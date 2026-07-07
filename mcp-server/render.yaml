@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: lion-elite-business-mcp
+    env: node
+    rootDir: mcp-server
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    plan: starter
+    autoDeploy: true
+    healthCheckPath: /health
