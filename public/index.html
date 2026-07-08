@@ -14,6 +14,7 @@
     p { color: #cfcfcf; font-size: 18px; line-height: 1.55; }
     .tag { display: inline-block; color: #111; background: #fff; border-radius: 999px; padding: 8px 14px; font-weight: 900; margin-bottom: 20px; }
     .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; margin-top: 18px; }
+    .metric-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
     .card { border: 1px solid #252525; background: #111; border-radius: 20px; padding: 22px; }
     .card h3 { margin-top: 0; font-size: 22px; }
     ul { padding-left: 18px; color: #d6d6d6; line-height: 1.7; }
@@ -53,6 +54,23 @@
       <button onclick="quickTask('AlexTheLionLifts','personal coaching authority','Create a personal brand reel script about strength, aesthetics, discipline, and coaching CTA.')">Alex Content</button>
     </div>
 
+    <h2>Daily KPI Scorecard</h2>
+    <div class="card">
+      <p class="small">Use numbers only. Do not enter customer names or private client details.</p>
+      <div class="metric-grid">
+        <div><label for="dmCount">DMs</label><input id="dmCount" placeholder="0" /></div>
+        <div><label for="leadCount">New Leads</label><input id="leadCount" placeholder="0" /></div>
+        <div><label for="consultCount">Consults Booked</label><input id="consultCount" placeholder="0" /></div>
+        <div><label for="orderCount">Orders / Sales</label><input id="orderCount" placeholder="0" /></div>
+        <div><label for="revenueCount">Revenue</label><input id="revenueCount" placeholder="$0" /></div>
+        <div><label for="contentCount">Posts Made</label><input id="contentCount" placeholder="0" /></div>
+      </div>
+      <label for="priorityNote">CEO Priority Note</label>
+      <textarea id="priorityNote" placeholder="Example: Need more coaching leads today. Push Lion Elite Beauty offers and follow up with warm DMs."></textarea>
+      <button onclick="saveDailyInputs()">Save Today Inputs</button>
+      <button onclick="clearDailyInputs()">Clear Inputs</button>
+    </div>
+
     <h2>Agent Output</h2>
     <div>
       <button onclick="copyOutput()">Copy Output</button>
@@ -74,11 +92,50 @@
 
   <script>
     let currentRun = null;
+    const inputIds = ['brand', 'topic', 'task', 'dmCount', 'leadCount', 'consultCount', 'orderCount', 'revenueCount', 'contentCount', 'priorityNote'];
 
     function quickTask(brand, topic, task) {
       document.getElementById('brand').value = brand;
       document.getElementById('topic').value = topic;
       document.getElementById('task').value = task;
+    }
+
+    function getValue(id) {
+      return document.getElementById(id).value || '';
+    }
+
+    function getScorecardText() {
+      return `\n\nDaily KPI Scorecard:\nDMs: ${getValue('dmCount') || 'not entered'}\nNew Leads: ${getValue('leadCount') || 'not entered'}\nConsults Booked: ${getValue('consultCount') || 'not entered'}\nOrders/Sales: ${getValue('orderCount') || 'not entered'}\nRevenue: ${getValue('revenueCount') || 'not entered'}\nPosts Made: ${getValue('contentCount') || 'not entered'}\nCEO Priority Note: ${getValue('priorityNote') || 'not entered'}\n\nUse these numbers to decide what action matters most today.`;
+    }
+
+    function buildPayload() {
+      const brand = getValue('brand') || 'Lion Elite';
+      const topic = getValue('topic') || 'daily execution';
+      const task = (getValue('task') || '') + getScorecardText();
+      return { brand, topic, task };
+    }
+
+    function saveDailyInputs() {
+      const data = {};
+      inputIds.forEach(id => data[id] = getValue(id));
+      localStorage.setItem('lionEliteDailyInputs', JSON.stringify(data));
+      alert('Today inputs saved on this browser.');
+    }
+
+    function loadDailyInputs() {
+      const raw = localStorage.getItem('lionEliteDailyInputs');
+      if (!raw) return;
+      try {
+        const data = JSON.parse(raw);
+        inputIds.forEach(id => {
+          if (data[id] !== undefined && document.getElementById(id)) document.getElementById(id).value = data[id];
+        });
+      } catch (error) {}
+    }
+
+    function clearDailyInputs() {
+      ['dmCount', 'leadCount', 'consultCount', 'orderCount', 'revenueCount', 'contentCount', 'priorityNote'].forEach(id => document.getElementById(id).value = '');
+      saveDailyInputs();
     }
 
     function formatOutput(data) {
@@ -94,17 +151,15 @@
     }
 
     async function runAgent(agentId) {
-      const brand = document.getElementById('brand').value || 'Lion Elite';
-      const topic = document.getElementById('topic').value || 'daily execution';
-      const task = document.getElementById('task').value || '';
+      const payload = buildPayload();
       const output = document.getElementById('output');
       output.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      output.textContent = 'Running agent...';
+      output.textContent = 'Running agent with today scorecard...';
 
       const res = await fetch(`/api/agents/${agentId}/run`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ brand, topic, task })
+        body: JSON.stringify(payload)
       });
       const data = await res.json();
       currentRun = data;
@@ -112,16 +167,14 @@
     }
 
     async function runDailyBriefing() {
-      const brand = document.getElementById('brand').value || 'Lion Elite Beauty';
-      const topic = document.getElementById('topic').value || 'daily lead generation';
-      const task = document.getElementById('task').value || '';
+      const payload = buildPayload();
       const output = document.getElementById('output');
       output.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      output.textContent = 'Running full daily briefing. This may take a moment...';
+      output.textContent = 'Running full daily briefing with today scorecard. This may take a moment...';
       const res = await fetch('/api/briefing/daily', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ brand, topic, task })
+        body: JSON.stringify(payload)
       });
       const data = await res.json();
       if (!res.ok) {
@@ -137,16 +190,13 @@
       const os = await osRes.json();
       const output = document.getElementById('output');
       output.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      output.textContent = 'Running full agent team...';
+      output.textContent = 'Running full agent team with today scorecard...';
       const results = [];
       for (const agent of os.agents) {
-        const brand = document.getElementById('brand').value || 'Lion Elite';
-        const topic = document.getElementById('topic').value || 'daily execution';
-        const task = document.getElementById('task').value || '';
         const res = await fetch(`/api/agents/${agent.id}/run`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ brand, topic, task })
+          body: JSON.stringify(buildPayload())
         });
         const data = await res.json();
         results.push(`${data.agent.name} (${data.mode}): ${data.result.nextAction}`);
@@ -183,6 +233,7 @@
     }
 
     async function loadOS() {
+      loadDailyInputs();
       const osRes = await fetch('/api/os');
       const os = await osRes.json();
       const planRes = await fetch('/api/agent-plan/today');
