@@ -53,15 +53,15 @@
       <button onclick="quickTask('AlexTheLionLifts','personal coaching authority','Create a personal brand reel script about strength, aesthetics, discipline, and coaching CTA.')">Alex Content</button>
     </div>
 
-    <h2>Active AI Agents</h2>
-    <div class="grid" id="agents"></div>
-
     <h2>Agent Output</h2>
     <div>
       <button onclick="copyOutput()">Copy Output</button>
       <button onclick="saveOutput()">Save Output To GitHub</button>
     </div>
-    <div class="output" id="output">Choose an agent and press Run Agent.</div>
+    <div class="output" id="output">Choose an agent or press Run Daily Agent Briefing.</div>
+
+    <h2>Active AI Agents</h2>
+    <div class="grid" id="agents"></div>
 
     <h2>Today’s Agent Plan</h2>
     <div class="card"><ul id="today"></ul></div>
@@ -98,6 +98,7 @@
       const topic = document.getElementById('topic').value || 'daily execution';
       const task = document.getElementById('task').value || '';
       const output = document.getElementById('output');
+      output.scrollIntoView({ behavior: 'smooth', block: 'start' });
       output.textContent = 'Running agent...';
 
       const res = await fetch(`/api/agents/${agentId}/run`, {
@@ -115,6 +116,7 @@
       const topic = document.getElementById('topic').value || 'daily lead generation';
       const task = document.getElementById('task').value || '';
       const output = document.getElementById('output');
+      output.scrollIntoView({ behavior: 'smooth', block: 'start' });
       output.textContent = 'Running full daily briefing. This may take a moment...';
       const res = await fetch('/api/briefing/daily', {
         method: 'POST',
@@ -134,6 +136,7 @@
       const osRes = await fetch('/api/os');
       const os = await osRes.json();
       const output = document.getElementById('output');
+      output.scrollIntoView({ behavior: 'smooth', block: 'start' });
       output.textContent = 'Running full agent team...';
       const results = [];
       for (const agent of os.agents) {
