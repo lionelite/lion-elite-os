@@ -18,7 +18,11 @@
     .card h3 { margin-top: 0; font-size: 22px; }
     ul { padding-left: 18px; color: #d6d6d6; line-height: 1.7; }
     .status { margin-top: 24px; padding: 18px; background: #160f20; border: 1px solid #4e2f80; border-radius: 18px; color: #e6d6ff; font-weight: 800; }
-    .button { display: inline-block; margin-top: 12px; border: 1px solid #444; border-radius: 999px; padding: 10px 14px; font-weight: 800; color: #fff; text-decoration: none; }
+    .button, button { display: inline-block; margin-top: 12px; border: 1px solid #444; border-radius: 999px; padding: 10px 14px; font-weight: 800; color: #fff; background: #181818; text-decoration: none; cursor: pointer; }
+    button:hover, .button:hover { border-color: #aaa; }
+    .output { white-space: pre-wrap; background: #0b0b0b; border: 1px solid #2a2a2a; border-radius: 18px; padding: 18px; color: #eaeaea; min-height: 120px; }
+    input { width: 100%; box-sizing: border-box; padding: 14px; border-radius: 14px; border: 1px solid #333; background: #111; color: #fff; font-size: 16px; margin-top: 10px; }
+    label { color: #d8d8d8; font-weight: 800; }
     .footer { margin-top: 46px; color: #888; font-size: 14px; }
   </style>
 </head>
@@ -31,19 +35,67 @@
       <div class="status" id="priority">Loading agent priority...</div>
     </section>
 
+    <h2>Run Context</h2>
+    <div class="card">
+      <label for="brand">Brand</label>
+      <input id="brand" value="Lion Elite" />
+      <label for="topic">Topic / Task</label>
+      <input id="topic" value="daily execution" />
+    </div>
+
     <h2>Active AI Agents</h2>
     <div class="grid" id="agents"></div>
 
-    <h2>Next Agent Builds</h2>
-    <div class="card"><ul id="nextBuilds"></ul></div>
+    <h2>Agent Output</h2>
+    <div class="output" id="output">Choose an agent and press Run Agent.</div>
 
     <h2>Today’s Agent Plan</h2>
     <div class="card"><ul id="today"></ul></div>
+
+    <h2>Next Agent Builds</h2>
+    <div class="card"><ul id="nextBuilds"></ul></div>
 
     <p class="footer">Lion Elite OS — agents first, automation first, execution first.</p>
   </main>
 
   <script>
+    async function runAgent(agentId) {
+      const brand = document.getElementById('brand').value || 'Lion Elite';
+      const topic = document.getElementById('topic').value || 'daily execution';
+      const output = document.getElementById('output');
+      output.textContent = 'Running agent...';
+
+      const res = await fetch(`/api/agents/${agentId}/run`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ brand, topic })
+      });
+      const data = await res.json();
+      const result = data.result;
+
+      output.textContent = `${data.agent.name}\n${result.title}\n\n${result.summary}\n\n${result.items.map(item => `${item.type}:\n${item.output}`).join('\n\n')}\n\nNext Action:\n${result.nextAction}`;
+    }
+
+    async function runAllAgents() {
+      const osRes = await fetch('/api/os');
+      const os = await osRes.json();
+      const output = document.getElementById('output');
+      output.textContent = 'Running full agent team...';
+      const results = [];
+      for (const agent of os.agents) {
+        const brand = document.getElementById('brand').value || 'Lion Elite';
+        const topic = document.getElementById('topic').value || 'daily execution';
+        const res = await fetch(`/api/agents/${agent.id}/run`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ brand, topic })
+        });
+        const data = await res.json();
+        results.push(`${data.agent.name}: ${data.result.nextAction}`);
+      }
+      output.textContent = `Full Agent Team Complete\n\n${results.join('\n')}`;
+    }
+
     async function loadOS() {
       const osRes = await fetch('/api/os');
       const os = await osRes.json();
@@ -60,9 +112,10 @@
           <p>${agent.activation}</p>
           <strong>Daily Outputs:</strong>
           <ul>${agent.dailyOutputs.map(item => `<li>${item}</li>`).join('')}</ul>
-          <a class="button" href="/api/agents/${agent.id}">View Agent API</a>
+          <button onclick="runAgent('${agent.id}')">Run Agent</button>
+          <a class="button" href="/api/agents/${agent.id}/run">View Output API</a>
         </div>
-      `).join('');
+      `).join('') + `<div class="card"><h3>Full Agent Team</h3><p>Run every agent and get one next action from each.</p><button onclick="runAllAgents()">Run All Agents</button></div>`;
 
       document.getElementById('nextBuilds').innerHTML = os.commandCenter.nextBuilds.map(item => `<li>${item}</li>`).join('');
       document.getElementById('today').innerHTML = plan.plan.map(item => `<li><strong>${item.agent}:</strong> ${item.action}</li>`).join('');
