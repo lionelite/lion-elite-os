@@ -3,67 +3,69 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Lion Elite OS</title>
+  <title>Lion Elite OS | AI Agents</title>
   <style>
     :root { color-scheme: dark; font-family: Inter, Arial, sans-serif; }
     body { margin: 0; background: #070707; color: #f5f5f5; }
-    main { max-width: 1100px; margin: 0 auto; padding: 48px 22px; }
-    .hero { border: 1px solid #252525; border-radius: 28px; padding: 36px; background: linear-gradient(135deg, #101010, #181818); }
-    h1 { font-size: clamp(42px, 8vw, 86px); margin: 0; line-height: .9; letter-spacing: -3px; }
-    h2 { font-size: 28px; margin-top: 42px; }
+    main { max-width: 1120px; margin: 0 auto; padding: 44px 20px; }
+    .hero { border: 1px solid #252525; border-radius: 28px; padding: 34px; background: linear-gradient(135deg, #101010, #181818); }
+    h1 { font-size: clamp(42px, 8vw, 82px); margin: 0; line-height: .9; letter-spacing: -3px; }
+    h2 { font-size: 28px; margin-top: 38px; }
     p { color: #cfcfcf; font-size: 18px; line-height: 1.55; }
-    .tag { display: inline-block; color: #111; background: #fff; border-radius: 999px; padding: 8px 14px; font-weight: 800; margin-bottom: 20px; }
-    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-top: 18px; }
+    .tag { display: inline-block; color: #111; background: #fff; border-radius: 999px; padding: 8px 14px; font-weight: 900; margin-bottom: 20px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; margin-top: 18px; }
     .card { border: 1px solid #252525; background: #111; border-radius: 20px; padding: 22px; }
     .card h3 { margin-top: 0; font-size: 22px; }
     ul { padding-left: 18px; color: #d6d6d6; line-height: 1.7; }
-    .status { margin-top: 26px; padding: 18px; background: #0f2015; border: 1px solid #255c37; border-radius: 18px; color: #b8ffd0; }
+    .status { margin-top: 24px; padding: 18px; background: #160f20; border: 1px solid #4e2f80; border-radius: 18px; color: #e6d6ff; font-weight: 800; }
+    .button { display: inline-block; margin-top: 12px; border: 1px solid #444; border-radius: 999px; padding: 10px 14px; font-weight: 800; color: #fff; text-decoration: none; }
     .footer { margin-top: 46px; color: #888; font-size: 14px; }
   </style>
 </head>
 <body>
   <main>
     <section class="hero">
-      <span class="tag">LIVE AUTOMATION FOUNDATION</span>
+      <span class="tag">AI AGENT COMMAND CENTER</span>
       <h1>Lion Elite OS</h1>
-      <p>The operating system for Lion Elite Wellness, Lion Elite Beauty, AlexTheLionLifts, BUNKER, real estate, sales, content, and internal execution.</p>
-      <div class="status">Render deployment target: connected and ready to run.</div>
+      <p>The system is now focused on specialized AI agents for marketing, sales, operations, research compliance, and finance/KPIs.</p>
+      <div class="status" id="priority">Loading agent priority...</div>
     </section>
 
-    <h2>Automation Agents</h2>
+    <h2>Active AI Agents</h2>
     <div class="grid" id="agents"></div>
 
-    <h2>Daily Execution Flow</h2>
-    <div class="card"><ul id="workflow"></ul></div>
+    <h2>Next Agent Builds</h2>
+    <div class="card"><ul id="nextBuilds"></ul></div>
 
-    <h2>Brand Split</h2>
-    <div class="grid" id="brands"></div>
+    <h2>Today’s Agent Plan</h2>
+    <div class="card"><ul id="today"></ul></div>
 
-    <p class="footer">Lion Elite OS v1.0 — built to become the control center for daily business automation.</p>
+    <p class="footer">Lion Elite OS — agents first, automation first, execution first.</p>
   </main>
 
   <script>
     async function loadOS() {
-      const res = await fetch('/api/os');
-      const data = await res.json();
+      const osRes = await fetch('/api/os');
+      const os = await osRes.json();
+      const planRes = await fetch('/api/agent-plan/today');
+      const plan = await planRes.json();
 
-      document.getElementById('agents').innerHTML = data.agents.map(agent => `
+      document.getElementById('priority').textContent = os.commandCenter.priority;
+
+      document.getElementById('agents').innerHTML = os.agents.map(agent => `
         <div class="card">
           <h3>${agent.name}</h3>
           <p>${agent.mission}</p>
-          <ul>${agent.outputs.map(item => `<li>${item}</li>`).join('')}</ul>
+          <strong>Activation:</strong>
+          <p>${agent.activation}</p>
+          <strong>Daily Outputs:</strong>
+          <ul>${agent.dailyOutputs.map(item => `<li>${item}</li>`).join('')}</ul>
+          <a class="button" href="/api/agents/${agent.id}">View Agent API</a>
         </div>
       `).join('');
 
-      document.getElementById('workflow').innerHTML = data.dailyWorkflow.map(step => `<li>${step}</li>`).join('');
-
-      document.getElementById('brands').innerHTML = data.brands.map(brand => `
-        <div class="card">
-          <h3>${brand.name}</h3>
-          <p>${brand.role}</p>
-          <ul>${brand.focus.map(item => `<li>${item}</li>`).join('')}</ul>
-        </div>
-      `).join('');
+      document.getElementById('nextBuilds').innerHTML = os.commandCenter.nextBuilds.map(item => `<li>${item}</li>`).join('');
+      document.getElementById('today').innerHTML = plan.plan.map(item => `<li><strong>${item.agent}:</strong> ${item.action}</li>`).join('');
     }
     loadOS();
   </script>
