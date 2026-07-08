@@ -9,6 +9,15 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 const agents = [
   {
+    id: 'executive',
+    name: 'Executive Agent',
+    mission: 'Coordinate all Lion Elite agents into one clear CEO action plan.',
+    activation: 'Run at the start of the day, after running multiple agents, or when Alex needs the next best move.',
+    dailyOutputs: ['CEO priority', 'agent assignments', 'revenue action', 'risk warning', 'next 3 moves'],
+    tools: ['All agent outputs', 'KPI scoreboard', 'brand rules', 'daily priorities'],
+    systemPrompt: 'You are the Lion Elite Executive Agent. You coordinate the Marketing, Sales, Operations, Research Compliance, and Finance/KPI agents. Your job is to turn all information into a clear CEO action plan. Be direct. Give priorities, order of execution, and the next 3 moves. Focus on revenue, lead generation, consistency, compliance, and operational leverage.'
+  },
+  {
     id: 'marketing',
     name: 'Marketing Agent',
     mission: 'Create daily content, captions, hooks, CTAs, carousel outlines, reel scripts, and campaign plans.',
@@ -59,7 +68,7 @@ const commandCenter = {
   priority: 'AI agents first. Build Lion Elite OS around automation, not just a website.',
   mode: process.env.OPENAI_API_KEY ? 'AI-powered' : 'Template fallback',
   nextBuilds: [
-    'Add OPENAI_API_KEY in Render environment variables to activate AI-powered generations.',
+    'Use Daily Briefing to run the full agent team and get a CEO action plan.',
     'Add GITHUB_TOKEN in Render environment variables to save approved outputs back to GitHub.',
     'Connect Gmail for draft follow-ups and recap emails.',
     'Connect Calendar for consultations and daily schedule.',
@@ -85,6 +94,16 @@ function fallbackRunAgent(id, context = {}) {
   const brand = context.brand || 'Lion Elite';
 
   const outputs = {
+    executive: {
+      title: 'CEO Action Plan',
+      summary: `Coordinate today's execution for ${brand} around ${topic}.`,
+      items: [
+        { type: 'CEO Priority', output: 'Focus on the action most likely to create leads, conversations, consultations, or revenue today.' },
+        { type: 'Agent Assignments', output: 'Marketing creates demand. Sales follows up. Operations documents the process. Finance tracks the score. Compliance reviews Wellness copy.' },
+        { type: 'Next 3 Moves', output: '1) Publish one lead-generating post. 2) Follow up with warm leads. 3) Track DMs, calls, orders, and revenue before the day ends.' }
+      ],
+      nextAction: 'Run Marketing and Sales first, then execute the highest revenue action.'
+    },
     marketing: {
       title: 'Daily Marketing Output',
       summary: `Create content for ${brand} around ${topic}.`,
@@ -196,6 +215,32 @@ async function runAgent(id, context = {}) {
   };
 }
 
+async function runDailyBriefing(context = {}) {
+  const brand = context.brand || 'Lion Elite Beauty';
+  const topic = context.topic || 'daily lead generation';
+  const baseTask = context.task || 'Create the next best actions to produce leads, conversations, consultations, or revenue today.';
+  const runIds = ['marketing', 'sales', 'operations', 'research-compliance', 'finance-kpi'];
+  const runs = [];
+
+  for (const id of runIds) {
+    const agent = findAgent(id);
+    const task = `${baseTask}\n\nYou are contributing to a full daily CEO briefing. Brand: ${brand}. Topic: ${topic}. Give your most useful output for today.`;
+    runs.push(await runAgent(id, { brand, topic, task }));
+  }
+
+  const briefingText = runs.map(run => `${run.agent.name}:\n${run.result.text || run.result.items.map(item => `${item.type}: ${item.output}`).join('\n')}`).join('\n\n---\n\n');
+  const executiveTask = `Create a concise CEO briefing from these agent outputs. Give: 1) top priority, 2) today\'s exact execution order, 3) revenue action, 4) content to post, 5) follow-up to send, 6) risk to watch, 7) next 3 moves.\n\n${briefingText}`;
+  const executive = await runAgent('executive', { brand, topic, task: executiveTask });
+
+  return {
+    date: new Date().toISOString().slice(0, 10),
+    mode: commandCenter.mode,
+    context: { brand, topic, task: baseTask },
+    executive,
+    runs
+  };
+}
+
 function slugify(value) {
   return String(value || 'output')
     .toLowerCase()
@@ -301,6 +346,14 @@ app.get('/api/agents/:id/run', async (req, res) => {
     res.json(await runAgent(req.params.id, req.query));
   } catch (error) {
     res.status(500).json({ error: error.message, fallback: fallbackRunAgent(req.params.id, req.query) });
+  }
+});
+
+app.post('/api/briefing/daily', async (req, res) => {
+  try {
+    res.json(await runDailyBriefing(req.body));
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
 });
 
