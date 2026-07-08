@@ -71,12 +71,25 @@
       <button onclick="clearDailyInputs()">Clear Inputs</button>
     </div>
 
+    <h2>Content Calendar</h2>
+    <div class="card">
+      <p class="small">Build a daily posting plan for whichever brand is selected above.</p>
+      <div class="metric-grid">
+        <div><label for="calendarDays">Days</label><input id="calendarDays" value="7" /></div>
+        <div><label for="calendarCTA">Main CTA</label><input id="calendarCTA" value="DM ELITE" /></div>
+      </div>
+      <label for="calendarGoal">Calendar Goal</label>
+      <textarea id="calendarGoal">Generate a premium content calendar that attracts coaching leads, affiliate interest, and warm conversations. Include posts, reels, stories, and DM CTAs.</textarea>
+      <button class="primary" onclick="generateContentCalendar()">Generate Content Calendar</button>
+      <button onclick="generateTodayPostStack()">Generate Today's Post Stack</button>
+    </div>
+
     <h2>Agent Output</h2>
     <div>
       <button onclick="copyOutput()">Copy Output</button>
       <button onclick="saveOutput()">Save Output To GitHub</button>
     </div>
-    <div class="output" id="output">Choose an agent or press Run Daily Agent Briefing.</div>
+    <div class="output" id="output">Choose an agent, run the briefing, or generate a content calendar.</div>
 
     <h2>Active AI Agents</h2>
     <div class="grid" id="agents"></div>
@@ -92,7 +105,7 @@
 
   <script>
     let currentRun = null;
-    const inputIds = ['brand', 'topic', 'task', 'dmCount', 'leadCount', 'consultCount', 'orderCount', 'revenueCount', 'contentCount', 'priorityNote'];
+    const inputIds = ['brand', 'topic', 'task', 'dmCount', 'leadCount', 'consultCount', 'orderCount', 'revenueCount', 'contentCount', 'priorityNote', 'calendarDays', 'calendarCTA', 'calendarGoal'];
 
     function quickTask(brand, topic, task) {
       document.getElementById('brand').value = brand;
@@ -148,6 +161,38 @@
       const executiveBody = data.executive.result.text || data.executive.result.items.map(item => `${item.type}:\n${item.output}`).join('\n\n');
       const agentSummary = data.runs.map(run => `\n---\n${run.agent.name}\n${run.result.text || run.result.items.map(item => `${item.type}: ${item.output}`).join('\n')}`).join('\n');
       return `DAILY AGENT BRIEFING\nMode: ${data.mode}\nBrand: ${data.context.brand}\nTopic: ${data.context.topic}\n\nEXECUTIVE SUMMARY\n${executiveBody}\n\nFULL AGENT OUTPUTS\n${agentSummary}`;
+    }
+
+    async function runMarketingTask(topic, task, loadingText) {
+      const brand = getValue('brand') || 'Lion Elite';
+      const output = document.getElementById('output');
+      output.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      output.textContent = loadingText;
+
+      const res = await fetch('/api/agents/marketing/run', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ brand, topic, task: task + getScorecardText() })
+      });
+      const data = await res.json();
+      currentRun = data;
+      output.textContent = formatOutput(data);
+    }
+
+    async function generateContentCalendar() {
+      const brand = getValue('brand') || 'Lion Elite';
+      const days = getValue('calendarDays') || '7';
+      const cta = getValue('calendarCTA') || 'DM ELITE';
+      const goal = getValue('calendarGoal') || 'Generate a content calendar that creates leads and conversations.';
+      const task = `Create a ${days}-day content calendar for ${brand}. Goal: ${goal}\n\nFor each day include: day number, platform, content type, hook, content angle, caption direction, story follow-up, CTA, and what the DM conversation should start with. Main CTA: ${cta}. Make it premium, direct, and sales-focused without sounding cheap.`;
+      await runMarketingTask('content calendar', task, 'Generating content calendar...');
+    }
+
+    async function generateTodayPostStack() {
+      const brand = getValue('brand') || 'Lion Elite';
+      const cta = getValue('calendarCTA') || 'DM ELITE';
+      const task = `Create today's post stack for ${brand}. Include: 1 carousel outline, 1 reel script, 3 captions, 5 story frames, 5 hook options, and 5 DM follow-up openers. Main CTA: ${cta}. Make it ready to post today.`;
+      await runMarketingTask('today post stack', task, 'Generating today post stack...');
     }
 
     async function runAgent(agentId) {
