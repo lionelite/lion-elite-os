@@ -14,7 +14,8 @@ const agents = [
     mission: 'Create daily content, captions, hooks, CTAs, carousel outlines, reel scripts, and campaign plans.',
     activation: 'Run when Lion Elite needs content, campaigns, ads, email angles, or daily posting assets.',
     dailyOutputs: ['3 captions', '3 reel hooks', '1 carousel outline', '1 story CTA', '1 cross-brand content idea'],
-    tools: ['GitHub content files', 'Brand rules', 'Caption bank', 'KPI scoreboard']
+    tools: ['GitHub content files', 'Brand rules', 'Caption bank', 'KPI scoreboard'],
+    systemPrompt: 'You are the Lion Elite Marketing Agent. Create direct, premium, conversion-focused marketing outputs. Respect the brand split: Lion Elite Wellness is research education only; Lion Elite Beauty is coaching, beauty, transformation and client programs; AlexTheLionLifts is personal credibility, training, discipline, and coaching. Always include hook, value, CTA, platform, and brand target.'
   },
   {
     id: 'sales',
@@ -22,7 +23,8 @@ const agents = [
     mission: 'Turn leads into conversations, consultations, and customers through DM, SMS, email, and call follow-up.',
     activation: 'Run when a lead comments, DMs, books, misses a meeting, objects, or needs a follow-up.',
     dailyOutputs: ['5 warm lead follow-ups', '3 SMS messages', '1 objection response', '1 close script', '1 reactivation message'],
-    tools: ['Gmail drafts', 'DM scripts', 'Call recap templates', 'Sales framework']
+    tools: ['Gmail drafts', 'DM scripts', 'Call recap templates', 'Sales framework'],
+    systemPrompt: 'You are the Lion Elite Sales Agent. Use the framework Engage → Power Statement → Identify → Build Value → Handle Objection → Close → Follow Up. Messages must be short enough for DM/SMS when requested. Always end with a question. Build value before price.'
   },
   {
     id: 'operations',
@@ -30,7 +32,8 @@ const agents = [
     mission: 'Turn repeated business work into SOPs, checklists, issues, dashboards, and team-ready workflows.',
     activation: 'Run when a process repeats twice, a task gets messy, or a team member needs instructions.',
     dailyOutputs: ['1 SOP', '1 checklist', '1 GitHub issue', '1 bottleneck note', '1 workflow improvement'],
-    tools: ['GitHub SOPs', 'Operations folder', 'Weekly review', 'Fulfillment checklists']
+    tools: ['GitHub SOPs', 'Operations folder', 'Weekly review', 'Fulfillment checklists'],
+    systemPrompt: 'You are the Lion Elite Operations Agent. Turn messy repeated work into clear SOPs, checklists, owners, triggers, quality checks, and next improvements. Prioritize execution over explanation.'
   },
   {
     id: 'research-compliance',
@@ -38,7 +41,8 @@ const agents = [
     mission: 'Keep Lion Elite Wellness research-use-only content safe, educational, and compliant.',
     activation: 'Run before publishing Lion Elite Wellness product, peptide, research, or educational content.',
     dailyOutputs: ['1 content review', '1 safer rewrite', '1 disclaimer check', '1 approved education idea'],
-    tools: ['Compliance language', 'Research disclaimers', 'Wellness brand rules']
+    tools: ['Compliance language', 'Research disclaimers', 'Wellness brand rules'],
+    systemPrompt: 'You are the Lion Elite Research Compliance Agent. For Lion Elite Wellness, keep content research-use-only. Do not provide dosing, human-use instructions, disease claims, treatment claims, or transformation promises. Rewrite risky copy into research-safe educational language. Include risk level, problem phrase, safer replacement, and final version.'
   },
   {
     id: 'finance-kpi',
@@ -46,14 +50,16 @@ const agents = [
     mission: 'Track the numbers that matter and turn them into daily revenue priorities.',
     activation: 'Run at the start and end of each business day or after new sales/performance data is added.',
     dailyOutputs: ['Daily scorecard', '1 KPI insight', '1 revenue action', '1 risk warning', '1 CEO question'],
-    tools: ['KPI scoreboard', 'Sales data', 'Marketing metrics', 'Revenue targets']
+    tools: ['KPI scoreboard', 'Sales data', 'Marketing metrics', 'Revenue targets'],
+    systemPrompt: 'You are the Lion Elite Finance & KPI Agent. Translate numbers into daily action. Focus on revenue, orders, DMs, consultations, content performance, average order value, and the $100k/month target. Always end with one CEO priority question.'
   }
 ];
 
 const commandCenter = {
   priority: 'AI agents first. Build Lion Elite OS around automation, not just a website.',
+  mode: process.env.OPENAI_API_KEY ? 'AI-powered' : 'Template fallback',
   nextBuilds: [
-    'Wire dashboard run buttons to agent output endpoints.',
+    'Add OPENAI_API_KEY in Render environment variables to activate AI-powered generations.',
     'Save approved agent outputs to GitHub files.',
     'Connect Gmail for draft follow-ups and recap emails.',
     'Connect Calendar for consultations and daily schedule.',
@@ -67,7 +73,7 @@ function findAgent(id) {
   return agents.find(item => item.id === id);
 }
 
-function runAgent(id, context = {}) {
+function fallbackRunAgent(id, context = {}) {
   const today = new Date().toISOString().slice(0, 10);
   const topic = context.topic || 'daily execution';
   const brand = context.brand || 'Lion Elite';
@@ -105,7 +111,7 @@ function runAgent(id, context = {}) {
     },
     'research-compliance': {
       title: 'Research Compliance Output',
-      summary: `Review Wellness-style content for research-safe language.`,
+      summary: 'Review Wellness-style content for research-safe language.',
       items: [
         { type: 'Safe Phrase', output: 'Investigational research compound studied in controlled laboratory models.' },
         { type: 'Avoid', output: 'Avoid dosing, human-use instructions, treatment claims, disease claims, or transformation promises for research products.' },
@@ -115,7 +121,7 @@ function runAgent(id, context = {}) {
     },
     'finance-kpi': {
       title: 'Finance & KPI Output',
-      summary: `Turn business metrics into today's revenue priority.`,
+      summary: 'Turn business metrics into today\'s revenue priority.',
       items: [
         { type: 'Scorecard', output: 'Track DMs, consultations booked, orders, revenue, content posted, and top CTA.' },
         { type: 'Revenue Math', output: '$100,000/month requires about $3,333/day. The daily question: what creates qualified leads, orders, or repeat buyers today?' },
@@ -127,14 +133,65 @@ function runAgent(id, context = {}) {
 
   return {
     date: today,
+    mode: 'template-fallback',
     agent: findAgent(id),
     context: { brand, topic },
     result: outputs[id]
   };
 }
 
+async function runAgent(id, context = {}) {
+  const agent = findAgent(id);
+  if (!process.env.OPENAI_API_KEY) {
+    return fallbackRunAgent(id, context);
+  }
+
+  const today = new Date().toISOString().slice(0, 10);
+  const brand = context.brand || 'Lion Elite';
+  const topic = context.topic || 'daily execution';
+  const userTask = context.task || `Create today's agent output for brand: ${brand}. Topic/task: ${topic}.`;
+
+  const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${process.env.OPENAI_API_KEY}`
+    },
+    body: JSON.stringify({
+      model: process.env.OPENAI_MODEL || 'gpt-4.1-mini',
+      temperature: 0.7,
+      messages: [
+        { role: 'system', content: `${agent.systemPrompt}\n\nReturn a practical business output. Use headings and bullets. Keep it direct and ready to use.` },
+        { role: 'user', content: userTask }
+      ]
+    })
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    return { ...fallbackRunAgent(id, context), mode: 'template-fallback-after-openai-error', openaiError: errorText };
+  }
+
+  const data = await response.json();
+  const text = data.choices?.[0]?.message?.content || 'No output returned.';
+
+  return {
+    date: today,
+    mode: 'ai-powered',
+    agent,
+    context: { brand, topic, task: userTask },
+    result: {
+      title: `${agent.name} AI Output`,
+      summary: `AI-generated output for ${brand} around ${topic}.`,
+      text,
+      items: [{ type: 'AI Output', output: text }],
+      nextAction: 'Review, edit if needed, then execute or save.'
+    }
+  };
+}
+
 app.get('/health', (req, res) => {
-  res.json({ status: 'ok', service: 'lion-elite-os', timestamp: new Date().toISOString() });
+  res.json({ status: 'ok', service: 'lion-elite-os', mode: commandCenter.mode, timestamp: new Date().toISOString() });
 });
 
 app.get('/api/os', (req, res) => {
@@ -142,30 +199,39 @@ app.get('/api/os', (req, res) => {
     name: 'Lion Elite OS',
     mission: 'Automate the Lion Elite business ecosystem through specialized AI agents.',
     commandCenter,
-    agents
+    agents: agents.map(({ systemPrompt, ...agent }) => agent)
   });
 });
 
 app.get('/api/agents', (req, res) => {
-  res.json({ agents });
+  res.json({ agents: agents.map(({ systemPrompt, ...agent }) => agent) });
 });
 
 app.get('/api/agents/:id', (req, res) => {
   const agent = findAgent(req.params.id);
   if (!agent) return res.status(404).json({ error: 'Agent not found' });
-  res.json({ agent });
+  const { systemPrompt, ...safeAgent } = agent;
+  res.json({ agent: safeAgent });
 });
 
-app.post('/api/agents/:id/run', (req, res) => {
+app.post('/api/agents/:id/run', async (req, res) => {
   const agent = findAgent(req.params.id);
   if (!agent) return res.status(404).json({ error: 'Agent not found' });
-  res.json(runAgent(req.params.id, req.body));
+  try {
+    res.json(await runAgent(req.params.id, req.body));
+  } catch (error) {
+    res.status(500).json({ error: error.message, fallback: fallbackRunAgent(req.params.id, req.body) });
+  }
 });
 
-app.get('/api/agents/:id/run', (req, res) => {
+app.get('/api/agents/:id/run', async (req, res) => {
   const agent = findAgent(req.params.id);
   if (!agent) return res.status(404).json({ error: 'Agent not found' });
-  res.json(runAgent(req.params.id, req.query));
+  try {
+    res.json(await runAgent(req.params.id, req.query));
+  } catch (error) {
+    res.status(500).json({ error: error.message, fallback: fallbackRunAgent(req.params.id, req.query) });
+  }
 });
 
 app.get('/api/agent-plan/today', (req, res) => {
