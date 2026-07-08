@@ -18,12 +18,13 @@
     .card h3 { margin-top: 0; font-size: 22px; }
     ul { padding-left: 18px; color: #d6d6d6; line-height: 1.7; }
     .status { margin-top: 24px; padding: 18px; background: #160f20; border: 1px solid #4e2f80; border-radius: 18px; color: #e6d6ff; font-weight: 800; }
-    .button, button { display: inline-block; margin-top: 12px; border: 1px solid #444; border-radius: 999px; padding: 10px 14px; font-weight: 800; color: #fff; background: #181818; text-decoration: none; cursor: pointer; }
+    .button, button { display: inline-block; margin-top: 12px; margin-right: 8px; border: 1px solid #444; border-radius: 999px; padding: 10px 14px; font-weight: 800; color: #fff; background: #181818; text-decoration: none; cursor: pointer; }
     button:hover, .button:hover { border-color: #aaa; }
     .output { white-space: pre-wrap; background: #0b0b0b; border: 1px solid #2a2a2a; border-radius: 18px; padding: 18px; color: #eaeaea; min-height: 160px; }
     input, textarea { width: 100%; box-sizing: border-box; padding: 14px; border-radius: 14px; border: 1px solid #333; background: #111; color: #fff; font-size: 16px; margin-top: 10px; margin-bottom: 16px; }
     textarea { min-height: 110px; resize: vertical; }
     label { color: #d8d8d8; font-weight: 800; }
+    .small { color: #999; font-size: 14px; margin-top: 10px; }
     .footer { margin-top: 46px; color: #888; font-size: 14px; }
   </style>
 </head>
@@ -34,6 +35,7 @@
       <h1>Lion Elite OS</h1>
       <p>The system is now focused on specialized AI agents for marketing, sales, operations, research compliance, and finance/KPIs.</p>
       <div class="status" id="priority">Loading agent priority...</div>
+      <div class="small" id="integrations">Checking integrations...</div>
     </section>
 
     <h2>Run Context</h2>
@@ -50,6 +52,10 @@
     <div class="grid" id="agents"></div>
 
     <h2>Agent Output</h2>
+    <div>
+      <button onclick="copyOutput()">Copy Output</button>
+      <button onclick="saveOutput()">Save Output To GitHub</button>
+    </div>
     <div class="output" id="output">Choose an agent and press Run Agent.</div>
 
     <h2>Today’s Agent Plan</h2>
@@ -62,6 +68,8 @@
   </main>
 
   <script>
+    let currentRun = null;
+
     function formatOutput(data) {
       const result = data.result;
       const body = result.text || result.items.map(item => `${item.type}:\n${item.output}`).join('\n\n');
@@ -81,6 +89,7 @@
         body: JSON.stringify({ brand, topic, task })
       });
       const data = await res.json();
+      currentRun = data;
       output.textContent = formatOutput(data);
     }
 
@@ -102,7 +111,35 @@
         const data = await res.json();
         results.push(`${data.agent.name} (${data.mode}): ${data.result.nextAction}`);
       }
+      currentRun = null;
       output.textContent = `Full Agent Team Complete\n\n${results.join('\n')}`;
+    }
+
+    async function copyOutput() {
+      const text = document.getElementById('output').textContent;
+      await navigator.clipboard.writeText(text);
+      alert('Copied.');
+    }
+
+    async function saveOutput() {
+      if (!currentRun) {
+        alert('Run one agent first, then save.');
+        return;
+      }
+      const output = document.getElementById('output');
+      const previous = output.textContent;
+      output.textContent = previous + '\n\nSaving to GitHub...';
+      const res = await fetch('/api/outputs/save', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ run: currentRun })
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        output.textContent = previous + `\n\nSave failed: ${data.error}`;
+        return;
+      }
+      output.textContent = previous + `\n\nSaved to GitHub: ${data.saved.path}`;
     }
 
     async function loadOS() {
@@ -110,8 +147,11 @@
       const os = await osRes.json();
       const planRes = await fetch('/api/agent-plan/today');
       const plan = await planRes.json();
+      const integrationsRes = await fetch('/api/integrations');
+      const integrations = await integrationsRes.json();
 
       document.getElementById('priority').textContent = `${os.commandCenter.priority} Current mode: ${os.commandCenter.mode}.`;
+      document.getElementById('integrations').textContent = `OpenAI: ${integrations.openai ? 'connected' : 'not connected'} | GitHub Save: ${integrations.githubSave ? 'connected' : 'not connected'} | Repo: ${integrations.githubRepo}`;
 
       document.getElementById('agents').innerHTML = os.agents.map(agent => `
         <div class="card">
