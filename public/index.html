@@ -19,6 +19,7 @@
     ul { padding-left: 18px; color: #d6d6d6; line-height: 1.7; }
     .status { margin-top: 24px; padding: 18px; background: #160f20; border: 1px solid #4e2f80; border-radius: 18px; color: #e6d6ff; font-weight: 800; }
     .button, button { display: inline-block; margin-top: 12px; margin-right: 8px; border: 1px solid #444; border-radius: 999px; padding: 10px 14px; font-weight: 800; color: #fff; background: #181818; text-decoration: none; cursor: pointer; }
+    .primary { background: #fff; color: #111; border-color: #fff; }
     button:hover, .button:hover { border-color: #aaa; }
     .output { white-space: pre-wrap; background: #0b0b0b; border: 1px solid #2a2a2a; border-radius: 18px; padding: 18px; color: #eaeaea; min-height: 160px; }
     input, textarea { width: 100%; box-sizing: border-box; padding: 14px; border-radius: 14px; border: 1px solid #333; background: #111; color: #fff; font-size: 16px; margin-top: 10px; margin-bottom: 16px; }
@@ -33,7 +34,7 @@
     <section class="hero">
       <span class="tag">AI AGENT COMMAND CENTER</span>
       <h1>Lion Elite OS</h1>
-      <p>The system is now focused on specialized AI agents for marketing, sales, operations, research compliance, and finance/KPIs.</p>
+      <p>Specialized AI agents for marketing, sales, operations, research review, and finance/KPIs.</p>
       <div class="status" id="priority">Loading agent priority...</div>
       <div class="small" id="integrations">Checking integrations...</div>
     </section>
@@ -46,6 +47,10 @@
       <input id="topic" value="daily lead generation" />
       <label for="task">Detailed Task For The Agent</label>
       <textarea id="task">Create the next best output I can use today to create leads, conversations, consultations, or revenue.</textarea>
+      <button class="primary" onclick="runDailyBriefing()">Run Daily Agent Briefing</button>
+      <button onclick="quickTask('Lion Elite Beauty','daily lead generation','Create 3 Instagram captions, 3 reel hooks, and 3 DM CTAs to attract coaching leads today.')">LEB Leads</button>
+      <button onclick="quickTask('Lion Elite Wellness','research education post','Create a compliant educational carousel outline for the research brand. Keep it scientific, educational, and brand-safe.')">LEW Education</button>
+      <button onclick="quickTask('AlexTheLionLifts','personal coaching authority','Create a personal brand reel script about strength, aesthetics, discipline, and coaching CTA.')">Alex Content</button>
     </div>
 
     <h2>Active AI Agents</h2>
@@ -70,10 +75,22 @@
   <script>
     let currentRun = null;
 
+    function quickTask(brand, topic, task) {
+      document.getElementById('brand').value = brand;
+      document.getElementById('topic').value = topic;
+      document.getElementById('task').value = task;
+    }
+
     function formatOutput(data) {
       const result = data.result;
       const body = result.text || result.items.map(item => `${item.type}:\n${item.output}`).join('\n\n');
       return `${data.agent.name}\nMode: ${data.mode}\n${result.title}\n\n${result.summary}\n\n${body}\n\nNext Action:\n${result.nextAction}`;
+    }
+
+    function formatBriefing(data) {
+      const executiveBody = data.executive.result.text || data.executive.result.items.map(item => `${item.type}:\n${item.output}`).join('\n\n');
+      const agentSummary = data.runs.map(run => `\n---\n${run.agent.name}\n${run.result.text || run.result.items.map(item => `${item.type}: ${item.output}`).join('\n')}`).join('\n');
+      return `DAILY AGENT BRIEFING\nMode: ${data.mode}\nBrand: ${data.context.brand}\nTopic: ${data.context.topic}\n\nEXECUTIVE SUMMARY\n${executiveBody}\n\nFULL AGENT OUTPUTS\n${agentSummary}`;
     }
 
     async function runAgent(agentId) {
@@ -91,6 +108,26 @@
       const data = await res.json();
       currentRun = data;
       output.textContent = formatOutput(data);
+    }
+
+    async function runDailyBriefing() {
+      const brand = document.getElementById('brand').value || 'Lion Elite Beauty';
+      const topic = document.getElementById('topic').value || 'daily lead generation';
+      const task = document.getElementById('task').value || '';
+      const output = document.getElementById('output');
+      output.textContent = 'Running full daily briefing. This may take a moment...';
+      const res = await fetch('/api/briefing/daily', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ brand, topic, task })
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        output.textContent = `Daily briefing failed: ${data.error}`;
+        return;
+      }
+      currentRun = data.executive;
+      output.textContent = formatBriefing(data);
     }
 
     async function runAllAgents() {
