@@ -4,7 +4,7 @@ const path = require('path');
 const app = express();
 const port = process.env.PORT || 3000;
 
-app.use(express.json());
+app.use(express.json({ limit: '1mb' }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 const agents = [
@@ -60,7 +60,7 @@ const commandCenter = {
   mode: process.env.OPENAI_API_KEY ? 'AI-powered' : 'Template fallback',
   nextBuilds: [
     'Add OPENAI_API_KEY in Render environment variables to activate AI-powered generations.',
-    'Save approved agent outputs to GitHub files.',
+    'Add GITHUB_TOKEN in Render environment variables to save approved outputs back to GitHub.',
     'Connect Gmail for draft follow-ups and recap emails.',
     'Connect Calendar for consultations and daily schedule.',
     'Add KPI input form for revenue, orders, DMs, and content metrics.',
@@ -71,6 +71,12 @@ const commandCenter = {
 
 function findAgent(id) {
   return agents.find(item => item.id === id);
+}
+
+function safeAgent(agent) {
+  if (!agent) return null;
+  const { systemPrompt, ...safe } = agent;
+  return safe;
 }
 
 function fallbackRunAgent(id, context = {}) {
@@ -134,7 +140,7 @@ function fallbackRunAgent(id, context = {}) {
   return {
     date: today,
     mode: 'template-fallback',
-    agent: findAgent(id),
+    agent: safeAgent(findAgent(id)),
     context: { brand, topic },
     result: outputs[id]
   };
@@ -178,7 +184,7 @@ async function runAgent(id, context = {}) {
   return {
     date: today,
     mode: 'ai-powered',
-    agent,
+    agent: safeAgent(agent),
     context: { brand, topic, task: userTask },
     result: {
       title: `${agent.name} AI Output`,
@@ -190,8 +196,73 @@ async function runAgent(id, context = {}) {
   };
 }
 
+function slugify(value) {
+  return String(value || 'output')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 80) || 'output';
+}
+
+function markdownFromRun(run) {
+  const body = run.result?.text || (run.result?.items || []).map(item => `## ${item.type}\n${item.output}`).join('\n\n');
+  return `# ${run.agent?.name || 'Agent'} Output\n\nDate: ${run.date || new Date().toISOString().slice(0, 10)}\nMode: ${run.mode || 'unknown'}\nBrand: ${run.context?.brand || 'N/A'}\nTopic: ${run.context?.topic || 'N/A'}\n\n## Summary\n${run.result?.summary || ''}\n\n## Output\n${body}\n\n## Next Action\n${run.result?.nextAction || ''}\n`;
+}
+
+async function saveRunToGitHub(run) {
+  if (!process.env.GITHUB_TOKEN) {
+    throw new Error('GITHUB_TOKEN is not configured in Render environment variables.');
+  }
+
+  const repo = process.env.GITHUB_REPO || 'lionelite/lion-elite-os';
+  const branch = process.env.GITHUB_BRANCH || 'main';
+  const date = new Date().toISOString().slice(0, 10);
+  const stamp = new Date().toISOString().replace(/[:.]/g, '-');
+  const agentId = slugify(run.agent?.id || run.agent?.name || 'agent');
+  const topic = slugify(run.context?.topic || 'output');
+  const filePath = `agent-outputs/${date}/${agentId}-${topic}-${stamp}.md`;
+  const content = markdownFromRun(run);
+
+  const response = await fetch(`https://api.github.com/repos/${repo}/contents/${filePath}`, {
+    method: 'PUT',
+    headers: {
+      Authorization: `Bearer ${process.env.GITHUB_TOKEN}`,
+      Accept: 'application/vnd.github+json',
+      'Content-Type': 'application/json',
+      'User-Agent': 'lion-elite-os'
+    },
+    body: JSON.stringify({
+      message: `Save ${run.agent?.name || 'agent'} output`,
+      content: Buffer.from(content).toString('base64'),
+      branch
+    })
+  });
+
+  const data = await response.json();
+  if (!response.ok) {
+    throw new Error(data.message || 'GitHub save failed.');
+  }
+
+  return {
+    repo,
+    branch,
+    path: filePath,
+    url: data.content?.html_url,
+    commit: data.commit?.sha
+  };
+}
+
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', service: 'lion-elite-os', mode: commandCenter.mode, timestamp: new Date().toISOString() });
+});
+
+app.get('/api/integrations', (req, res) => {
+  res.json({
+    openai: Boolean(process.env.OPENAI_API_KEY),
+    githubSave: Boolean(process.env.GITHUB_TOKEN),
+    githubRepo: process.env.GITHUB_REPO || 'lionelite/lion-elite-os',
+    mode: commandCenter.mode
+  });
 });
 
 app.get('/api/os', (req, res) => {
@@ -199,19 +270,18 @@ app.get('/api/os', (req, res) => {
     name: 'Lion Elite OS',
     mission: 'Automate the Lion Elite business ecosystem through specialized AI agents.',
     commandCenter,
-    agents: agents.map(({ systemPrompt, ...agent }) => agent)
+    agents: agents.map(safeAgent)
   });
 });
 
 app.get('/api/agents', (req, res) => {
-  res.json({ agents: agents.map(({ systemPrompt, ...agent }) => agent) });
+  res.json({ agents: agents.map(safeAgent) });
 });
 
 app.get('/api/agents/:id', (req, res) => {
   const agent = findAgent(req.params.id);
   if (!agent) return res.status(404).json({ error: 'Agent not found' });
-  const { systemPrompt, ...safeAgent } = agent;
-  res.json({ agent: safeAgent });
+  res.json({ agent: safeAgent(agent) });
 });
 
 app.post('/api/agents/:id/run', async (req, res) => {
@@ -231,6 +301,16 @@ app.get('/api/agents/:id/run', async (req, res) => {
     res.json(await runAgent(req.params.id, req.query));
   } catch (error) {
     res.status(500).json({ error: error.message, fallback: fallbackRunAgent(req.params.id, req.query) });
+  }
+});
+
+app.post('/api/outputs/save', async (req, res) => {
+  try {
+    if (!req.body?.run) return res.status(400).json({ error: 'Missing run payload.' });
+    const saved = await saveRunToGitHub(req.body.run);
+    res.json({ saved });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
 });
 
