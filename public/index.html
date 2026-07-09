@@ -15,6 +15,9 @@
     .tag { display: inline-block; color: #111; background: #fff; border-radius: 999px; padding: 8px 14px; font-weight: 900; margin-bottom: 20px; }
     .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; margin-top: 18px; }
     .metric-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+    .inventory-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin-top: 16px; }
+    .inventory-item { border: 1px solid #2a2a2a; background: #0c0c0c; border-radius: 16px; padding: 16px; }
+    .inventory-item h3 { margin: 0 0 8px; font-size: 18px; }
     .card { border: 1px solid #252525; background: #111; border-radius: 20px; padding: 22px; }
     .card h3 { margin-top: 0; font-size: 22px; }
     ul { padding-left: 18px; color: #d6d6d6; line-height: 1.7; }
@@ -28,6 +31,10 @@
     label { color: #d8d8d8; font-weight: 800; }
     .small { color: #999; font-size: 14px; margin-top: 10px; }
     .footer { margin-top: 46px; color: #888; font-size: 14px; }
+    .pill { display: inline-block; border-radius: 999px; padding: 5px 10px; font-size: 12px; font-weight: 900; text-transform: uppercase; }
+    .in_stock { background: #12351f; color: #b8ffd0; border: 1px solid #1f6f3b; }
+    .low_stock { background: #3d2d0b; color: #ffe0a3; border: 1px solid #9b6b13; }
+    .out_of_stock { background: #3d1111; color: #ffc4c4; border: 1px solid #803030; }
   </style>
 </head>
 <body>
@@ -35,7 +42,7 @@
     <section class="hero">
       <span class="tag">AI AGENT COMMAND CENTER</span>
       <h1>Lion Elite OS</h1>
-      <p>Specialized AI agents for marketing, sales, operations, research review, and finance/KPIs.</p>
+      <p>Specialized AI agents for marketing, sales, operations, research review, inventory, and finance/KPIs.</p>
       <div class="status" id="priority">Loading agent priority...</div>
       <div class="small" id="integrations">Checking integrations...</div>
     </section>
@@ -71,6 +78,15 @@
       <button onclick="clearDailyInputs()">Clear Inputs</button>
     </div>
 
+    <h2>Inventory Command Center</h2>
+    <div class="card">
+      <p class="small" id="inventorySource">Loading Google Drive inventory mirror...</p>
+      <button class="primary" onclick="loadInventory()">Refresh Inventory</button>
+      <button onclick="copyInventoryPush()">Copy Inventory Push</button>
+      <button onclick="quickTask('Lion Elite Wellness','research inventory sales push','Using the current inventory shown in the OS, create a compliant research-only inventory sales post and DM follow-up sequence. Do not advertise out-of-stock products as available.')">Generate Inventory Sales Copy</button>
+      <div class="inventory-grid" id="inventoryGrid"></div>
+    </div>
+
     <h2>Content Calendar</h2>
     <div class="card">
       <p class="small">Build a daily posting plan for whichever brand is selected above.</p>
@@ -89,7 +105,7 @@
       <button onclick="copyOutput()">Copy Output</button>
       <button onclick="saveOutput()">Save Output To GitHub</button>
     </div>
-    <div class="output" id="output">Choose an agent, run the briefing, or generate a content calendar.</div>
+    <div class="output" id="output">Choose an agent, run the briefing, generate inventory copy, or generate a content calendar.</div>
 
     <h2>Active AI Agents</h2>
     <div class="grid" id="agents"></div>
@@ -105,6 +121,7 @@
 
   <script>
     let currentRun = null;
+    let currentInventory = null;
     const inputIds = ['brand', 'topic', 'task', 'dmCount', 'leadCount', 'consultCount', 'orderCount', 'revenueCount', 'contentCount', 'priorityNote', 'calendarDays', 'calendarCTA', 'calendarGoal'];
 
     function quickTask(brand, topic, task) {
@@ -121,10 +138,23 @@
       return `\n\nDaily KPI Scorecard:\nDMs: ${getValue('dmCount') || 'not entered'}\nNew Leads: ${getValue('leadCount') || 'not entered'}\nConsults Booked: ${getValue('consultCount') || 'not entered'}\nOrders/Sales: ${getValue('orderCount') || 'not entered'}\nRevenue: ${getValue('revenueCount') || 'not entered'}\nPosts Made: ${getValue('contentCount') || 'not entered'}\nCEO Priority Note: ${getValue('priorityNote') || 'not entered'}\n\nUse these numbers to decide what action matters most today.`;
     }
 
+    function getInventoryText() {
+      if (!currentInventory?.items) return '\n\nInventory: not loaded.';
+      const available = currentInventory.items
+        .filter(item => item.status !== 'out_of_stock' && Number(item.units) > 0)
+        .map(item => `${item.name} ${item.dosage || ''}: ${item.units} units (${item.status})`)
+        .join('\n');
+      const out = currentInventory.items
+        .filter(item => item.status === 'out_of_stock' || Number(item.units) === 0)
+        .map(item => `${item.name}: OUT OF STOCK / WAITLIST ONLY`)
+        .join('\n');
+      return `\n\nCurrent Inventory Source: Google Drive mirror in OS.\nAvailable:\n${available || 'none loaded'}\n\nOut of stock / waitlist only:\n${out || 'none listed'}\n\nNever advertise out-of-stock products as available. For Lion Elite Wellness, keep all language research-use-only.`;
+    }
+
     function buildPayload() {
       const brand = getValue('brand') || 'Lion Elite';
       const topic = getValue('topic') || 'daily execution';
-      const task = (getValue('task') || '') + getScorecardText();
+      const task = (getValue('task') || '') + getScorecardText() + getInventoryText();
       return { brand, topic, task };
     }
 
@@ -163,6 +193,49 @@
       return `DAILY AGENT BRIEFING\nMode: ${data.mode}\nBrand: ${data.context.brand}\nTopic: ${data.context.topic}\n\nEXECUTIVE SUMMARY\n${executiveBody}\n\nFULL AGENT OUTPUTS\n${agentSummary}`;
     }
 
+    async function loadInventory() {
+      const source = document.getElementById('inventorySource');
+      const grid = document.getElementById('inventoryGrid');
+      source.textContent = 'Loading website inventory mirror...';
+      try {
+        const res = await fetch('/data/current-inventory.json?cache=' + Date.now());
+        const data = await res.json();
+        currentInventory = data;
+        const items = data.items || [];
+        const available = items.filter(item => item.status !== 'out_of_stock' && Number(item.units) > 0).length;
+        const low = items.filter(item => item.status === 'low_stock').length;
+        const out = items.filter(item => item.status === 'out_of_stock' || Number(item.units) === 0).length;
+        source.textContent = `Source: Google Drive inventory mirror | Available products: ${available} | Low stock: ${low} | Out of stock: ${out} | Last checked: ${data.source?.last_checked_utc || data.source?.last_synced_from_orders_utc || 'unknown'}`;
+        grid.innerHTML = items.map(item => `
+          <div class="inventory-item">
+            <h3>${item.name}</h3>
+            <div class="pill ${item.status}">${String(item.status || '').replaceAll('_', ' ')}</div>
+            <p class="small">${item.dosage || 'No dosage listed'}${item.batch ? ' | ' + item.batch : ''}</p>
+            <p><strong>${item.units}</strong> units</p>
+            ${item.sales_note ? `<p class="small">${item.sales_note}</p>` : ''}
+          </div>
+        `).join('');
+      } catch (error) {
+        source.textContent = 'Inventory failed to load. Check public/data/current-inventory.json.';
+        grid.innerHTML = '';
+      }
+    }
+
+    async function copyInventoryPush() {
+      if (!currentInventory) await loadInventory();
+      const available = (currentInventory.items || [])
+        .filter(item => item.status !== 'out_of_stock' && Number(item.units) > 0)
+        .map(item => `${item.name}${item.dosage ? ' ' + item.dosage : ''} — ${item.units} units`)
+        .join('\n');
+      const waitlist = (currentInventory.items || [])
+        .filter(item => item.status === 'out_of_stock' || Number(item.units) === 0)
+        .map(item => `${item.name} — waitlist only`)
+        .join('\n');
+      const text = `Current research inventory is moving.\n\nAvailable now:\n${available}\n\nWaitlist only:\n${waitlist}\n\nFor laboratory research purposes only. Not for human or veterinary use.\n\nDM RESEARCH for current availability.`;
+      await navigator.clipboard.writeText(text);
+      document.getElementById('output').textContent = text;
+    }
+
     async function runMarketingTask(topic, task, loadingText) {
       const brand = getValue('brand') || 'Lion Elite';
       const output = document.getElementById('output');
@@ -172,7 +245,7 @@
       const res = await fetch('/api/agents/marketing/run', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ brand, topic, task: task + getScorecardText() })
+        body: JSON.stringify({ brand, topic, task: task + getScorecardText() + getInventoryText() })
       });
       const data = await res.json();
       currentRun = data;
@@ -199,7 +272,7 @@
       const payload = buildPayload();
       const output = document.getElementById('output');
       output.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      output.textContent = 'Running agent with today scorecard...';
+      output.textContent = 'Running agent with today scorecard and current inventory...';
 
       const res = await fetch(`/api/agents/${agentId}/run`, {
         method: 'POST',
@@ -215,7 +288,7 @@
       const payload = buildPayload();
       const output = document.getElementById('output');
       output.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      output.textContent = 'Running full daily briefing with today scorecard. This may take a moment...';
+      output.textContent = 'Running full daily briefing with today scorecard and inventory. This may take a moment...';
       const res = await fetch('/api/briefing/daily', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -235,7 +308,7 @@
       const os = await osRes.json();
       const output = document.getElementById('output');
       output.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      output.textContent = 'Running full agent team with today scorecard...';
+      output.textContent = 'Running full agent team with today scorecard and inventory...';
       const results = [];
       for (const agent of os.agents) {
         const res = await fetch(`/api/agents/${agent.id}/run`, {
@@ -279,6 +352,7 @@
 
     async function loadOS() {
       loadDailyInputs();
+      await loadInventory();
       const osRes = await fetch('/api/os');
       const os = await osRes.json();
       const planRes = await fetch('/api/agent-plan/today');
