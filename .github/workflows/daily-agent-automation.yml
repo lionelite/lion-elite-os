@@ -17,6 +17,12 @@ on:
         description: 'Execution task'
         required: false
         default: 'Complete the highest-impact work first. Produce ready-to-use assets across the correct brand lanes with minimal explanation and clear priorities.'
+  push:
+    branches:
+      - main
+    paths:
+      - 'automation-triggers/**'
+      - '.github/workflows/daily-agent-automation.yml'
 
 permissions:
   contents: write
