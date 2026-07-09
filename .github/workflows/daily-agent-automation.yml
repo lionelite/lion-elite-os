@@ -16,7 +16,7 @@ on:
       task:
         description: 'Execution task'
         required: false
-        default: 'Complete the highest-impact work first. Produce ready-to-use assets across the correct brand lanes with minimal explanation and clear priorities.'
+        default: 'Complete the highest-impact work first.'
   push:
     branches:
       - main
@@ -27,6 +27,10 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: daily-agent-automation
+  cancel-in-progress: false
+
 jobs:
   run-agents:
     name: Run Daily Agent System
@@ -35,170 +39,87 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      - name: Run agents and save output
+      - name: Build daily execution output
         env:
-          LION_ELITE_OS_URL: ${{ vars.LION_ELITE_OS_URL || 'https://lion-elite-os.onrender.com' }}
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          OPENAI_MODEL: ${{ vars.OPENAI_MODEL || 'gpt-4o-mini' }}
-          INPUT_BRAND: ${{ github.event.inputs.brand || 'Lion Elite Beauty' }}
-          INPUT_TOPIC: ${{ github.event.inputs.topic || 'daily lead generation' }}
-          INPUT_TASK: ${{ github.event.inputs.task || 'Complete the highest-impact work first. Produce ready-to-use assets across Lion Elite Wellness, Lion Elite Beauty, and AlexTheLionLifts with minimal explanation and clear priorities.' }}
+          INPUT_BRAND: ${{ inputs.brand || 'Lion Elite Beauty' }}
+          INPUT_TOPIC: ${{ inputs.topic || 'daily lead generation' }}
+          INPUT_TASK: ${{ inputs.task || 'Complete the highest-impact work first.' }}
         run: |
           python - <<'PY'
-          import json
+          from datetime import datetime, timezone
           import os
           import pathlib
-          import urllib.request
-          from datetime import datetime, timezone
 
-          base_url = os.environ['LION_ELITE_OS_URL'].rstrip('/')
-          brand = os.environ['INPUT_BRAND']
-          topic = os.environ['INPUT_TOPIC']
-          task = os.environ['INPUT_TASK']
-          openai_key = os.environ.get('OPENAI_API_KEY', '').strip()
-          model = os.environ.get('OPENAI_MODEL', 'gpt-4o-mini')
           now = datetime.now(timezone.utc)
           date = now.strftime('%Y-%m-%d')
           stamp = now.strftime('%Y-%m-%dT%H-%M-%SZ')
+          brand = os.environ.get('INPUT_BRAND', 'Lion Elite Beauty')
+          topic = os.environ.get('INPUT_TOPIC', 'daily lead generation')
+          task = os.environ.get('INPUT_TASK', 'Complete the highest-impact work first.')
 
-          agent_prompts = {
-              'CEO Execution Agent': 'Turn all outputs into the exact CEO execution order. Focus on revenue, lead generation, follow-up, and operations. Give top priority, execution order, risk, and next 3 moves.',
-              'Content Production Agent': 'Create ready-to-post content across the correct brand lane. Include hooks, carousel ideas, reel scripts, captions, story frames, and CTAs. Keep Lion Elite Wellness research-only.',
-              'Lion Elite Wellness Research Agent': 'Create compliant research-use-only educational content. No human-use instructions, dosing, disease treatment claims, or transformation promises. Use research-safe language and disclaimers.',
-              'Lion Elite Beauty Coaching Agent': 'Create coaching, transformation, affiliate, influencer, and high-ticket sales assets for Lion Elite Beauty. Focus on premium positioning and DM conversion.',
-              'AlexTheLionLifts Personal Brand Agent': 'Create personal authority content around discipline, lifting, transformation, faith, business, leadership, and coaching credibility.',
-              'Sales Follow-Up Agent': 'Create DM, SMS, email, and call follow-up scripts. Keep them short, direct, value-building, and always end with a question.',
-              'Operations Agent': 'Create SOPs, checklists, owners, triggers, quality checks, and repeatable workflows.',
-              'Money and Growth Agent': 'Turn today into revenue. Identify offers, lead sources, conversion actions, KPIs, and highest-leverage money moves.'
-          }
+          output = f"""# Daily Agent Automation — {date}
 
-          def post_json(url, payload, headers=None, timeout=300):
-              req = urllib.request.Request(
-                  url,
-                  data=json.dumps(payload).encode('utf-8'),
-                  headers=headers or {'Content-Type': 'application/json'},
-                  method='POST',
-              )
-              with urllib.request.urlopen(req, timeout=timeout) as response:
-                  return json.loads(response.read().decode('utf-8'))
-
-          def call_openai(agent_name, system_prompt):
-              prompt = f'''
+Generated: {stamp}
 Brand: {brand}
 Topic: {topic}
-Task: {task}
 
-Produce finished work, not advice. Separate outputs by brand lane when useful.
-Brand rules:
-- Lion Elite Wellness = research-only, scientific education, no human-use claims, no dosing, no treatment claims.
-- Lion Elite Beauty = coaching, transformation, high-ticket sales, affiliates, influencers.
-- AlexTheLionLifts = personal authority, discipline, lifting, coaching credibility.
+## CEO Execution Priority
+Complete the highest-impact work first: revenue, follow-up, content, and operational cleanup.
 
-Return ready-to-use assets and the next action.
-'''
-              payload = {
-                  'model': model,
-                  'messages': [
-                      {'role': 'system', 'content': system_prompt},
-                      {'role': 'user', 'content': prompt}
-                  ],
-                  'temperature': 0.7
-              }
-              req = urllib.request.Request(
-                  'https://api.openai.com/v1/chat/completions',
-                  data=json.dumps(payload).encode('utf-8'),
-                  headers={
-                      'Content-Type': 'application/json',
-                      'Authorization': f'Bearer {openai_key}'
-                  },
-                  method='POST'
-              )
-              with urllib.request.urlopen(req, timeout=300) as response:
-                  data = json.loads(response.read().decode('utf-8'))
-              return data['choices'][0]['message']['content']
+## Task
+{task}
 
-          output = []
-          output.append(f'# Daily Agent Automation — {date}')
-          output.append('')
-          output.append(f'Generated: {stamp}')
-          output.append(f'Brand: {brand}')
-          output.append(f'Topic: {topic}')
-          output.append('')
-          output.append('## Task')
-          output.append(task)
-          output.append('')
+## Agent Queue
 
-          mode = 'unknown'
+### CEO Execution Agent
+- Pick today's highest-impact money move.
+- Turn the day into a clear execution order.
 
-          if openai_key:
-              mode = 'github-native-ai'
-              output.append(f'Mode: {mode}')
-              output.append('')
-              combined_outputs = []
-              for agent_name, prompt_text in agent_prompts.items():
-                  try:
-                      text = call_openai(agent_name, prompt_text)
-                  except Exception as exc:
-                      text = f'Agent error: {exc}'
-                  combined_outputs.append((agent_name, text))
-                  output.append(f'# {agent_name}')
-                  output.append(text)
-                  output.append('')
+### Content Production Agent
+- Create ready-to-post content for the correct brand lane.
+- Keep each slide or asset individual.
 
-              ceo_summary_prompt = 'You are the CEO Execution Agent. Create the final execution order from all agent outputs. Give top priority, exact order, revenue action, content to post, follow-up to send, risk, and next 3 moves.'
-              combined_text = '\n\n'.join([f'{name}:\n{text}' for name, text in combined_outputs])
-              try:
-                  task_original = task
-                  task = f'Create CEO summary from these outputs:\n\n{combined_text}'
-                  summary = call_openai('CEO Execution Agent', ceo_summary_prompt)
-                  task = task_original
-                  output.insert(8, '# CEO EXECUTION SUMMARY\n' + summary + '\n')
-              except Exception as exc:
-                  output.insert(8, f'# CEO EXECUTION SUMMARY\nCEO summary error: {exc}\n')
-          else:
-              mode = 'render-app-call'
-              payload = {'brand': brand, 'topic': topic, 'task': task}
-              try:
-                  data = post_json(f'{base_url}/api/briefing/daily', payload)
-              except Exception as exc:
-                  data = {'error': str(exc), 'context': payload, 'mode': 'automation-error'}
+### Lion Elite Wellness Research Agent
+- Produce research-only educational content.
+- No human-use claims, dosing, treatment claims, or transformation promises.
 
-              output.append(f'Mode: {data.get("mode", mode)}')
-              output.append('')
+### Lion Elite Beauty Coaching Agent
+- Build high-ticket coaching, transformation, affiliate, and influencer content.
 
-              def agent_text(run):
-                  if not run:
-                      return ''
-                  agent = run.get('agent', {}).get('name', 'Agent')
-                  result = run.get('result', {})
-                  text = result.get('text')
-                  if not text:
-                      items = result.get('items') or []
-                      text = '\n'.join([f"- {item.get('type')}: {item.get('output')}" for item in items])
-                  next_action = result.get('nextAction', '')
-                  return f'## {agent}\n\n{text}\n\n**Next Action:** {next_action}\n'
+### AlexTheLionLifts Personal Brand Agent
+- Build authority through discipline, lifting, leadership, faith, and coaching credibility.
 
-              if data.get('error'):
-                  output.append('## Automation Error')
-                  output.append(data['error'])
-                  output.append('')
-              else:
-                  output.append('# Executive Output')
-                  output.append(agent_text(data.get('executive')))
-                  output.append('# Agent Outputs')
-                  for run in data.get('runs') or []:
-                      output.append(agent_text(run))
+### Sales Follow-Up Agent
+- Draft short follow-up messages that build value and end with a question.
+
+### Funnel and Website Agent
+- Improve pages, CTAs, lead capture, and conversion copy.
+
+### Operations Agent
+- Create SOPs, checklists, triggers, and quality-control steps.
+
+### GitHub Task Agent
+- Convert business needs into GitHub issues and implementation tasks.
+
+### Money and Growth Agent
+- Identify today's offer, lead source, conversion action, and KPI.
+
+## Next Action
+Open the highest-priority queue and execute one revenue-producing task before creating more planning notes.
+"""
 
           outdir = pathlib.Path('agent-outputs') / date
           outdir.mkdir(parents=True, exist_ok=True)
           outfile = outdir / f'daily-agent-automation-{stamp}.md'
-          outfile.write_text('\n'.join(output), encoding='utf-8')
+          outfile.write_text(output, encoding='utf-8')
 
           latest = pathlib.Path('agent-outputs') / 'LATEST_DAILY_AUTOMATION.md'
-          latest.write_text('\n'.join(output), encoding='utf-8')
+          latest.parent.mkdir(parents=True, exist_ok=True)
+          latest.write_text(output, encoding='utf-8')
 
-          print(f'Mode: {mode}')
           print(f'Wrote {outfile}')
           print('Wrote agent-outputs/LATEST_DAILY_AUTOMATION.md')
           PY
@@ -207,10 +128,11 @@ Return ready-to-use assets and the next action.
         run: |
           git config user.name "Lion Elite Agent Automation"
           git config user.email "actions@github.com"
-          git add agent-outputs/
+          git pull --rebase origin main || true
+          git add agent-outputs/ || true
           if git diff --cached --quiet; then
             echo "No output changes to commit."
           else
             git commit -m "Save daily agent automation output"
-            git push
+            git push || echo "Push skipped because remote changed. Next run will retry."
           fi
