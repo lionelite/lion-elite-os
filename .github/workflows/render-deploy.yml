@@ -1,0 +1,25 @@
+name: Trigger Render Deploy
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Trigger Render Deploy Hook
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check deploy hook secret
+        run: |
+          if [ -z "${{ secrets.RENDER_DEPLOY_HOOK_URL }}" ]; then
+            echo "Missing GitHub secret: RENDER_DEPLOY_HOOK_URL"
+            echo "Add your Render deploy hook URL as a repository secret before running this workflow."
+            exit 1
+          fi
+
+      - name: Trigger Render deploy
+        run: |
+          curl --fail --show-error --location --request POST "${{ secrets.RENDER_DEPLOY_HOOK_URL }}"
