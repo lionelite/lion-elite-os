@@ -20,9 +20,8 @@ on:
   push:
     branches:
       - main
-    paths:
-      - 'automation-triggers/**'
-      - '.github/workflows/daily-agent-automation.yml'
+    paths-ignore:
+      - 'agent-outputs/**'
 
 permissions:
   contents: write
@@ -46,16 +45,15 @@ jobs:
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           OPENAI_MODEL: ${{ vars.OPENAI_MODEL || 'gpt-4o-mini' }}
-          INPUT_BRAND: ${{ inputs.brand || 'Lion Elite Beauty' }}
-          INPUT_TOPIC: ${{ inputs.topic || 'daily lead generation' }}
-          INPUT_TASK: ${{ inputs.task || 'Complete the highest-impact work first.' }}
+          INPUT_BRAND: ${{ github.event.inputs.brand || 'Lion Elite Beauty' }}
+          INPUT_TOPIC: ${{ github.event.inputs.topic || 'daily lead generation' }}
+          INPUT_TASK: ${{ github.event.inputs.task || 'Complete the highest-impact work first.' }}
         run: |
           python - <<'PY'
           import json
           import os
           import pathlib
           import urllib.request
-          import urllib.error
           from datetime import datetime, timezone
 
           now = datetime.now(timezone.utc)
