@@ -1,0 +1,138 @@
+name: Daily Agent Automation
+
+on:
+  schedule:
+    - cron: '0 11 * * *'
+  workflow_dispatch:
+    inputs:
+      brand:
+        description: 'Brand lane'
+        required: false
+        default: 'Lion Elite Beauty'
+      topic:
+        description: 'Daily topic'
+        required: false
+        default: 'daily lead generation'
+      task:
+        description: 'Execution task'
+        required: false
+        default: 'Complete the highest-impact work first. Produce ready-to-use assets across the correct brand lanes with minimal explanation and clear priorities.'
+
+permissions:
+  contents: write
+
+jobs:
+  run-agents:
+    name: Run Daily Agent System
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Run agents through Lion Elite OS and save output
+        env:
+          LION_ELITE_OS_URL: ${{ vars.LION_ELITE_OS_URL || 'https://lion-elite-os.onrender.com' }}
+          INPUT_BRAND: ${{ github.event.inputs.brand || 'Lion Elite Beauty' }}
+          INPUT_TOPIC: ${{ github.event.inputs.topic || 'daily lead generation' }}
+          INPUT_TASK: ${{ github.event.inputs.task || 'Complete the highest-impact work first. Produce ready-to-use assets across Lion Elite Wellness, Lion Elite Beauty, and AlexTheLionLifts with minimal explanation and clear priorities.' }}
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          import pathlib
+          import urllib.request
+          from datetime import datetime, timezone
+
+          base_url = os.environ['LION_ELITE_OS_URL'].rstrip('/')
+          brand = os.environ['INPUT_BRAND']
+          topic = os.environ['INPUT_TOPIC']
+          task = os.environ['INPUT_TASK']
+          now = datetime.now(timezone.utc)
+          date = now.strftime('%Y-%m-%d')
+          stamp = now.strftime('%Y-%m-%dT%H-%M-%SZ')
+
+          payload = {
+              'brand': brand,
+              'topic': topic,
+              'task': task,
+          }
+
+          req = urllib.request.Request(
+              f'{base_url}/api/briefing/daily',
+              data=json.dumps(payload).encode('utf-8'),
+              headers={'Content-Type': 'application/json'},
+              method='POST',
+          )
+
+          try:
+              with urllib.request.urlopen(req, timeout=300) as response:
+                  data = json.loads(response.read().decode('utf-8'))
+          except Exception as exc:
+              data = {
+                  'error': str(exc),
+                  'context': payload,
+                  'mode': 'automation-error',
+              }
+
+          def agent_text(run):
+              if not run:
+                  return ''
+              agent = run.get('agent', {}).get('name', 'Agent')
+              result = run.get('result', {})
+              text = result.get('text')
+              if not text:
+                  items = result.get('items') or []
+                  text = '\n'.join([f"- {item.get('type')}: {item.get('output')}" for item in items])
+              next_action = result.get('nextAction', '')
+              return f"## {agent}\n\n{text}\n\n**Next Action:** {next_action}\n"
+
+          executive = data.get('executive')
+          runs = data.get('runs') or []
+
+          output = []
+          output.append(f"# Daily Agent Automation — {date}")
+          output.append('')
+          output.append(f"Generated: {stamp}")
+          output.append(f"Brand: {brand}")
+          output.append(f"Topic: {topic}")
+          output.append(f"Mode: {data.get('mode', 'unknown')}")
+          output.append('')
+          output.append('## Task')
+          output.append(task)
+          output.append('')
+
+          if data.get('error'):
+              output.append('## Automation Error')
+              output.append(data['error'])
+              output.append('')
+          else:
+              output.append('# Executive Output')
+              output.append(agent_text(executive))
+              output.append('# Agent Outputs')
+              for run in runs:
+                  output.append(agent_text(run))
+
+          outdir = pathlib.Path('agent-outputs') / date
+          outdir.mkdir(parents=True, exist_ok=True)
+          outfile = outdir / f'daily-agent-automation-{stamp}.md'
+          outfile.write_text('\n'.join(output), encoding='utf-8')
+
+          latest = pathlib.Path('agent-outputs') / 'LATEST_DAILY_AUTOMATION.md'
+          latest.write_text('\n'.join(output), encoding='utf-8')
+
+          print(f'Wrote {outfile}')
+          print('Wrote agent-outputs/LATEST_DAILY_AUTOMATION.md')
+          PY
+
+      - name: Commit agent output
+        run: |
+          git config user.name "Lion Elite Agent Automation"
+          git config user.email "actions@github.com"
+          git add agent-outputs/
+          if git diff --cached --quiet; then
+            echo "No output changes to commit."
+          else
+            git commit -m "Save daily agent automation output"
+            git push
+          fi
