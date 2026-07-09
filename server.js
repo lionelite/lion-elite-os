@@ -7,6 +7,20 @@ const port = process.env.PORT || 3000;
 app.use(express.json({ limit: '1mb' }));
 app.use(express.static(path.join(__dirname, 'public')));
 
+const customerCommunicationRules = [
+  'All customer-facing emails, DMs, SMS, and follow-ups must sound human, warm, relationship-building, and customer-service focused. Do not sound robotic, scripted, pushy, or corporate.',
+  'Lead with care, clarity, and personal attention before selling. Make the customer feel guided, not processed.',
+  'Keep messages conversational and natural. Use simple language, short paragraphs, and a tone that feels like a real person helping them.',
+  'Do not send internal inventory, exact inventory lists, product counts, unit quantities, batch details, source-sheet details, or internal notes to customers or leads.',
+  'For customer-facing availability language, only say limited stock, current availability is limited, or I can confirm current availability for you.',
+  'If a product is out of stock, do not advertise it as available. Offer to confirm availability, suggest joining the waitlist, or guide them to the right next step.',
+  'For Lion Elite Wellness, keep all product language research-use-only and do not include dosing, human-use instructions, disease claims, treatment claims, or transformation promises.'
+];
+
+function communicationRulesText() {
+  return customerCommunicationRules.map(rule => `- ${rule}`).join('\n');
+}
+
 const agents = [
   {
     id: 'executive',
@@ -15,7 +29,7 @@ const agents = [
     activation: 'Run at the start of the day, after running multiple agents, or when Alex needs the next best move.',
     dailyOutputs: ['CEO priority', 'agent assignments', 'revenue action', 'risk warning', 'next 3 moves'],
     tools: ['All agent outputs', 'KPI scoreboard', 'brand rules', 'daily priorities'],
-    systemPrompt: 'You are the Lion Elite Executive Agent. You coordinate the Marketing, Sales, Operations, Research Compliance, and Finance/KPI agents. Your job is to turn all information into a clear CEO action plan. Be direct. Give priorities, order of execution, and the next 3 moves. Focus on revenue, lead generation, consistency, compliance, and operational leverage.'
+    systemPrompt: 'You are the Lion Elite Executive Agent. You coordinate the Marketing, Sales, Operations, Research Compliance, and Finance/KPI agents. Your job is to turn all information into a clear CEO action plan. Be direct. Give priorities, order of execution, and the next 3 moves. Focus on revenue, lead generation, consistency, compliance, operational leverage, customer trust, and relationship-building communication.'
   },
   {
     id: 'marketing',
@@ -24,7 +38,7 @@ const agents = [
     activation: 'Run when Lion Elite needs content, campaigns, ads, email angles, or daily posting assets.',
     dailyOutputs: ['3 captions', '3 reel hooks', '1 carousel outline', '1 story CTA', '1 cross-brand content idea'],
     tools: ['GitHub content files', 'Brand rules', 'Caption bank', 'KPI scoreboard'],
-    systemPrompt: 'You are the Lion Elite Marketing Agent. Create direct, premium, conversion-focused marketing outputs. Respect the brand split: Lion Elite Wellness is research education only; Lion Elite Beauty is coaching, beauty, transformation and client programs; AlexTheLionLifts is personal credibility, training, discipline, and coaching. Always include hook, value, CTA, platform, and brand target.'
+    systemPrompt: 'You are the Lion Elite Marketing Agent. Create direct, premium, conversion-focused marketing outputs. Respect the brand split: Lion Elite Wellness is research education only; Lion Elite Beauty is coaching, beauty, transformation and client programs; AlexTheLionLifts is personal credibility, training, discipline, and coaching. Always include hook, value, CTA, platform, and brand target. For emails, DMs, and customer follow-ups, write human, warm, relationship-building copy that feels like real customer service. Never reveal exact inventory, product counts, units, batch details, or internal inventory notes; customer-facing availability language may only say limited stock or current availability is limited.'
   },
   {
     id: 'sales',
@@ -33,7 +47,7 @@ const agents = [
     activation: 'Run when a lead comments, DMs, books, misses a meeting, objects, or needs a follow-up.',
     dailyOutputs: ['5 warm lead follow-ups', '3 SMS messages', '1 objection response', '1 close script', '1 reactivation message'],
     tools: ['Gmail drafts', 'DM scripts', 'Call recap templates', 'Sales framework'],
-    systemPrompt: 'You are the Lion Elite Sales Agent. Use the framework Engage → Power Statement → Identify → Build Value → Handle Objection → Close → Follow Up. Messages must be short enough for DM/SMS when requested. Always end with a question. Build value before price.'
+    systemPrompt: 'You are the Lion Elite Sales Agent. Use the framework Engage → Power Statement → Identify → Build Value → Handle Objection → Close → Follow Up, but do not sound scripted. Customer-facing messages must feel human, warm, relationship-building, and service-first. Build trust before asking for the sale. Messages must be short enough for DM/SMS when requested. Always end with a natural question. Build value before price. Never send internal inventory, exact product counts, unit quantities, batch details, or source-sheet details to customers. If availability matters, only say limited stock or current availability is limited, then offer to confirm what is available for them.'
   },
   {
     id: 'operations',
@@ -42,7 +56,7 @@ const agents = [
     activation: 'Run when a process repeats twice, a task gets messy, or a team member needs instructions.',
     dailyOutputs: ['1 SOP', '1 checklist', '1 GitHub issue', '1 bottleneck note', '1 workflow improvement'],
     tools: ['GitHub SOPs', 'Operations folder', 'Weekly review', 'Fulfillment checklists'],
-    systemPrompt: 'You are the Lion Elite Operations Agent. Turn messy repeated work into clear SOPs, checklists, owners, triggers, quality checks, and next improvements. Prioritize execution over explanation.'
+    systemPrompt: 'You are the Lion Elite Operations Agent. Turn messy repeated work into clear SOPs, checklists, owners, triggers, quality checks, and next improvements. Prioritize execution over explanation. Build guardrails that keep internal inventory private and keep customer communication warm, human, and service-first.'
   },
   {
     id: 'research-compliance',
@@ -51,7 +65,7 @@ const agents = [
     activation: 'Run before publishing Lion Elite Wellness product, peptide, research, or educational content.',
     dailyOutputs: ['1 content review', '1 safer rewrite', '1 disclaimer check', '1 approved education idea'],
     tools: ['Compliance language', 'Research disclaimers', 'Wellness brand rules'],
-    systemPrompt: 'You are the Lion Elite Research Compliance Agent. For Lion Elite Wellness, keep content research-use-only. Do not provide dosing, human-use instructions, disease claims, treatment claims, or transformation promises. Rewrite risky copy into research-safe educational language. Include risk level, problem phrase, safer replacement, and final version.'
+    systemPrompt: 'You are the Lion Elite Research Compliance Agent. For Lion Elite Wellness, keep content research-use-only. Do not provide dosing, human-use instructions, disease claims, treatment claims, or transformation promises. Rewrite risky copy into research-safe educational language. Include risk level, problem phrase, safer replacement, and final version. Also check that customer-facing content does not reveal internal inventory, exact product counts, unit quantities, batch details, source-sheet details, or internal notes. Availability language must only say limited stock or current availability is limited.'
   },
   {
     id: 'finance-kpi',
@@ -60,22 +74,24 @@ const agents = [
     activation: 'Run at the start and end of each business day or after new sales/performance data is added.',
     dailyOutputs: ['Daily scorecard', '1 KPI insight', '1 revenue action', '1 risk warning', '1 CEO question'],
     tools: ['KPI scoreboard', 'Sales data', 'Marketing metrics', 'Revenue targets'],
-    systemPrompt: 'You are the Lion Elite Finance & KPI Agent. Translate numbers into daily action. Focus on revenue, orders, DMs, consultations, content performance, average order value, and the $100k/month target. Always end with one CEO priority question.'
+    systemPrompt: 'You are the Lion Elite Finance & KPI Agent. Translate numbers into daily action. Focus on revenue, orders, DMs, consultations, content performance, average order value, and the $100k/month target. Always end with one CEO priority question. Treat inventory quantities as internal business data, not customer-facing copy.'
   }
 ];
 
 const commandCenter = {
   priority: 'AI agents first. Build Lion Elite OS around automation, not just a website.',
   mode: process.env.OPENAI_API_KEY ? 'AI-powered' : 'Template fallback',
+  communicationRules: customerCommunicationRules,
   nextBuilds: [
     'Use Daily Briefing to run the full agent team and get a CEO action plan.',
     'Add GITHUB_TOKEN in Render environment variables to save approved outputs back to GitHub.',
     'Connect Gmail for draft follow-ups and recap emails.',
     'Connect Calendar for consultations and daily schedule.',
     'Add KPI input form for revenue, orders, DMs, and content metrics.',
-    'Add authentication before private business data is entered.'
+    'Add authentication before private business data is entered.',
+    'Add a pre-send customer communication checker for emails, DMs, SMS, and inventory-related copy.'
   ],
-  operatingRule: 'Every agent must produce a usable business output: content, follow-up, SOP, compliance rewrite, or KPI action.'
+  operatingRule: 'Every agent must produce a usable business output while protecting internal inventory data and keeping customer communication human, relationship-building, and service-first.'
 };
 
 function findAgent(id) {
@@ -98,9 +114,9 @@ function fallbackRunAgent(id, context = {}) {
       title: 'CEO Action Plan',
       summary: `Coordinate today's execution for ${brand} around ${topic}.`,
       items: [
-        { type: 'CEO Priority', output: 'Focus on the action most likely to create leads, conversations, consultations, or revenue today.' },
-        { type: 'Agent Assignments', output: 'Marketing creates demand. Sales follows up. Operations documents the process. Finance tracks the score. Compliance reviews Wellness copy.' },
-        { type: 'Next 3 Moves', output: '1) Publish one lead-generating post. 2) Follow up with warm leads. 3) Track DMs, calls, orders, and revenue before the day ends.' }
+        { type: 'CEO Priority', output: 'Focus on the action most likely to create leads, conversations, consultations, or revenue today while protecting customer trust.' },
+        { type: 'Agent Assignments', output: 'Marketing creates demand. Sales follows up warmly. Operations documents the process. Finance tracks the score. Compliance reviews Wellness copy and inventory privacy.' },
+        { type: 'Next 3 Moves', output: '1) Publish one lead-generating post. 2) Follow up with warm leads using relationship-first language. 3) Track DMs, calls, orders, and revenue before the day ends.' }
       ],
       nextAction: 'Run Marketing and Sales first, then execute the highest revenue action.'
     },
@@ -108,9 +124,9 @@ function fallbackRunAgent(id, context = {}) {
       title: 'Daily Marketing Output',
       summary: `Create content for ${brand} around ${topic}.`,
       items: [
-        { type: 'Caption', output: `Discipline creates momentum. ${brand} is built on daily execution, not random motivation. CTA: DM ELITE if you are ready to build with intention.` },
-        { type: 'Reel Hook', output: 'Most people do not need more ideas. They need a system that makes the right action obvious every day.' },
-        { type: 'Carousel', output: 'Slide 1: Stop guessing. Slide 2: Track leads. Slide 3: Track conversations. Slide 4: Track conversions. Slide 5: Double down on what works. Slide 6: Execute daily. Slide 7: DM ELITE.' }
+        { type: 'Caption', output: `Real progress starts when people feel guided, not sold. ${brand} is built on trust, standards, and personal support. CTA: DM ELITE if you want help choosing the right next step.` },
+        { type: 'Reel Hook', output: 'Most people do not need another cold pitch. They need someone who actually listens, guides, and helps them execute.' },
+        { type: 'Customer Availability Language', output: 'Current availability is limited, but I can help confirm what makes sense before you make a decision.' }
       ],
       nextAction: 'Choose one post and publish it today.'
     },
@@ -118,28 +134,28 @@ function fallbackRunAgent(id, context = {}) {
       title: 'Daily Sales Output',
       summary: `Follow up with warm leads for ${brand}.`,
       items: [
-        { type: 'DM Follow-up', output: 'Hey, I saw you were interested. The next step is simple: we map your goal, identify what is holding you back, and build the plan. Are you looking to start this week or next week?' },
-        { type: 'Objection Response', output: 'I understand. The reason I recommend starting with a plan is because guessing usually costs more time and money. Want me to show you what the first step would look like?' },
-        { type: 'Close', output: 'The process is three steps: establish the plan, personalize the execution, and capitalize with ongoing support. Do you want me to get your application started?' }
+        { type: 'DM Follow-up', output: 'Hey, I appreciate you reaching out. I want to make sure I point you in the right direction instead of just throwing information at you. What goal are you focused on right now?' },
+        { type: 'Objection Response', output: 'I understand. I would rather help you make a clear decision than pressure you into anything. Want me to walk you through what the first step would look like?' },
+        { type: 'Limited Stock Note', output: 'Current availability is limited, so I can confirm what makes sense before you move forward. What are you looking for help with first?' }
       ],
-      nextAction: 'Send one follow-up to a warm lead now.'
+      nextAction: 'Send one warm, human follow-up to a real lead now.'
     },
     operations: {
       title: 'Daily Operations Output',
       summary: `Systemize one repeated task around ${topic}.`,
       items: [
         { type: 'SOP Trigger', output: 'If the same task happens twice, document it before doing it a third time.' },
-        { type: 'Checklist', output: 'Define owner → define trigger → write steps → add quality check → store in GitHub → review weekly.' },
+        { type: 'Checklist', output: 'Define owner → define trigger → write steps → add quality check → protect internal data → store in GitHub → review weekly.' },
         { type: 'Bottleneck', output: 'Unwritten processes slow down marketing, fulfillment, and follow-up. The fix is one checklist per repeated workflow.' }
       ],
       nextAction: 'Pick one repeated task and turn it into a checklist.'
     },
     'research-compliance': {
       title: 'Research Compliance Output',
-      summary: 'Review Wellness-style content for research-safe language.',
+      summary: 'Review Wellness-style content for research-safe language and inventory privacy.',
       items: [
         { type: 'Safe Phrase', output: 'Investigational research compound studied in controlled laboratory models.' },
-        { type: 'Avoid', output: 'Avoid dosing, human-use instructions, treatment claims, disease claims, or transformation promises for research products.' },
+        { type: 'Avoid', output: 'Avoid dosing, human-use instructions, treatment claims, disease claims, transformation promises, exact inventory counts, batch details, or internal inventory lists.' },
         { type: 'Disclaimer', output: 'For laboratory research purposes only. Not for human or veterinary use.' }
       ],
       nextAction: 'Run Wellness content through this agent before publishing.'
@@ -150,7 +166,7 @@ function fallbackRunAgent(id, context = {}) {
       items: [
         { type: 'Scorecard', output: 'Track DMs, consultations booked, orders, revenue, content posted, and top CTA.' },
         { type: 'Revenue Math', output: '$100,000/month requires about $3,333/day. The daily question: what creates qualified leads, orders, or repeat buyers today?' },
-        { type: 'CEO Question', output: 'Which activity today has the highest chance of creating revenue in the next 24 hours?' }
+        { type: 'CEO Question', output: 'Which activity today has the highest chance of creating revenue in the next 24 hours while protecting customer trust?' }
       ],
       nextAction: 'Enter today’s DMs, orders, consultations, and revenue.'
     }
@@ -186,7 +202,7 @@ async function runAgent(id, context = {}) {
       model: process.env.OPENAI_MODEL || 'gpt-4.1-mini',
       temperature: 0.7,
       messages: [
-        { role: 'system', content: `${agent.systemPrompt}\n\nReturn a practical business output. Use headings and bullets. Keep it direct and ready to use.` },
+        { role: 'system', content: `${agent.systemPrompt}\n\nCustomer Communication Rules:\n${communicationRulesText()}\n\nReturn a practical business output. Use headings and bullets. Keep it direct and ready to use. Customer-facing copy must sound human and service-first, not robotic. Never expose internal inventory details; only mention limited stock/current availability when needed.` },
         { role: 'user', content: userTask }
       ]
     })
@@ -224,12 +240,12 @@ async function runDailyBriefing(context = {}) {
 
   for (const id of runIds) {
     const agent = findAgent(id);
-    const task = `${baseTask}\n\nYou are contributing to a full daily CEO briefing. Brand: ${brand}. Topic: ${topic}. Give your most useful output for today.`;
+    const task = `${baseTask}\n\nYou are contributing to a full daily CEO briefing. Brand: ${brand}. Topic: ${topic}. Give your most useful output for today while following the customer communication rules and inventory privacy rules.`;
     runs.push(await runAgent(id, { brand, topic, task }));
   }
 
   const briefingText = runs.map(run => `${run.agent.name}:\n${run.result.text || run.result.items.map(item => `${item.type}: ${item.output}`).join('\n')}`).join('\n\n---\n\n');
-  const executiveTask = `Create a concise CEO briefing from these agent outputs. Give: 1) top priority, 2) today\'s exact execution order, 3) revenue action, 4) content to post, 5) follow-up to send, 6) risk to watch, 7) next 3 moves.\n\n${briefingText}`;
+  const executiveTask = `Create a concise CEO briefing from these agent outputs. Give: 1) top priority, 2) today's exact execution order, 3) revenue action, 4) content to post, 5) follow-up to send, 6) risk to watch, 7) next 3 moves. Make all customer-facing copy warm, human, relationship-building, and service-first. Do not reveal internal inventory or exact product quantities; only use limited stock/current availability language.\n\n${briefingText}`;
   const executive = await runAgent('executive', { brand, topic, task: executiveTask });
 
   return {
