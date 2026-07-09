@@ -1,0 +1,111 @@
+name: Action Connectors
+
+on:
+  workflow_dispatch:
+    inputs:
+      action_type:
+        description: 'draft_email | shopify_status | calendar_status | render_status'
+        required: true
+        default: 'shopify_status'
+      payload:
+        description: 'JSON payload for the action'
+        required: false
+        default: '{}'
+
+permissions:
+  contents: read
+
+jobs:
+  action-connectors:
+    name: Run Gated Action Connector
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Run connector action
+        env:
+          ACTION_TYPE: ${{ github.event.inputs.action_type }}
+          ACTION_PAYLOAD: ${{ github.event.inputs.payload }}
+          SHOPIFY_SHOP_DOMAIN: ${{ secrets.SHOPIFY_SHOP_DOMAIN }}
+          SHOPIFY_ADMIN_ACCESS_TOKEN: ${{ secrets.SHOPIFY_ADMIN_ACCESS_TOKEN }}
+          RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
+          RENDER_SERVICE_ID: ${{ secrets.RENDER_SERVICE_ID }}
+          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+          GOOGLE_REFRESH_TOKEN: ${{ secrets.GOOGLE_REFRESH_TOKEN }}
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          import urllib.parse
+          import urllib.request
+
+          action_type = os.environ.get('ACTION_TYPE', '')
+          try:
+              payload = json.loads(os.environ.get('ACTION_PAYLOAD') or '{}')
+          except json.JSONDecodeError:
+              payload = {}
+
+          def require(*names):
+              missing = [name for name in names if not os.environ.get(name)]
+              if missing:
+                  raise SystemExit(f'Missing required secret(s): {", ".join(missing)}')
+
+          def request_json(url, method='GET', headers=None, data=None):
+              body = json.dumps(data).encode('utf-8') if data is not None else None
+              req = urllib.request.Request(url, data=body, headers=headers or {}, method=method)
+              with urllib.request.urlopen(req, timeout=60) as response:
+                  text = response.read().decode('utf-8')
+                  return json.loads(text) if text else {}
+
+          def google_access_token():
+              require('GOOGLE_CLIENT_ID', 'GOOGLE_CLIENT_SECRET', 'GOOGLE_REFRESH_TOKEN')
+              data = urllib.parse.urlencode({
+                  'client_id': os.environ['GOOGLE_CLIENT_ID'],
+                  'client_secret': os.environ['GOOGLE_CLIENT_SECRET'],
+                  'refresh_token': os.environ['GOOGLE_REFRESH_TOKEN'],
+                  'grant_type': 'refresh_token'
+              }).encode('utf-8')
+              req = urllib.request.Request('https://oauth2.googleapis.com/token', data=data, method='POST')
+              with urllib.request.urlopen(req, timeout=60) as response:
+                  token_data = json.loads(response.read().decode('utf-8'))
+              return token_data['access_token']
+
+          if action_type == 'shopify_status':
+              require('SHOPIFY_SHOP_DOMAIN', 'SHOPIFY_ADMIN_ACCESS_TOKEN')
+              shop = os.environ['SHOPIFY_SHOP_DOMAIN'].replace('https://', '').replace('http://', '').strip('/')
+              url = f'https://{shop}/admin/api/2025-01/shop.json'
+              data = request_json(url, headers={'X-Shopify-Access-Token': os.environ['SHOPIFY_ADMIN_ACCESS_TOKEN']})
+              print(json.dumps({'shopify_connected': True, 'shop': data.get('shop', {}).get('name'), 'domain': data.get('shop', {}).get('domain')}, indent=2))
+
+          elif action_type == 'render_status':
+              require('RENDER_API_KEY', 'RENDER_SERVICE_ID')
+              url = f'https://api.render.com/v1/services/{os.environ["RENDER_SERVICE_ID"]}/deploys?limit=1'
+              data = request_json(url, headers={'Authorization': f'Bearer {os.environ["RENDER_API_KEY"]}', 'Accept': 'application/json'})
+              print(json.dumps({'render_connected': True, 'latest_deploy': data[0] if isinstance(data, list) and data else data}, indent=2))
+
+          elif action_type == 'calendar_status':
+              token = google_access_token()
+              data = request_json('https://www.googleapis.com/calendar/v3/users/me/calendarList', headers={'Authorization': f'Bearer {token}'})
+              print(json.dumps({'calendar_connected': True, 'calendar_count': len(data.get('items', []))}, indent=2))
+
+          elif action_type == 'draft_email':
+              token = google_access_token()
+              to = payload.get('to')
+              subject = payload.get('subject', 'Lion Elite Follow Up')
+              body = payload.get('body', '')
+              if not to or not body:
+                  raise SystemExit('draft_email requires payload with to and body')
+              import base64
+              raw = f'To: {to}\r\nSubject: {subject}\r\nContent-Type: text/plain; charset="UTF-8"\r\n\r\n{body}'
+              encoded = base64.urlsafe_b64encode(raw.encode('utf-8')).decode('utf-8')
+              data = request_json(
+                  'https://gmail.googleapis.com/gmail/v1/users/me/drafts',
+                  method='POST',
+                  headers={'Authorization': f'Bearer {token}', 'Content-Type': 'application/json'},
+                  data={'message': {'raw': encoded}}
+              )
+              print(json.dumps({'gmail_draft_created': True, 'draft_id': data.get('id')}, indent=2))
+
+          else:
+              raise SystemExit(f'Unknown action_type: {action_type}')
+          PY
