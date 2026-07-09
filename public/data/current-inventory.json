@@ -1,0 +1,35 @@
+{
+  "source": {
+    "type": "google_drive_sheet",
+    "title": "Inventory",
+    "spreadsheet_id": "1kTq_vI7wZ_lkXByW5qOyoVGLMrAWz97nOzGpuPuReTE",
+    "url": "https://docs.google.com/spreadsheets/d/1kTq_vI7wZ_lkXByW5qOyoVGLMrAWz97nOzGpuPuReTE",
+    "last_checked_utc": "2026-07-09T14:05:00Z",
+    "rule": "Google Drive inventory is the source of truth. Do not advertise or upsell products without checking this sheet first."
+  },
+  "items": [
+    { "name": "Epithalon", "batch": "Clear / Blue cap", "dosage": "10 Mg", "units": 6, "status": "in_stock" },
+    { "name": "IGF-1 LR3", "batch": "Clear / Black cap", "dosage": "1 Mg", "units": 7, "status": "in_stock" },
+    { "name": "Kisspeptine", "batch": "Clear / Black cap", "dosage": "5 Mg", "units": 13, "status": "in_stock" },
+    { "name": "KPV", "batch": "Clear / Platinum cap", "dosage": "10 Mg", "units": 7, "status": "in_stock" },
+    { "name": "MOTS-c", "batch": "Purple / Platinum cap", "dosage": "10 Mg", "units": 34, "status": "in_stock" },
+    { "name": "CJC / Ipamorelin", "batch": "", "dosage": "10 Mg", "units": 7, "status": "in_stock" },
+    { "name": "NAD+", "batch": "Black / Platinum cap", "dosage": "1000 Mg", "units": 1, "status": "low_stock" },
+    { "name": "NAD+", "batch": "Black / Platinum cap", "dosage": "500 Mg", "units": 7, "status": "in_stock" },
+    { "name": "PT141", "batch": "Dark Green / Platinum cap", "dosage": "10 Mg", "units": 8, "status": "in_stock" },
+    { "name": "Retatrutide", "batch": "Clear / Black cap", "dosage": "15 Mg", "units": 4, "status": "low_stock" },
+    { "name": "Retatrutide", "batch": "Clear / Gold cap", "dosage": "10 Mg", "units": 16, "status": "in_stock" },
+    { "name": "Retatrutide", "batch": "Purple / Platinum cap", "dosage": "5 Mg", "units": 10, "status": "in_stock" },
+    { "name": "Selank", "batch": "Green / Platinum Cap", "dosage": "10 Mg", "units": 11, "status": "in_stock" },
+    { "name": "Semax", "batch": "Green / Platinum Cap", "dosage": "5 Mg", "units": 15, "status": "in_stock" },
+    { "name": "SS31", "batch": "Purple / Platinum cap", "dosage": "10 Mg", "units": 8, "status": "in_stock" },
+    { "name": "Tesamorelin", "batch": "Blue / Platinum cap", "dosage": "5 Mg", "units": 10, "status": "in_stock" },
+    { "name": "Thymosin Alpha", "batch": "Green / Gold cap", "dosage": "10 Mg", "units": 6, "status": "in_stock" },
+    { "name": "Bacteriostatic Water", "batch": "White Box", "dosage": "10 Mg", "units": 7, "status": "in_stock" },
+    { "name": "GHK-Cu", "batch": "Blue / Platinum cap", "dosage": "100 Mg", "units": 55, "status": "in_stock" },
+    { "name": "BPC 157 / TB 500", "batch": "Black / Platinum cap", "dosage": "10 Mg", "units": 23, "status": "in_stock" },
+    { "name": "KLOW Blend", "batch": "Yellow / Green cap", "dosage": "80 Mg", "units": 2, "status": "low_stock" },
+    { "name": "DSIP", "batch": "Purple / Platinum cap", "dosage": "5 Mg", "units": 3, "status": "low_stock" },
+    { "name": "AOD9604", "batch": "", "dosage": "", "units": 0, "status": "out_of_stock", "sales_note": "Waitlist only. Do not advertise as available." }
+  ]
+}
