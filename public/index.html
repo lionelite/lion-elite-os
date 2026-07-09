@@ -35,6 +35,7 @@
     .in_stock { background: #12351f; color: #b8ffd0; border: 1px solid #1f6f3b; }
     .low_stock { background: #3d2d0b; color: #ffe0a3; border: 1px solid #9b6b13; }
     .out_of_stock { background: #3d1111; color: #ffc4c4; border: 1px solid #803030; }
+    .warning { border-color: #6d4b12; background: #181104; color: #ffe6ad; }
   </style>
 </head>
 <body>
@@ -42,7 +43,7 @@
     <section class="hero">
       <span class="tag">AI AGENT COMMAND CENTER</span>
       <h1>Lion Elite OS</h1>
-      <p>Specialized AI agents for marketing, sales, operations, research review, inventory, and finance/KPIs.</p>
+      <p>Specialized AI agents for marketing, sales, operations, research review, internal inventory, and finance/KPIs.</p>
       <div class="status" id="priority">Loading agent priority...</div>
       <div class="small" id="integrations">Checking integrations...</div>
     </section>
@@ -54,11 +55,11 @@
       <label for="topic">Topic / Task</label>
       <input id="topic" value="daily lead generation" />
       <label for="task">Detailed Task For The Agent</label>
-      <textarea id="task">Create the next best output I can use today to create leads, conversations, consultations, or revenue.</textarea>
+      <textarea id="task">Create the next best output I can use today to create leads, conversations, consultations, or revenue. Make customer-facing emails, DMs, and follow-ups sound human, warm, relationship-building, and service-first.</textarea>
       <button class="primary" onclick="runDailyBriefing()">Run Daily Agent Briefing</button>
-      <button onclick="quickTask('Lion Elite Beauty','daily lead generation','Create 3 Instagram captions, 3 reel hooks, and 3 DM CTAs to attract coaching leads today.')">LEB Leads</button>
-      <button onclick="quickTask('Lion Elite Wellness','research education post','Create a compliant educational carousel outline for the research brand. Keep it scientific, educational, and brand-safe.')">LEW Education</button>
-      <button onclick="quickTask('AlexTheLionLifts','personal coaching authority','Create a personal brand reel script about strength, aesthetics, discipline, and coaching CTA.')">Alex Content</button>
+      <button onclick="quickTask('Lion Elite Beauty','daily lead generation','Create 3 Instagram captions, 3 reel hooks, and 3 DM CTAs to attract coaching leads today. Make the DMs human, warm, and relationship-building, not robotic.')">LEB Leads</button>
+      <button onclick="quickTask('Lion Elite Wellness','research education post','Create a compliant educational carousel outline for the research brand. Keep it scientific, educational, and brand-safe. Do not include inventory counts or internal availability details.')">LEW Education</button>
+      <button onclick="quickTask('AlexTheLionLifts','personal coaching authority','Create a personal brand reel script about strength, aesthetics, discipline, and coaching CTA. Keep the CTA personal and relationship-first.')">Alex Content</button>
     </div>
 
     <h2>Daily KPI Scorecard</h2>
@@ -80,10 +81,11 @@
 
     <h2>Inventory Command Center</h2>
     <div class="card">
+      <p class="small warning" style="padding: 12px; border: 1px solid; border-radius: 12px;">Internal only. Do not send exact inventory, unit counts, batch details, or full inventory lists to customers. Customer-facing language should only say limited stock or current availability is limited.</p>
       <p class="small" id="inventorySource">Loading Google Drive inventory mirror...</p>
-      <button class="primary" onclick="loadInventory()">Refresh Inventory</button>
-      <button onclick="copyInventoryPush()">Copy Inventory Push</button>
-      <button onclick="quickTask('Lion Elite Wellness','research inventory sales push','Using the current inventory shown in the OS, create a compliant research-only inventory sales post and DM follow-up sequence. Do not advertise out-of-stock products as available.')">Generate Inventory Sales Copy</button>
+      <button class="primary" onclick="loadInventory()">Refresh Internal Inventory</button>
+      <button onclick="copyLimitedStockCustomerNote()">Copy Limited-Stock Customer Note</button>
+      <button onclick="quickTask('Lion Elite Wellness','limited stock customer follow-up','Create a compliant research-only customer follow-up. Use inventory only as internal context. Do not include product counts, exact inventory quantities, batch details, full inventory lists, or source-sheet information. Only say limited stock or current availability is limited. Make it human, warm, relationship-building, and service-first.')">Generate Limited-Stock Copy</button>
       <div class="inventory-grid" id="inventoryGrid"></div>
     </div>
 
@@ -95,7 +97,7 @@
         <div><label for="calendarCTA">Main CTA</label><input id="calendarCTA" value="DM ELITE" /></div>
       </div>
       <label for="calendarGoal">Calendar Goal</label>
-      <textarea id="calendarGoal">Generate a premium content calendar that attracts coaching leads, affiliate interest, and warm conversations. Include posts, reels, stories, and DM CTAs.</textarea>
+      <textarea id="calendarGoal">Generate a premium content calendar that attracts coaching leads, affiliate interest, and warm conversations. Include posts, reels, stories, and DM CTAs. Make follow-ups human and relationship-building.</textarea>
       <button class="primary" onclick="generateContentCalendar()">Generate Content Calendar</button>
       <button onclick="generateTodayPostStack()">Generate Today's Post Stack</button>
     </div>
@@ -105,7 +107,7 @@
       <button onclick="copyOutput()">Copy Output</button>
       <button onclick="saveOutput()">Save Output To GitHub</button>
     </div>
-    <div class="output" id="output">Choose an agent, run the briefing, generate inventory copy, or generate a content calendar.</div>
+    <div class="output" id="output">Choose an agent, run the briefing, generate limited-stock copy, or generate a content calendar.</div>
 
     <h2>Active AI Agents</h2>
     <div class="grid" id="agents"></div>
@@ -124,6 +126,18 @@
     let currentInventory = null;
     const inputIds = ['brand', 'topic', 'task', 'dmCount', 'leadCount', 'consultCount', 'orderCount', 'revenueCount', 'contentCount', 'priorityNote', 'calendarDays', 'calendarCTA', 'calendarGoal'];
 
+    const customerCommunicationRules = `
+
+Customer Communication Rules:
+- All emails, DMs, SMS, and follow-ups must sound human, warm, relationship-building, and customer-service focused.
+- Do not sound robotic, scripted, pushy, or corporate.
+- Lead with care, clarity, and personal attention before selling.
+- Keep messages conversational with simple language and short paragraphs.
+- Do not send internal inventory, exact inventory lists, product counts, unit quantities, batch details, source-sheet details, or internal notes to customers.
+- Customer-facing availability language may only say limited stock, current availability is limited, or I can confirm current availability for you.
+- If something is out of stock, do not advertise it as available; offer to confirm availability or guide them to the waitlist.
+- For Lion Elite Wellness, keep product language research-use-only and do not include dosing, human-use instructions, disease claims, treatment claims, or transformation promises.`;
+
     function quickTask(brand, topic, task) {
       document.getElementById('brand').value = brand;
       document.getElementById('topic').value = topic;
@@ -139,22 +153,13 @@
     }
 
     function getInventoryText() {
-      if (!currentInventory?.items) return '\n\nInventory: not loaded.';
-      const available = currentInventory.items
-        .filter(item => item.status !== 'out_of_stock' && Number(item.units) > 0)
-        .map(item => `${item.name} ${item.dosage || ''}: ${item.units} units (${item.status})`)
-        .join('\n');
-      const out = currentInventory.items
-        .filter(item => item.status === 'out_of_stock' || Number(item.units) === 0)
-        .map(item => `${item.name}: OUT OF STOCK / WAITLIST ONLY`)
-        .join('\n');
-      return `\n\nCurrent Inventory Source: Google Drive mirror in OS.\nAvailable:\n${available || 'none loaded'}\n\nOut of stock / waitlist only:\n${out || 'none listed'}\n\nNever advertise out-of-stock products as available. For Lion Elite Wellness, keep all language research-use-only.`;
+      return '\n\nInternal Inventory Rule: Inventory data is internal only. Use it only to avoid promoting out-of-stock products. Do not include exact inventory, unit counts, batch details, source-sheet details, or full inventory lists in customer-facing copy. If availability must be mentioned, only say limited stock or current availability is limited.';
     }
 
     function buildPayload() {
       const brand = getValue('brand') || 'Lion Elite';
       const topic = getValue('topic') || 'daily execution';
-      const task = (getValue('task') || '') + getScorecardText() + getInventoryText();
+      const task = (getValue('task') || '') + getScorecardText() + getInventoryText() + customerCommunicationRules;
       return { brand, topic, task };
     }
 
@@ -196,7 +201,7 @@
     async function loadInventory() {
       const source = document.getElementById('inventorySource');
       const grid = document.getElementById('inventoryGrid');
-      source.textContent = 'Loading website inventory mirror...';
+      source.textContent = 'Loading internal inventory mirror...';
       try {
         const res = await fetch('/data/current-inventory.json?cache=' + Date.now());
         const data = await res.json();
@@ -205,13 +210,13 @@
         const available = items.filter(item => item.status !== 'out_of_stock' && Number(item.units) > 0).length;
         const low = items.filter(item => item.status === 'low_stock').length;
         const out = items.filter(item => item.status === 'out_of_stock' || Number(item.units) === 0).length;
-        source.textContent = `Source: Google Drive inventory mirror | Available products: ${available} | Low stock: ${low} | Out of stock: ${out} | Last checked: ${data.source?.last_checked_utc || data.source?.last_synced_from_orders_utc || 'unknown'}`;
+        source.textContent = `Internal source: Google Drive inventory mirror | Available products: ${available} | Low stock: ${low} | Out of stock: ${out} | Last checked: ${data.source?.last_checked_utc || data.source?.last_synced_from_orders_utc || 'unknown'}`;
         grid.innerHTML = items.map(item => `
           <div class="inventory-item">
             <h3>${item.name}</h3>
             <div class="pill ${item.status}">${String(item.status || '').replaceAll('_', ' ')}</div>
             <p class="small">${item.dosage || 'No dosage listed'}${item.batch ? ' | ' + item.batch : ''}</p>
-            <p><strong>${item.units}</strong> units</p>
+            <p><strong>${item.units}</strong> internal units</p>
             ${item.sales_note ? `<p class="small">${item.sales_note}</p>` : ''}
           </div>
         `).join('');
@@ -221,17 +226,8 @@
       }
     }
 
-    async function copyInventoryPush() {
-      if (!currentInventory) await loadInventory();
-      const available = (currentInventory.items || [])
-        .filter(item => item.status !== 'out_of_stock' && Number(item.units) > 0)
-        .map(item => `${item.name}${item.dosage ? ' ' + item.dosage : ''} — ${item.units} units`)
-        .join('\n');
-      const waitlist = (currentInventory.items || [])
-        .filter(item => item.status === 'out_of_stock' || Number(item.units) === 0)
-        .map(item => `${item.name} — waitlist only`)
-        .join('\n');
-      const text = `Current research inventory is moving.\n\nAvailable now:\n${available}\n\nWaitlist only:\n${waitlist}\n\nFor laboratory research purposes only. Not for human or veterinary use.\n\nDM RESEARCH for current availability.`;
+    async function copyLimitedStockCustomerNote() {
+      const text = `Hey — I appreciate you reaching out.\n\nCurrent availability is limited right now, so I do not want to just throw random options at you. I would rather help you confirm what makes sense and point you in the right direction.\n\nFor Lion Elite Wellness, everything is for laboratory research purposes only and not for human or veterinary use.\n\nWhat are you looking for help understanding first?`;
       await navigator.clipboard.writeText(text);
       document.getElementById('output').textContent = text;
     }
@@ -245,7 +241,7 @@
       const res = await fetch('/api/agents/marketing/run', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ brand, topic, task: task + getScorecardText() + getInventoryText() })
+        body: JSON.stringify({ brand, topic, task: task + getScorecardText() + getInventoryText() + customerCommunicationRules })
       });
       const data = await res.json();
       currentRun = data;
@@ -257,14 +253,14 @@
       const days = getValue('calendarDays') || '7';
       const cta = getValue('calendarCTA') || 'DM ELITE';
       const goal = getValue('calendarGoal') || 'Generate a content calendar that creates leads and conversations.';
-      const task = `Create a ${days}-day content calendar for ${brand}. Goal: ${goal}\n\nFor each day include: day number, platform, content type, hook, content angle, caption direction, story follow-up, CTA, and what the DM conversation should start with. Main CTA: ${cta}. Make it premium, direct, and sales-focused without sounding cheap.`;
+      const task = `Create a ${days}-day content calendar for ${brand}. Goal: ${goal}\n\nFor each day include: day number, platform, content type, hook, content angle, caption direction, story follow-up, CTA, and what the DM conversation should start with. Main CTA: ${cta}. Make it premium, direct, and sales-focused without sounding cheap. Make DMs and emails human, warm, relationship-building, and customer-service focused.`;
       await runMarketingTask('content calendar', task, 'Generating content calendar...');
     }
 
     async function generateTodayPostStack() {
       const brand = getValue('brand') || 'Lion Elite';
       const cta = getValue('calendarCTA') || 'DM ELITE';
-      const task = `Create today's post stack for ${brand}. Include: 1 carousel outline, 1 reel script, 3 captions, 5 story frames, 5 hook options, and 5 DM follow-up openers. Main CTA: ${cta}. Make it ready to post today.`;
+      const task = `Create today's post stack for ${brand}. Include: 1 carousel outline, 1 reel script, 3 captions, 5 story frames, 5 hook options, and 5 DM follow-up openers. Main CTA: ${cta}. Make it ready to post today. Make every customer-facing follow-up warm and relationship-first.`;
       await runMarketingTask('today post stack', task, 'Generating today post stack...');
     }
 
@@ -272,7 +268,7 @@
       const payload = buildPayload();
       const output = document.getElementById('output');
       output.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      output.textContent = 'Running agent with today scorecard and current inventory...';
+      output.textContent = 'Running agent with today scorecard and customer communication rules...';
 
       const res = await fetch(`/api/agents/${agentId}/run`, {
         method: 'POST',
@@ -288,7 +284,7 @@
       const payload = buildPayload();
       const output = document.getElementById('output');
       output.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      output.textContent = 'Running full daily briefing with today scorecard and inventory. This may take a moment...';
+      output.textContent = 'Running full daily briefing with scorecard, customer communication rules, and inventory privacy rules...';
       const res = await fetch('/api/briefing/daily', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -308,7 +304,7 @@
       const os = await osRes.json();
       const output = document.getElementById('output');
       output.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      output.textContent = 'Running full agent team with today scorecard and inventory...';
+      output.textContent = 'Running full agent team with scorecard, customer communication rules, and inventory privacy rules...';
       const results = [];
       for (const agent of os.agents) {
         const res = await fetch(`/api/agents/${agent.id}/run`, {
