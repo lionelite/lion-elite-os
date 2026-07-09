@@ -4,15 +4,16 @@
     "title": "Inventory",
     "spreadsheet_id": "1kTq_vI7wZ_lkXByW5qOyoVGLMrAWz97nOzGpuPuReTE",
     "url": "https://docs.google.com/spreadsheets/d/1kTq_vI7wZ_lkXByW5qOyoVGLMrAWz97nOzGpuPuReTE",
-    "last_checked_utc": "2026-07-09T14:05:00Z",
-    "rule": "Google Drive inventory is the source of truth. Do not advertise or upsell products without checking this sheet first."
+    "last_checked_utc": "2026-07-09T14:20:00Z",
+    "rule": "Google Drive inventory is the source of truth. Do not advertise or upsell products without checking this sheet first.",
+    "manual_adjustment_note": "Hunter Stephens reported a paid Cash App MOTS-c order that was not submitted through the site. MOTS-c reduced by 1."
   },
   "items": [
     { "name": "Epithalon", "batch": "Clear / Blue cap", "dosage": "10 Mg", "units": 6, "status": "in_stock" },
     { "name": "IGF-1 LR3", "batch": "Clear / Black cap", "dosage": "1 Mg", "units": 7, "status": "in_stock" },
     { "name": "Kisspeptine", "batch": "Clear / Black cap", "dosage": "5 Mg", "units": 13, "status": "in_stock" },
     { "name": "KPV", "batch": "Clear / Platinum cap", "dosage": "10 Mg", "units": 7, "status": "in_stock" },
-    { "name": "MOTS-c", "batch": "Purple / Platinum cap", "dosage": "10 Mg", "units": 34, "status": "in_stock" },
+    { "name": "MOTS-c", "batch": "Purple / Platinum cap", "dosage": "10 Mg", "units": 33, "status": "in_stock" },
     { "name": "CJC / Ipamorelin", "batch": "", "dosage": "10 Mg", "units": 7, "status": "in_stock" },
     { "name": "NAD+", "batch": "Black / Platinum cap", "dosage": "1000 Mg", "units": 1, "status": "low_stock" },
     { "name": "NAD+", "batch": "Black / Platinum cap", "dosage": "500 Mg", "units": 7, "status": "in_stock" },
