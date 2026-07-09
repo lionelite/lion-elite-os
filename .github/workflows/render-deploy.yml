@@ -23,3 +23,72 @@ jobs:
       - name: Trigger Render deploy
         run: |
           curl --fail --show-error --location --request POST "${{ secrets.RENDER_DEPLOY_HOOK_URL }}"
+          echo "Render deploy hook triggered successfully."
+
+      - name: Optional Render status visibility
+        run: |
+          if [ -z "${{ secrets.RENDER_API_KEY }}" ] || [ -z "${{ secrets.RENDER_SERVICE_ID }}" ]; then
+            echo "Render deploy was triggered."
+            echo "To let GitHub see Render deploy status, add these repository secrets:"
+            echo "RENDER_API_KEY"
+            echo "RENDER_SERVICE_ID"
+            echo "Skipping Render API status check for now."
+            exit 0
+          fi
+
+          echo "Checking latest Render deploy status..."
+
+          python - <<'PY'
+          import json
+          import os
+          import sys
+          import time
+          import urllib.request
+
+          api_key = os.environ.get("RENDER_API_KEY_SECRET")
+          service_id = os.environ.get("RENDER_SERVICE_ID_SECRET")
+
+          url = f"https://api.render.com/v1/services/{service_id}/deploys?limit=1"
+          headers = {
+              "Authorization": f"Bearer {api_key}",
+              "Accept": "application/json",
+          }
+
+          terminal_success = {"live", "succeeded"}
+          terminal_failure = {"failed", "canceled", "cancelled"}
+
+          for attempt in range(30):
+              req = urllib.request.Request(url, headers=headers)
+              with urllib.request.urlopen(req, timeout=30) as response:
+                  data = json.loads(response.read().decode("utf-8"))
+
+              deploys = data if isinstance(data, list) else data.get("deploys", [])
+              if not deploys:
+                  print("No Render deploys returned yet. Waiting...")
+                  time.sleep(20)
+                  continue
+
+              latest = deploys[0]
+              deploy = latest.get("deploy", latest)
+              status = str(deploy.get("status", "unknown")).lower()
+              deploy_id = deploy.get("id", "unknown")
+
+              print(f"Latest Render deploy: {deploy_id}")
+              print(f"Status: {status}")
+
+              if status in terminal_success:
+                  print("Render deploy completed successfully.")
+                  sys.exit(0)
+
+              if status in terminal_failure:
+                  print("Render deploy failed.")
+                  sys.exit(1)
+
+              time.sleep(20)
+
+          print("Render deploy did not reach a final status before timeout.")
+          sys.exit(1)
+          PY
+        env:
+          RENDER_API_KEY_SECRET: ${{ secrets.RENDER_API_KEY }}
+          RENDER_SERVICE_ID_SECRET: ${{ secrets.RENDER_SERVICE_ID }}
