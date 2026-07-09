@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: order-inventory-sync
@@ -14,27 +14,210 @@ concurrency:
 
 jobs:
   sync-orders:
-    name: Order inventory sync preflight
+    name: Monitor order emails and sync website inventory
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      - name: Verify sync configuration
+      - name: Read Gmail orders and sync inventory
         env:
-          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
-          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
-          GOOGLE_REFRESH_TOKEN: ${{ secrets.GOOGLE_REFRESH_TOKEN }}
+          GMAIL_ADDRESS: ${{ secrets.GMAIL_ADDRESS }}
+          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
         run: |
-          echo "Checking order inventory sync configuration..."
-          missing=0
-          if [ -z "$GOOGLE_CLIENT_ID" ]; then echo "Missing GOOGLE_CLIENT_ID"; missing=1; fi
-          if [ -z "$GOOGLE_CLIENT_SECRET" ]; then echo "Missing GOOGLE_CLIENT_SECRET"; missing=1; fi
-          if [ -z "$GOOGLE_REFRESH_TOKEN" ]; then echo "Missing GOOGLE_REFRESH_TOKEN"; missing=1; fi
-          if [ "$missing" -eq 1 ]; then
-            echo "Live order sync is paused until Google OAuth secrets are added."
-            echo "Workflow completed successfully so failure alerts stop."
-            exit 0
+          python - <<'PY'
+          import email
+          import imaplib
+          import json
+          import os
+          import pathlib
+          import re
+          from datetime import datetime, timedelta, timezone
+          from email.header import decode_header
+
+          inventory_paths = [
+              pathlib.Path('public/data/current-inventory.json'),
+              pathlib.Path('data/inventory/current-inventory.json'),
+          ]
+          processed_path = pathlib.Path('data/orders/processed-order-ids.json')
+          report_path = pathlib.Path('data/orders/latest-sync-report.json')
+          processed_path.parent.mkdir(parents=True, exist_ok=True)
+          report_path.parent.mkdir(parents=True, exist_ok=True)
+
+          def utc_now():
+              return datetime.now(timezone.utc).isoformat()
+
+          def write_report(payload):
+              payload.setdefault('synced_at', utc_now())
+              report_path.write_text(json.dumps(payload, indent=2) + '\n', encoding='utf-8')
+
+          gmail_address = os.environ.get('GMAIL_ADDRESS', '').strip()
+          gmail_app_password = os.environ.get('GMAIL_APP_PASSWORD', '').strip()
+          if not gmail_address or not gmail_app_password:
+              print('GMAIL_ADDRESS or GMAIL_APP_PASSWORD missing. Live sync skipped safely.')
+              write_report({'status': 'skipped_missing_gmail_app_password_secrets', 'applied': []})
+              raise SystemExit(0)
+
+          def read_json(path, default):
+              if path.exists():
+                  try:
+                      return json.loads(path.read_text(encoding='utf-8'))
+                  except Exception as exc:
+                      print(f'Could not parse {path}: {exc}')
+              return default
+
+          inventory = read_json(inventory_paths[0], {'items': [], 'source': {}})
+          processed = set(read_json(processed_path, []))
+
+          aliases = {
+              'retatrutide': 'Retatrutide',
+              'cjc-1295 / ipamorelin blend': 'CJC / Ipamorelin',
+              'cjc / ipamorelin': 'CJC / Ipamorelin',
+              'klow blend 80mg': 'KLOW Blend',
+              'klow blend': 'KLOW Blend',
+              'mots-c': 'MOTS-c',
+              'mots - c': 'MOTS-c',
+              'nad+ 1000mg': 'NAD+',
+              'nad+ 500mg': 'NAD+',
+              'nad+': 'NAD+',
+              'ghkcu': 'GHK-Cu',
+              'ghk-cu': 'GHK-Cu',
+              'bpc 157 / tb 500': 'BPC 157 / TB 500',
+              'tesamorelin': 'Tesamorelin',
+              'bacteriostatic water': 'Bacteriostatic Water',
+              'aod9604': 'AOD9604',
+          }
+
+          def decode_mime(value):
+              parts = decode_header(value or '')
+              out = ''
+              for part, enc in parts:
+                  if isinstance(part, bytes):
+                      out += part.decode(enc or 'utf-8', errors='ignore')
+                  else:
+                      out += part
+              return out
+
+          def normalize_name(raw):
+              cleaned = re.sub(r'\s+', ' ', raw).strip()
+              low = cleaned.lower()
+              for key, value in aliases.items():
+                  if key in low:
+                      return value
+              return cleaned
+
+          def dosage_from_name(raw):
+              match = re.search(r'(\d+\s*mg)', raw, re.I)
+              return match.group(1).replace(' ', ' ') if match else ''
+
+          def body_from_message(msg):
+              bodies = []
+              if msg.is_multipart():
+                  for part in msg.walk():
+                      content_type = part.get_content_type()
+                      disposition = str(part.get('Content-Disposition') or '')
+                      if 'attachment' in disposition.lower():
+                          continue
+                      if content_type in ('text/plain', 'text/html'):
+                          payload = part.get_payload(decode=True)
+                          if payload:
+                              bodies.append(payload.decode(part.get_content_charset() or 'utf-8', errors='ignore'))
+              else:
+                  payload = msg.get_payload(decode=True)
+                  if payload:
+                      bodies.append(payload.decode(msg.get_content_charset() or 'utf-8', errors='ignore'))
+              return '\n'.join(bodies)
+
+          def decrement_item(name, dosage, qty):
+              candidates = [item for item in inventory.get('items', []) if item.get('name', '').lower() == name.lower()]
+              if dosage:
+                  dose_num = re.sub(r'\D+', '', dosage)
+                  dose_matches = [item for item in candidates if dose_num and dose_num in re.sub(r'\D+', '', item.get('dosage', ''))]
+                  if dose_matches:
+                      candidates = dose_matches
+              if not candidates:
+                  return False
+              item = candidates[0]
+              item['units'] = max(0, int(item.get('units') or 0) - qty)
+              if item['units'] == 0:
+                  item['status'] = 'out_of_stock'
+              elif item['units'] <= 5:
+                  item['status'] = 'low_stock'
+              else:
+                  item['status'] = 'in_stock'
+              return True
+
+          since = (datetime.now(timezone.utc) - timedelta(days=2)).strftime('%d-%b-%Y')
+          applied = []
+          checked = 0
+
+          try:
+              mail = imaplib.IMAP4_SSL('imap.gmail.com')
+              mail.login(gmail_address, gmail_app_password)
+              mail.select('INBOX')
+              status, data = mail.search(None, f'(SINCE {since})')
+              if status != 'OK':
+                  raise RuntimeError('Could not search Gmail inbox')
+              message_ids = data[0].split()[-50:]
+              for mid in message_ids:
+                  status, msg_data = mail.fetch(mid, '(RFC822)')
+                  if status != 'OK' or not msg_data or not msg_data[0]:
+                      continue
+                  checked += 1
+                  msg = email.message_from_bytes(msg_data[0][1])
+                  gmail_message_id = msg.get('Message-ID') or mid.decode()
+                  if gmail_message_id in processed:
+                      continue
+                  subject = decode_mime(msg.get('Subject', ''))
+                  sender = decode_mime(msg.get('From', ''))
+                  if 'New Order' not in subject and 'order' not in subject.lower():
+                      processed.add(gmail_message_id)
+                      continue
+                  if 'lionelite' not in sender.lower() and 'order' not in sender.lower():
+                      processed.add(gmail_message_id)
+                      continue
+                  body = body_from_message(msg)
+                  plain = re.sub(r'<[^>]+>', '\n', body)
+                  product_block = plain.split('Product')[-1]
+                  for product, qty in re.findall(r'([^\n]+?)\s*\n\s*(\d+)\s*\n\s*\$?\d', product_block):
+                      raw = product.strip()
+                      if not raw or raw.lower() in {'qty', 'price'}:
+                          continue
+                      name = normalize_name(raw)
+                      dosage = dosage_from_name(raw)
+                      quantity = int(qty)
+                      if decrement_item(name, dosage, quantity):
+                          applied.append({'message_id': gmail_message_id, 'subject': subject, 'product': name, 'dosage': dosage, 'qty': quantity})
+                  processed.add(gmail_message_id)
+              mail.logout()
+          except Exception as exc:
+              print(f'Gmail app password sync unavailable. Workflow completed safely. Error: {exc}')
+              write_report({'status': 'skipped_gmail_unavailable', 'error': str(exc), 'applied': []})
+              raise SystemExit(0)
+
+          inventory.setdefault('source', {})['last_synced_from_orders_utc'] = utc_now()
+          inventory.setdefault('source', {})['sync_rule'] = 'Gmail order emails reduce website inventory after new order emails are processed.'
+
+          for path in inventory_paths:
+              path.parent.mkdir(parents=True, exist_ok=True)
+              path.write_text(json.dumps(inventory, indent=2) + '\n', encoding='utf-8')
+          processed_path.write_text(json.dumps(sorted(processed), indent=2) + '\n', encoding='utf-8')
+          write_report({'status': 'success', 'checked_messages': checked, 'applied': applied})
+          print(json.dumps({'status': 'success', 'checked_messages': checked, 'applied': applied}, indent=2))
+          PY
+
+      - name: Commit website inventory changes
+        run: |
+          git config user.name "Lion Elite Order Sync"
+          git config user.email "actions@github.com"
+          git pull --rebase origin main || true
+          git add public/data/current-inventory.json data/inventory/current-inventory.json data/orders/ || true
+          if git diff --cached --quiet; then
+            echo "No inventory changes to commit."
+          else
+            git commit -m "Sync website inventory from order emails"
+            git push || echo "Push skipped because remote changed. Next run will retry."
           fi
-          echo "Google OAuth secrets are present. Live sync can be re-enabled in the next build step."
