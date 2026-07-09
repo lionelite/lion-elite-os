@@ -1,6 +1,11 @@
-name: Daily Agent Automation
+name: Manual Daily Agent
 
 on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - 'agent-outputs/**'
   schedule:
     - cron: '0 11 * * *'
   workflow_dispatch:
