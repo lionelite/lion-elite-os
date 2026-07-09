@@ -1,0 +1,164 @@
+name: Daily Agent Automation
+
+on:
+  schedule:
+    - cron: '0 11 * * *'
+  workflow_dispatch:
+    inputs:
+      brand:
+        description: 'Brand lane'
+        required: false
+        default: 'Lion Elite Beauty'
+      topic:
+        description: 'Daily topic'
+        required: false
+        default: 'daily lead generation'
+      task:
+        description: 'Execution task'
+        required: false
+        default: 'Complete the highest-impact work first.'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: manual-daily-agent
+  cancel-in-progress: false
+
+jobs:
+  run-daily-agent:
+    name: Run Daily Agent System
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Build daily agent output
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_MODEL: ${{ vars.OPENAI_MODEL || 'gpt-4o-mini' }}
+          INPUT_BRAND: ${{ github.event.inputs.brand || 'Lion Elite Beauty' }}
+          INPUT_TOPIC: ${{ github.event.inputs.topic || 'daily lead generation' }}
+          INPUT_TASK: ${{ github.event.inputs.task || 'Complete the highest-impact work first.' }}
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          import pathlib
+          import urllib.request
+          from datetime import datetime, timezone
+
+          now = datetime.now(timezone.utc)
+          date = now.strftime('%Y-%m-%d')
+          stamp = now.strftime('%Y-%m-%dT%H-%M-%SZ')
+          brand = os.environ.get('INPUT_BRAND', 'Lion Elite Beauty')
+          topic = os.environ.get('INPUT_TOPIC', 'daily lead generation')
+          task = os.environ.get('INPUT_TASK', 'Complete the highest-impact work first.')
+          api_key = os.environ.get('OPENAI_API_KEY', '').strip()
+          model = os.environ.get('OPENAI_MODEL', 'gpt-4o-mini')
+
+          fallback = f"""# Daily Agent Automation — {date}
+
+Generated: {stamp}
+Mode: fallback-no-ai
+Brand: {brand}
+Topic: {topic}
+
+## Task
+{task}
+
+## CEO Execution Priority
+Complete the highest-impact work first: revenue, follow-up, content, and operational cleanup.
+
+## Agent Queue
+- CEO Execution Agent: choose today's highest-impact money move.
+- Content Production Agent: create ready-to-post content for the correct brand lane.
+- Lion Elite Wellness Research Agent: research-only education; no human-use claims, dosing, or treatment claims.
+- Lion Elite Beauty Coaching Agent: high-ticket coaching, transformation, affiliate, and influencer content.
+- AlexTheLionLifts Personal Brand Agent: authority, discipline, lifting, leadership, faith, and coaching credibility.
+- Sales Follow-Up Agent: short follow-ups that build value and end with a question.
+- Funnel and Website Agent: improve CTAs, lead capture, and conversion copy.
+- Operations Agent: SOPs, checklists, triggers, and quality-control steps.
+- GitHub Task Agent: convert needs into issues and implementation tasks.
+- Money and Growth Agent: identify today's offer, lead source, conversion action, and KPI.
+
+## Next Action
+Open the highest-priority queue and execute one revenue-producing task.
+"""
+
+          system_prompt = """You are the Lion Elite OS daily execution engine. Produce finished work, not advice. Separate outputs by brand lane. Follow these rules: Lion Elite Wellness is research-only education with no human-use claims, no dosing, no treatment claims, and no transformation promises. Lion Elite Beauty is coaching, transformation, high-ticket sales, affiliates, and influencers. AlexTheLionLifts is personal authority, lifting, discipline, faith, business, leadership, and coaching credibility. Keep outputs direct and ready to use."""
+
+          user_prompt = f"""Create today's execution brief.
+
+Brand: {brand}
+Topic: {topic}
+Task: {task}
+
+Include:
+1. CEO execution summary
+2. top 3 money moves
+3. ready-to-post content asset
+4. sales follow-up script
+5. website/funnel action
+6. operations action
+7. GitHub task
+8. next action
+"""
+
+          output = fallback
+          if api_key:
+              payload = {
+                  'model': model,
+                  'messages': [
+                      {'role': 'system', 'content': system_prompt},
+                      {'role': 'user', 'content': user_prompt}
+                  ],
+                  'temperature': 0.7
+              }
+              try:
+                  req = urllib.request.Request(
+                      'https://api.openai.com/v1/chat/completions',
+                      data=json.dumps(payload).encode('utf-8'),
+                      headers={
+                          'Content-Type': 'application/json',
+                          'Authorization': f'Bearer {api_key}'
+                      },
+                      method='POST'
+                  )
+                  with urllib.request.urlopen(req, timeout=120) as response:
+                      data = json.loads(response.read().decode('utf-8'))
+                  text = data['choices'][0]['message']['content']
+                  output = f"# Daily Agent Automation — {date}\n\nGenerated: {stamp}\nMode: openai-api\nModel: {model}\nBrand: {brand}\nTopic: {topic}\n\n{text}\n"
+              except Exception as exc:
+                  output = fallback + f"\n## OpenAI API Note\nThe API key was present, but the AI call did not complete. Error: {exc}\n"
+          else:
+              output = fallback + "\n## OpenAI API Note\nOPENAI_API_KEY was not available to this workflow.\n"
+
+          outdir = pathlib.Path('agent-outputs') / date
+          outdir.mkdir(parents=True, exist_ok=True)
+          outfile = outdir / f'daily-agent-automation-{stamp}.md'
+          outfile.write_text(output, encoding='utf-8')
+
+          latest = pathlib.Path('agent-outputs') / 'LATEST_DAILY_AUTOMATION.md'
+          latest.parent.mkdir(parents=True, exist_ok=True)
+          latest.write_text(output, encoding='utf-8')
+
+          print(f'Wrote {outfile}')
+          print('Wrote agent-outputs/LATEST_DAILY_AUTOMATION.md')
+          PY
+
+      - name: Commit agent output
+        run: |
+          git config user.name "Lion Elite Agent Automation"
+          git config user.email "actions@github.com"
+          git pull --rebase origin main || true
+          git add agent-outputs/ || true
+          if git diff --cached --quiet; then
+            echo "No output changes to commit."
+          else
+            git commit -m "Save daily agent automation output"
+            git push || echo "Push skipped because remote changed. Next run will retry."
+          fi
