@@ -17,11 +17,6 @@ on:
         description: 'Execution task'
         required: false
         default: 'Complete the highest-impact work first.'
-  push:
-    branches:
-      - main
-    paths-ignore:
-      - 'agent-outputs/**'
 
 permissions:
   contents: write
