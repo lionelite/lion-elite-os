@@ -2,7 +2,40 @@
 
 This repository is the operating system for Lion Elite Wellness, Lion Elite Beauty, BUNKER, real estate projects, sales systems, content, and internal operations.
 
+## Top Priority — AI Lead Intelligence Engine
+
+Build a continuous, human-supervised lead generation and sales intelligence system using lawful, publicly available professional and business information.
+
+The system must:
+
+1. Discover qualified businesses continuously.
+2. Verify, normalize, deduplicate, and organize public business information.
+3. Build searchable business knowledge profiles with source attribution and freshness timestamps.
+4. Use AI to understand each prospect’s business, likely goals, challenges, buying signals, and opportunities before outreach.
+5. Score prospects using fit, intent, timing, data confidence, and relationship potential.
+6. Equip human representatives with personalized research briefs, discovery questions, conversation guidance, objections, and recommended Lion Elite solutions.
+7. Draft personalized outreach for human review rather than sending automatically by default.
+8. Keep the CRM current through outcome logging, ownership rules, lifecycle stages, follow-up tasks, and stale-record refreshes.
+9. Learn from responses, meetings, conversions, retention, and losses to improve qualification and scoring.
+10. Respect privacy, website terms, robots directives, applicable law, suppression lists, consent requirements, and channel-specific outreach rules.
+
+Primary success metrics:
+
+- Qualified leads created
+- Verified-data rate
+- Duplicate rate
+- Positive response rate
+- Meetings booked
+- Lead-to-customer conversion rate
+- Customer retention and expansion
+- Time saved per representative
+- Data freshness
+- Human approval and edit rate for AI drafts
+
+Detailed specification: [`ai-agents/lead-intelligence-engine.md`](ai-agents/lead-intelligence-engine.md)
+
 ## Mission
+
 Build Lion Elite into a scalable business ecosystem with clear systems, repeatable processes, organized execution, and daily progress tracking.
 
 ## Core Brands
@@ -34,7 +67,7 @@ Scripts, objections, follow-ups, client pipelines, and closing frameworks.
 | `real-estate/` | BRRRR, FHA, DSCR, deals, property analysis |
 | `operations/` | Daily tasks, weekly reviews, KPIs, hiring, accountability |
 | `templates/` | Reusable issue, SOP, campaign, and content templates |
-| `ai-agents/` | Role prompts for marketing, sales, operations, research, finance |
+| `ai-agents/` | Role prompts for marketing, sales, operations, research, finance, and lead intelligence |
 
 ## Daily Workflow
 
@@ -67,6 +100,7 @@ Example prompts:
 
 ## Current Focus
 
+- Build the AI Lead Intelligence Engine as the top priority.
 - Systemize Lion Elite Wellness operations.
 - Build repeatable content and sales execution.
 - Clean up SOPs and product documentation.
