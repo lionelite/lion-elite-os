@@ -1,0 +1,42 @@
+{
+  "version": 1,
+  "sections": [
+    {
+      "name": "Hard-truth readiness",
+      "questions": [
+        "Tell us about the most recent piece of feedback that changed your behavior.",
+        "What belief about your business might currently be wrong?",
+        "What would your team say you avoid confronting?",
+        "When results miss the target, what do you examine first in your own leadership?"
+      ]
+    },
+    {
+      "name": "Execution evidence",
+      "questions": [
+        "What meaningful change did you implement in the last 30 days?",
+        "How quickly do you normally implement agreed actions?",
+        "Provide one example where you kept executing after motivation faded.",
+        "Which three KPIs do you review every week?"
+      ]
+    },
+    {
+      "name": "Business and budget",
+      "questions": [
+        "Current monthly revenue",
+        "Current monthly profit",
+        "Available investment capital",
+        "Monthly marketing budget",
+        "Team size",
+        "Desired investment level",
+        "Twelve-month growth objective"
+      ]
+    }
+  ],
+  "callTests": [
+    "Challenge one assumption respectfully and observe whether the founder becomes curious or defensive.",
+    "Ask the founder to identify their own contribution to the current constraint.",
+    "Assign one small pre-call action and record speed and quality of completion.",
+    "Ask for exact numbers rather than confidence-based descriptions."
+  ],
+  "decisionPolicy": "Never infer personality from protected traits, wealth, confidence, accent, education, or charisma. Score only documented behavior, business evidence, implementation history, financial fit, and responses to direct but respectful feedback."
+}
