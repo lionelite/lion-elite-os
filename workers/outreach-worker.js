@@ -6,6 +6,7 @@ const { createRedisConnection, getRedis, ensureConnected, healthcheck, withLock,
 const { QUEUE_NAMES, addJob, moveToDeadLetter, queueMetrics } = require('../lib/job-queues');
 const { generateEmailDraft, scoreEmailDraft } = require('../lib/email-generator');
 const { validateProspect, authorizeOutreach } = require('../lib/outreach-validation');
+const { sendEmail } = require('../lib/email-delivery');
 const { log, runtimeMetrics } = require('../lib/observability');
 
 const workers = [];
@@ -69,12 +70,19 @@ startWorker(QUEUE_NAMES.validation, async job => {
   return { validation, authorization };
 });
 
-startWorker(QUEUE_NAMES.dispatch, async job => ({
-  status: 'authorized_for_delivery',
-  authorization: job.data.authorization,
-  recipient: job.data.draft?.recipient || job.data.prospect?.contact?.email,
-  preparedAt: new Date().toISOString()
-}));
+startWorker(QUEUE_NAMES.dispatch, async job => {
+  const context = job.data || {};
+  const delivery = await sendEmail({
+    prospect: context.prospect,
+    draft: context.draft,
+    authorization: context.authorization
+  });
+  return {
+    ...delivery,
+    authorization: context.authorization,
+    quality: context.quality
+  };
+});
 
 async function heartbeat() {
   const redis = await ensureConnected(getRedis());
@@ -97,10 +105,11 @@ const server = http.createServer(async (req, res) => {
   try {
     const redis = await healthcheck();
     const queues = req.url === '/metrics' ? await queueMetrics() : undefined;
-    const ready = !shuttingDown && redis.ok && workers.length > 0;
+    const deliveryConfigured = Boolean(process.env.RESEND_API_KEY && process.env.OUTREACH_FROM_EMAIL && String(process.env.OUTREACH_SEND_ENABLED).toLowerCase() === 'true');
+    const ready = !shuttingDown && redis.ok && workers.length > 0 && deliveryConfigured;
     const statusCode = req.url === '/ready' && !ready ? 503 : 200;
     res.writeHead(statusCode, { 'content-type': 'application/json' });
-    res.end(JSON.stringify({ status: ready ? 'ok' : 'degraded', ready, service: 'lion-elite-outreach-worker', redis, queues, workers: workers.length, ...runtimeMetrics() }));
+    res.end(JSON.stringify({ status: ready ? 'ok' : 'degraded', ready, deliveryConfigured, service: 'lion-elite-outreach-worker', redis, queues, workers: workers.length, ...runtimeMetrics() }));
   } catch (error) {
     res.writeHead(503, { 'content-type': 'application/json' });
     res.end(JSON.stringify({ status: 'degraded', ready: false, error: error.message }));
