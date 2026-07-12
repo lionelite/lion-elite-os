@@ -7,9 +7,11 @@ const { QUEUE_NAMES, addJob, moveToDeadLetter, queueMetrics } = require('../lib/
 const { generateEmailDraft, scoreEmailDraft } = require('../lib/email-generator');
 const { validateProspect, authorizeOutreach } = require('../lib/outreach-validation');
 const { sendEmail } = require('../lib/email-delivery');
+const { PostgresProspectStore } = require('../lib/postgres-prospect-store');
 const { log, runtimeMetrics } = require('../lib/observability');
 
 const workers = [];
+const store = new PostgresProspectStore();
 const concurrency = Number(process.env.WORKER_CONCURRENCY || 5);
 const heartbeatSeconds = Number(process.env.WORKER_HEARTBEAT_SECONDS || 15);
 const queueLagWarning = Number(process.env.QUEUE_LAG_WARNING || 100);
@@ -60,6 +62,29 @@ startWorker(QUEUE_NAMES.email, async job => {
 
 startWorker(QUEUE_NAMES.validation, async job => {
   const context = job.data || {};
+
+  if (job.name === 'schedule-due-followups') {
+    const pending = await store.listQueue({ status: 'pending' });
+    const now = Date.now();
+    const due = pending
+      .filter(item => !item.scheduledAt || new Date(item.scheduledAt).getTime() <= now)
+      .slice(0, Number(context.maxProspects || 100));
+
+    let queued = 0;
+    for (const item of due) {
+      const prospect = await store.get(item.prospectId);
+      if (!prospect || prospect.status === 'suppressed') continue;
+      await addJob('dispatch', 'dispatch-authorized-outreach', {
+        queueId: item.queueId,
+        prospect,
+        draft: { recipient: item.recipient, subject: item.subject, body: item.body },
+        authorization: { authorized: true, idempotencyKey: item.idempotencyKey, validationRunId: item.validationRunId }
+      }, { jobId: item.idempotencyKey });
+      queued += 1;
+    }
+    return { examined: pending.length, due: due.length, queued };
+  }
+
   const validation = validateProspect(context.prospect || {}, context.policy || {});
   if (!validation.passed) {
     const error = new Error('Prospect failed outreach validation.');
@@ -72,16 +97,19 @@ startWorker(QUEUE_NAMES.validation, async job => {
 
 startWorker(QUEUE_NAMES.dispatch, async job => {
   const context = job.data || {};
-  const delivery = await sendEmail({
-    prospect: context.prospect,
-    draft: context.draft,
-    authorization: context.authorization
-  });
-  return {
-    ...delivery,
-    authorization: context.authorization,
-    quality: context.quality
-  };
+  if (context.queueId) await store.markQueue(context.queueId, 'processing', {}, 'outreach-worker');
+  try {
+    const delivery = await sendEmail({ prospect: context.prospect, draft: context.draft, authorization: context.authorization });
+    if (context.queueId) await store.markQueue(context.queueId, 'sent', { providerMessageId: delivery.providerId }, 'outreach-worker');
+    return { ...delivery, authorization: context.authorization, quality: context.quality };
+  } catch (error) {
+    if (context.queueId) {
+      await store.markQueue(context.queueId, 'failed', { lastError: `${error.code || 'DELIVERY_FAILED'}: ${error.message}` }, 'outreach-worker').catch(markError => {
+        log('error', 'queue.mark_failed', { queueId: context.queueId, message: markError.message });
+      });
+    }
+    throw error;
+  }
 });
 
 async function heartbeat() {
