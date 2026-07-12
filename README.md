@@ -65,6 +65,27 @@ Detailed specifications:
 - [`ai-agents/lead-intelligence-engine.md`](ai-agents/lead-intelligence-engine.md)
 - [`docs/outreach-validation-api.md`](docs/outreach-validation-api.md)
 
+## Real Estate Intelligence MVP
+
+The repository now includes an executable property acquisition scoring engine for multifamily, off-market, distressed, pre-foreclosure, and broker-sourced opportunities.
+
+It provides:
+
+- Explainable scoring for seller motivation, equity, economics, physical condition, legal risk, market quality, and data confidence.
+- Deal-killer gates for illegal units, title defects, uninsurability, structural hazards, inspection denial, and suspected financial-document fraud.
+- NOI, cap-rate, DSCR, all-in basis, and discount-to-value calculations.
+- A due-diligence checklist assigning every verification task to the appropriate broker, attorney, inspector, contractor, lender, insurance broker, CPA, or property manager.
+- A five-property comparison demo and automated tests.
+
+Run it with:
+
+```bash
+node real-estate/intelligence/src/demo.js
+node --test real-estate/intelligence/test/scoring.test.js
+```
+
+Documentation: [`real-estate/intelligence/README.md`](real-estate/intelligence/README.md)
+
 ## Mission
 
 Build Lion Elite into a scalable business ecosystem with clear systems, repeatable processes, organized execution, and daily progress tracking.
@@ -129,5 +150,6 @@ Ask ChatGPT to:
 - Connect enrichment evidence to persistent prospect records.
 - Add campaign configuration, suppression storage, and audit events.
 - Build the authorized delivery worker and CRM synchronization.
+- Build the Real Estate Intelligence data-ingestion and five-property comparison dashboard.
 - Systemize Lion Elite Wellness operations.
 - Build repeatable content and sales execution.
