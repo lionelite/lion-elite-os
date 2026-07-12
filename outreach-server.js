@@ -19,13 +19,16 @@ const store = new ProspectStore();
 
 app.use(express.json({ limit: '1mb' }));
 
+// Quality thresholds reduced by 25% from the original production defaults.
+// Hard safety controls remain unchanged: approved sources, suppression, opt-outs,
+// duplicate prevention, authorization, channel rules, and frequency limits.
 const defaultPolicy = Object.freeze({
-  ruleVersion: '1.2.0',
-  minimumIdentityConfidence: 0.8,
-  minimumQualificationScore: 70,
-  minimumPersonalizationScore: 75,
-  minimumEvidenceCoverage: 0.9,
-  minimumEmailConfidence: 80,
+  ruleVersion: '1.2.1',
+  minimumIdentityConfidence: 0.6,
+  minimumQualificationScore: 52.5,
+  minimumPersonalizationScore: 56.25,
+  minimumEvidenceCoverage: 0.675,
+  minimumEmailConfidence: 60,
   maxDataAgeDays: 30,
   maxContactsPerWindow: 3,
   approvedChannels: ['email', 'sms', 'linkedin', 'manual_call'],
