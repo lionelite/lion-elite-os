@@ -11,7 +11,7 @@ const {
   enrichBusinessEmail,
   enrichBatch
 } = require('./lib/email-enrichment');
-const { buildEmail, scoreEmail, DEFAULT_SIGNATURE } = require('./lib/email-generation');
+const { generateEmailDraft, scoreEmailDraft } = require('./lib/email-generator');
 const { ProspectStore, STAGES } = require('./lib/prospect-store');
 
 const app = express();
@@ -22,7 +22,7 @@ app.use(express.json({ limit: '1mb' }));
 
 // Quality thresholds reduced by 25% from the original production defaults.
 // Hard safety controls remain unchanged: approved sources, suppression, opt-outs,
-// duplicate prevention, authorization, channel rules, and frequency limits.
+// duplicate prevention, authorization, channel rules, frequency limits, and daily send quota.
 const defaultPolicy = Object.freeze({
   ruleVersion: '1.3.0',
   minimumIdentityConfidence: 0.6,
@@ -32,6 +32,7 @@ const defaultPolicy = Object.freeze({
   minimumEmailConfidence: 60,
   maxDataAgeDays: 30,
   maxContactsPerWindow: 3,
+  dailyEmailLimit: Number(process.env.DAILY_EMAIL_LIMIT || 100),
   approvedChannels: ['email', 'sms', 'linkedin', 'manual_call'],
   requiredBusinessFields: ['name', 'domain']
 });
@@ -41,17 +42,8 @@ app.get('/health', (req, res) => {
     status: 'ok',
     service: 'lion-elite-outreach-validation',
     ruleVersion: defaultPolicy.ruleVersion,
-    capabilities: [
-      'validation',
-      'authorization',
-      'public_business_email_enrichment',
-      'personalized_email_generation',
-      'email_quality_scoring',
-      'prospect_store',
-      'outreach_queue',
-      'audit_timeline'
-    ],
-    defaultSignature: DEFAULT_SIGNATURE,
+    capabilities: ['validation', 'authorization', 'public_business_email_enrichment', 'email_generation', 'prospect_store', 'outreach_queue', 'audit_timeline', 'daily_email_quota'],
+    emailQuota: store.getDailyEmailQuota(),
     timestamp: new Date().toISOString()
   });
 });
@@ -85,20 +77,18 @@ app.post('/api/outreach/authorize', (req, res) => {
 
 app.post('/api/outreach/email/generate', (req, res) => {
   const policy = { ...defaultPolicy, ...(req.body?.policy || {}) };
-  try {
-    const draft = buildEmail(req.body?.context || req.body || {}, {
-      minimumScore: policy.minimumPersonalizationScore,
-      signature: req.body?.signature
-    });
-    res.status(draft.approved ? 200 : 422).json({ draft });
-  } catch (error) {
-    res.status(400).json({ error: 'EMAIL_GENERATION_FAILED', message: error.message });
-  }
+  const draft = generateEmailDraft(req.body || {});
+  const quality = scoreEmailDraft(draft, req.body || {});
+  const approved = quality.score >= policy.minimumPersonalizationScore && quality.prohibitedClaims.length === 0;
+  res.status(approved ? 200 : 422).json({ draft, quality, approved });
 });
 
 app.post('/api/outreach/email/score', (req, res) => {
-  if (!req.body?.draft) return res.status(400).json({ error: 'MISSING_DRAFT' });
-  res.json({ quality: scoreEmail(req.body.draft, req.body?.context || {}) });
+  res.json({ quality: scoreEmailDraft(req.body?.draft || {}, req.body?.context || {}) });
+});
+
+app.get('/api/outreach/quota', (req, res) => {
+  res.json({ quota: store.getDailyEmailQuota(req.query?.day) });
 });
 
 app.post('/api/enrichment/email', async (req, res) => {
@@ -170,9 +160,13 @@ app.post('/api/prospects/:id/queue', (req, res) => {
 app.get('/api/outreach/queue', (req, res) => res.json({ queue: store.listQueue(req.query) }));
 
 app.patch('/api/outreach/queue/:id', (req, res) => {
-  const item = store.markQueue(req.params.id, req.body?.status, req.body?.metadata, req.get('x-actor-id') || 'api');
-  if (!item) return res.status(404).json({ error: 'QUEUE_ITEM_NOT_FOUND' });
-  res.json({ item });
+  try {
+    const item = store.markQueue(req.params.id, req.body?.status, req.body?.metadata, req.get('x-actor-id') || 'api');
+    if (!item) return res.status(404).json({ error: 'QUEUE_ITEM_NOT_FOUND' });
+    res.json({ item, quota: store.getDailyEmailQuota() });
+  } catch (error) {
+    res.status(429).json({ error: error.code || 'QUEUE_UPDATE_FAILED', message: error.message, quota: error.quota || store.getDailyEmailQuota() });
+  }
 });
 
 app.get('/api/metrics/pipeline', (req, res) => res.json({ metrics: store.metrics() }));
