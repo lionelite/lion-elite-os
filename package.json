@@ -1,7 +1,7 @@
 {
   "name": "lion-elite-os",
-  "version": "1.1.0",
-  "description": "Lion Elite OS automation dashboard and validated outreach platform.",
+  "version": "1.2.0",
+  "description": "Lion Elite OS automation dashboard, public business email enrichment, and validated outreach platform.",
   "main": "server.js",
   "type": "commonjs",
   "scripts": {
