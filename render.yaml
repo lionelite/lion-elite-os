@@ -89,3 +89,58 @@ services:
         value: 5000
       - key: JOB_LOCK_TTL_MS
         value: 120000
+
+  - type: cron
+    name: lion-elite-business-discovery
+    runtime: node
+    schedule: "0 */4 * * *"
+    buildCommand: npm ci
+    startCommand: node scripts/cron-scheduler.js discovery
+    envVars: &cronEnv
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: lion-elite-os-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          type: keyvalue
+          name: lion-elite-os-redis
+          property: connectionString
+      - key: JOB_ATTEMPTS
+        value: 4
+      - key: JOB_BACKOFF_MS
+        value: 5000
+
+  - type: cron
+    name: lion-elite-stale-data-refresh
+    runtime: node
+    schedule: "15 */6 * * *"
+    buildCommand: npm ci
+    startCommand: node scripts/cron-scheduler.js staleData
+    envVars: *cronEnv
+
+  - type: cron
+    name: lion-elite-followup-scheduler
+    runtime: node
+    schedule: "0 * * * *"
+    buildCommand: npm ci
+    startCommand: node scripts/cron-scheduler.js followups
+    envVars: *cronEnv
+
+  - type: cron
+    name: lion-elite-daily-analytics
+    runtime: node
+    schedule: "0 12 * * *"
+    buildCommand: npm ci
+    startCommand: node scripts/cron-scheduler.js analytics
+    envVars: *cronEnv
+
+  - type: cron
+    name: lion-elite-weekly-maintenance
+    runtime: node
+    schedule: "0 7 * * 0"
+    buildCommand: npm ci
+    startCommand: node scripts/cron-scheduler.js cleanup
+    envVars: *cronEnv
