@@ -1,7 +1,9 @@
 'use strict';
 
 const express = require('express');
-const { healthcheck } = require('./lib/database');
+const { healthcheck: databaseHealthcheck } = require('./lib/database');
+const { healthcheck: redisHealthcheck } = require('./lib/redis');
+const { addJob, queueMetrics } = require('./lib/job-queues');
 const { createBusinessFingerprint, scoreQualification, validateProspect, authorizeOutreach } = require('./lib/outreach-validation');
 const { enrichBusinessEmail, enrichBatch } = require('./lib/email-enrichment');
 const { generateEmailDraft, scoreEmailDraft } = require('./lib/email-generator');
@@ -15,7 +17,7 @@ const asyncRoute = handler => (req, res, next) => Promise.resolve(handler(req, r
 app.use(express.json({ limit: '1mb' }));
 
 const defaultPolicy = Object.freeze({
-  ruleVersion: '1.4.0',
+  ruleVersion: '1.5.0',
   minimumIdentityConfidence: 0.6,
   minimumQualificationScore: 52.5,
   minimumPersonalizationScore: 56.25,
@@ -29,14 +31,16 @@ const defaultPolicy = Object.freeze({
 });
 
 app.get('/health', asyncRoute(async (req, res) => {
-  const database = await healthcheck();
+  const [database, redis] = await Promise.all([databaseHealthcheck(), redisHealthcheck()]);
   res.json({
     status: 'ok',
     service: 'lion-elite-outreach',
     store: 'postgresql',
+    queue: 'redis-bullmq',
     ruleVersion: defaultPolicy.ruleVersion,
-    capabilities: ['validation','authorization','public_business_email_enrichment','email_generation','postgres_prospect_store','outreach_queue','audit_timeline','daily_email_quota'],
+    capabilities: ['validation','authorization','public_business_email_enrichment','email_generation','postgres_prospect_store','redis_job_queues','distributed_locks','caching','dead_letter_queue','outreach_queue','audit_timeline','daily_email_quota'],
     database,
+    redis,
     emailQuota: await store.getDailyEmailQuota(),
     timestamp: new Date().toISOString()
   });
@@ -61,6 +65,27 @@ app.post('/api/outreach/email/generate', (req, res) => {
 });
 app.post('/api/outreach/email/score', (req, res) => res.json({ quality: scoreEmailDraft(req.body?.draft || {}, req.body?.context || {}) }));
 app.get('/api/outreach/quota', asyncRoute(async (req, res) => res.json({ quota: await store.getDailyEmailQuota(req.query?.day) })));
+
+app.post('/api/workflows/outreach', asyncRoute(async (req, res) => {
+  const prospect = req.body?.prospect;
+  if (!prospect) return res.status(400).json({ error: 'MISSING_PROSPECT' });
+  const prospectId = prospect.prospectId || createBusinessFingerprint(prospect.business || prospect);
+  const job = await addJob('email', 'generate-personalized-email', {
+    ...req.body,
+    prospect,
+    policy: { ...defaultPolicy, ...(req.body?.policy || {}) }
+  }, {
+    jobId: `email:${prospectId}:${req.body?.campaignId || prospect.campaignId || 'default'}`
+  });
+  res.status(202).json({ accepted: true, queue: 'email', jobId: job.id, state: await job.getState() });
+}));
+
+app.post('/api/jobs/:queue', asyncRoute(async (req, res) => {
+  const job = await addJob(req.params.queue, req.body?.name || 'manual-job', req.body?.data || {}, req.body?.options || {});
+  res.status(202).json({ accepted: true, queue: req.params.queue, jobId: job.id, state: await job.getState() });
+}));
+
+app.get('/api/metrics/queues', asyncRoute(async (req, res) => res.json({ queues: await queueMetrics() })));
 
 app.post('/api/enrichment/email', asyncRoute(async (req, res) => {
   const policy = { ...defaultPolicy, ...(req.body?.policy || {}) };
@@ -112,5 +137,5 @@ app.use((error, req, res, next) => {
   res.status(status).json({ error: error.code || 'INTERNAL_ERROR', message: error.message || 'The outreach service could not complete the request.' });
 });
 
-app.listen(port, () => console.log(`Lion Elite PostgreSQL outreach service running on port ${port}`));
+app.listen(port, () => console.log(`Lion Elite PostgreSQL and Redis outreach service running on port ${port}`));
 module.exports = { app, defaultPolicy, store };

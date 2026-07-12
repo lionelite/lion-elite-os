@@ -5,6 +5,12 @@ databases:
     plan: basic-256mb
 
 services:
+  - type: keyvalue
+    name: lion-elite-os-redis
+    plan: starter
+    ipAllowList: []
+    maxmemoryPolicy: noeviction
+
   - type: web
     name: lion-elite-os
     runtime: node
@@ -40,7 +46,46 @@ services:
         fromDatabase:
           name: lion-elite-os-db
           property: connectionString
+      - key: REDIS_URL
+        fromService:
+          type: keyvalue
+          name: lion-elite-os-redis
+          property: connectionString
       - key: DAILY_EMAIL_LIMIT
         value: 100
       - key: PG_POOL_MAX
         value: 10
+      - key: JOB_ATTEMPTS
+        value: 4
+      - key: JOB_BACKOFF_MS
+        value: 5000
+
+  - type: worker
+    name: lion-elite-outreach-worker
+    runtime: node
+    plan: starter
+    buildCommand: npm ci && npm run db:migrate
+    startCommand: npm run worker:outreach
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: lion-elite-os-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          type: keyvalue
+          name: lion-elite-os-redis
+          property: connectionString
+      - key: DAILY_EMAIL_LIMIT
+        value: 100
+      - key: WORKER_CONCURRENCY
+        value: 5
+      - key: JOB_ATTEMPTS
+        value: 4
+      - key: JOB_BACKOFF_MS
+        value: 5000
+      - key: JOB_LOCK_TTL_MS
+        value: 120000
