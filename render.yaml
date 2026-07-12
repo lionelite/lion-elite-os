@@ -1,0 +1,26 @@
+databases:
+  - name: lion-elite-os-db
+    databaseName: lion_elite_os
+    user: lion_elite_os
+    plan: basic-256mb
+
+services:
+  - type: web
+    name: lion-elite-os
+    runtime: node
+    plan: starter
+    buildCommand: npm ci && npm run db:migrate
+    startCommand: npm start
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: lion-elite-os-db
+          property: connectionString
+      - key: DAILY_EMAIL_LIMIT
+        value: 100
+      - key: PG_POOL_MAX
+        value: 10
