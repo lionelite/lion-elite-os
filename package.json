@@ -1,12 +1,14 @@
 {
   "name": "lion-elite-os",
-  "version": "1.0.0",
-  "description": "Lion Elite OS automation dashboard for business operations, marketing, sales, and AI agent workflows.",
+  "version": "1.1.0",
+  "description": "Lion Elite OS automation dashboard and validated outreach platform.",
   "main": "server.js",
   "type": "commonjs",
   "scripts": {
     "start": "node server.js",
-    "dev": "node server.js"
+    "dev": "node server.js",
+    "outreach": "node outreach-server.js",
+    "test": "node --test test/*.test.js"
   },
   "dependencies": {
     "express": "^4.19.2"
