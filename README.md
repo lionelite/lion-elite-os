@@ -6,6 +6,8 @@ This repository is the operating system for Lion Elite Wellness, Lion Elite Beau
 
 Build a continuous, human-supervised lead generation and sales intelligence system using lawful, publicly available professional and business information.
 
+The system now includes an executable outreach-validation and public business email-enrichment MVP.
+
 The system must:
 
 1. Discover qualified businesses continuously.
@@ -18,6 +20,32 @@ The system must:
 8. Keep the CRM current through outcome logging, ownership rules, lifecycle stages, follow-up tasks, and stale-record refreshes.
 9. Learn from responses, meetings, conversions, retention, and losses to improve qualification and scoring.
 10. Respect privacy, website terms, robots directives, applicable law, suppression lists, consent requirements, and channel-specific outreach rules.
+
+### Executable services
+
+Run the existing command center:
+
+```bash
+npm start
+```
+
+Run the outreach-validation and email-enrichment service:
+
+```bash
+npm run outreach
+```
+
+The outreach service can:
+
+- Normalize and fingerprint business identities.
+- Calculate explainable qualification scores.
+- Enforce sixteen fail-closed pre-send checks.
+- Inspect official business websites and same-domain contact pages for public business emails.
+- Record the exact source URL, capture time, domain match, inbox type, and confidence.
+- Process enrichment batches of up to 25 businesses.
+- Generate an authorization and idempotency key only after all required validation checks pass.
+
+It does not guess email addresses, use people-search data, or send messages directly.
 
 Primary success metrics:
 
@@ -32,7 +60,10 @@ Primary success metrics:
 - Data freshness
 - Human approval and edit rate for AI drafts
 
-Detailed specification: [`ai-agents/lead-intelligence-engine.md`](ai-agents/lead-intelligence-engine.md)
+Detailed specifications:
+
+- [`ai-agents/lead-intelligence-engine.md`](ai-agents/lead-intelligence-engine.md)
+- [`docs/outreach-validation-api.md`](docs/outreach-validation-api.md)
 
 ## Mission
 
@@ -68,6 +99,8 @@ Scripts, objections, follow-ups, client pipelines, and closing frameworks.
 | `operations/` | Daily tasks, weekly reviews, KPIs, hiring, accountability |
 | `templates/` | Reusable issue, SOP, campaign, and content templates |
 | `ai-agents/` | Role prompts for marketing, sales, operations, research, finance, and lead intelligence |
+| `lib/` | Executable validation and enrichment modules |
+| `test/` | Automated safety and behavior tests |
 
 ## Daily Workflow
 
@@ -90,18 +123,11 @@ Ask ChatGPT to:
 - Turn scattered ideas into execution plans.
 - Build templates for the team.
 
-Example prompts:
-
-- `Create an Instagram campaign for KLOW80 and add it to GitHub.`
-- `Turn Issue #3 into a full SOP.`
-- `Create 10 follow-up messages for warm leads.`
-- `Build a weekly KPI dashboard for Lion Elite Wellness.`
-- `Create a checklist for fulfilling customer orders.`
-
 ## Current Focus
 
-- Build the AI Lead Intelligence Engine as the top priority.
+- Deploy and test the AI Lead Intelligence Engine.
+- Connect enrichment evidence to persistent prospect records.
+- Add campaign configuration, suppression storage, and audit events.
+- Build the authorized delivery worker and CRM synchronization.
 - Systemize Lion Elite Wellness operations.
 - Build repeatable content and sales execution.
-- Clean up SOPs and product documentation.
-- Create a daily task flow that can scale with team members and AI support.
