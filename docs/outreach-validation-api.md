@@ -1,6 +1,6 @@
-# Outreach Validation and Email Enrichment API
+# Outreach Validation API
 
-Lion Elite OS includes a standalone fail-closed service for prospect qualification, public business email enrichment, and outreach authorization.
+Lion Elite OS includes a fail-closed validation, enrichment, personalization, prospect pipeline, and outreach authorization service.
 
 ## Start
 
@@ -11,7 +11,62 @@ npm run outreach
 
 Default port: `3001`. Override with `OUTREACH_PORT`.
 
-## Validation Endpoints
+## Email Generation Agent
+
+### `POST /api/outreach/email/generate`
+
+Generates a personalized Lion Elite Beauty partnership email using structured business context.
+
+Recommended request:
+
+```json
+{
+  "context": {
+    "businessName": "Example Fitness",
+    "contactName": "Jordan",
+    "category": "Personal training studio",
+    "location": "Miami, FL",
+    "partnershipAngle": "referral and affiliate partnership",
+    "goal": "helping members stay consistent beyond their initial program",
+    "specificOpportunity": "give members a structured accountability option between sessions",
+    "verifiedFacts": [
+      {
+        "status": "verified",
+        "text": "Example Fitness offers one-on-one personal training"
+      }
+    ]
+  }
+}
+```
+
+The generator returns:
+
+- Subject line
+- Personalized email body
+- Selected partnership offer
+- Personalization inputs used
+- Quality score and dimension breakdown
+- Approval status
+- Required Alexander Ringfield signature with `216-326-0050`
+
+The agent separates verified facts from inferred goals, does not invent private problems, and blocks prohibited guarantees or treatment claims.
+
+### `POST /api/outreach/email/score`
+
+Scores an existing draft for:
+
+- Specificity
+- Relevance
+- Value clarity
+- Rapport
+- Call-to-action quality
+- Readability
+- Signature completeness
+- Evidence usage
+
+A draft below the configured personalization threshold or containing a blocker is not approved.
+
+## Other Endpoints
 
 ### `POST /api/outreach/fingerprint`
 
@@ -21,21 +76,6 @@ Creates a deterministic business fingerprint from normalized domain, phone, comp
 
 Calculates an explainable weighted qualification score.
 
-```json
-{
-  "signals": {
-    "overallFit": 0.9,
-    "buyingPotential": 0.8,
-    "timingIndicators": 0.6,
-    "strategicValue": 0.9,
-    "dataConfidence": 1,
-    "personalizationReadiness": 0.9
-  }
-}
-```
-
-All signal values are clamped between `0` and `1`.
-
 ### `POST /api/outreach/validate`
 
 Evaluates every required checkpoint. A failed validation returns HTTP `422`.
@@ -44,65 +84,29 @@ Evaluates every required checkpoint. A failed validation returns HTTP `422`.
 
 Performs the final pre-send validation. Authorization succeeds only when every required checkpoint passes. Successful responses contain a deterministic idempotency key that must be stored with the outbound event and protected by a unique database constraint.
 
-## Email Enrichment Endpoints
-
 ### `POST /api/enrichment/email`
 
-Checks an official business website and a limited set of same-domain contact, about, team, staff, and partnership pages for a publicly displayed business email.
-
-```json
-{
-  "business": {
-    "name": "Example Fitness",
-    "website": "https://example.com"
-  },
-  "policy": {
-    "minimumEmailConfidence": 80
-  },
-  "maxPages": 6
-}
-```
-
-A verified result includes:
-
-- Normalized business email
-- Confidence score
-- Exact source URL
-- Evidence type (`mailto` or visible page text)
-- Capture timestamp
-- Domain-match status
-- Role-inbox status
-
-The agent does not:
-
-- Guess email formats
-- Generate addresses from employee names
-- Search people-finder or household-data sites
-- Accept third-party mailbox domains as verified business addresses
-- Treat a contact form as an email address
-- Release a prospect without evidence
+Looks for publicly displayed business email addresses on the official business website and same-domain pages.
 
 ### `POST /api/enrichment/email/batch`
 
-Processes up to 25 official business websites sequentially and reports verified and blocked records.
+Runs email enrichment for up to 25 businesses.
 
-```json
-{
-  "businesses": [
-    { "name": "Business One", "website": "https://one.example" },
-    { "name": "Business Two", "website": "https://two.example" }
-  ]
-}
+### Prospect Pipeline
+
+```text
+POST  /api/prospects
+GET   /api/prospects
+GET   /api/prospects/:id
+PATCH /api/prospects/:id
+POST  /api/prospects/:id/transition
+POST  /api/prospects/:id/queue
+GET   /api/outreach/queue
+PATCH /api/outreach/queue/:id
+GET   /api/metrics/pipeline
 ```
 
-Blocked reasons include:
-
-- `MISSING_OFFICIAL_WEBSITE`
-- `OFFICIAL_WEBSITE_UNAVAILABLE`
-- `NO_VERIFIED_PUBLIC_BUSINESS_EMAIL`
-- `ENRICHMENT_ERROR`
-
-## Required Outreach Checks
+## Required Checks
 
 1. Approved source
 2. Verified identity
@@ -123,23 +127,9 @@ Blocked reasons include:
 
 Missing and unknown values fail closed.
 
-## Release Sequence
-
-```text
-Official website
-→ Public email enrichment
-→ Evidence and confidence threshold
-→ CRM synchronization
-→ Qualification
-→ Personalization
-→ Final validation
-→ Outreach authorization
-→ Delivery worker
-```
-
 ## Important Deployment Rule
 
-This service enriches and authorizes outreach; it does not itself send email, SMS, or social messages. The delivery worker must require a valid authorization result, store the validation run ID, verify suppression again immediately before delivery, and enforce uniqueness on the returned idempotency key before calling any communication provider.
+This service generates and authorizes outreach actions; it does not itself send email, SMS, or social messages. The delivery worker must require a valid authorization result, store the validation run ID, and enforce uniqueness on the returned idempotency key before calling any communication provider.
 
 ## Run Tests
 
@@ -147,4 +137,4 @@ This service enriches and authorizes outreach; it does not itself send email, SM
 npm test
 ```
 
-Tests cover normalization, email extraction, same-domain enforcement, public-source evidence, blocked enrichment, deduplication fingerprints, explainable scoring, stale records, opt-outs, missing CRM synchronization, fail-closed behavior, and idempotency.
+Tests cover normalization, deduplication, scoring, stale records, opt-outs, CRM synchronization, email enrichment, personalized email generation, signature enforcement, prohibited claims, pipeline persistence, queue controls, fail-closed behavior, and idempotency.
