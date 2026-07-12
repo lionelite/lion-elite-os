@@ -11,6 +11,7 @@ const {
   enrichBusinessEmail,
   enrichBatch
 } = require('./lib/email-enrichment');
+const { buildEmail, scoreEmail, DEFAULT_SIGNATURE } = require('./lib/email-generation');
 const { ProspectStore, STAGES } = require('./lib/prospect-store');
 
 const app = express();
@@ -23,7 +24,7 @@ app.use(express.json({ limit: '1mb' }));
 // Hard safety controls remain unchanged: approved sources, suppression, opt-outs,
 // duplicate prevention, authorization, channel rules, and frequency limits.
 const defaultPolicy = Object.freeze({
-  ruleVersion: '1.2.1',
+  ruleVersion: '1.3.0',
   minimumIdentityConfidence: 0.6,
   minimumQualificationScore: 52.5,
   minimumPersonalizationScore: 56.25,
@@ -40,7 +41,17 @@ app.get('/health', (req, res) => {
     status: 'ok',
     service: 'lion-elite-outreach-validation',
     ruleVersion: defaultPolicy.ruleVersion,
-    capabilities: ['validation', 'authorization', 'public_business_email_enrichment', 'prospect_store', 'outreach_queue', 'audit_timeline'],
+    capabilities: [
+      'validation',
+      'authorization',
+      'public_business_email_enrichment',
+      'personalized_email_generation',
+      'email_quality_scoring',
+      'prospect_store',
+      'outreach_queue',
+      'audit_timeline'
+    ],
+    defaultSignature: DEFAULT_SIGNATURE,
     timestamp: new Date().toISOString()
   });
 });
@@ -70,6 +81,24 @@ app.post('/api/outreach/authorize', (req, res) => {
   } catch (error) {
     res.status(422).json({ error: error.code || 'OUTREACH_BLOCKED', message: error.message, validation: error.validation });
   }
+});
+
+app.post('/api/outreach/email/generate', (req, res) => {
+  const policy = { ...defaultPolicy, ...(req.body?.policy || {}) };
+  try {
+    const draft = buildEmail(req.body?.context || req.body || {}, {
+      minimumScore: policy.minimumPersonalizationScore,
+      signature: req.body?.signature
+    });
+    res.status(draft.approved ? 200 : 422).json({ draft });
+  } catch (error) {
+    res.status(400).json({ error: 'EMAIL_GENERATION_FAILED', message: error.message });
+  }
+});
+
+app.post('/api/outreach/email/score', (req, res) => {
+  if (!req.body?.draft) return res.status(400).json({ error: 'MISSING_DRAFT' });
+  res.json({ quality: scoreEmail(req.body.draft, req.body?.context || {}) });
 });
 
 app.post('/api/enrichment/email', async (req, res) => {
