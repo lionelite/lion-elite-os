@@ -14,6 +14,15 @@ function store() {
 
 const business = { name: 'Elite Fitness Lab', domain: 'elitefitness.example', phone: '216-555-0100', region: 'OH' };
 
+function queuedEmail(db, suffix) {
+  const { prospect } = db.create({ business: { ...business, name: `${business.name} ${suffix}`, domain: `${suffix}.elitefitness.example` } });
+  return db.enqueue(
+    prospect.prospectId,
+    { authorized: true, idempotencyKey: `idem_${suffix}`, validationRunId: `val_${suffix}` },
+    { channel: 'email', recipient: `info@${suffix}.elitefitness.example`, subject: 'Partnership', body: 'Hello', messageVersion: 'v1' }
+  ).item;
+}
+
 test('creates a durable prospect and blocks duplicates', () => {
   const db = store();
   const first = db.create({ business, campaignId: 'campaign_1' });
@@ -60,4 +69,32 @@ test('suppressed prospects cannot be queued', () => {
     { authorized: true, idempotencyKey: 'idem_456' },
     { channel: 'email', recipient: 'info@elitefitness.example', body: 'Hello' }
   ), /suppressed/i);
+});
+
+test('enforces the daily email quota and exposes remaining capacity', () => {
+  const db = store();
+  db.dailyEmailLimit = 2;
+  const one = queuedEmail(db, 'one');
+  const two = queuedEmail(db, 'two');
+  const three = queuedEmail(db, 'three');
+
+  db.markQueue(one.queueId, 'sent');
+  db.markQueue(two.queueId, 'sent');
+
+  const quota = db.getDailyEmailQuota();
+  assert.equal(quota.limit, 2);
+  assert.equal(quota.sent, 2);
+  assert.equal(quota.remaining, 0);
+  assert.equal(quota.exhausted, true);
+  assert.throws(() => db.markQueue(three.queueId, 'processing'), error => error.code === 'DAILY_EMAIL_QUOTA_REACHED');
+  assert.throws(() => db.markQueue(three.queueId, 'sent'), error => error.code === 'DAILY_EMAIL_QUOTA_REACHED');
+});
+
+test('does not double-count a queue item marked sent twice', () => {
+  const db = store();
+  db.dailyEmailLimit = 100;
+  const item = queuedEmail(db, 'single');
+  db.markQueue(item.queueId, 'sent');
+  db.markQueue(item.queueId, 'sent');
+  assert.equal(db.getDailyEmailQuota().sent, 1);
 });
