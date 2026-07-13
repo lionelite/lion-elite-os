@@ -53,6 +53,7 @@ jobs:
           import json
           import os
           import pathlib
+          import textwrap
           import urllib.request
           from datetime import datetime, timezone
 
@@ -65,53 +66,55 @@ jobs:
           api_key = os.environ.get('OPENAI_API_KEY', '').strip()
           model = os.environ.get('OPENAI_MODEL', 'gpt-4o-mini')
 
-          fallback = f"""# Daily Agent Automation — {date}
+          fallback = textwrap.dedent(f"""
+              # Daily Agent Automation — {date}
 
-Generated: {stamp}
-Mode: fallback-no-ai
-Brand: {brand}
-Topic: {topic}
+              Generated: {stamp}
+              Mode: fallback-no-ai
+              Brand: {brand}
+              Topic: {topic}
 
-## Task
-{task}
+              ## Task
+              {task}
 
-## CEO Execution Priority
-Complete the highest-impact work first: revenue, follow-up, content, and operational cleanup.
+              ## CEO Execution Priority
+              Complete the highest-impact work first: revenue, follow-up, content, and operational cleanup.
 
-## Agent Queue
-- CEO Execution Agent: choose today's highest-impact money move.
-- Content Production Agent: create ready-to-post content for the correct brand lane.
-- Lion Elite Wellness Research Agent: research-only education; no human-use claims, dosing, or treatment claims.
-- Lion Elite Beauty Coaching Agent: high-ticket coaching, transformation, affiliate, and influencer content.
-- AlexTheLionLifts Personal Brand Agent: authority, discipline, lifting, leadership, faith, and coaching credibility.
-- Sales Follow-Up Agent: short follow-ups that build value and end with a question.
-- Funnel and Website Agent: improve CTAs, lead capture, and conversion copy.
-- Operations Agent: SOPs, checklists, triggers, and quality-control steps.
-- GitHub Task Agent: convert needs into issues and implementation tasks.
-- Money and Growth Agent: identify today's offer, lead source, conversion action, and KPI.
+              ## Agent Queue
+              - CEO Execution Agent: choose today's highest-impact money move.
+              - Content Production Agent: create ready-to-post content for the correct brand lane.
+              - Lion Elite Wellness Research Agent: research-only education; no human-use claims, dosing, or treatment claims.
+              - Lion Elite Beauty Coaching Agent: high-ticket coaching, transformation, affiliate, and influencer content.
+              - AlexTheLionLifts Personal Brand Agent: authority, discipline, lifting, leadership, faith, and coaching credibility.
+              - Sales Follow-Up Agent: short follow-ups that build value and end with a question.
+              - Funnel and Website Agent: improve CTAs, lead capture, and conversion copy.
+              - Operations Agent: SOPs, checklists, triggers, and quality-control steps.
+              - GitHub Task Agent: convert needs into issues and implementation tasks.
+              - Money and Growth Agent: identify today's offer, lead source, conversion action, and KPI.
 
-## Next Action
-Open the highest-priority queue and execute one revenue-producing task.
-"""
+              ## Next Action
+              Open the highest-priority queue and execute one revenue-producing task.
+              """).strip() + "\n"
 
           system_prompt = """You are the Lion Elite OS daily execution engine. Produce finished work, not advice. Separate outputs by brand lane. Follow these rules: Lion Elite Wellness is research-only education with no human-use claims, no dosing, no treatment claims, and no transformation promises. Lion Elite Beauty is coaching, transformation, high-ticket sales, affiliates, and influencers. AlexTheLionLifts is personal authority, lifting, discipline, faith, business, leadership, and coaching credibility. Keep outputs direct and ready to use."""
 
-          user_prompt = f"""Create today's execution brief.
+          user_prompt = textwrap.dedent(f"""
+              Create today's execution brief.
 
-Brand: {brand}
-Topic: {topic}
-Task: {task}
+              Brand: {brand}
+              Topic: {topic}
+              Task: {task}
 
-Include:
-1. CEO execution summary
-2. top 3 money moves
-3. ready-to-post content asset
-4. sales follow-up script
-5. website/funnel action
-6. operations action
-7. GitHub task
-8. next action
-"""
+              Include:
+              1. CEO execution summary
+              2. top 3 money moves
+              3. ready-to-post content asset
+              4. sales follow-up script
+              5. website/funnel action
+              6. operations action
+              7. GitHub task
+              8. next action
+              """).strip() + "\n"
 
           output = fallback
           if api_key:
