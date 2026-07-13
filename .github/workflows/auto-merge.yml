@@ -1,0 +1,44 @@
+name: Auto Merge claude-automation
+
+# Opens (or updates) a PR from claude-automation into main and enables
+# GitHub's native auto-merge. GitHub only completes the merge once every
+# required status check on main (see branch protection: the "test" check
+# from ci-render.yml) has passed on that PR's head commit. Failing checks
+# block the merge with no bypass.
+
+on:
+  push:
+    branches: [claude-automation]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  open-and-automerge:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Enable auto-merge on the open claude-automation PR
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+
+          # Repo policy intentionally leaves "Allow GitHub Actions to create
+          # and approve pull requests" disabled (security control), so this
+          # job never creates a PR itself - it only enables auto-merge on
+          # one that a human or an authenticated Claude session already
+          # opened from claude-automation into main.
+          PR_NUMBER=$(gh pr list --head claude-automation --base main --state open --json number --jq '.[0].number // empty')
+
+          if [ -z "$PR_NUMBER" ]; then
+            echo "No open PR from claude-automation into main yet - nothing to do."
+            echo "Open one with: gh pr create --head claude-automation --base main"
+            exit 0
+          fi
+
+          echo "Enabling auto-merge for PR #$PR_NUMBER"
+          gh pr merge "$PR_NUMBER" --squash --auto
