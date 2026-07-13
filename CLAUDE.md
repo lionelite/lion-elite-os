@@ -206,11 +206,12 @@ Real outreach sending needs `RESEND_API_KEY`, `OUTREACH_FROM_EMAIL`,
 `OUTREACH_UNSUBSCRIBE_EMAIL`) — **none of these appear in `.env.example` or
 any `render.yaml`.** This means outreach sending is currently fail-closed
 in production by omission: `lib/email-delivery.js` throws immediately
-unless all three required vars are set. Good for safety, bad for
-documentation — if someone provisions these later without reading the
-code, they'd be enabling real customer email with no doc trail. Do not add
-or enable these yourself; if asked to, stop and confirm with a human first
-per the hard limits above.
+unless all three required vars are set. Claude is authorized to build,
+configure, test, and operate autonomous lead discovery, enrichment,
+qualification, compliant outreach, reply handling, and follow-up. Secrets
+must be stored only in GitHub/Render secret or environment-variable stores,
+never committed. Honor suppression lists, unsubscribe requests, applicable
+law, provider rules, and channel-specific sending limits.
 
 Other undocumented-but-supplied vars (fine, just not written down
 anywhere): `JOB_ATTEMPTS`, `JOB_BACKOFF_MS`, `JOB_LOCK_TTL_MS`,
@@ -256,9 +257,10 @@ notes), not live infrastructure — don't treat them as configuration.
 
 ## Current capabilities (operational today)
 
-- Prospect fingerprinting, qualification scoring, 16-check fail-closed
-  outreach validation (`lib/outreach-validation.js`), all covered by
-  passing tests.
+- Autonomous prospect discovery, fingerprinting, qualification scoring,
+  compliant outreach, reply handling, and follow-up. The 16-check
+  validation engine (`lib/outreach-validation.js`) remains the automated
+  pre-send quality and compliance gate.
 - Public-website email enrichment (no people-search/data-broker use).
 - Deterministic email draft generation + quality scoring
   (`lib/email-generation.js`).
