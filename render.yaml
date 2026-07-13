@@ -15,7 +15,7 @@ services:
     name: lion-elite-os
     runtime: node
     plan: starter
-    buildCommand: npm ci && npm run db:migrate
+    buildCommand: npm install --no-audit --no-fund && npm run db:migrate
     startCommand: npm start
     healthCheckPath: /health
     autoDeploy: true
@@ -35,7 +35,7 @@ services:
     name: lion-elite-outreach-api
     runtime: node
     plan: starter
-    buildCommand: npm ci && npm run db:migrate
+    buildCommand: npm install --no-audit --no-fund && npm run db:migrate
     startCommand: node outreach-server-postgres.js
     healthCheckPath: /health
     autoDeploy: true
@@ -64,7 +64,7 @@ services:
     name: lion-elite-outreach-worker
     runtime: node
     plan: starter
-    buildCommand: npm ci && npm run db:migrate
+    buildCommand: npm install --no-audit --no-fund && npm run db:migrate
     startCommand: npm run worker:outreach
     autoDeploy: true
     envVars:
@@ -100,7 +100,7 @@ services:
     name: lion-elite-operations-monitor
     runtime: node
     schedule: "*/5 * * * *"
-    buildCommand: npm ci
+    buildCommand: npm install --no-audit --no-fund
     startCommand: node scripts/operations-monitor.js
     envVars: &monitorEnv
       - key: NODE_ENV
@@ -127,7 +127,7 @@ services:
     name: lion-elite-business-discovery
     runtime: node
     schedule: "0 */4 * * *"
-    buildCommand: npm ci
+    buildCommand: npm install --no-audit --no-fund
     startCommand: node scripts/cron-scheduler.js discovery
     envVars: &cronEnv
       - key: NODE_ENV
@@ -150,7 +150,7 @@ services:
     name: lion-elite-stale-data-refresh
     runtime: node
     schedule: "15 */6 * * *"
-    buildCommand: npm ci
+    buildCommand: npm install --no-audit --no-fund
     startCommand: node scripts/cron-scheduler.js staleData
     envVars: *cronEnv
 
@@ -158,7 +158,7 @@ services:
     name: lion-elite-followup-scheduler
     runtime: node
     schedule: "0 * * * *"
-    buildCommand: npm ci
+    buildCommand: npm install --no-audit --no-fund
     startCommand: node scripts/cron-scheduler.js followups
     envVars: *cronEnv
 
@@ -166,7 +166,7 @@ services:
     name: lion-elite-daily-analytics
     runtime: node
     schedule: "0 12 * * *"
-    buildCommand: npm ci
+    buildCommand: npm install --no-audit --no-fund
     startCommand: node scripts/cron-scheduler.js analytics
     envVars: *cronEnv
 
@@ -174,6 +174,6 @@ services:
     name: lion-elite-weekly-maintenance
     runtime: node
     schedule: "0 7 * * 0"
-    buildCommand: npm ci
+    buildCommand: npm install --no-audit --no-fund
     startCommand: node scripts/cron-scheduler.js cleanup
     envVars: *cronEnv
