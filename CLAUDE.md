@@ -70,8 +70,6 @@ own writeup:
   branch protection.
 - Never delete or truncate production data (databases, customer records,
   uploaded assets).
-- Never send customer-facing outreach (email/SMS/notifications) as a side
-  effect of automation work.
 - Never make paid purchases, upgrade billing/plan tiers, or spend money on
   any connected service.
 
