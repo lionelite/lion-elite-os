@@ -42,7 +42,9 @@ jobs:
         run: |
           node --check server.js
           node --check outreach-server-postgres.js
+          node --check executive-orchestrator.js
           node --check workers/outreach-worker.js
+          node --check workers/executive-worker.js
           node --check scripts/cron-scheduler.js
           node --check scripts/operations-monitor.js
 
