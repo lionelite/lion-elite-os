@@ -34,7 +34,7 @@ const candidates = Array.from({ length: 5 }, (_, index) => ({
 }));
 
 const ranked = candidates
-  .map(analyzeProperty)
+  .map((candidate) => analyzeProperty(candidate))
   .sort((a, b) => b.score - a.score);
 
 console.table(ranked.map(({ address, score, recommendation, dealKillers, missingCriticalFacts }) => ({
