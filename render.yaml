@@ -60,6 +60,33 @@ services:
       - key: JOB_BACKOFF_MS
         value: 5000
 
+  - type: web
+    name: lion-elite-executive-api
+    runtime: node
+    plan: starter
+    buildCommand: npm install --no-audit --no-fund
+    startCommand: npm run executive
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars: &executiveEnv
+      - key: NODE_ENV
+        value: production
+      - key: REDIS_URL
+        fromService:
+          type: keyvalue
+          name: lion-elite-os-redis
+          property: connectionString
+      - key: EXECUTIVE_API_TOKEN
+        generateValue: true
+      - key: JOB_ATTEMPTS
+        value: 4
+      - key: JOB_BACKOFF_MS
+        value: 5000
+      - key: JOB_LOCK_TTL_MS
+        value: 120000
+      - key: EXECUTIVE_QUEUE_WARNING
+        value: 100
+
   - type: worker
     name: lion-elite-outreach-worker
     runtime: node
@@ -95,6 +122,15 @@ services:
         value: 100
       - key: SHUTDOWN_TIMEOUT_MS
         value: 30000
+
+  - type: worker
+    name: lion-elite-executive-worker
+    runtime: node
+    plan: starter
+    buildCommand: npm install --no-audit --no-fund
+    startCommand: npm run worker:executive
+    autoDeploy: true
+    envVars: *executiveEnv
 
   - type: cron
     name: lion-elite-operations-monitor
@@ -176,4 +212,36 @@ services:
     schedule: "0 7 * * 0"
     buildCommand: npm install --no-audit --no-fund
     startCommand: node scripts/cron-scheduler.js cleanup
+    envVars: *cronEnv
+
+  - type: cron
+    name: lion-elite-morning-brief
+    runtime: node
+    schedule: "0 11 * * *"
+    buildCommand: npm install --no-audit --no-fund
+    startCommand: node scripts/cron-scheduler.js morningBrief
+    envVars: *cronEnv
+
+  - type: cron
+    name: lion-elite-midday-revenue
+    runtime: node
+    schedule: "0 16 * * *"
+    buildCommand: npm install --no-audit --no-fund
+    startCommand: node scripts/cron-scheduler.js middayRevenue
+    envVars: *cronEnv
+
+  - type: cron
+    name: lion-elite-evening-review
+    runtime: node
+    schedule: "0 23 * * *"
+    buildCommand: npm install --no-audit --no-fund
+    startCommand: node scripts/cron-scheduler.js eveningReview
+    envVars: *cronEnv
+
+  - type: cron
+    name: lion-elite-hourly-health
+    runtime: node
+    schedule: "15 * * * *"
+    buildCommand: npm install --no-audit --no-fund
+    startCommand: node scripts/cron-scheduler.js healthSnapshot
     envVars: *cronEnv
