@@ -12,26 +12,12 @@ services:
         value: production
       - key: REDIS_URL
         sync: false
-      - key: DATABASE_URL
-        sync: false
       - key: INTEGRATION_GATEWAY_TOKEN
         generateValue: true
       - key: SHOPIFY_WEBHOOK_SECRET
         sync: false
       - key: GMAIL_WEBHOOK_SECRET
         sync: false
-      - key: GOOGLE_CLIENT_ID
-        sync: false
-      - key: GOOGLE_CLIENT_SECRET
-        sync: false
-      - key: GOOGLE_REDIRECT_URI
-        sync: false
-      - key: PUBLIC_APP_URL
-        sync: false
-      - key: GMAIL_OAUTH_STATE_SECRET
-        generateValue: true
-      - key: TOKEN_ENCRYPTION_KEY
-        generateValue: true
       - key: CALENDAR_WEBHOOK_SECRET
         sync: false
       - key: ADS_WEBHOOK_SECRET
@@ -63,11 +49,3 @@ services:
         value: 120000
       - key: INTEGRATION_WORKER_CONCURRENCY
         value: 5
-
-  - type: cron
-    name: lion-elite-gmail-sync
-    runtime: node
-    schedule: "*/15 * * * *"
-    buildCommand: npm install --no-audit --no-fund && npm run db:migrate
-    startCommand: npm run gmail:sync
-    envVars: *integrationEnv
