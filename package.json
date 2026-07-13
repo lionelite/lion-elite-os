@@ -18,7 +18,6 @@
     "real-estate": "node real-estate/intelligence/src/dashboard-server.js",
     "real-estate:demo": "node real-estate/intelligence/src/demo.js",
     "real-estate:import": "node real-estate/intelligence/src/import-csv.js",
-    "gmail:sync": "node scripts/gmail-sync.js",
     "test": "node --test test/*.test.js real-estate/intelligence/test/*.test.js business-scaling/founder-intelligence/test/*.test.js"
   },
   "dependencies": {

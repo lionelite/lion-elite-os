@@ -8,7 +8,6 @@ const { createBusinessFingerprint, scoreQualification, validateProspect, authori
 const { enrichBusinessEmail, enrichBatch } = require('./lib/email-enrichment');
 const { buildEmail: generateEmailDraft, scoreEmail: scoreEmailDraft } = require('./lib/email-generation');
 const { PostgresProspectStore, STAGES } = require('./lib/postgres-prospect-store');
-const { prepareBulkOutreach } = require('./lib/bulk-outreach');
 
 const app = express();
 const port = process.env.PORT || process.env.OUTREACH_PORT || 3001;
@@ -16,17 +15,6 @@ const store = new PostgresProspectStore();
 const asyncRoute = handler => (req, res, next) => Promise.resolve(handler(req, res, next)).catch(next);
 
 app.use(express.json({ limit: '1mb' }));
-
-function requireBulkBearer(req, res, next) {
-  if (String(process.env.BULK_SEND_ENABLED).toLowerCase() !== 'true') return res.status(503).json({ error: 'BULK_SEND_DISABLED' });
-  if (String(process.env.OUTREACH_SEND_ENABLED).toLowerCase() !== 'true') return res.status(503).json({ error: 'OUTREACH_SEND_DISABLED' });
-  const expected = process.env.OUTREACH_API_TOKEN;
-  const actual = String(req.headers.authorization || '').replace(/^Bearer\s+/i, '');
-  if (!expected || actual.length !== expected.length || !require('crypto').timingSafeEqual(Buffer.from(actual), Buffer.from(expected))) {
-    return res.status(401).json({ error: 'UNAUTHORIZED' });
-  }
-  next();
-}
 
 const defaultPolicy = Object.freeze({
   ruleVersion: '1.5.0',
@@ -77,19 +65,6 @@ app.post('/api/outreach/email/generate', (req, res) => {
 });
 app.post('/api/outreach/email/score', (req, res) => res.json({ quality: scoreEmailDraft(req.body?.draft || {}, req.body?.context || {}) }));
 app.get('/api/outreach/quota', asyncRoute(async (req, res) => res.json({ quota: await store.getDailyEmailQuota(req.query?.day) })));
-
-app.post('/api/outreach/bulk/queue', requireBulkBearer, asyncRoute(async (req, res) => {
-  const quota = await store.getDailyEmailQuota();
-  const policy = { ...defaultPolicy, ...(req.body?.policy || {}) };
-  const prepared = prepareBulkOutreach(req.body?.items, policy, quota);
-  const queued = [];
-  for (const item of prepared) {
-    const result = await store.enqueue(item.prospectId, item.authorization, item.message, req.body?.scheduledAt, req.get('x-actor-id') || 'bulk-api');
-    queued.push({ queueId: result.item.queueId, prospectId: item.prospectId, recipient: item.message.recipient, duplicate: result.duplicate });
-  }
-  const job = await addJob('validation', 'schedule-due-followups', { maxProspects: Math.min(prepared.length, quota.remaining) }, { jobId: `bulk-dispatch:${new Date().toISOString().slice(0, 10)}:${req.body?.campaignId || 'default'}` });
-  res.status(202).json({ accepted: true, queued, dispatchJobId: job.id, quota });
-}));
 
 app.post('/api/workflows/outreach', asyncRoute(async (req, res) => {
   const prospect = req.body?.prospect;

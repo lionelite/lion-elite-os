@@ -276,8 +276,6 @@ notes), not live infrastructure — don't treat them as configuration.
 
 ## Recent fixes (this pass)
 
-- Added secure Gmail OAuth and reply synchronization: signed/expiring OAuth state, AES-256-GCM token encryption, refresh-token handling, redacted connection status, idempotent Gmail message storage, reply-to-prospect matching, automatic campaign stop-on-reply, an audit event, a 15-minute Render sync cron, and focused security tests. The feature is fail-closed until Google and Render credentials are configured; see `docs/gmail-oauth-integration.md`.
-
 - **Fixed a production-breaking bug**: `outreach-server.js`,
   `outreach-server-postgres.js`, and `workers/outreach-worker.js` all
   `require('./lib/email-generator')`, a file that doesn't exist (the real
