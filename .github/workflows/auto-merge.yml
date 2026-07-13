@@ -1,0 +1,42 @@
+name: Auto Merge claude-automation
+
+# Opens (or updates) a PR from claude-automation into main and enables
+# GitHub's native auto-merge. GitHub only completes the merge once every
+# required status check on main (see branch protection: the "test" check
+# from ci-render.yml) has passed on that PR's head commit. Failing checks
+# block the merge with no bypass.
+
+on:
+  push:
+    branches: [claude-automation]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  open-and-automerge:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Ensure PR exists and enable auto-merge
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+
+          PR_NUMBER=$(gh pr list --head claude-automation --base main --state open --json number --jq '.[0].number // empty')
+
+          if [ -z "$PR_NUMBER" ]; then
+            gh pr create \
+              --head claude-automation \
+              --base main \
+              --title "Automated update from claude-automation" \
+              --body "Automated changes from the claude-automation pipeline. This PR merges automatically once all required checks pass — it never merges failing code."
+            PR_NUMBER=$(gh pr list --head claude-automation --base main --state open --json number --jq '.[0].number')
+          fi
+
+          echo "Enabling auto-merge for PR #$PR_NUMBER"
+          gh pr merge "$PR_NUMBER" --squash --auto
