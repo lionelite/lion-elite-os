@@ -60,3 +60,41 @@ CREATE TABLE IF NOT EXISTS daily_usage (
   sent_count INTEGER NOT NULL DEFAULT 0 CHECK (sent_count >= 0),
   PRIMARY KEY (usage_day, channel)
 );
+
+CREATE TABLE IF NOT EXISTS google_connections (
+  connection_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  provider TEXT NOT NULL DEFAULT 'gmail',
+  account_email TEXT NOT NULL,
+  encrypted_refresh_token TEXT,
+  encrypted_access_token TEXT,
+  token_expires_at TIMESTAMPTZ,
+  scopes TEXT[] NOT NULL DEFAULT '{}',
+  status TEXT NOT NULL DEFAULT 'active',
+  gmail_history_id TEXT,
+  last_synced_at TIMESTAMPTZ,
+  last_error TEXT,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  UNIQUE(provider, account_email)
+);
+
+CREATE TABLE IF NOT EXISTS gmail_messages (
+  message_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  connection_id UUID NOT NULL REFERENCES google_connections(connection_id) ON DELETE CASCADE,
+  gmail_message_id TEXT NOT NULL,
+  gmail_thread_id TEXT,
+  internet_message_id TEXT,
+  in_reply_to TEXT,
+  direction TEXT NOT NULL CHECK (direction IN ('inbound', 'outbound')),
+  sender_email TEXT,
+  recipient_email TEXT,
+  subject TEXT,
+  snippet TEXT,
+  prospect_id UUID REFERENCES prospects(prospect_id) ON DELETE SET NULL,
+  received_at TIMESTAMPTZ,
+  raw_metadata JSONB NOT NULL DEFAULT '{}'::jsonb,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  UNIQUE(connection_id, gmail_message_id)
+);
+CREATE INDEX IF NOT EXISTS gmail_messages_thread_idx ON gmail_messages(gmail_thread_id);
+CREATE INDEX IF NOT EXISTS gmail_messages_prospect_idx ON gmail_messages(prospect_id, received_at DESC);

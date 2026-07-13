@@ -65,6 +65,12 @@ Detailed specifications:
 - [`ai-agents/lead-intelligence-engine.md`](ai-agents/lead-intelligence-engine.md)
 - [`docs/outreach-validation-api.md`](docs/outreach-validation-api.md)
 
+## Gmail integration
+
+The integration gateway includes a secure Google OAuth connection for importing Gmail replies into the prospect timeline. Matching replies move a prospect to `replied`, stop pending campaign messages, and create an auditable follow-up event. Tokens are encrypted in PostgreSQL and never returned by the status API. A Render cron service synchronizes the connected mailbox every 15 minutes.
+
+Gmail access remains disabled until the owner completes Google OAuth and configures the required Render secrets. Setup: [`docs/gmail-oauth-integration.md`](docs/gmail-oauth-integration.md).
+
 ## Real Estate Intelligence MVP
 
 The repository now includes an executable property acquisition scoring engine for multifamily, off-market, distressed, pre-foreclosure, and broker-sourced opportunities.
