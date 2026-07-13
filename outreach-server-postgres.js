@@ -6,7 +6,7 @@ const { healthcheck: redisHealthcheck } = require('./lib/redis');
 const { addJob, queueMetrics } = require('./lib/job-queues');
 const { createBusinessFingerprint, scoreQualification, validateProspect, authorizeOutreach } = require('./lib/outreach-validation');
 const { enrichBusinessEmail, enrichBatch } = require('./lib/email-enrichment');
-const { generateEmailDraft, scoreEmailDraft } = require('./lib/email-generator');
+const { buildEmail: generateEmailDraft, scoreEmail: scoreEmailDraft } = require('./lib/email-generation');
 const { PostgresProspectStore, STAGES } = require('./lib/postgres-prospect-store');
 
 const app = express();
@@ -60,7 +60,7 @@ app.post('/api/outreach/email/generate', (req, res) => {
   const policy = { ...defaultPolicy, ...(req.body?.policy || {}) };
   const draft = generateEmailDraft(req.body || {});
   const quality = scoreEmailDraft(draft, req.body || {});
-  const approved = quality.score >= policy.minimumPersonalizationScore && quality.prohibitedClaims.length === 0;
+  const approved = quality.score >= policy.minimumPersonalizationScore && quality.blockers.length === 0;
   res.status(approved ? 200 : 422).json({ draft, quality, approved });
 });
 app.post('/api/outreach/email/score', (req, res) => res.json({ quality: scoreEmailDraft(req.body?.draft || {}, req.body?.context || {}) }));

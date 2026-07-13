@@ -4,7 +4,7 @@ const http = require('http');
 const { Worker } = require('bullmq');
 const { createRedisConnection, getRedis, ensureConnected, healthcheck, withLock, closeRedis } = require('../lib/redis');
 const { QUEUE_NAMES, addJob, moveToDeadLetter, queueMetrics } = require('../lib/job-queues');
-const { generateEmailDraft, scoreEmailDraft } = require('../lib/email-generator');
+const { buildEmail: generateEmailDraft, scoreEmail: scoreEmailDraft } = require('../lib/email-generation');
 const { validateProspect, authorizeOutreach } = require('../lib/outreach-validation');
 const { sendEmail } = require('../lib/email-delivery');
 const { PostgresProspectStore } = require('../lib/postgres-prospect-store');
@@ -52,7 +52,7 @@ startWorker(QUEUE_NAMES.email, async job => {
   const draft = generateEmailDraft(context);
   const quality = scoreEmailDraft(draft, context);
   const minimumScore = Number(context.minimumPersonalizationScore || process.env.MINIMUM_PERSONALIZATION_SCORE || 56.25);
-  if (quality.prohibitedClaims.length || quality.score < minimumScore) {
+  if (quality.blockers.length || quality.score < minimumScore) {
     const error = new Error('Generated email did not meet quality requirements.');
     error.code = 'EMAIL_QUALITY_BLOCKED'; error.quality = quality; throw error;
   }
