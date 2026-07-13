@@ -4,7 +4,7 @@ This repository is the operating system for Lion Elite Wellness, Lion Elite Beau
 
 ## Top Priority — AI Lead Intelligence Engine
 
-Build a continuous, human-supervised lead generation and sales intelligence system using lawful, publicly available professional and business information.
+Build a continuous, autonomous lead generation, outreach, follow-up, and sales intelligence system using lawful, publicly available professional and business information.
 
 The system now includes an executable outreach-validation and public business email-enrichment MVP.
 
@@ -16,7 +16,7 @@ The system must:
 4. Use AI to understand each prospect’s business, likely goals, challenges, buying signals, and opportunities before outreach.
 5. Score prospects using fit, intent, timing, data confidence, and relationship potential.
 6. Equip human representatives with personalized research briefs, discovery questions, conversation guidance, objections, and recommended Lion Elite solutions.
-7. Draft personalized outreach for human review rather than sending automatically by default.
+7. Generate and send personalized outreach automatically when qualification, validation, suppression, consent, provider, and channel-specific requirements pass.
 8. Keep the CRM current through outcome logging, ownership rules, lifecycle stages, follow-up tasks, and stale-record refreshes.
 9. Learn from responses, meetings, conversions, retention, and losses to improve qualification and scoring.
 10. Respect privacy, website terms, robots directives, applicable law, suppression lists, consent requirements, and channel-specific outreach rules.
@@ -45,7 +45,7 @@ The outreach service can:
 - Process enrichment batches of up to 25 businesses.
 - Generate an authorization and idempotency key only after all required validation checks pass.
 
-It does not guess email addresses, use people-search data, or send messages directly.
+It does not guess email addresses or use people-search data. When authorized delivery credentials are configured, validated messages can be dispatched automatically through the outreach worker.
 
 Primary success metrics:
 
@@ -58,7 +58,7 @@ Primary success metrics:
 - Customer retention and expansion
 - Time saved per representative
 - Data freshness
-- Human approval and edit rate for AI drafts
+- Automated delivery, reply, meeting-booking, and compliance success rates
 
 Detailed specifications:
 
