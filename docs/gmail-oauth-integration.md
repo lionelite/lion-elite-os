@@ -23,5 +23,3 @@ Never store Google credentials or tokens in GitHub. The refresh and access token
 - `POST /gmail/disconnect` — disables the connection and removes stored tokens.
 
 Imported replies are idempotent. When the sender matches `prospects.contact.email`, the prospect moves to `replied`, pending/scheduled outreach stops, and an audit event is created.
-
-Bulk campaign delivery uses Resend, not Gmail. Configure the verified sending domain and Render variables described in `docs/outreach-validation-api.md`; Gmail remains the reply synchronization inbox.
