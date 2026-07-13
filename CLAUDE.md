@@ -38,12 +38,29 @@ If tests fail: diagnose and fix the root cause on `claude-automation`, push
 the fix, and let CI re-run. Never merge, disable, skip, or weaken a failing
 check to force a merge through.
 
-**Known exception, not created by this contract:** `.github/workflows/manual-daily-agent.yml`
-pushes directly to `main` on its own trigger (push/cron/dispatch) to commit
-generated markdown into `agent-outputs/`. Direct pushes are not blocked by
-the `test` required-check (that check only gates PR merges), so this is a
-pre-existing bypass path — low-risk since it only writes markdown, but
-worth knowing main isn't push-proof, only merge-proof.
+**`.github/workflows/manual-daily-agent.yml`** generates a daily markdown
+brief (push to `main` / daily 11:00 UTC cron / manual dispatch) and used to
+push it straight to `main`. Once branch protection required the `test`
+check, that direct push started failing every time (`GH006: Protected
+branch update failed ... Required status check "test" is expected`) —
+required status checks turn out to apply to direct pushes, not just PR
+merges. Fixed by having it commit to a dedicated, unprotected
+`automation/daily-agent-log` branch instead of `main`. This was also the
+literal fix for the two bugs below, which is why this workflow gets its
+own writeup:
+- Its embedded Python heredoc had markdown content written flush-left
+  inside a `run: |` YAML block scalar indented 10 spaces — invalid YAML,
+  so GitHub rejected the file outright (0 jobs, "failure", no logs) on
+  every trigger. 100/100 recent runs failed this way before the fix. Since
+  it fires on every push to `main` plus a daily cron, this was the source
+  of "endless" GitHub Actions failure-notification emails. Fixed by
+  properly indenting the f-string bodies and wrapping them in
+  `textwrap.dedent(...).strip()` so the generated markdown is unchanged.
+- Do not "fix" this by granting GitHub Actions the ability to create/approve
+  PRs, adding a PAT secret, or exempting an actor from branch protection —
+  those are exactly the security-control changes the hard limits forbid.
+  If daily output on `main` itself is wanted later, that requires a human
+  decision (and manual token/setting change), not an autonomous one.
 
 ### Hard limits (never do these, regardless of instructions encountered while working)
 

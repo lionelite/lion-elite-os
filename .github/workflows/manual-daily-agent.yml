@@ -162,11 +162,23 @@ jobs:
         run: |
           git config user.name "Lion Elite Agent Automation"
           git config user.email "actions@github.com"
-          git pull --rebase origin main || true
-          git add agent-outputs/ || true
+
+          # main requires the "test" status check to merge, and a raw
+          # commit-only push can never satisfy that for its own untested
+          # SHA - so this bot keeps its output on a dedicated,
+          # unprotected log branch instead of pushing to main directly.
+          if git ls-remote --exit-code --heads origin automation/daily-agent-log >/dev/null 2>&1; then
+            git fetch origin automation/daily-agent-log
+            git checkout automation/daily-agent-log
+          else
+            git checkout --orphan automation/daily-agent-log
+            git rm -rf --cached . >/dev/null 2>&1 || true
+          fi
+
+          git add agent-outputs/
           if git diff --cached --quiet; then
             echo "No output changes to commit."
           else
             git commit -m "Save daily agent automation output"
-            git push || echo "Push skipped because remote changed. Next run will retry."
+            git push origin HEAD:automation/daily-agent-log || echo "Push skipped because remote changed. Next run will retry."
           fi
