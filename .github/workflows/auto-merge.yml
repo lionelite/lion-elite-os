@@ -21,21 +21,23 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Ensure PR exists and enable auto-merge
+      - name: Enable auto-merge on the open claude-automation PR
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
 
+          # Repo policy intentionally leaves "Allow GitHub Actions to create
+          # and approve pull requests" disabled (security control), so this
+          # job never creates a PR itself - it only enables auto-merge on
+          # one that a human or an authenticated Claude session already
+          # opened from claude-automation into main.
           PR_NUMBER=$(gh pr list --head claude-automation --base main --state open --json number --jq '.[0].number // empty')
 
           if [ -z "$PR_NUMBER" ]; then
-            gh pr create \
-              --head claude-automation \
-              --base main \
-              --title "Automated update from claude-automation" \
-              --body "Automated changes from the claude-automation pipeline. This PR merges automatically once all required checks pass — it never merges failing code."
-            PR_NUMBER=$(gh pr list --head claude-automation --base main --state open --json number --jq '.[0].number')
+            echo "No open PR from claude-automation into main yet - nothing to do."
+            echo "Open one with: gh pr create --head claude-automation --base main"
+            exit 0
           fi
 
           echo "Enabling auto-merge for PR #$PR_NUMBER"

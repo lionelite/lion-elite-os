@@ -23,8 +23,12 @@ touch branch protection / repo settings as part of routine work — merges to
 1. Work happens on `claude-automation`. Every push runs
    `.github/workflows/ci-render.yml` (`npm test` + `npm run
    validate:render`).
-2. `.github/workflows/auto-merge.yml` opens (or updates) a PR from
-   `claude-automation` into `main` and enables GitHub's native auto-merge.
+2. A PR from `claude-automation` into `main` stays open across the branch's
+   lifetime (opened once by a human or an authenticated Claude session —
+   deliberately *not* by the Actions bot: "Allow GitHub Actions to create
+   and approve pull requests" stays disabled as a security control).
+   `.github/workflows/auto-merge.yml` runs on every push to
+   `claude-automation` and enables GitHub's native auto-merge on that PR.
 3. `main` is branch-protected: the `test` status check is required —
    enforced for everyone, including admins — before a PR can merge. A
    failing check blocks the merge with no exceptions and no bypass.
