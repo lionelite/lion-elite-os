@@ -1,0 +1,51 @@
+services:
+  - type: web
+    name: lion-elite-integration-gateway
+    runtime: node
+    plan: starter
+    buildCommand: npm install --no-audit --no-fund
+    startCommand: npm run integrations
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars: &integrationEnv
+      - key: NODE_ENV
+        value: production
+      - key: REDIS_URL
+        sync: false
+      - key: INTEGRATION_GATEWAY_TOKEN
+        generateValue: true
+      - key: SHOPIFY_WEBHOOK_SECRET
+        sync: false
+      - key: GMAIL_WEBHOOK_SECRET
+        sync: false
+      - key: CALENDAR_WEBHOOK_SECRET
+        sync: false
+      - key: ADS_WEBHOOK_SECRET
+        sync: false
+      - key: JOB_ATTEMPTS
+        value: 4
+      - key: JOB_BACKOFF_MS
+        value: 5000
+      - key: INTEGRATION_MAX_BODY
+        value: 1mb
+
+  - type: worker
+    name: lion-elite-integration-worker
+    runtime: node
+    plan: starter
+    buildCommand: npm install --no-audit --no-fund
+    startCommand: npm run worker:integrations
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: REDIS_URL
+        sync: false
+      - key: JOB_ATTEMPTS
+        value: 4
+      - key: JOB_BACKOFF_MS
+        value: 5000
+      - key: JOB_LOCK_TTL_MS
+        value: 120000
+      - key: INTEGRATION_WORKER_CONCURRENCY
+        value: 5
