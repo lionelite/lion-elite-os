@@ -11,7 +11,7 @@ const {
   enrichBusinessEmail,
   enrichBatch
 } = require('./lib/email-enrichment');
-const { generateEmailDraft, scoreEmailDraft } = require('./lib/email-generator');
+const { buildEmail: generateEmailDraft, scoreEmail: scoreEmailDraft } = require('./lib/email-generation');
 const { ProspectStore, STAGES } = require('./lib/prospect-store');
 
 const app = express();
@@ -79,7 +79,7 @@ app.post('/api/outreach/email/generate', (req, res) => {
   const policy = { ...defaultPolicy, ...(req.body?.policy || {}) };
   const draft = generateEmailDraft(req.body || {});
   const quality = scoreEmailDraft(draft, req.body || {});
-  const approved = quality.score >= policy.minimumPersonalizationScore && quality.prohibitedClaims.length === 0;
+  const approved = quality.score >= policy.minimumPersonalizationScore && quality.blockers.length === 0;
   res.status(approved ? 200 : 422).json({ draft, quality, approved });
 });
 
