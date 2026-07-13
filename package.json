@@ -10,6 +10,7 @@
     "outreach": "node outreach-server-postgres.js",
     "worker:outreach": "node workers/outreach-worker.js",
     "db:migrate": "node scripts/migrate.js",
+    "validate:render": "node scripts/validate-render-blueprint.js",
     "real-estate": "node real-estate/intelligence/src/dashboard-server.js",
     "real-estate:demo": "node real-estate/intelligence/src/demo.js",
     "real-estate:import": "node real-estate/intelligence/src/import-csv.js",

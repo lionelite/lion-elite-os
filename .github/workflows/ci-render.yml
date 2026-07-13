@@ -1,0 +1,54 @@
+name: CI and Render Blueprint Validation
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    services:
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      REDIS_URL: redis://localhost:6379
+      NODE_ENV: test
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Validate JavaScript syntax
+        run: |
+          node --check server.js
+          node --check outreach-server-postgres.js
+          node --check workers/outreach-worker.js
+          node --check scripts/cron-scheduler.js
+          node --check scripts/operations-monitor.js
+
+      - name: Validate Render blueprint references
+        run: node scripts/validate-render-blueprint.js
+
+      - name: Run automated tests
+        run: npm test

@@ -1,7 +1,7 @@
 'use strict';
 
 const crypto = require('crypto');
-const { addJob, QUEUE_NAMES, queueMetrics, closeQueues } = require('../lib/queues');
+const { addJob, QUEUE_NAMES, queueMetrics, closeQueues } = require('../lib/job-queues');
 
 const JOBS = Object.freeze({
   discovery: {
