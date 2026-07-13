@@ -1,7 +1,7 @@
 {
   "name": "lion-elite-os",
-  "version": "2.0.0",
-  "description": "Lion Elite OS automation dashboard with PostgreSQL, Redis queues, executive orchestration, validated outreach, and real estate intelligence.",
+  "version": "2.1.0",
+  "description": "Lion Elite OS automation dashboard with PostgreSQL, Redis queues, executive orchestration, integration gateway, validated outreach, and real estate intelligence.",
   "main": "server.js",
   "type": "commonjs",
   "scripts": {
@@ -9,8 +9,10 @@
     "dev": "node server.js",
     "outreach": "node outreach-server-postgres.js",
     "executive": "node executive-orchestrator.js",
+    "integrations": "node integration-gateway-server.js",
     "worker:outreach": "node workers/outreach-worker.js",
     "worker:executive": "node workers/executive-worker.js",
+    "worker:integrations": "node workers/integration-worker.js",
     "db:migrate": "node scripts/migrate.js",
     "validate:render": "node scripts/validate-render-blueprint.js",
     "real-estate": "node real-estate/intelligence/src/dashboard-server.js",
