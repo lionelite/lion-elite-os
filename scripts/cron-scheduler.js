@@ -28,6 +28,26 @@ const JOBS = Object.freeze({
     queue: QUEUE_NAMES.analytics,
     name: 'queue-and-data-maintenance',
     payload: { pruneCompletedAfterDays: 14, pruneFailedAfterDays: 30 }
+  },
+  morningBrief: {
+    queue: QUEUE_NAMES.analytics,
+    name: 'morning-brief',
+    payload: { brands: ['lion-elite-wellness', 'lion-elite-beauty'], include: ['queues', 'operations', 'sales', 'content', 'deployments'] }
+  },
+  middayRevenue: {
+    queue: QUEUE_NAMES.analytics,
+    name: 'midday-revenue-check',
+    payload: { brands: ['lion-elite-wellness', 'lion-elite-beauty'], include: ['sales', 'leads', 'orders', 'followups'] }
+  },
+  eveningReview: {
+    queue: QUEUE_NAMES.analytics,
+    name: 'evening-review',
+    payload: { brands: ['lion-elite-wellness', 'lion-elite-beauty'], include: ['completed', 'failed', 'tomorrow-priorities'] }
+  },
+  healthSnapshot: {
+    queue: QUEUE_NAMES.analytics,
+    name: 'business-health-snapshot',
+    payload: { include: ['queues', 'workers', 'failures', 'backlog'] }
   }
 });
 
@@ -39,7 +59,8 @@ async function main() {
   }
 
   const runId = crypto.randomUUID();
-  const periodKey = key === 'analytics' || key === 'cleanup'
+  const dailyJobs = new Set(['analytics', 'cleanup', 'morningBrief', 'middayRevenue', 'eveningReview']);
+  const periodKey = dailyJobs.has(key)
     ? new Date().toISOString().slice(0, 10)
     : new Date().toISOString().slice(0, 13);
 
