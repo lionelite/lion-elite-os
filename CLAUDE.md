@@ -87,7 +87,7 @@ Five independent Node entry points, sharing `lib/`:
 | `server.js` | `lion-elite-os` (web) | Agent command-center dashboard. Inline agent definitions (executive/marketing/sales/operations/research-compliance/finance-kpi), template-based fallback plus optional OpenAI generation, can save approved outputs back to GitHub via `GITHUB_TOKEN`. |
 | `outreach-server-postgres.js` | `lion-elite-outreach-api` (web) | Live prospect/outreach API: fingerprinting, scoring, 16-check validation, email enrichment, email draft generation, Postgres-backed prospect store, BullMQ job submission. |
 | `executive-orchestrator.js` | `lion-elite-executive-api` (web) | Bearer-token-gated (`EXECUTIVE_API_TOKEN`) trigger for 4 whitelisted analytics jobs. |
-| `integration-gateway-server.js` | *(only in `render-integrations.yaml`, a separate blueprint — not deployed by the main `render.yaml`)* | Webhook intake for Shopify/Gmail/Calendar/Ads, HMAC/shared-secret verified, enqueues to `integrations` queue. |
+| `integration-gateway-server.js` | *(only in `render-integrations.yaml`, a separate blueprint — not deployed by the main `render.yaml`)* | Webhook intake for Shopify/Gmail/Calendar/Ads/Affiliate, HMAC/shared-secret verified, enqueues to `integrations` queue. The `affiliate` source (`AFFILIATE_WEBHOOK_SECRET`, `/webhooks/affiliate`) is the intake path for partner/affiliate applications (see "Recent fixes" below). |
 | `outreach-server.js` | *(none — dead code)* | Legacy in-memory (JSON-file) predecessor to `outreach-server-postgres.js`. Not referenced by any script, workflow, or `render.yaml`. Safe to remove when someone confirms nothing external points at it. |
 
 Workers (`workers/*.js`), each its own Render worker/consumer:
@@ -97,7 +97,13 @@ Workers (`workers/*.js`), each its own Render worker/consumer:
 - `executive-worker.js` — consumes `analytics` queue, writes health-score
   reports to Redis.
 - `integration-worker.js` — consumes `integrations` queue, normalizes
-  webhook payloads, cascades events into executive-queue jobs.
+  webhook payloads (via `lib/integration-normalization.js`, extracted so its
+  pure `classify`/`summarize` logic is unit-testable without a live Redis
+  connection), cascades events into executive-queue jobs. Affiliate
+  applications (`category: 'affiliate_lead'`) are written into the
+  `prospects` table (stage `affiliate_applied`) instead of cascading to the
+  executive queue; a result already flagged `status: 'suppressed'` (an
+  existing suppressed fingerprint match) is not cascaded further.
 
 Cron (`scripts/cron-scheduler.js <task>`, one Render cron service per task,
 8 schedules in `render.yaml`): `discovery`, `staleData`, `followups`,
@@ -295,6 +301,29 @@ notes), not live infrastructure — don't treat them as configuration.
 - Added `.gitignore` (`node_modules/`, lockfiles, `.env`, `*.log`) — none
   existed before, so any local install risked an accidental
   `node_modules` commit.
+- **Fixed a second production-breaking bug**, same class as the one above:
+  every write path in `lib/postgres-prospect-store.js`
+  (`create`/`update`/`transition`/`enqueue`/`markQueue`/`timeline`/`metrics`)
+  wrote audit events to a table called `audit_events` with a column
+  `event_type` — neither exists. `db/schema.sql` only defines
+  `prospect_events` with a column named `type`. Because no CI job or test
+  runs `PostgresProspectStore` against a real Postgres instance (CI
+  provisions Redis, not Postgres), this was completely unguarded — any real
+  prospect write in production would have thrown `relation "audit_events"
+  does not exist`. Fixed by correcting the table/column names to match the
+  real schema; locked in with a source-text regression test
+  (`test/postgres-prospect-store-schema.test.js`) that fails if the two
+  ever drift apart again, since a live DB isn't available in CI to catch it
+  the normal way.
+- **Added an `affiliate` webhook intake path** to the integration gateway
+  (`/webhooks/affiliate`, `AFFILIATE_WEBHOOK_SECRET`) so partner/affiliate
+  applications land in the `prospects` table (stage `affiliate_applied`,
+  deduped by the existing business fingerprint) instead of only existing as
+  prose in a GitHub issue comment. This is the backend half of the
+  affiliate-conversion-surface plan discussed in Issue #38; the actual
+  applicant-facing form/page is intentionally not built yet — it's blocked
+  on either live Orchids site access or an owner decision to use a hosted
+  form in the meantime, whichever comes first.
 
 ## Highest-value next steps
 

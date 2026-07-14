@@ -66,7 +66,8 @@ app.get('/status', requireBearer, async (_req, res) => {
     shopify: Boolean(process.env.SHOPIFY_WEBHOOK_SECRET),
     gmail: Boolean(process.env.GMAIL_WEBHOOK_SECRET),
     calendar: Boolean(process.env.CALENDAR_WEBHOOK_SECRET),
-    ads: Boolean(process.env.ADS_WEBHOOK_SECRET)
+    ads: Boolean(process.env.ADS_WEBHOOK_SECRET),
+    affiliate: Boolean(process.env.AFFILIATE_WEBHOOK_SECRET)
   }});
 });
 
@@ -80,7 +81,8 @@ app.post('/webhooks/shopify', async (req, res) => {
 for (const config of [
   { source: 'gmail', path: '/webhooks/gmail', secret: 'GMAIL_WEBHOOK_SECRET' },
   { source: 'calendar', path: '/webhooks/calendar', secret: 'CALENDAR_WEBHOOK_SECRET' },
-  { source: 'ads', path: '/webhooks/ads', secret: 'ADS_WEBHOOK_SECRET' }
+  { source: 'ads', path: '/webhooks/ads', secret: 'ADS_WEBHOOK_SECRET' },
+  { source: 'affiliate', path: '/webhooks/affiliate', secret: 'AFFILIATE_WEBHOOK_SECRET' }
 ]) {
   app.post(config.path, async (req, res) => {
     if (!verifySharedSecret(req, config.secret)) return res.status(401).json({ error: 'INVALID_SIGNATURE' });
@@ -91,7 +93,7 @@ for (const config of [
 }
 
 app.post('/events/:source', requireBearer, async (req, res) => {
-  const allowed = new Set(['shopify', 'gmail', 'calendar', 'ads', 'manual']);
+  const allowed = new Set(['shopify', 'gmail', 'calendar', 'ads', 'affiliate', 'manual']);
   if (!allowed.has(req.params.source)) return res.status(400).json({ error: 'UNSUPPORTED_SOURCE' });
   res.status(202).json(await enqueue(req.params.source, req.body?.type || 'manual-event', req.body?.payload ?? req.body, { submittedBy: 'authorized-api' }));
 });
@@ -101,4 +103,8 @@ app.use((error, _req, res, _next) => {
   res.status(500).json({ error: 'INTEGRATION_GATEWAY_ERROR' });
 });
 
-app.listen(port, () => console.log(JSON.stringify({ level: 'info', event: 'integration_gateway.started', port })));
+if (require.main === module) {
+  app.listen(port, () => console.log(JSON.stringify({ level: 'info', event: 'integration_gateway.started', port })));
+}
+
+module.exports = { app, safeEqual, verifySharedSecret, verifyShopify };

@@ -3,56 +3,10 @@
 const { Worker } = require('bullmq');
 const { createRedisConnection, ensureConnected, getRedis, closeRedis } = require('../lib/redis');
 const { QUEUE_NAMES, addJob, moveToDeadLetter } = require('../lib/job-queues');
+const { summarize, classify, recordAffiliateLead } = require('../lib/integration-normalization');
 
 const concurrency = Number(process.env.INTEGRATION_WORKER_CONCURRENCY || 5);
 let shuttingDown = false;
-
-function summarize(source, type, payload) {
-  if (source === 'shopify') {
-    return {
-      orderId: payload?.id || payload?.order_id || null,
-      customerEmail: payload?.email || payload?.customer?.email || null,
-      total: Number(payload?.current_total_price || payload?.total_price || 0),
-      currency: payload?.currency || null,
-      financialStatus: payload?.financial_status || null
-    };
-  }
-  if (source === 'gmail') {
-    return {
-      messageId: payload?.messageId || payload?.id || null,
-      from: payload?.from || null,
-      subject: payload?.subject || null,
-      intent: payload?.intent || null,
-      urgency: payload?.urgency || null
-    };
-  }
-  if (source === 'calendar') {
-    return {
-      eventId: payload?.eventId || payload?.id || null,
-      title: payload?.title || payload?.summary || null,
-      startsAt: payload?.startsAt || payload?.start?.dateTime || payload?.start || null,
-      attendeeCount: Array.isArray(payload?.attendees) ? payload.attendees.length : null
-    };
-  }
-  if (source === 'ads') {
-    return {
-      campaignId: payload?.campaignId || payload?.campaign_id || null,
-      spend: Number(payload?.spend || 0),
-      revenue: Number(payload?.revenue || payload?.conversionValue || 0),
-      leads: Number(payload?.leads || 0)
-    };
-  }
-  return { keys: Object.keys(payload || {}).slice(0, 20) };
-}
-
-function classify(source, type, payload) {
-  const normalizedType = String(type || '').toLowerCase();
-  if (source === 'shopify' && (normalizedType.includes('order') || payload?.total_price)) return 'revenue';
-  if (source === 'gmail') return 'lead_or_support';
-  if (source === 'calendar') return 'appointment';
-  if (source === 'ads') return 'marketing_performance';
-  return 'general';
-}
 
 const worker = new Worker(QUEUE_NAMES.integrations, async job => {
   const redis = await ensureConnected(getRedis());
@@ -68,6 +22,12 @@ const worker = new Worker(QUEUE_NAMES.integrations, async job => {
     processedAt: new Date().toISOString()
   };
 
+  let affiliateResult = null;
+  if (record.category === 'affiliate_lead') {
+    affiliateResult = await recordAffiliateLead(record);
+    record.affiliate = affiliateResult;
+  }
+
   const encoded = JSON.stringify(record);
   await redis.multi()
     .lpush('integrations:events', encoded)
@@ -81,6 +41,10 @@ const worker = new Worker(QUEUE_NAMES.integrations, async job => {
     : record.category === 'lead_or_support'
       ? 'business-health-snapshot'
       : null;
+
+  if (affiliateResult?.suppressed) {
+    return record;
+  }
 
   if (executiveJob) {
     await addJob('executive', executiveJob, {

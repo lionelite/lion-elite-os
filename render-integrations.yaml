@@ -22,6 +22,8 @@ services:
         sync: false
       - key: ADS_WEBHOOK_SECRET
         sync: false
+      - key: AFFILIATE_WEBHOOK_SECRET
+        sync: false
       - key: JOB_ATTEMPTS
         value: 4
       - key: JOB_BACKOFF_MS
@@ -40,6 +42,8 @@ services:
       - key: NODE_ENV
         value: production
       - key: REDIS_URL
+        sync: false
+      - key: DATABASE_URL
         sync: false
       - key: JOB_ATTEMPTS
         value: 4
