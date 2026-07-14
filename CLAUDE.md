@@ -298,13 +298,12 @@ notes), not live infrastructure — don't treat them as configuration.
 
 ## Highest-value next steps
 
-1. **Add a real startup smoke check to CI.** Neither `node --check`
-   (syntax only) nor the existing test suite (imports `lib/` modules
-   directly, bypassing the entry-point `require` chain) would have caught
-   the bug just fixed. A CI step that actually `require()`s each server
-   entry point (with a short timeout, since `app.listen` doesn't block)
-   would catch missing-module/wrong-export regressions before they reach
-   Render.
+1. ~~Add a real startup smoke check to CI.~~ **Done** —
+   `scripts/smoke-check.js` spawns each deployed entry point as a real
+   child process for a few seconds and fails CI if any of them crash on
+   `require()`/startup; wired into `ci-render.yml`'s required `test` job.
+   Verified it catches the exact `email-generator` bug class fixed
+   earlier.
 2. **Decide the fate of `outreach-server.js` + `lib/prospect-store.js`**
    (confirmed dead/legacy) — remove or explicitly document why they're
    kept.
