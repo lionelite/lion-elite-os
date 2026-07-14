@@ -53,5 +53,8 @@ jobs:
       - name: Validate Render blueprint references
         run: node scripts/validate-render-blueprint.js
 
+      - name: Startup smoke test (catches missing-module/wrong-export regressions)
+        run: node scripts/smoke-check.js
+
       - name: Run automated tests
         run: npm test
