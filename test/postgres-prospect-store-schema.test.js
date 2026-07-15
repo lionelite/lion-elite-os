@@ -44,6 +44,16 @@ test('daily email quota SQL matches the daily_usage schema', () => {
   assert.match(storeSource, /RETURNING sent_count/);
 });
 
+test('outreach_queue schema supports provider delivery and failure metadata', () => {
+  const tableStart = schemaSource.indexOf('CREATE TABLE IF NOT EXISTS outreach_queue');
+  const tableBlock = schemaSource.slice(tableStart, schemaSource.indexOf(');', tableStart));
+
+  assert.match(tableBlock, /provider_message_id TEXT/);
+  assert.match(tableBlock, /last_error TEXT/);
+  assert.match(schemaSource, /ALTER TABLE outreach_queue ADD COLUMN IF NOT EXISTS provider_message_id TEXT/);
+  assert.match(schemaSource, /ALTER TABLE outreach_queue ADD COLUMN IF NOT EXISTS last_error TEXT/);
+});
+
 test('STAGES includes affiliate_applied for the affiliate-application intake path', () => {
   const { STAGES } = require('../lib/postgres-prospect-store');
   assert.ok(STAGES.includes('affiliate_applied'));
