@@ -37,10 +37,16 @@ CREATE TABLE IF NOT EXISTS outreach_queue (
   status TEXT NOT NULL DEFAULT 'pending',
   scheduled_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   attempts INTEGER NOT NULL DEFAULT 0,
+  provider_message_id TEXT,
+  last_error TEXT,
   metadata JSONB NOT NULL DEFAULT '{}'::jsonb,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
+
+-- Keep existing deployments compatible when this idempotent schema is rerun.
+ALTER TABLE outreach_queue ADD COLUMN IF NOT EXISTS provider_message_id TEXT;
+ALTER TABLE outreach_queue ADD COLUMN IF NOT EXISTS last_error TEXT;
 
 CREATE INDEX IF NOT EXISTS outreach_queue_status_schedule_idx ON outreach_queue(status, scheduled_at);
 
