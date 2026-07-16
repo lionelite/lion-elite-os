@@ -11,6 +11,13 @@ const enabledEnv = {
   TWILIO_MESSAGING_SERVICE_SID: 'MG00000000000000000000000000000000'
 };
 
+const directNumberEnv = {
+  SMS_SEND_ENABLED: 'true',
+  TWILIO_ACCOUNT_SID: 'AC00000000000000000000000000000000',
+  TWILIO_AUTH_TOKEN: 'test-token',
+  TWILIO_FROM_NUMBER: '+12163260050'
+};
+
 test('Twilio delivery is fail-closed until explicitly enabled and configured', () => {
   assert.throws(() => getConfig({}), error => error.code === 'SMS_SEND_DISABLED');
   assert.throws(() => getConfig({ SMS_SEND_ENABLED: 'true' }), error => error.code === 'TWILIO_CONFIGURATION_ERROR');
@@ -19,6 +26,12 @@ test('Twilio delivery is fail-closed until explicitly enabled and configured', (
 test('normalizes only valid E.164 recipients', () => {
   assert.equal(normalizePhone('+13055551234'), '+13055551234');
   assert.throws(() => normalizePhone('305-555-1234'), error => error.code === 'INVALID_SMS_RECIPIENT');
+});
+
+test('supports the verified Lion Elite Twilio sender number', () => {
+  const config = getConfig(directNumberEnv);
+  assert.equal(config.fromNumber, '+12163260050');
+  assert.equal(config.messagingServiceSid, undefined);
 });
 
 test('blocks unauthorized, suppressed, empty, and oversized messages', () => {
@@ -31,14 +44,7 @@ test('blocks unauthorized, suppressed, empty, and oversized messages', () => {
 
 test('sends through a Twilio Messaging Service and returns provider metadata', async () => {
   let request;
-  const client = {
-    messages: {
-      create: async payload => {
-        request = payload;
-        return { sid: 'SM123', status: 'queued' };
-      }
-    }
-  };
+  const client = { messages: { create: async payload => { request = payload; return { sid: 'SM123', status: 'queued' }; } } };
 
   const result = await sendSms({
     prospect: { contact: { phone: '+13055551234' } },
@@ -50,4 +56,18 @@ test('sends through a Twilio Messaging Service and returns provider metadata', a
   assert.equal(request.messagingServiceSid, enabledEnv.TWILIO_MESSAGING_SERVICE_SID);
   assert.equal(result.provider, 'twilio');
   assert.equal(result.providerId, 'SM123');
+});
+
+test('sends directly from the configured Twilio phone number', async () => {
+  let request;
+  const client = { messages: { create: async payload => { request = payload; return { sid: 'SM456', status: 'queued' }; } } };
+
+  await sendSms({
+    prospect: { contact: { phone: '+13055551234' } },
+    draft: { body: 'Reply with your biggest fitness goal.' },
+    authorization: { authorized: true }
+  }, { env: directNumberEnv, client });
+
+  assert.equal(request.from, '+12163260050');
+  assert.equal(request.messagingServiceSid, undefined);
 });
