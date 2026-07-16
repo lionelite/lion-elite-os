@@ -163,6 +163,15 @@ jobs:
           git config user.name "Lion Elite Agent Automation"
           git config user.email "actions@github.com"
 
+          # Preserve the generated files outside the worktree before changing
+          # branches. Otherwise Git refuses the checkout because the tracked
+          # LATEST_DAILY_AUTOMATION.md would be overwritten.
+          output_tmp="$(mktemp -d)"
+          trap 'rm -rf "$output_tmp"' EXIT
+          cp -a agent-outputs/. "$output_tmp/"
+          git reset --hard HEAD
+          git clean -fd -- agent-outputs/
+
           # main requires the "test" status check to merge, and a raw
           # commit-only push can never satisfy that for its own untested
           # SHA - so this bot keeps its output on a dedicated,
@@ -174,6 +183,10 @@ jobs:
             git checkout --orphan automation/daily-agent-log
             git rm -rf --cached . >/dev/null 2>&1 || true
           fi
+
+          rm -rf agent-outputs
+          mkdir -p agent-outputs
+          cp -a "$output_tmp/." agent-outputs/
 
           git add agent-outputs/
           if git diff --cached --quiet; then
