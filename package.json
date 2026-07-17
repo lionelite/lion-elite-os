@@ -16,10 +16,13 @@
     "db:migrate": "node scripts/migrate.js",
     "validate:render": "node scripts/validate-render-blueprint.js",
     "social:generate": "node scripts/generate-social-content.js",
+    "listen:bluesky": "node social-listening/src/monitor.js",
+    "listen:review": "node social-listening/src/review-server.js",
+    "listen:replay": "node social-listening/src/replay.js",
     "real-estate": "node real-estate/intelligence/src/dashboard-server.js",
     "real-estate:demo": "node real-estate/intelligence/src/demo.js",
     "real-estate:import": "node real-estate/intelligence/src/import-csv.js",
-    "test": "node --test test/*.test.js real-estate/intelligence/test/*.test.js business-scaling/founder-intelligence/test/*.test.js"
+    "test": "node --test test/*.test.js real-estate/intelligence/test/*.test.js business-scaling/founder-intelligence/test/*.test.js social-listening/test/*.test.js"
   },
   "dependencies": {
     "bullmq": "^5.34.10",

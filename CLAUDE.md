@@ -161,6 +161,20 @@ Standalone modules that share the repo but not the architecture above:
   `test/scoring.test.js`), but was completely orphaned until this pass —
   not in `npm test`, no CI, no Render service. Now wired into `npm test`
   (see Recent fixes).
+- **`social-listening/`** — Bluesky firehose (Jetstream) monitor,
+  **read-only by design**: no Bluesky credentials, no write path to any
+  platform. Surfaces posts matching two audiences (researchers sourcing
+  peptides → Wellness lane; people publicly seeking a trainer/coach →
+  Beauty lane) via an explainable keyword/synonym classifier plus optional
+  local-Ollama refinement that can only make results more conservative.
+  Human-use-intent posts are hard-flagged DO NOT ENGAGE (RUO compliance).
+  Output is a local JSONL log + review dashboard
+  (`npm run listen:bluesky` / `listen:review` / `listen:replay`); any
+  engagement is a manual human action on bsky.app. Auto-reply/auto-outreach
+  was explicitly requested once and declined — it violates the
+  no-customer-outreach hard limit, Bluesky's guidelines, and RUO marketing
+  rules; do not add a posting path to this module. No Render service.
+  Tests are in the root `npm test`.
 - **`mcp-server/`** — standalone MCP server (TypeScript), its own
   `package.json`/`render.yaml`. Not linked from the main blueprint or any
   workflow; several of its tools (GA4/GSC/CRM/GitHub) are literally
