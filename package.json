@@ -13,6 +13,8 @@
     "worker:outreach": "node workers/outreach-worker.js",
     "worker:executive": "node workers/executive-worker.js",
     "worker:integrations": "node workers/integration-worker.js",
+    "sms:preview": "node scripts/send-customer-sms.js --days 45",
+    "sms:send": "node scripts/send-customer-sms.js --days 45 --send",
     "db:migrate": "node scripts/migrate.js",
     "validate:render": "node scripts/validate-render-blueprint.js",
     "real-estate": "node real-estate/intelligence/src/dashboard-server.js",
