@@ -1,0 +1,161 @@
+name: Daily Social Content
+
+# Issue #48 Phase 1: generate daily brand content at 7:00 AM
+# America/New_York. GitHub cron only speaks UTC, so both possible UTC
+# offsets are scheduled and a guard step keeps whichever run is actually
+# 7 AM in New York (11:00 UTC during EDT, 12:00 UTC during EST).
+on:
+  schedule:
+    - cron: '0 11 * * *'
+    - cron: '0 12 * * *'
+  workflow_dispatch:
+    inputs:
+      date:
+        description: 'Content date (YYYY-MM-DD, defaults to today)'
+        required: false
+        default: ''
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: daily-social-content
+  cancel-in-progress: false
+
+jobs:
+  generate:
+    name: Generate daily social content
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Keep only the 7 AM New York run
+        id: guard
+        run: |
+          if [ "${{ github.event_name }}" = "schedule" ]; then
+            hour="$(TZ=America/New_York date +%H)"
+            if [ "$hour" != "07" ]; then
+              echo "Not 7 AM in America/New_York (local hour: $hour). Skipping."
+              echo "skip=true" >> "$GITHUB_OUTPUT"
+            fi
+          fi
+
+      - name: Checkout repo
+        if: steps.guard.outputs.skip != 'true'
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # Prior days' output lives on the unprotected automation branch, not
+      # main. Restore it so duplicate-topic detection and the weekly CSV
+      # can see the last seven days.
+      - name: Restore content history
+        if: steps.guard.outputs.skip != 'true'
+        run: |
+          if git fetch origin automation/social-content 2>/dev/null; then
+            git checkout FETCH_HEAD -- content/ 2>/dev/null || echo "No content/ directory on history branch yet."
+          else
+            echo "No automation/social-content branch yet. Starting fresh."
+          fi
+
+      - name: Set up Node
+        if: steps.guard.outputs.skip != 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      # The generator uses only Node built-ins, so no npm install is needed.
+      - name: Generate content
+        if: steps.guard.outputs.skip != 'true'
+        id: generate
+        env:
+          AI_API_KEY: ${{ secrets.AI_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          AI_MODEL: ${{ vars.AI_MODEL }}
+          OPENAI_MODEL: ${{ vars.OPENAI_MODEL }}
+        run: |
+          if [ -n "${{ github.event.inputs.date }}" ]; then
+            node scripts/generate-social-content.js --date="${{ github.event.inputs.date }}"
+          else
+            node scripts/generate-social-content.js
+          fi
+
+      # main requires the "test" status check, which a content-only bot
+      # push can never satisfy - so output lands on a dedicated,
+      # unprotected branch (same pattern as manual-daily-agent.yml).
+      - name: Commit content to automation branch
+        if: steps.guard.outputs.skip != 'true'
+        run: |
+          git config user.name "Lion Elite Social Automation"
+          git config user.email "actions@github.com"
+
+          output_tmp="$(mktemp -d)"
+          trap 'rm -rf "$output_tmp"' EXIT
+          cp -a content/. "$output_tmp/"
+          git reset --hard HEAD
+          git clean -fd -- content/
+
+          if git ls-remote --exit-code --heads origin automation/social-content >/dev/null 2>&1; then
+            git fetch origin automation/social-content
+            git checkout automation/social-content
+          else
+            git checkout --orphan automation/social-content
+            git rm -rf --cached . >/dev/null 2>&1 || true
+          fi
+
+          mkdir -p content
+          cp -a "$output_tmp/." content/
+
+          git add content/
+          if git diff --cached --quiet; then
+            echo "No content changes to commit."
+          else
+            git commit -m "Add daily social content output"
+            git push origin HEAD:automation/social-content || echo "Push skipped because remote changed. Next run will retry."
+          fi
+
+      - name: Open issue on failure or compliance block
+        if: >-
+          always() && steps.guard.outputs.skip != 'true' &&
+          (steps.generate.outcome == 'failure' ||
+           (steps.generate.outputs.blocked != '' && steps.generate.outputs.blocked != '0'))
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const failed = '${{ steps.generate.outcome }}' === 'failure';
+            const blocked = '${{ steps.generate.outputs.blocked }}';
+            const date = '${{ steps.generate.outputs.date }}' || new Date().toISOString().slice(0, 10);
+            const title = `Daily social content ${failed ? 'generation failed' : 'compliance block'} — ${date}`;
+
+            let details = '';
+            const logPath = `content/generated/${date}/generation-log.json`;
+            if (fs.existsSync(logPath)) {
+              const log = JSON.parse(fs.readFileSync(logPath, 'utf8'));
+              details = '\n```json\n' + JSON.stringify({ summary: log.summary, blocked: log.blocked }, null, 2) + '\n```\n';
+            }
+
+            const body = [
+              failed
+                ? 'The daily social content generation run failed before producing output.'
+                : `Compliance validation blocked ${blocked} platform variant(s); the affected pieces were excluded from the Metricool CSV.`,
+              details,
+              `Run: ${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`,
+              '',
+              'Generated output (when any) is on the `automation/social-content` branch under `content/generated/`.'
+            ].join('\n');
+
+            const existing = await github.rest.search.issuesAndPullRequests({
+              q: `repo:${context.repo.owner}/${context.repo.repo} is:issue is:open in:title "${title}"`
+            });
+            if (existing.data.items.some((item) => item.title === title)) {
+              console.log('Issue already open for this date; skipping duplicate.');
+              return;
+            }
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title,
+              body,
+              labels: ['social-content', 'automation']
+            });

@@ -15,6 +15,7 @@
     "worker:integrations": "node workers/integration-worker.js",
     "db:migrate": "node scripts/migrate.js",
     "validate:render": "node scripts/validate-render-blueprint.js",
+    "social:generate": "node scripts/generate-social-content.js",
     "real-estate": "node real-estate/intelligence/src/dashboard-server.js",
     "real-estate:demo": "node real-estate/intelligence/src/demo.js",
     "real-estate:import": "node real-estate/intelligence/src/import-csv.js",
