@@ -1,5 +1,4 @@
 'use strict';
-
 const http = require('http');
 const { Worker } = require('bullmq');
 const { createRedisConnection, getRedis, ensureConnected, healthcheck, withLock, closeRedis } = require('../lib/redis');
@@ -30,11 +29,7 @@ function startWorker(queueName, processor) {
       log('error', 'job.failed', { queue: queueName, jobId: job.id, durationMs: Date.now() - started, code: error.code, message: error.message });
       throw error;
     }
-  }, {
-    connection: createRedisConnection(),
-    concurrency,
-    lockDuration: Number(process.env.JOB_LOCK_TTL_MS || 120000)
-  });
+  }, { connection: createRedisConnection(), concurrency, lockDuration: Number(process.env.JOB_LOCK_TTL_MS || 120000) });
 
   worker.on('failed', async (job, error) => {
     if (job && job.attemptsMade >= Number(job.opts.attempts || 1)) {
@@ -66,10 +61,7 @@ startWorker(QUEUE_NAMES.validation, async job => {
   if (job.name === 'schedule-due-followups') {
     const pending = await store.listQueue({ status: 'pending' });
     const now = Date.now();
-    const due = pending
-      .filter(item => !item.scheduledAt || new Date(item.scheduledAt).getTime() <= now)
-      .slice(0, Number(context.maxProspects || 100));
-
+    const due = pending.filter(item => !item.scheduledAt || new Date(item.scheduledAt).getTime() <= now).slice(0, Number(context.maxProspects || 100));
     let queued = 0;
     for (const item of due) {
       const prospect = await store.get(item.prospectId);
@@ -91,8 +83,30 @@ startWorker(QUEUE_NAMES.validation, async job => {
     error.code = 'OUTREACH_BLOCKED'; error.validation = validation; throw error;
   }
   const authorization = authorizeOutreach(context.prospect, context.policy || {});
-  await addJob('dispatch', 'dispatch-authorized-outreach', { prospect: context.prospect, draft: context.draft, quality: context.quality, authorization }, { jobId: authorization.idempotencyKey });
-  return { validation, authorization };
+
+  // Human approval gate: validated outreach is stored but never dispatched here.
+  // A reviewer must explicitly approve the draft in the review queue UI.
+  if (!context.prospect?.prospectId) {
+    const error = new Error('Stored prospect required for human review queue.');
+    error.code = 'PROSPECT_ID_REQUIRED';
+    throw error;
+  }
+  const queued = await store.enqueue(
+    context.prospect.prospectId,
+    authorization,
+    {
+      channel: context.draft?.channel || 'email',
+      recipient: context.draft?.recipient || context.prospect?.contact?.email,
+      subject: context.draft?.subject || null,
+      body: context.draft?.body,
+      messageVersion: context.draft?.messageVersion || 'review-v1'
+    },
+    new Date().toISOString(),
+    'outreach-worker'
+  );
+  await store.markQueue(queued.item.queueId, 'awaiting_review', { quality: context.quality }, 'outreach-worker');
+  await store.transition(context.prospect.prospectId, 'ready_for_review', { queueId: queued.item.queueId }, 'outreach-worker');
+  return { validation, authorization, awaitingReview: true, queueId: queued.item.queueId };
 });
 
 startWorker(QUEUE_NAMES.dispatch, async job => {
@@ -150,13 +164,9 @@ async function shutdown(signal) {
   if (shuttingDown) return;
   shuttingDown = true;
   clearInterval(heartbeatTimer);
-  log('info', 'worker.shutdown_started', { signal });
   await Promise.allSettled(workers.map(worker => worker.close()));
   await closeRedis();
-  server.close(() => {
-    log('info', 'worker.shutdown_complete', { signal });
-    process.exit(0);
-  });
+  server.close(() => process.exit(0));
   setTimeout(() => process.exit(1), Number(process.env.SHUTDOWN_TIMEOUT_MS || 30000)).unref();
 }
 
