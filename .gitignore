@@ -3,3 +3,6 @@ bun.lock
 bun.lockb
 .env
 *.log
+
+# Social-listening monitor output (third-party post content stays local)
+social-listening/data/

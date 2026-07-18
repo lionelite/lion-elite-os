@@ -86,6 +86,27 @@ node --test real-estate/intelligence/test/scoring.test.js
 
 Documentation: [`real-estate/intelligence/README.md`](real-estate/intelligence/README.md)
 
+## Daily Social Content Engine
+
+A scheduled GitHub Action (`.github/workflows/daily-social-content.yml`)
+generates daily, brand-separated social content for Lion Elite Wellness and
+Lion Elite Beauty at 7:00 AM America/New_York — 1 feed post, 1 Reel/TikTok
+script, and 2 Stories per brand, with platform-specific captions for
+Instagram, Facebook, TikTok, LinkedIn, and X.
+
+- Every piece passes fail-closed compliance validation (Lion Elite Wellness
+  stays research-education only: no dosing, human-use, treatment, or
+  transformation claims, mandatory research disclaimer).
+- Duplicate-topic detection enforces a seven-day content rotation.
+- Output lands on the `automation/social-content` branch as structured JSON,
+  media prompts (1080x1350 feed / 1080x1920 Stories-Reels), and
+  Metricool-compatible CSVs (`content/metricool-import/week-of-*.csv`) for
+  free-plan batch scheduling.
+- Failures and compliance blocks automatically open a GitHub issue.
+
+Run locally with `npm run social:generate`. Setup, secrets, and token
+rotation: [`docs/social-content-pipeline.md`](docs/social-content-pipeline.md).
+
 ## Mission
 
 Build Lion Elite into a scalable business ecosystem with clear systems, repeatable processes, organized execution, and daily progress tracking.

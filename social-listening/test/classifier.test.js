@@ -1,0 +1,100 @@
+'use strict';
+
+const test = require('node:test');
+const assert = require('node:assert/strict');
+const { classifyPost } = require('../src/classifier');
+
+test('matches a researcher sourcing post: subject + purchase intent', () => {
+  const { relevant, matches } = classifyPost(
+    'Any recommendations for a reliable peptide supplier with real COA documentation? Our lab needs a new source for BPC-157 for an in vitro study.'
+  );
+  assert.equal(relevant, true);
+  const match = matches.find((m) => m.audience === 'research-peptides');
+  assert.ok(match);
+  assert.equal(match.doNotEngage, false);
+  assert.ok(match.score >= 60, String(match.score));
+  assert.ok(match.matched.subject.includes('peptide') || match.matched.subject.includes('bpc-157'));
+  assert.ok(match.matched.intent.length >= 1);
+  assert.ok(match.suggestedOpener.includes('lionelitewellness.com'));
+  assert.ok(match.suggestedOpener.toLowerCase().includes('laboratory research purposes only'));
+});
+
+test('flags human-use intent as do-not-engage with no suggested opener', () => {
+  const { matches } = classifyPost(
+    'Looking to buy BPC-157 — starting my cycle next week, what dose did you all inject?'
+  );
+  const match = matches.find((m) => m.audience === 'research-peptides');
+  assert.ok(match, 'still surfaced');
+  assert.equal(match.doNotEngage, true);
+  assert.equal(match.suggestedOpener, null);
+  assert.match(match.doNotEngageReason, /research-use-only/i);
+  assert.ok(match.doNotEngageMatches.length >= 2);
+});
+
+test('ignores peptide mentions with no purchase intent (news, jokes)', () => {
+  for (const text of [
+    'Interesting new paper on peptide folding published today.',
+    'FDA cracks down on gray-market peptides, story at 9.',
+    'peptides lol'
+  ]) {
+    const { matches } = classifyPost(text);
+    assert.equal(matches.some((m) => m.audience === 'research-peptides'), false, text);
+  }
+});
+
+test('ignores purchase intent with no subject (buying anything else)', () => {
+  const { relevant } = classifyPost('Looking for recommendations on where to buy a good espresso machine.');
+  assert.equal(relevant, false);
+});
+
+test('matches someone publicly looking for a personal trainer', () => {
+  const { matches } = classifyPost(
+    "New year, same me apparently. Seriously thinking about hiring a personal trainer — any recommendations? Total beginner and no idea where to start."
+  );
+  const match = matches.find((m) => m.audience === 'personal-training');
+  assert.ok(match);
+  assert.equal(match.doNotEngage, false);
+  assert.ok(match.score >= 60, String(match.score));
+  assert.ok(match.suggestedOpener.includes('lionelitebeauty.com'));
+});
+
+test('flags trainers advertising themselves as peers, not prospects', () => {
+  // A pure ad with no seeking language is filtered out entirely.
+  const ad = classifyPost("I'm a certified personal trainer accepting new clients. Best training program in Austin!");
+  assert.equal(ad.matches.some((m) => m.audience === 'personal-training'), false);
+
+  // A peer post that DOES contain seeking language surfaces but is flagged.
+  const { matches } = classifyPost(
+    "Looking for new clients! I'm a certified personal trainer — DM me to start your training program!"
+  );
+  const match = matches.find((m) => m.audience === 'personal-training');
+  assert.ok(match, 'still surfaced');
+  assert.equal(match.doNotEngage, true);
+  assert.equal(match.suggestedOpener, null);
+});
+
+test('personal-training subject without seeking intent does not match', () => {
+  const { matches } = classifyPost('Crushed my workout routine today. Gym was empty, loved it.');
+  assert.equal(matches.some((m) => m.audience === 'personal-training'), false);
+});
+
+test('audience filter restricts classification', () => {
+  const text = 'Looking for a reliable peptide vendor for our lab.';
+  const both = classifyPost(text);
+  assert.equal(both.matches.length >= 1, true);
+  const filtered = classifyPost(text, { audiences: ['personal-training'] });
+  assert.equal(filtered.relevant, false);
+  assert.throws(() => classifyPost(text, { audiences: ['nope'] }), /Unknown audience/);
+});
+
+test('term matching respects word boundaries', () => {
+  // "order" inside "border", "buy" inside "buyer's remorse story"… should not fire alone,
+  // and unrelated words containing subject substrings must not match.
+  const { relevant } = classifyPost('The border town semaxxxx festival was great.');
+  assert.equal(relevant, false);
+});
+
+test('handles empty and non-string input', () => {
+  assert.equal(classifyPost('').relevant, false);
+  assert.equal(classifyPost(null).relevant, false);
+});
