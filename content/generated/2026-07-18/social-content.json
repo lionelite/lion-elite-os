@@ -1,0 +1,362 @@
+{
+  "date": "2026-07-18",
+  "generatedAt": "2026-07-18T01:49:49.032Z",
+  "brands": {
+    "wellness": {
+      "brandName": "Lion Elite Wellness",
+      "pieces": [
+        {
+          "id": "2026-07-18-wellness-feed",
+          "brand": "wellness",
+          "date": "2026-07-18",
+          "slot": "feed",
+          "type": "educational_feed",
+          "topic": {
+            "slug": "what-peptides-are",
+            "title": "What peptides actually are"
+          },
+          "cta": "website",
+          "platforms": {
+            "instagram": {
+              "text": "Short chains of amino acids — that is the whole definition.\n\nWhat peptides actually are — today's research education note from Lion Elite Wellness.\n\n• Peptides are sequences of amino acids, smaller than proteins.\n• They are studied across many fields of laboratory research.\n• Understanding the chemistry keeps the conversation honest.\n\nExplore the research catalog at lionelitewellness.com.\n\nFor laboratory research purposes only. Not for human or veterinary use.\n\n#ResearchEducation #PeptideResearch #ScientificLiteracy #LabStandards #LionEliteWellness"
+            },
+            "facebook": {
+              "text": "Short chains of amino acids — that is the whole definition.\n\nWhat peptides actually are — today's research education note from Lion Elite Wellness.\n\n• Peptides are sequences of amino acids, smaller than proteins.\n• They are studied across many fields of laboratory research.\n• Understanding the chemistry keeps the conversation honest.\n\nExplore the research catalog at lionelitewellness.com.\n\nFor laboratory research purposes only. Not for human or veterinary use."
+            },
+            "linkedin": {
+              "text": "What peptides actually are\n\nShort chains of amino acids — that is the whole definition.\n\n— Peptides are sequences of amino acids, smaller than proteins.\n— They are studied across many fields of laboratory research.\n— Understanding the chemistry keeps the conversation honest.\n\nExplore the research catalog at lionelitewellness.com.\n\nFor laboratory research purposes only. Not for human or veterinary use."
+            },
+            "x": {
+              "text": "Short chains of amino acids — that is the whole definition.\n\nExplore the research catalog at lionelitewellness.com.\n\nFor laboratory research purposes only. Not for human or veterinary use."
+            }
+          },
+          "media": {
+            "format": "feed",
+            "dimensions": "1080x1350",
+            "aspectRatio": "4:5",
+            "prompt": "molecular structure illustration, clean scientific aesthetic. Lion Elite Wellness aesthetic: premium, minimal, earth tones and black-and-white accents, natural light, no text overlay. Vertical 4:5 feed image, 1080x1350 px."
+          },
+          "schedule": {
+            "date": "2026-07-18",
+            "time": "09:00"
+          },
+          "compliance": {
+            "approved": true,
+            "platforms": {
+              "instagram": {
+                "approved": true,
+                "blockers": []
+              },
+              "facebook": {
+                "approved": true,
+                "blockers": []
+              },
+              "linkedin": {
+                "approved": true,
+                "blockers": []
+              },
+              "x": {
+                "approved": true,
+                "blockers": []
+              }
+            }
+          }
+        },
+        {
+          "id": "2026-07-18-wellness-reel",
+          "brand": "wellness",
+          "date": "2026-07-18",
+          "slot": "reel",
+          "type": "reel_script",
+          "topic": {
+            "slug": "quality-over-hype",
+            "title": "A higher standard for the research space"
+          },
+          "cta": "product_education",
+          "platforms": {
+            "instagram": {
+              "text": "The research product space has a hype problem. Standards fix it.\n\nRead the product information pages to learn how we document quality.\n\nFor laboratory research purposes only. Not for human or veterinary use.\n\n#ResearchEducation #PeptideResearch #ScientificLiteracy #LabStandards #LionEliteWellness"
+            },
+            "tiktok": {
+              "text": "HOOK (0-3s, on camera or bold text): The research product space has a hype problem. Standards fix it.\n\nBODY (talking points, one per cut):\n1. Clear labels, professional language, and quality documentation.\n2. Education builds trust; exaggeration destroys it.\n3. Lion Elite Wellness exists to raise the standard.\n\nCTA (final 3s): Read the product information pages to learn how we document quality.\n\nON-SCREEN DISCLAIMER (visible full duration): see below.\n\nFor laboratory research purposes only. Not for human or veterinary use."
+            }
+          },
+          "media": {
+            "format": "vertical",
+            "dimensions": "1080x1920",
+            "aspectRatio": "9:16",
+            "prompt": "brand flat-lay, black and white premium, lion motif subtle. Lion Elite Wellness aesthetic: premium, minimal, earth tones and black-and-white accents, natural light, no text overlay. Vertical 9:16 Reel/TikTok cover, 1080x1920 px."
+          },
+          "schedule": {
+            "date": "2026-07-18",
+            "time": "12:30"
+          },
+          "compliance": {
+            "approved": true,
+            "platforms": {
+              "instagram": {
+                "approved": true,
+                "blockers": []
+              },
+              "tiktok": {
+                "approved": true,
+                "blockers": []
+              }
+            }
+          }
+        },
+        {
+          "id": "2026-07-18-wellness-story-1",
+          "brand": "wellness",
+          "date": "2026-07-18",
+          "slot": "story-1",
+          "type": "story",
+          "topic": {
+            "slug": "what-peptides-are",
+            "title": "What peptides actually are"
+          },
+          "cta": "affiliate",
+          "platforms": {
+            "instagram": {
+              "text": "Short chains of amino acids — that is the whole definition.\n\nPeptides are sequences of amino acids, smaller than proteins.\n\nNew post is live — full breakdown on the feed.\n\nFor laboratory research purposes only. Not for human or veterinary use."
+            }
+          },
+          "media": {
+            "format": "vertical",
+            "dimensions": "1080x1920",
+            "aspectRatio": "9:16",
+            "prompt": "molecular structure illustration, clean scientific aesthetic. Lion Elite Wellness aesthetic: premium, minimal, earth tones and black-and-white accents, natural light, no text overlay. Vertical 9:16 Story frame, 1080x1920 px."
+          },
+          "schedule": {
+            "date": "2026-07-18",
+            "time": "15:00"
+          },
+          "compliance": {
+            "approved": true,
+            "platforms": {
+              "instagram": {
+                "approved": true,
+                "blockers": []
+              }
+            }
+          }
+        },
+        {
+          "id": "2026-07-18-wellness-story-2",
+          "brand": "wellness",
+          "date": "2026-07-18",
+          "slot": "story-2",
+          "type": "story",
+          "topic": {
+            "slug": "what-peptides-are",
+            "title": "What peptides actually are"
+          },
+          "cta": "wholesale",
+          "platforms": {
+            "instagram": {
+              "text": "Question sticker: What research-quality topic should we break down next?\n\nSourcing for a lab or research team? Reach out about wholesale inquiries.\n\nFor laboratory research purposes only. Not for human or veterinary use."
+            }
+          },
+          "media": {
+            "format": "vertical",
+            "dimensions": "1080x1920",
+            "aspectRatio": "9:16",
+            "prompt": "molecular structure illustration, clean scientific aesthetic. Lion Elite Wellness aesthetic: premium, minimal, earth tones and black-and-white accents, natural light, no text overlay. Vertical 9:16 Story frame, 1080x1920 px."
+          },
+          "schedule": {
+            "date": "2026-07-18",
+            "time": "19:00"
+          },
+          "compliance": {
+            "approved": true,
+            "platforms": {
+              "instagram": {
+                "approved": true,
+                "blockers": []
+              }
+            }
+          }
+        }
+      ],
+      "rejected": []
+    },
+    "beauty": {
+      "brandName": "Lion Elite Beauty",
+      "pieces": [
+        {
+          "id": "2026-07-18-beauty-feed",
+          "brand": "beauty",
+          "date": "2026-07-18",
+          "slot": "feed",
+          "type": "transformation_feed",
+          "topic": {
+            "slug": "plateau-protocol",
+            "title": "What to audit when progress stalls"
+          },
+          "cta": "dm_elite",
+          "platforms": {
+            "instagram": {
+              "text": "A plateau is information, not failure.\n\nWhat to audit when progress stalls — today's standard from Lion Elite Beauty.\n\n• Audit sleep, stress, adherence, and training load — in that order.\n• Most stalls are recovery problems wearing a nutrition costume.\n• Change one variable, measure, repeat.\n\nDM ELITE if you are ready to build with purpose.\n\n#LionEliteBeauty #DisciplineDaily #Biomarkers #WellnessCoaching #HigherStandard"
+            },
+            "facebook": {
+              "text": "A plateau is information, not failure.\n\nWhat to audit when progress stalls — today's standard from Lion Elite Beauty.\n\n• Audit sleep, stress, adherence, and training load — in that order.\n• Most stalls are recovery problems wearing a nutrition costume.\n• Change one variable, measure, repeat.\n\nDM ELITE if you are ready to build with purpose."
+            },
+            "linkedin": {
+              "text": "What to audit when progress stalls\n\nA plateau is information, not failure.\n\n— Audit sleep, stress, adherence, and training load — in that order.\n— Most stalls are recovery problems wearing a nutrition costume.\n— Change one variable, measure, repeat.\n\nDM ELITE if you are ready to build with purpose."
+            },
+            "x": {
+              "text": "A plateau is information, not failure.\n\nDM ELITE if you are ready to build with purpose."
+            }
+          },
+          "media": {
+            "format": "feed",
+            "dimensions": "1080x1350",
+            "aspectRatio": "4:5",
+            "prompt": "flat progress chart turning upward, analytical premium look. Lion Elite Beauty aesthetic: premium, minimal, earth tones and black-and-white accents, natural light, no text overlay. Vertical 4:5 feed image, 1080x1350 px."
+          },
+          "schedule": {
+            "date": "2026-07-18",
+            "time": "10:00"
+          },
+          "compliance": {
+            "approved": true,
+            "platforms": {
+              "instagram": {
+                "approved": true,
+                "blockers": []
+              },
+              "facebook": {
+                "approved": true,
+                "blockers": []
+              },
+              "linkedin": {
+                "approved": true,
+                "blockers": []
+              },
+              "x": {
+                "approved": true,
+                "blockers": []
+              }
+            }
+          }
+        },
+        {
+          "id": "2026-07-18-beauty-reel",
+          "brand": "beauty",
+          "date": "2026-07-18",
+          "slot": "reel",
+          "type": "reel_script",
+          "topic": {
+            "slug": "client-journey-structure",
+            "title": "What structured coaching actually looks like"
+          },
+          "cta": "comment_ready",
+          "platforms": {
+            "instagram": {
+              "text": "Assessment. Plan. Check-ins. Adjustments. Accountability.\n\nComment READY and we will send you the first step.\n\n#LionEliteBeauty #DisciplineDaily #Biomarkers #WellnessCoaching #HigherStandard"
+            },
+            "tiktok": {
+              "text": "HOOK (0-3s, on camera or bold text): Assessment. Plan. Check-ins. Adjustments. Accountability.\n\nBODY (talking points, one per cut):\n1. It starts with understanding where you are today.\n2. Objective feedback drives every adjustment.\n3. Structure is the service.\n\nCTA (final 3s): Comment READY and we will send you the first step."
+            }
+          },
+          "media": {
+            "format": "vertical",
+            "dimensions": "1080x1920",
+            "aspectRatio": "9:16",
+            "prompt": "coaching roadmap graphic, five steps, brand colors. Lion Elite Beauty aesthetic: premium, minimal, earth tones and black-and-white accents, natural light, no text overlay. Vertical 9:16 Reel/TikTok cover, 1080x1920 px."
+          },
+          "schedule": {
+            "date": "2026-07-18",
+            "time": "13:30"
+          },
+          "compliance": {
+            "approved": true,
+            "platforms": {
+              "instagram": {
+                "approved": true,
+                "blockers": []
+              },
+              "tiktok": {
+                "approved": true,
+                "blockers": []
+              }
+            }
+          }
+        },
+        {
+          "id": "2026-07-18-beauty-story-1",
+          "brand": "beauty",
+          "date": "2026-07-18",
+          "slot": "story-1",
+          "type": "story",
+          "topic": {
+            "slug": "plateau-protocol",
+            "title": "What to audit when progress stalls"
+          },
+          "cta": "program_application",
+          "platforms": {
+            "instagram": {
+              "text": "A plateau is information, not failure.\n\nAudit sleep, stress, adherence, and training load — in that order.\n\nNew post is live — full breakdown on the feed."
+            }
+          },
+          "media": {
+            "format": "vertical",
+            "dimensions": "1080x1920",
+            "aspectRatio": "9:16",
+            "prompt": "flat progress chart turning upward, analytical premium look. Lion Elite Beauty aesthetic: premium, minimal, earth tones and black-and-white accents, natural light, no text overlay. Vertical 9:16 Story frame, 1080x1920 px."
+          },
+          "schedule": {
+            "date": "2026-07-18",
+            "time": "16:00"
+          },
+          "compliance": {
+            "approved": true,
+            "platforms": {
+              "instagram": {
+                "approved": true,
+                "blockers": []
+              }
+            }
+          }
+        },
+        {
+          "id": "2026-07-18-beauty-story-2",
+          "brand": "beauty",
+          "date": "2026-07-18",
+          "slot": "story-2",
+          "type": "story",
+          "topic": {
+            "slug": "plateau-protocol",
+            "title": "What to audit when progress stalls"
+          },
+          "cta": "dm_elite",
+          "platforms": {
+            "instagram": {
+              "text": "Question sticker: What is the one habit you refuse to skip this week?\n\nDM ELITE if you are ready to build with purpose."
+            }
+          },
+          "media": {
+            "format": "vertical",
+            "dimensions": "1080x1920",
+            "aspectRatio": "9:16",
+            "prompt": "flat progress chart turning upward, analytical premium look. Lion Elite Beauty aesthetic: premium, minimal, earth tones and black-and-white accents, natural light, no text overlay. Vertical 9:16 Story frame, 1080x1920 px."
+          },
+          "schedule": {
+            "date": "2026-07-18",
+            "time": "20:00"
+          },
+          "compliance": {
+            "approved": true,
+            "platforms": {
+              "instagram": {
+                "approved": true,
+                "blockers": []
+              }
+            }
+          }
+        }
+      ],
+      "rejected": []
+    }
+  }
+}
