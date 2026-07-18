@@ -2,16 +2,16 @@
 
 // Audience profiles for the Bluesky social-listening monitor.
 //
-// Two audiences, one per brand lane:
+// Three audiences:
 //  - research-peptides (Lion Elite Wellness): researchers and lab buyers
 //    discussing sourcing, vendors, COAs, purity. Posts showing PERSONAL-USE
 //    intent (dosing, injecting, cycles, "I'm on...") are surfaced but
 //    hard-flagged DO NOT ENGAGE — marketing research-use-only products to
 //    human-use intent is outside policy (docs/customer-communication-rules.md).
 //  - personal-training (Lion Elite Beauty): people publicly asking for a
-//    trainer/coach or how to start training. (The firehose exposes public
-//    posts, not searches — a public "looking for a coach" post is the
-//    equivalent signal.)
+//    trainer/coach or how to start training.
+//  - business-scaling (LionOS): business owners publicly asking how to grow,
+//    automate, generate leads, improve sales systems, or scale operations.
 //
 // This tool NEVER posts, replies, likes, follows, or DMs. It only surfaces
 // posts, with a suggested opener a human may use manually after review.
@@ -21,7 +21,6 @@ const AUDIENCE_PROFILES = Object.freeze({
     key: 'research-peptides',
     brand: 'wellness',
     label: 'Researchers sourcing peptides (Lion Elite Wellness)',
-    // At least one subject term is required.
     subjectTerms: [
       'peptide', 'peptides',
       'bpc-157', 'bpc157', 'bpc 157',
@@ -37,7 +36,6 @@ const AUDIENCE_PROFILES = Object.freeze({
       'research chemical', 'research chemicals',
       'peptide vendor', 'peptide supplier', 'peptide source'
     ],
-    // At least one purchase/sourcing intent term is required.
     intentTerms: [
       'buy', 'buying', 'purchase', 'order', 'ordering',
       'source', 'sourcing', 'vendor', 'vendors', 'supplier', 'suppliers',
@@ -49,13 +47,11 @@ const AUDIENCE_PROFILES = Object.freeze({
       'in stock', 'restock', 'restocked',
       'anyone know', 'any suggestions', 'who sells', 'best place'
     ],
-    // Optional context that raises the score (research setting signals).
     boosterTerms: [
       'lab', 'laboratory', 'research', 'researcher', 'study', 'studies',
       'in vitro', 'in vivo', 'assay', 'cell culture', 'university',
       'coa', 'hplc', 'purity', 'batch', 'third-party tested', 'third party tested'
     ],
-    // Human-use intent → surface but DO NOT ENGAGE.
     doNotEngagePatterns: [
       /\bdos(e|es|ed|ing|age|ages)\b/i,
       /\binject(s|ed|ing|ions?|able)?\b/i,
@@ -108,7 +104,6 @@ const AUDIENCE_PROFILES = Object.freeze({
       'motivation', 'consistency', 'accountability', 'busy schedule',
       'plateau', 'stuck', 'overwhelmed', 'goals', 'new year'
     ],
-    // Trainers advertising themselves are peers, not prospects.
     doNotEngagePatterns: [
       /\bi'?m\s+a\s+(certified\s+)?(personal\s+)?(trainer|coach)\b/i,
       /\bmy\s+clients?\b/i,
@@ -116,12 +111,50 @@ const AUDIENCE_PROFILES = Object.freeze({
       /\bdm\s+me\s+to\s+(train|start|sign)\b/i
     ],
     doNotEngageReason:
-      'Author appears to be a trainer/coach advertising services (peer, not ' +
-      'a prospect).',
+      'Author appears to be a trainer/coach advertising services (peer, not a prospect).',
     suggestedOpener:
-      'If what you actually want is structure and real accountability — not ' +
-      'another random plan — that is exactly what Lion Elite Beauty coaching ' +
-      'is built around. lionelitebeauty.com'
+      'If what you actually want is structure and real accountability — not another random plan — that is exactly what Lion Elite Beauty coaching is built around. lionelitebeauty.com'
+  },
+
+  'business-scaling': {
+    key: 'business-scaling',
+    brand: 'lionos',
+    label: 'Business owners looking to scale / automate (LionOS)',
+    subjectTerms: [
+      'scale my business', 'scale our business', 'scaling my business', 'scaling a business',
+      'grow my business', 'grow our business', 'growing my business', 'business growth',
+      'lead generation', 'generate leads', 'more leads', 'get more clients', 'more clients',
+      'sales pipeline', 'sales system', 'sales process', 'close more sales', 'increase sales',
+      'business automation', 'automate my business', 'automate our business', 'ai automation',
+      'crm', 'customer relationship management', 'follow-up system', 'follow up system',
+      'marketing automation', 'email automation', 'workflow automation',
+      'operations', 'business systems', 'sop', 'standard operating procedure',
+      'client acquisition', 'customer acquisition', 'conversion rate', 'funnel'
+    ],
+    intentTerms: [
+      'need help', 'looking for', 'searching for', 'trying to find', 'want to',
+      'how do i', 'how can i', 'how to', 'where do i start', 'where to start',
+      'recommend', 'recommendation', 'recommendations', 'any suggestions',
+      'anyone know', 'struggling with', 'stuck', 'overwhelmed', 'need a system',
+      'need someone', 'hire', 'consultant', 'agency', 'service', 'solution'
+    ],
+    boosterTerms: [
+      'small business', 'business owner', 'founder', 'entrepreneur', 'startup',
+      'revenue', 'sales', 'clients', 'customers', 'pipeline', 'crm', 'automation',
+      'ai', 'marketing', 'operations', 'team', 'agency', 'ecommerce', 'e-commerce'
+    ],
+    doNotEngagePatterns: [
+      /\bwe\s+help\s+(businesses|founders|companies)\s+(scale|grow)\b/i,
+      /\bi'?m\s+a\s+(business\s+)?(coach|consultant)\b/i,
+      /\bmy\s+agency\b/i,
+      /\bbook\s+a\s+(free\s+)?call\b/i,
+      /\bdm\s+me\s+(to|if)\b/i,
+      /\baccepting\s+(new\s+)?clients\b/i
+    ],
+    doNotEngageReason:
+      'Author appears to be advertising business-growth services rather than seeking help.',
+    suggestedOpener:
+      'Saw your post about scaling. LionOS is built around practical AI automation, CRM, lead generation, sales systems, marketing automation, and business operations. Happy to compare notes on the bottleneck you are trying to solve.'
   }
 });
 
