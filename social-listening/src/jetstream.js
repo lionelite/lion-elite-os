@@ -42,6 +42,18 @@ function postUrl(did, rkey) {
   return `https://bsky.app/profile/${did}/post/${rkey}`;
 }
 
+function extractMentionDids(record = {}) {
+  const mentions = new Set();
+  for (const facet of Array.isArray(record.facets) ? record.facets : []) {
+    for (const feature of Array.isArray(facet?.features) ? facet.features : []) {
+      if (feature?.$type === 'app.bsky.richtext.facet#mention' && typeof feature.did === 'string') {
+        mentions.add(feature.did);
+      }
+    }
+  }
+  return [...mentions];
+}
+
 /**
  * Parse one raw Jetstream message. Returns a normalized post for new
  * app.bsky.feed.post creations, or null for anything else (deletes,
@@ -70,6 +82,7 @@ function parseEvent(raw) {
     langs: Array.isArray(record.langs) ? record.langs : [],
     createdAt: record.createdAt || null,
     isReply: Boolean(record.reply),
+    mentionedDids: extractMentionDids(record),
     url: postUrl(event.did, commit.rkey)
   };
 }
@@ -149,6 +162,7 @@ module.exports = {
   buildSubscribeUrl,
   parseEvent,
   postUrl,
+  extractMentionDids,
   isEnglish,
   JetstreamListener
 };

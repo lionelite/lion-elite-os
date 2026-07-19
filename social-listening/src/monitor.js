@@ -111,7 +111,8 @@ async function main() {
           url: post.url,
           text: post.text,
           createdAt: post.createdAt,
-          isReply: post.isReply
+          isReply: post.isReply,
+          mentionedDids: Array.isArray(post.mentionedDids) ? post.mentionedDids : []
         },
         match
       });

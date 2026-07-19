@@ -39,6 +39,12 @@ function keyFor(entry) {
   return `${entry.post.did}/${entry.post.rkey}/${entry.match.audience}`;
 }
 
+function isExplicitlyTagged(entry, botDid) {
+  const expected = String(botDid || '').trim();
+  if (!expected || entry?.post?.did === expected) return false;
+  return Array.isArray(entry?.post?.mentionedDids) && entry.post.mentionedDids.includes(expected);
+}
+
 function buildMessage(entry) {
   const opener = String(entry.match.suggestedOpener || '').trim();
   if (opener) return opener;
@@ -105,11 +111,19 @@ async function runOutreach() {
     return { disabled: true, attempted: 0, sent: 0 };
   }
 
+  const botDid = String(process.env.BLUESKY_BOT_DID || '').trim();
+  if (!botDid) {
+    const error = new Error('BLUESKY_BOT_DID is required. Automated replies are limited to posts that explicitly tag the bot.');
+    error.code = 'BLUESKY_BOT_DID_REQUIRED';
+    throw error;
+  }
+
   const state = loadState();
   const today = new Date().toISOString().slice(0, 10);
   const sentToday = Number(state.daily[today] || 0);
   const cap = Math.max(0, Math.min(maxPerRun, maxPerDay - sentToday));
   const entries = loadRecentMatches({ days: 7 })
+    .filter((entry) => isExplicitlyTagged(entry, botDid))
     .filter((entry) => !entry?.match?.doNotEngage)
     .filter((entry) => allowedAudiences.has(entry?.match?.audience))
     .filter((entry) => Number(entry?.match?.score || 0) >= minScore)
@@ -154,4 +168,4 @@ if (require.main === module) {
     });
 }
 
-module.exports = { runOutreach, buildMessage, keyFor };
+module.exports = { runOutreach, buildMessage, keyFor, isExplicitlyTagged };
