@@ -4,6 +4,7 @@ const express = require('express');
 const crypto = require('crypto');
 const { addJob, queueMetrics } = require('./lib/job-queues');
 const { getRedis, ensureConnected } = require('./lib/redis');
+const killSwitch = require('./lib/kill-switch');
 
 const app = express();
 app.use(express.json({ limit: '256kb' }));
@@ -37,6 +38,27 @@ app.get('/status', requireAuth, async (_req, res) => {
     redis.get('executive:last-report')
   ]);
   res.json({ metrics, lastReport: lastReport ? JSON.parse(lastReport) : null, time: new Date().toISOString() });
+});
+
+// Kill-switch routes for automated outreach. Unlike the analytics routes,
+// these REQUIRE a configured token: requireAuth alone falls open when
+// EXECUTIVE_API_TOKEN is unset, and an unauthenticated resume path would
+// defeat the point of a kill switch.
+function requireConfiguredAuth(req, res, next) {
+  if (!apiToken) return res.status(503).json({ error: 'EXECUTIVE_API_TOKEN_NOT_CONFIGURED' });
+  return requireAuth(req, res, next);
+}
+
+app.get('/outreach/kill-switch', requireConfiguredAuth, async (_req, res) => {
+  res.json(await killSwitch.status());
+});
+
+app.post('/outreach/kill-switch', requireConfiguredAuth, async (req, res) => {
+  const wantHalted = Boolean(req.body?.halted);
+  const result = wantHalted
+    ? await killSwitch.halt(String(req.body?.reason || 'manual halt via executive API'), 'executive-api')
+    : await killSwitch.resume('executive-api');
+  res.json(result);
 });
 
 app.post('/run/:job', requireAuth, async (req, res) => {

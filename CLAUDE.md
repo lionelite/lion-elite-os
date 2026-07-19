@@ -87,7 +87,13 @@ no-customer-outreach hard limit is untouched. Docs:
 - Never delete or truncate production data (databases, customer records,
   uploaded assets).
 - Never send customer-facing outreach (email/SMS/notifications) as a side
-  effect of automation work.
+  effect of automation work. *Owner amendment 2026-07-19:* the validated
+  B2B e-mail pipeline (`outreach-worker.js` → `lib/email-delivery.js`) is
+  explicitly authorized to send unattended, governed by the safeguards and
+  kill switch in `docs/automated-outreach.md`. Everything else this bullet
+  covers still stands: no SMS, no DMs, no social posting/replies, no new
+  send paths, and no weakening of the pipeline's validation, quota,
+  suppression, or kill-switch controls without a fresh owner decision.
 - Never make paid purchases, upgrade billing/plan tiers, or spend money on
   any connected service.
 
@@ -109,7 +115,16 @@ Five independent Node entry points, sharing `lib/`:
 Workers (`workers/*.js`), each its own Render worker/consumer:
 - `outreach-worker.js` — chains `email` → `validation` → `dispatch` BullMQ
   queues. Dispatch calls `lib/email-delivery.js`'s `sendEmail` directly
-  (the one real send path in the repo).
+  (the one real send path in the repo). Runs unattended by owner decision
+  (2026-07-19): every send is forced through an `outreach_queue` row so
+  the transactional daily quota, suppression re-check, and audit trail
+  can't be bypassed (`PROSPECT_ID_REQUIRED` otherwise); validation and the
+  follow-ups scheduler share deterministic idempotency-key jobIds so
+  dispatch dedupes; and all three stages consult the Redis kill switch
+  (`lib/kill-switch.js`, toggled via `scripts/outreach-kill-switch.js` or
+  the token-required executive-API routes). Invariants locked in by
+  `test/outreach-automation.test.js`; runbook in
+  `docs/automated-outreach.md`.
 - `executive-worker.js` — consumes `analytics` queue, writes health-score
   reports to Redis.
 - `integration-worker.js` — consumes `integrations` queue, normalizes
@@ -241,14 +256,16 @@ control, so not visible here).
 
 Real outreach sending needs `RESEND_API_KEY`, `OUTREACH_FROM_EMAIL`,
 `OUTREACH_SEND_ENABLED=true` (plus optional `OUTREACH_REPLY_TO`,
-`OUTREACH_UNSUBSCRIBE_EMAIL`) — **none of these appear in `.env.example` or
-any `render.yaml`.** This means outreach sending is currently fail-closed
-in production by omission: `lib/email-delivery.js` throws immediately
-unless all three required vars are set. Good for safety, bad for
-documentation — if someone provisions these later without reading the
-code, they'd be enabling real customer email with no doc trail. Do not add
-or enable these yourself; if asked to, stop and confirm with a human first
-per the hard limits above.
+`OUTREACH_UNSUBSCRIBE_EMAIL`, `OUTREACH_POSTAL_ADDRESS`) — **none of these
+appear in `.env.example` or any `render.yaml`.** Sending stays fail-closed
+until they exist: `lib/email-delivery.js` throws immediately unless the
+three required vars are set. The owner authorized unattended sending on
+2026-07-19; the full enablement checklist (Resend domain verification →
+vars on the worker flag-off → self-addressed test → enable →
+deliverability ramp) and the kill-switch runbook live in
+`docs/automated-outreach.md`. Setting the vars is a human action in the
+Render dashboard — never commit or echo the key, and never flip
+`OUTREACH_SEND_ENABLED` yourself; the switch belongs to the owner.
 
 Other undocumented-but-supplied vars (fine, just not written down
 anywhere): `JOB_ATTEMPTS`, `JOB_BACKOFF_MS`, `JOB_LOCK_TTL_MS`,
