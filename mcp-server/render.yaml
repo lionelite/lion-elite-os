@@ -8,3 +8,6 @@ services:
     plan: starter
     autoDeploy: true
     healthCheckPath: /health
+    envVars:
+      - key: LION_ELITE_OPERATING_MINDSET
+        value: abundance
