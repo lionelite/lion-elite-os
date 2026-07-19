@@ -3,6 +3,7 @@
 const fs = require('fs');
 const path = require('path');
 const { loadRecentMatches, DATA_DIR } = require('./store');
+const { sendReply } = require('./bluesky-delivery');
 
 const STATE_FILE = path.join(DATA_DIR, 'outreach-state.json');
 const LOG_FILE = path.join(DATA_DIR, 'outreach-log.jsonl');
@@ -57,25 +58,9 @@ function buildMessage(entry) {
   return 'Saw your post and thought it may be relevant to what we do at Lion Elite. Happy to connect and learn more about what you are looking for.';
 }
 
-async function deliver(entry, message, dryRun) {
-  const payload = {
-    source: 'bluesky-listener',
-    action: 'outreach',
-    audience: entry.match.audience,
-    score: entry.match.score,
-    prospect: {
-      did: entry.post.did,
-      rkey: entry.post.rkey,
-      postUrl: entry.post.url,
-      postText: entry.post.text
-    },
-    message
-  };
-
-  if (dryRun) return { ok: true, dryRun: true };
-
+async function deliverWebhook(entry, message) {
   const webhook = process.env.OUTREACH_WEBHOOK_URL;
-  if (!webhook) throw new Error('OUTREACH_WEBHOOK_URL is required when dry-run is disabled');
+  if (!webhook) throw new Error('OUTREACH_WEBHOOK_URL is required for webhook delivery mode');
 
   const headers = { 'content-type': 'application/json' };
   if (process.env.OUTREACH_WEBHOOK_TOKEN) headers.authorization = `Bearer ${process.env.OUTREACH_WEBHOOK_TOKEN}`;
@@ -83,7 +68,19 @@ async function deliver(entry, message, dryRun) {
   const response = await fetch(webhook, {
     method: 'POST',
     headers,
-    body: JSON.stringify(payload),
+    body: JSON.stringify({
+      source: 'bluesky-listener',
+      action: 'outreach',
+      audience: entry.match.audience,
+      score: entry.match.score,
+      prospect: {
+        did: entry.post.did,
+        rkey: entry.post.rkey,
+        postUrl: entry.post.url,
+        postText: entry.post.text
+      },
+      message
+    }),
     signal: AbortSignal.timeout(15000)
   });
 
@@ -92,7 +89,16 @@ async function deliver(entry, message, dryRun) {
     throw new Error(`delivery failed (${response.status}): ${body.slice(0, 300)}`);
   }
 
-  return { ok: true, dryRun: false, status: response.status };
+  return { ok: true, mode: 'webhook', status: response.status };
+}
+
+async function deliver(entry, message, dryRun) {
+  if (dryRun) return { ok: true, dryRun: true };
+
+  const mode = String(process.env.BLUESKY_OUTREACH_DELIVERY_MODE || 'direct').toLowerCase();
+  if (mode === 'direct') return sendReply(entry, message);
+  if (mode === 'webhook') return deliverWebhook(entry, message);
+  throw new Error(`Unsupported BLUESKY_OUTREACH_DELIVERY_MODE: ${mode}`);
 }
 
 async function runOutreach() {
@@ -143,7 +149,7 @@ async function runOutreach() {
     try {
       const result = await deliver(entry, message, dryRun);
       if (!dryRun) {
-        state.contacted[key] = { at: new Date().toISOString(), postUrl: entry.post.url, audience: entry.match.audience };
+        state.contacted[key] = { at: new Date().toISOString(), postUrl: entry.post.url, audience: entry.match.audience, result };
         state.daily[today] = Number(state.daily[today] || 0) + 1;
         saveState(state);
       }
@@ -168,4 +174,4 @@ if (require.main === module) {
     });
 }
 
-module.exports = { runOutreach, buildMessage, keyFor, isExplicitlyTagged };
+module.exports = { runOutreach, buildMessage, keyFor, isExplicitlyTagged, deliver };
