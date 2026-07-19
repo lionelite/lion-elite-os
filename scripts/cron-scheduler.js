@@ -3,6 +3,8 @@
 const crypto = require('crypto');
 const { addJob, QUEUE_NAMES, queueMetrics, closeQueues } = require('../lib/job-queues');
 
+const includeAbundanceMindset = process.env.MORNING_BRIEF_INCLUDE_ABUNDANCE_MINDSET !== 'false';
+
 const JOBS = Object.freeze({
   discovery: {
     queue: QUEUE_NAMES.discovery,
@@ -32,7 +34,18 @@ const JOBS = Object.freeze({
   morningBrief: {
     queue: QUEUE_NAMES.analytics,
     name: 'morning-brief',
-    payload: { brands: ['lion-elite-wellness', 'lion-elite-beauty'], include: ['queues', 'operations', 'sales', 'content', 'deployments'] }
+    payload: {
+      brands: ['lion-elite-wellness', 'lion-elite-beauty'],
+      include: ['mindset', 'queues', 'operations', 'sales', 'content', 'deployments'],
+      mindset: includeAbundanceMindset ? {
+        mode: 'abundance',
+        source: 'docs/abundance-mindset-operating-system.md',
+        language: 'present-tense-embodied',
+        opening: 'daily-mantra',
+        requireActionAlignment: true,
+        factualReportingMustRemainExact: true
+      } : null
+    }
   },
   middayRevenue: {
     queue: QUEUE_NAMES.analytics,
