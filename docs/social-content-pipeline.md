@@ -86,17 +86,18 @@ content/
 ### Public media hosting
 
 The public repo doubles as the media host: image files committed under
-`content/media/YYYY-MM-DD/<piece-id>.png` on the `automation/social-content`
+`content/media/YYYY-MM-DD/<piece-id>.jpg` on the `automation/social-content`
 branch are served as stable HTTPS URLs via `raw.githubusercontent.com`, and
 those URLs are written into the Metricool CSV's `Picture Url 1` column
 automatically (all platform rows of a piece share its image).
 
 Image sources, in priority order:
 
-1. **Human-dropped** — put a finished PNG at
-   `content/media/<date>/<piece-id>.png` on the automation branch (piece
+1. **Human-dropped** — put a finished **JPEG** at
+   `content/media/<date>/<piece-id>.jpg` on the automation branch (piece
    ids are printed in the run log and in `social-content.json`). Always
-   wins over generation.
+   wins over generation. JPEG specifically: Instagram's publishing API
+   rejects PNG.
 2. **AI-generated (opt-in)** — set the repo *variable* `AI_IMAGE_ENABLED=true`
    (with the existing `AI_API_KEY`/`OPENAI_API_KEY` secret) and the daily
    run generates portrait images (gpt-image-1, 1024x1536) from each

@@ -14,7 +14,7 @@ function samplePayload() {
         pieces: [{
           id: '2026-07-20-wellness-feed',
           slot: 'feed',
-          media: { url: 'https://raw.githubusercontent.com/lionelite/lion-elite-os/automation/social-content/content/media/2026-07-20/2026-07-20-wellness-feed.png' },
+          media: { url: 'https://raw.githubusercontent.com/lionelite/lion-elite-os/automation/social-content/content/media/2026-07-20/2026-07-20-wellness-feed.jpg' },
           platforms: {
             instagram: { text: 'IG caption' },
             facebook: { text: 'FB caption' },

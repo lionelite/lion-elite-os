@@ -9,21 +9,21 @@ const { pieceToRows } = require('../lib/social/metricool-csv');
 const PIECE = { id: '2026-07-20-wellness-feed', date: '2026-07-20', slot: 'feed' };
 
 test('media path and default raw.githubusercontent URL are stable and branch-pinned', () => {
-  assert.equal(mediaRelativePath(PIECE), 'content/media/2026-07-20/2026-07-20-wellness-feed.png');
+  assert.equal(mediaRelativePath(PIECE), 'content/media/2026-07-20/2026-07-20-wellness-feed.jpg');
   assert.equal(
     mediaUrlFor(PIECE, {}),
-    'https://raw.githubusercontent.com/lionelite/lion-elite-os/automation/social-content/content/media/2026-07-20/2026-07-20-wellness-feed.png'
+    'https://raw.githubusercontent.com/lionelite/lion-elite-os/automation/social-content/content/media/2026-07-20/2026-07-20-wellness-feed.jpg'
   );
   assert.equal(
     mediaUrlFor(PIECE, { GITHUB_REPOSITORY: 'lionelite/lion-elite-os', MEDIA_BRANCH: 'other-branch' }),
-    'https://raw.githubusercontent.com/lionelite/lion-elite-os/other-branch/content/media/2026-07-20/2026-07-20-wellness-feed.png'
+    'https://raw.githubusercontent.com/lionelite/lion-elite-os/other-branch/content/media/2026-07-20/2026-07-20-wellness-feed.jpg'
   );
 });
 
 test('MEDIA_BASE_URL overrides the host for a future CDN/site move', () => {
   assert.equal(
     mediaUrlFor(PIECE, { MEDIA_BASE_URL: 'https://media.lionelitewellness.com/' }),
-    'https://media.lionelitewellness.com/content/media/2026-07-20/2026-07-20-wellness-feed.png'
+    'https://media.lionelitewellness.com/content/media/2026-07-20/2026-07-20-wellness-feed.jpg'
   );
 });
 
