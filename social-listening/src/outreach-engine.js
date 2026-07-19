@@ -7,6 +7,7 @@ const { sendReply } = require('./bluesky-delivery');
 
 const STATE_FILE = path.join(DATA_DIR, 'outreach-state.json');
 const LOG_FILE = path.join(DATA_DIR, 'outreach-log.jsonl');
+let resolvedBotDid = null;
 
 function boolEnv(name, fallback = false) {
   const value = process.env[name];
@@ -19,11 +20,8 @@ function numEnv(name, fallback) {
 }
 
 function loadState() {
-  try {
-    return JSON.parse(fs.readFileSync(STATE_FILE, 'utf8'));
-  } catch {
-    return { contacted: {}, daily: {} };
-  }
+  try { return JSON.parse(fs.readFileSync(STATE_FILE, 'utf8')); }
+  catch { return { contacted: {}, daily: {} }; }
 }
 
 function saveState(state) {
@@ -46,6 +44,26 @@ function isExplicitlyTagged(entry, botDid) {
   return Array.isArray(entry?.post?.mentionedDids) && entry.post.mentionedDids.includes(expected);
 }
 
+async function resolveBotDid() {
+  const configured = String(process.env.BLUESKY_BOT_DID || '').trim();
+  if (configured) return configured;
+  if (resolvedBotDid) return resolvedBotDid;
+
+  const handle = String(process.env.BLUESKY_HANDLE || '').trim().replace(/^@/, '');
+  if (!handle) throw new Error('BLUESKY_HANDLE is required to resolve the Bluesky bot DID');
+
+  const url = new URL('https://public.api.bsky.app/xrpc/com.atproto.identity.resolveHandle');
+  url.searchParams.set('handle', handle);
+  const response = await fetch(url, { signal: AbortSignal.timeout(15000) });
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok || !data.did) {
+    throw new Error(`Could not resolve Bluesky handle ${handle} to a DID`);
+  }
+  resolvedBotDid = data.did;
+  console.log(`[outreach] Resolved ${handle} -> ${resolvedBotDid}`);
+  return resolvedBotDid;
+}
+
 function buildMessage(entry) {
   const opener = String(entry.match.suggestedOpener || '').trim();
   if (opener) return opener;
@@ -61,40 +79,27 @@ function buildMessage(entry) {
 async function deliverWebhook(entry, message) {
   const webhook = process.env.OUTREACH_WEBHOOK_URL;
   if (!webhook) throw new Error('OUTREACH_WEBHOOK_URL is required for webhook delivery mode');
-
   const headers = { 'content-type': 'application/json' };
   if (process.env.OUTREACH_WEBHOOK_TOKEN) headers.authorization = `Bearer ${process.env.OUTREACH_WEBHOOK_TOKEN}`;
-
   const response = await fetch(webhook, {
     method: 'POST',
     headers,
     body: JSON.stringify({
-      source: 'bluesky-listener',
-      action: 'outreach',
-      audience: entry.match.audience,
-      score: entry.match.score,
-      prospect: {
-        did: entry.post.did,
-        rkey: entry.post.rkey,
-        postUrl: entry.post.url,
-        postText: entry.post.text
-      },
+      source: 'bluesky-listener', action: 'outreach', audience: entry.match.audience, score: entry.match.score,
+      prospect: { did: entry.post.did, rkey: entry.post.rkey, postUrl: entry.post.url, postText: entry.post.text },
       message
     }),
     signal: AbortSignal.timeout(15000)
   });
-
   if (!response.ok) {
     const body = await response.text().catch(() => '');
     throw new Error(`delivery failed (${response.status}): ${body.slice(0, 300)}`);
   }
-
   return { ok: true, mode: 'webhook', status: response.status };
 }
 
 async function deliver(entry, message, dryRun) {
   if (dryRun) return { ok: true, dryRun: true };
-
   const mode = String(process.env.BLUESKY_OUTREACH_DELIVERY_MODE || 'direct').toLowerCase();
   if (mode === 'direct') return sendReply(entry, message);
   if (mode === 'webhook') return deliverWebhook(entry, message);
@@ -102,8 +107,9 @@ async function deliver(entry, message, dryRun) {
 }
 
 async function runOutreach() {
-  const enabled = boolEnv('BLUESKY_OUTREACH_ENABLED', false);
-  const dryRun = boolEnv('BLUESKY_OUTREACH_DRY_RUN', true);
+  const credentialsPresent = Boolean(process.env.BLUESKY_HANDLE && process.env.BLUESKY_APP_PASSWORD);
+  const enabled = boolEnv('BLUESKY_OUTREACH_ENABLED', credentialsPresent);
+  const dryRun = boolEnv('BLUESKY_OUTREACH_DRY_RUN', !credentialsPresent);
   const minScore = numEnv('BLUESKY_OUTREACH_MIN_SCORE', 60);
   const maxPerRun = numEnv('BLUESKY_OUTREACH_MAX_PER_RUN', 5);
   const maxPerDay = numEnv('BLUESKY_OUTREACH_MAX_PER_DAY', 25);
@@ -117,13 +123,7 @@ async function runOutreach() {
     return { disabled: true, attempted: 0, sent: 0 };
   }
 
-  const botDid = String(process.env.BLUESKY_BOT_DID || '').trim();
-  if (!botDid) {
-    const error = new Error('BLUESKY_BOT_DID is required. Automated replies are limited to posts that explicitly tag the bot.');
-    error.code = 'BLUESKY_BOT_DID_REQUIRED';
-    throw error;
-  }
-
+  const botDid = await resolveBotDid();
   const state = loadState();
   const today = new Date().toISOString().slice(0, 10);
   const sentToday = Number(state.daily[today] || 0);
@@ -143,7 +143,6 @@ async function runOutreach() {
     if (sent >= cap) break;
     const key = keyFor(entry);
     if (state.contacted[key]) { skipped += 1; continue; }
-
     const message = buildMessage(entry);
     attempted += 1;
     try {
@@ -174,4 +173,4 @@ if (require.main === module) {
     });
 }
 
-module.exports = { runOutreach, buildMessage, keyFor, isExplicitlyTagged, deliver };
+module.exports = { runOutreach, buildMessage, keyFor, isExplicitlyTagged, deliver, resolveBotDid };
