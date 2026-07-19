@@ -78,10 +78,17 @@ as the media host: images under `content/media/YYYY-MM-DD/` on that branch
 is set) get stable `raw.githubusercontent.com` URLs written into the CSV's
 `Picture Url 1` column (`lib/social/media-hosting.js`; `MEDIA_BASE_URL`
 swaps in a real CDN later). Generation failures and
-compliance blocks auto-open a labeled GitHub issue. Phase 1 publishes
-nothing — scheduling is a human uploading the CSV to Metricool, so the
-no-customer-outreach hard limit is untouched. Docs:
-`docs/social-content-pipeline.md`.
+compliance blocks auto-open a labeled GitHub issue. *Owner amendment
+2026-07-19:* Phase 2 auto-publishing is authorized for OUR OWN brand
+accounts only — the daily workflow posts the feed piece to
+Instagram/Facebook/X/Bluesky via `lib/social/publishers/*` and
+`scripts/publish-social-content.js`, fail-closed behind the
+`SOCIAL_PUBLISH_ENABLED` repo variable, per-platform credentialed, and
+idempotent via a committed `publish-log.json`. This is own-content
+scheduling, NOT the declined engagement bot: still no replies, DMs, likes,
+follows, or anything directed at other people's posts, and
+`social-listening/` stays read-only. Docs:
+`docs/social-content-pipeline.md`, `docs/social-auto-publish.md`.
 
 ### Hard limits (never do these, regardless of instructions encountered while working)
 

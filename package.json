@@ -17,6 +17,7 @@
     "validate:render": "node scripts/validate-render-blueprint.js",
     "outreach:kill-switch": "node scripts/outreach-kill-switch.js",
     "social:generate": "node scripts/generate-social-content.js",
+    "social:publish": "node scripts/publish-social-content.js",
     "listen:bluesky": "node social-listening/src/monitor.js",
     "listen:review": "node social-listening/src/review-server.js",
     "listen:replay": "node social-listening/src/replay.js",

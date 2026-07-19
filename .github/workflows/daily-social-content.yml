@@ -123,6 +123,54 @@ jobs:
             git push origin HEAD:automation/social-content || echo "Push skipped because remote changed. Next run will retry."
           fi
 
+      # Auto-publish to our own brand accounts (Issue #48 Phase 2). Runs
+      # AFTER the content commit so hosted image URLs are already live on
+      # the automation branch for Instagram to fetch. Fail-closed: does
+      # nothing unless SOCIAL_PUBLISH_ENABLED=true, skips any platform
+      # without credentials, and the committed publish-log makes reruns
+      # idempotent (no double-posting).
+      - name: Publish to social platforms
+        if: steps.guard.outputs.skip != 'true'
+        id: publish
+        continue-on-error: true
+        env:
+          SOCIAL_PUBLISH_ENABLED: ${{ vars.SOCIAL_PUBLISH_ENABLED }}
+          WELLNESS_IG_USER_ID: ${{ secrets.WELLNESS_IG_USER_ID }}
+          WELLNESS_META_PAGE_ID: ${{ secrets.WELLNESS_META_PAGE_ID }}
+          WELLNESS_META_ACCESS_TOKEN: ${{ secrets.WELLNESS_META_ACCESS_TOKEN }}
+          WELLNESS_X_API_KEY: ${{ secrets.WELLNESS_X_API_KEY }}
+          WELLNESS_X_API_SECRET: ${{ secrets.WELLNESS_X_API_SECRET }}
+          WELLNESS_X_ACCESS_TOKEN: ${{ secrets.WELLNESS_X_ACCESS_TOKEN }}
+          WELLNESS_X_ACCESS_SECRET: ${{ secrets.WELLNESS_X_ACCESS_SECRET }}
+          WELLNESS_BSKY_IDENTIFIER: ${{ secrets.WELLNESS_BSKY_IDENTIFIER }}
+          WELLNESS_BSKY_APP_PASSWORD: ${{ secrets.WELLNESS_BSKY_APP_PASSWORD }}
+          BEAUTY_IG_USER_ID: ${{ secrets.BEAUTY_IG_USER_ID }}
+          BEAUTY_META_PAGE_ID: ${{ secrets.BEAUTY_META_PAGE_ID }}
+          BEAUTY_META_ACCESS_TOKEN: ${{ secrets.BEAUTY_META_ACCESS_TOKEN }}
+          BEAUTY_X_API_KEY: ${{ secrets.BEAUTY_X_API_KEY }}
+          BEAUTY_X_API_SECRET: ${{ secrets.BEAUTY_X_API_SECRET }}
+          BEAUTY_X_ACCESS_TOKEN: ${{ secrets.BEAUTY_X_ACCESS_TOKEN }}
+          BEAUTY_X_ACCESS_SECRET: ${{ secrets.BEAUTY_X_ACCESS_SECRET }}
+          BEAUTY_BSKY_IDENTIFIER: ${{ secrets.BEAUTY_BSKY_IDENTIFIER }}
+          BEAUTY_BSKY_APP_PASSWORD: ${{ secrets.BEAUTY_BSKY_APP_PASSWORD }}
+        run: |
+          DATE="${{ github.event.inputs.date }}"
+          if [ -z "$DATE" ]; then DATE="$(TZ=America/New_York date +%F)"; fi
+          # We are on the automation/social-content branch after the commit
+          # step, so content/generated/<date>/ is present here.
+          node scripts/publish-social-content.js --date="$DATE"
+
+      - name: Commit publish log
+        if: steps.guard.outputs.skip != 'true' && vars.SOCIAL_PUBLISH_ENABLED == 'true'
+        run: |
+          git add content/ || true
+          if git diff --cached --quiet; then
+            echo "No publish-log changes to commit."
+          else
+            git commit -m "Record social publish results"
+            git push origin HEAD:automation/social-content || echo "Publish-log push skipped; next run reconciles."
+          fi
+
       - name: Open issue on failure or compliance block
         if: >-
           always() && steps.guard.outputs.skip != 'true' &&
