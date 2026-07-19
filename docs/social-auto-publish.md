@@ -92,6 +92,44 @@ npm run social:publish -- --date=2026-07-20 --dry-run   # show resolved targets
 npm run social:publish -- --date=2026-07-20             # publish (needs env + enable flag)
 ```
 
+## Peptide Info Series (per-product daily images)
+
+`lib/social/peptide-catalog.js` + `scripts/generate-peptide-images.js`
+produce one research-education product spotlight per day for the Wellness
+lane — a labeled research-vial image plus a compliance-passing caption for
+each approved peptide.
+
+```bash
+npm run social:peptide-images -- --start=2026-07-19 --list          # 18-day plan, no API
+npm run social:peptide-images -- --start=2026-07-19 --all           # backfill all 18 (needs AI image key)
+npm run social:peptide-images -- --start=2026-07-19 --date=2026-07-25  # just that day
+```
+
+Images write to `content/media/<date>/<date>-wellness-feed.jpg` — the exact
+path the media-hosting and auto-publish layers already read — so a
+generated peptide image becomes that day's Instagram/Facebook image
+automatically. Rendering requires `AI_IMAGE_ENABLED=true` + an image key;
+without it the script still writes every prompt + caption to
+`content/generated/<date>/peptide-series.json` so a designer can render or
+drop JPEGs at the listed paths.
+
+**Two compliance guardrails are baked into the data:**
+
+1. **Approved products only.** The catalog contains only peptides on
+   `lion-elite-wellness/product-master-list.md`. **Testosterone Cypionate**
+   (a Schedule III controlled substance), **Melanotan II**, and **PT-141**
+   from the source calendar are deliberately excluded and listed in
+   `EXCLUDED_PRODUCTS` — do not add them without an owner decision.
+2. **Research-education captions only.** Every caption describes the
+   research area a compound is studied in, never an effect in a person, and
+   carries the RUO disclaimer. `test/social-peptide-catalog.test.js` runs
+   each caption through the fail-closed compliance validator, so a caption
+   that drifts into human-use/dosing/transformation language fails CI
+   before it can publish. This is why the original calendar's themes ("Fat
+   Loss & Metabolic Support", "Muscle Growth & Recovery", "Skin
+   Regeneration & Anti-Aging", etc.) are **not** used verbatim — they are
+   human-use claims the validator blocks.
+
 ## Compliance note
 
 Lion Elite Wellness content published here is the same research-education
