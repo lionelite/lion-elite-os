@@ -3,6 +3,7 @@
 const { Worker } = require('bullmq');
 const { createRedisConnection, getRedis, ensureConnected, closeRedis } = require('../lib/redis');
 const { QUEUE_NAMES, queueMetrics } = require('../lib/job-queues');
+const { buildLeadsDigest } = require('../lib/leads-digest');
 
 const concurrency = Number(process.env.EXECUTIVE_WORKER_CONCURRENCY || 2);
 const allowed = new Set(['morning-brief', 'midday-revenue-check', 'evening-review', 'business-health-snapshot', 'daily-executive-report', 'queue-and-data-maintenance']);
@@ -37,6 +38,16 @@ const worker = new Worker(QUEUE_NAMES.analytics, async job => {
     priorities: [],
     metrics
   };
+
+  // Attach the leads digest to every report. Degrades gracefully when the
+  // service has no DATABASE_URL (queue metrics still report).
+  try {
+    report.leads = await buildLeadsDigest();
+    const qualified = (report.leads.prospects.byStage.find(row => row.stage === 'qualified') || {}).count || 0;
+    if (qualified > 0) report.priorities.push({ priority: 'high', action: `${qualified} qualified lead(s) waiting on sales contact — see leads digest.` });
+  } catch (error) {
+    report.leads = { available: false, error: error.message };
+  }
 
   if (report.summary.failed > 0) report.priorities.push({ priority: 'critical', action: 'Review failed automation jobs and dead-letter queue.' });
   if (report.summary.waiting > Number(process.env.EXECUTIVE_QUEUE_WARNING || 100)) report.priorities.push({ priority: 'high', action: 'Reduce queue backlog or increase worker concurrency.' });

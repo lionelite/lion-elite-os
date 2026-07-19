@@ -53,6 +53,17 @@ app.get('/outreach/kill-switch', requireConfiguredAuth, async (_req, res) => {
   res.json(await killSwitch.status());
 });
 
+// On-demand leads digest ("what leads are we getting and how do they
+// rate"). Token-required: the digest contains prospect names.
+app.get('/leads/digest', requireConfiguredAuth, async (_req, res) => {
+  try {
+    const { buildLeadsDigest } = require('./lib/leads-digest');
+    res.json(await buildLeadsDigest());
+  } catch (error) {
+    res.status(503).json({ error: 'LEADS_DIGEST_UNAVAILABLE', message: error.message });
+  }
+});
+
 app.post('/outreach/kill-switch', requireConfiguredAuth, async (req, res) => {
   const wantHalted = Boolean(req.body?.halted);
   const result = wantHalted

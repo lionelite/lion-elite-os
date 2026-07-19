@@ -73,6 +73,15 @@ jobs:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           AI_MODEL: ${{ vars.AI_MODEL }}
           OPENAI_MODEL: ${{ vars.OPENAI_MODEL }}
+          # Media hosting: images commit to the automation branch and are
+          # referenced by stable raw.githubusercontent.com URLs in the CSV.
+          # AI image generation is opt-in (per-image API cost) via the
+          # AI_IMAGE_ENABLED repo variable; human-dropped images in
+          # content/media/<date>/ are used either way.
+          AI_IMAGE_ENABLED: ${{ vars.AI_IMAGE_ENABLED }}
+          AI_IMAGE_MODEL: ${{ vars.AI_IMAGE_MODEL }}
+          MEDIA_BASE_URL: ${{ vars.MEDIA_BASE_URL }}
+          MEDIA_BRANCH: ${{ vars.MEDIA_BRANCH }}
         run: |
           if [ -n "${{ github.event.inputs.date }}" ]; then
             node scripts/generate-social-content.js --date="${{ github.event.inputs.date }}"

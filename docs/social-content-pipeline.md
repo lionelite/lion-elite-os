@@ -83,6 +83,35 @@ content/
     week-of-YYYY-MM-DD.csv # Mon–Sun combined CSV, refreshed daily
 ```
 
+### Public media hosting
+
+The public repo doubles as the media host: image files committed under
+`content/media/YYYY-MM-DD/<piece-id>.png` on the `automation/social-content`
+branch are served as stable HTTPS URLs via `raw.githubusercontent.com`, and
+those URLs are written into the Metricool CSV's `Picture Url 1` column
+automatically (all platform rows of a piece share its image).
+
+Image sources, in priority order:
+
+1. **Human-dropped** — put a finished PNG at
+   `content/media/<date>/<piece-id>.png` on the automation branch (piece
+   ids are printed in the run log and in `social-content.json`). Always
+   wins over generation.
+2. **AI-generated (opt-in)** — set the repo *variable* `AI_IMAGE_ENABLED=true`
+   (with the existing `AI_API_KEY`/`OPENAI_API_KEY` secret) and the daily
+   run generates portrait images (gpt-image-1, 1024x1536) from each
+   feed/reel piece's media prompt. Off by default because every image is a
+   paid API call (~6/day when on). `AI_IMAGE_MODEL` overrides the model.
+3. **Neither** — the CSV row has an empty `Picture Url 1`, exactly as
+   before. Note Instagram/TikTok require media, so imageless rows for
+   those networks still need an image attached inside Metricool.
+
+`MEDIA_BASE_URL` (repo variable) swaps `raw.githubusercontent.com` for any
+future CDN or site host without touching code; `MEDIA_BRANCH` overrides the
+branch. URLs become live when the workflow's commit lands on the automation
+branch — which always happens before a human downloads the CSV, so
+Metricool can fetch them at import time.
+
 ## Importing into Metricool
 
 1. Open the weekly file under `content/metricool-import/` on the

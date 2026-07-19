@@ -26,6 +26,7 @@ const { validatePiece } = require('../lib/social/social-compliance');
 const { loadHistoryFromDir } = require('../lib/social/topic-rotation');
 const { buildMetricoolCsv } = require('../lib/social/metricool-csv');
 const { resolveConfig, enhanceCaption } = require('../lib/social/ai-provider');
+const { mediaRelativePath, mediaUrlFor, resolveImageConfig, generateImage } = require('../lib/social/media-hosting');
 
 const REPO_ROOT = path.join(__dirname, '..');
 const GENERATED_DIR = path.join(REPO_ROOT, 'content', 'generated');
@@ -187,6 +188,39 @@ async function main() {
   }
 
   const approvedPieces = brandResults.flatMap((r) => r.pieces);
+
+  // Public media hosting: attach a stable raw.githubusercontent.com URL to
+  // every CSV-bound piece (feed/reel) that has a real image file — either
+  // one a human already dropped into content/media/<date>/, or one
+  // generated now from the media prompt when AI images are enabled. Pieces
+  // without a file keep an empty Picture Url, same as before.
+  const imageConfig = args.dryRun ? { enabled: false } : resolveImageConfig();
+  let imagesGenerated = 0;
+  let piecesWithMedia = 0;
+  for (const piece of approvedPieces) {
+    if (piece.slot !== 'feed' && piece.slot !== 'reel') continue;
+    const mediaFile = path.join(REPO_ROOT, mediaRelativePath(piece));
+    if (!fs.existsSync(mediaFile) && imageConfig.enabled) {
+      const image = await generateImage({ prompt: piece.media.prompt, config: imageConfig });
+      if (image) {
+        fs.mkdirSync(path.dirname(mediaFile), { recursive: true });
+        fs.writeFileSync(mediaFile, image);
+        imagesGenerated += 1;
+        console.log(`[social] image      ${piece.id} (${image.length} bytes)`);
+      } else {
+        console.log(`[social] image-skip ${piece.id} (generation unavailable; CSV row will have no picture URL)`);
+      }
+    }
+    if (fs.existsSync(mediaFile)) {
+      piece.media.file = mediaRelativePath(piece);
+      piece.media.url = mediaUrlFor(piece);
+      piecesWithMedia += 1;
+    }
+  }
+  if (!args.dryRun) {
+    console.log(`[social] Media: ${piecesWithMedia} pieces with hosted images (${imagesGenerated} generated this run, AI images ${imageConfig.enabled ? 'enabled' : 'disabled'})`);
+  }
+
   const daily = buildMetricoolCsv(approvedPieces);
   const summary = {
     generated: generatedCount,
@@ -194,7 +228,9 @@ async function main() {
     rejected: generatedCount - approvedPieces.length,
     scheduled: daily.rowCount,
     published: 0, // Phase 1 has no direct publishing; Metricool CSV import is manual.
-    aiEnhanced: aiEnhancedCount
+    aiEnhanced: aiEnhancedCount,
+    imagesGenerated,
+    piecesWithMedia
   };
 
   console.log(`[social] Summary: generated=${summary.generated} rejected=${summary.rejected} scheduled=${summary.scheduled} published=${summary.published}`);

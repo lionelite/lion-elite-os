@@ -72,7 +72,12 @@ AI-caption-enhancement with template fallback — works with zero secrets).
 Output goes to the unprotected `automation/social-content` branch (same
 branch-protection lesson as the daily agent): structured JSON + media
 prompts + daily CSV under `content/generated/YYYY-MM-DD/`, weekly combined
-Metricool CSV under `content/metricool-import/`. Generation failures and
+Metricool CSV under `content/metricool-import/`. The public repo doubles
+as the media host: images under `content/media/YYYY-MM-DD/` on that branch
+(human-dropped, or AI-generated when the `AI_IMAGE_ENABLED` repo variable
+is set) get stable `raw.githubusercontent.com` URLs written into the CSV's
+`Picture Url 1` column (`lib/social/media-hosting.js`; `MEDIA_BASE_URL`
+swaps in a real CDN later). Generation failures and
 compliance blocks auto-open a labeled GitHub issue. Phase 1 publishes
 nothing — scheduling is a human uploading the CSV to Metricool, so the
 no-customer-outreach hard limit is untouched. Docs:
