@@ -1,0 +1,362 @@
+{
+  "date": "2026-07-19",
+  "generatedAt": "2026-07-19T12:00:04.552Z",
+  "brands": {
+    "wellness": {
+      "brandName": "Lion Elite Wellness",
+      "pieces": [
+        {
+          "id": "2026-07-19-wellness-feed",
+          "brand": "wellness",
+          "date": "2026-07-19",
+          "slot": "feed",
+          "type": "educational_feed",
+          "topic": {
+            "slug": "batch-traceability",
+            "title": "Batch numbers: small print, big deal"
+          },
+          "cta": "product_education",
+          "platforms": {
+            "instagram": {
+              "text": "A batch number is a promise that someone can trace the answer.\n\nBatch numbers: small print, big deal — today's research education note from Lion Elite Wellness.\n\n• Batch identifiers link a vial to its specific test results.\n• Traceability means problems can be found, scoped, and answered.\n• No batch number, no accountability.\n\nRead the product information pages to learn how we document quality.\n\nFor laboratory research purposes only. Not for human or veterinary use.\n\n#ResearchEducation #PeptideResearch #ScientificLiteracy #LabStandards #LionEliteWellness"
+            },
+            "facebook": {
+              "text": "A batch number is a promise that someone can trace the answer.\n\nBatch numbers: small print, big deal — today's research education note from Lion Elite Wellness.\n\n• Batch identifiers link a vial to its specific test results.\n• Traceability means problems can be found, scoped, and answered.\n• No batch number, no accountability.\n\nRead the product information pages to learn how we document quality.\n\nFor laboratory research purposes only. Not for human or veterinary use."
+            },
+            "linkedin": {
+              "text": "Batch numbers: small print, big deal\n\nA batch number is a promise that someone can trace the answer.\n\n— Batch identifiers link a vial to its specific test results.\n— Traceability means problems can be found, scoped, and answered.\n— No batch number, no accountability.\n\nRead the product information pages to learn how we document quality.\n\nFor laboratory research purposes only. Not for human or veterinary use."
+            },
+            "x": {
+              "text": "A batch number is a promise that someone can trace the answer.\n\nRead the product information pages to learn how we document quality.\n\nFor laboratory research purposes only. Not for human or veterinary use."
+            }
+          },
+          "media": {
+            "format": "feed",
+            "dimensions": "1080x1350",
+            "aspectRatio": "4:5",
+            "prompt": "macro shot of a batch label on a vial, premium studio lighting. Lion Elite Wellness aesthetic: premium, minimal, earth tones and black-and-white accents, natural light, no text overlay. Vertical 4:5 feed image, 1080x1350 px."
+          },
+          "schedule": {
+            "date": "2026-07-19",
+            "time": "09:00"
+          },
+          "compliance": {
+            "approved": true,
+            "platforms": {
+              "instagram": {
+                "approved": true,
+                "blockers": []
+              },
+              "facebook": {
+                "approved": true,
+                "blockers": []
+              },
+              "linkedin": {
+                "approved": true,
+                "blockers": []
+              },
+              "x": {
+                "approved": true,
+                "blockers": []
+              }
+            }
+          }
+        },
+        {
+          "id": "2026-07-19-wellness-reel",
+          "brand": "wellness",
+          "date": "2026-07-19",
+          "slot": "reel",
+          "type": "reel_script",
+          "topic": {
+            "slug": "third-party-testing",
+            "title": "Why third-party testing matters"
+          },
+          "cta": "affiliate",
+          "platforms": {
+            "instagram": {
+              "text": "A supplier grading its own homework is not a quality system.\n\nInterested in partnering? Ask about the Lion Elite Wellness affiliate program.\n\nFor laboratory research purposes only. Not for human or veterinary use.\n\n#ResearchEducation #PeptideResearch #ScientificLiteracy #LabStandards #LionEliteWellness"
+            },
+            "tiktok": {
+              "text": "HOOK (0-3s, on camera or bold text): A supplier grading its own homework is not a quality system.\n\nBODY (talking points, one per cut):\n1. Independent laboratories remove the conflict of interest.\n2. Third-party results should match the supplier’s claims.\n3. Verification you can check beats reputation you have to trust.\n\nCTA (final 3s): Interested in partnering? Ask about the Lion Elite Wellness affiliate program.\n\nON-SCREEN DISCLAIMER (visible full duration): see below.\n\nFor laboratory research purposes only. Not for human or veterinary use."
+            }
+          },
+          "media": {
+            "format": "vertical",
+            "dimensions": "1080x1920",
+            "aspectRatio": "9:16",
+            "prompt": "independent lab exterior and paperwork, documentary style. Lion Elite Wellness aesthetic: premium, minimal, earth tones and black-and-white accents, natural light, no text overlay. Vertical 9:16 Reel/TikTok cover, 1080x1920 px."
+          },
+          "schedule": {
+            "date": "2026-07-19",
+            "time": "12:30"
+          },
+          "compliance": {
+            "approved": true,
+            "platforms": {
+              "instagram": {
+                "approved": true,
+                "blockers": []
+              },
+              "tiktok": {
+                "approved": true,
+                "blockers": []
+              }
+            }
+          }
+        },
+        {
+          "id": "2026-07-19-wellness-story-1",
+          "brand": "wellness",
+          "date": "2026-07-19",
+          "slot": "story-1",
+          "type": "story",
+          "topic": {
+            "slug": "batch-traceability",
+            "title": "Batch numbers: small print, big deal"
+          },
+          "cta": "wholesale",
+          "platforms": {
+            "instagram": {
+              "text": "A batch number is a promise that someone can trace the answer.\n\nBatch identifiers link a vial to its specific test results.\n\nNew post is live — full breakdown on the feed.\n\nFor laboratory research purposes only. Not for human or veterinary use."
+            }
+          },
+          "media": {
+            "format": "vertical",
+            "dimensions": "1080x1920",
+            "aspectRatio": "9:16",
+            "prompt": "macro shot of a batch label on a vial, premium studio lighting. Lion Elite Wellness aesthetic: premium, minimal, earth tones and black-and-white accents, natural light, no text overlay. Vertical 9:16 Story frame, 1080x1920 px."
+          },
+          "schedule": {
+            "date": "2026-07-19",
+            "time": "15:00"
+          },
+          "compliance": {
+            "approved": true,
+            "platforms": {
+              "instagram": {
+                "approved": true,
+                "blockers": []
+              }
+            }
+          }
+        },
+        {
+          "id": "2026-07-19-wellness-story-2",
+          "brand": "wellness",
+          "date": "2026-07-19",
+          "slot": "story-2",
+          "type": "story",
+          "topic": {
+            "slug": "batch-traceability",
+            "title": "Batch numbers: small print, big deal"
+          },
+          "cta": "website",
+          "platforms": {
+            "instagram": {
+              "text": "Question sticker: What research-quality topic should we break down next?\n\nExplore the research catalog at lionelitewellness.com.\n\nFor laboratory research purposes only. Not for human or veterinary use."
+            }
+          },
+          "media": {
+            "format": "vertical",
+            "dimensions": "1080x1920",
+            "aspectRatio": "9:16",
+            "prompt": "macro shot of a batch label on a vial, premium studio lighting. Lion Elite Wellness aesthetic: premium, minimal, earth tones and black-and-white accents, natural light, no text overlay. Vertical 9:16 Story frame, 1080x1920 px."
+          },
+          "schedule": {
+            "date": "2026-07-19",
+            "time": "19:00"
+          },
+          "compliance": {
+            "approved": true,
+            "platforms": {
+              "instagram": {
+                "approved": true,
+                "blockers": []
+              }
+            }
+          }
+        }
+      ],
+      "rejected": []
+    },
+    "beauty": {
+      "brandName": "Lion Elite Beauty",
+      "pieces": [
+        {
+          "id": "2026-07-19-beauty-feed",
+          "brand": "beauty",
+          "date": "2026-07-19",
+          "slot": "feed",
+          "type": "transformation_feed",
+          "topic": {
+            "slug": "environment-design",
+            "title": "Design the environment, not just the plan"
+          },
+          "cta": "comment_ready",
+          "platforms": {
+            "instagram": {
+              "text": "Willpower loses to environment every single time.\n\nDesign the environment, not just the plan — today's standard from Lion Elite Beauty.\n\n• Make the right choice the easy choice — prep, layout, defaults.\n• Remove the friction between you and the standard.\n• Your surroundings vote on your habits daily.\n\nComment READY and we will send you the first step.\n\n#LionEliteBeauty #DisciplineDaily #Biomarkers #WellnessCoaching #HigherStandard"
+            },
+            "facebook": {
+              "text": "Willpower loses to environment every single time.\n\nDesign the environment, not just the plan — today's standard from Lion Elite Beauty.\n\n• Make the right choice the easy choice — prep, layout, defaults.\n• Remove the friction between you and the standard.\n• Your surroundings vote on your habits daily.\n\nComment READY and we will send you the first step."
+            },
+            "linkedin": {
+              "text": "Design the environment, not just the plan\n\nWillpower loses to environment every single time.\n\n— Make the right choice the easy choice — prep, layout, defaults.\n— Remove the friction between you and the standard.\n— Your surroundings vote on your habits daily.\n\nComment READY and we will send you the first step."
+            },
+            "x": {
+              "text": "Willpower loses to environment every single time.\n\nComment READY and we will send you the first step."
+            }
+          },
+          "media": {
+            "format": "feed",
+            "dimensions": "1080x1350",
+            "aspectRatio": "4:5",
+            "prompt": "organized kitchen and gym bag laid out the night before. Lion Elite Beauty aesthetic: premium, minimal, earth tones and black-and-white accents, natural light, no text overlay. Vertical 4:5 feed image, 1080x1350 px."
+          },
+          "schedule": {
+            "date": "2026-07-19",
+            "time": "10:00"
+          },
+          "compliance": {
+            "approved": true,
+            "platforms": {
+              "instagram": {
+                "approved": true,
+                "blockers": []
+              },
+              "facebook": {
+                "approved": true,
+                "blockers": []
+              },
+              "linkedin": {
+                "approved": true,
+                "blockers": []
+              },
+              "x": {
+                "approved": true,
+                "blockers": []
+              }
+            }
+          }
+        },
+        {
+          "id": "2026-07-19-beauty-reel",
+          "brand": "beauty",
+          "date": "2026-07-19",
+          "slot": "reel",
+          "type": "reel_script",
+          "topic": {
+            "slug": "sleep-is-a-skill",
+            "title": "Sleep is a trainable skill"
+          },
+          "cta": "program_application",
+          "platforms": {
+            "instagram": {
+              "text": "The most underrated performance tool is free and happens in the dark.\n\nApply for the coaching program — the link is in our bio.\n\n#LionEliteBeauty #DisciplineDaily #Biomarkers #WellnessCoaching #HigherStandard"
+            },
+            "tiktok": {
+              "text": "HOOK (0-3s, on camera or bold text): The most underrated performance tool is free and happens in the dark.\n\nBODY (talking points, one per cut):\n1. Consistent timing, cool room, morning light — the fundamentals win.\n2. Recovery quality shows up in training quality.\n3. Track it like you track training.\n\nCTA (final 3s): Apply for the coaching program — the link is in our bio."
+            }
+          },
+          "media": {
+            "format": "vertical",
+            "dimensions": "1080x1920",
+            "aspectRatio": "9:16",
+            "prompt": "dark minimal bedroom, watch on nightstand, dawn light. Lion Elite Beauty aesthetic: premium, minimal, earth tones and black-and-white accents, natural light, no text overlay. Vertical 9:16 Reel/TikTok cover, 1080x1920 px."
+          },
+          "schedule": {
+            "date": "2026-07-19",
+            "time": "13:30"
+          },
+          "compliance": {
+            "approved": true,
+            "platforms": {
+              "instagram": {
+                "approved": true,
+                "blockers": []
+              },
+              "tiktok": {
+                "approved": true,
+                "blockers": []
+              }
+            }
+          }
+        },
+        {
+          "id": "2026-07-19-beauty-story-1",
+          "brand": "beauty",
+          "date": "2026-07-19",
+          "slot": "story-1",
+          "type": "story",
+          "topic": {
+            "slug": "environment-design",
+            "title": "Design the environment, not just the plan"
+          },
+          "cta": "dm_elite",
+          "platforms": {
+            "instagram": {
+              "text": "Willpower loses to environment every single time.\n\nMake the right choice the easy choice — prep, layout, defaults.\n\nNew post is live — full breakdown on the feed."
+            }
+          },
+          "media": {
+            "format": "vertical",
+            "dimensions": "1080x1920",
+            "aspectRatio": "9:16",
+            "prompt": "organized kitchen and gym bag laid out the night before. Lion Elite Beauty aesthetic: premium, minimal, earth tones and black-and-white accents, natural light, no text overlay. Vertical 9:16 Story frame, 1080x1920 px."
+          },
+          "schedule": {
+            "date": "2026-07-19",
+            "time": "16:00"
+          },
+          "compliance": {
+            "approved": true,
+            "platforms": {
+              "instagram": {
+                "approved": true,
+                "blockers": []
+              }
+            }
+          }
+        },
+        {
+          "id": "2026-07-19-beauty-story-2",
+          "brand": "beauty",
+          "date": "2026-07-19",
+          "slot": "story-2",
+          "type": "story",
+          "topic": {
+            "slug": "environment-design",
+            "title": "Design the environment, not just the plan"
+          },
+          "cta": "comment_ready",
+          "platforms": {
+            "instagram": {
+              "text": "Question sticker: What is the one habit you refuse to skip this week?\n\nComment READY and we will send you the first step."
+            }
+          },
+          "media": {
+            "format": "vertical",
+            "dimensions": "1080x1920",
+            "aspectRatio": "9:16",
+            "prompt": "organized kitchen and gym bag laid out the night before. Lion Elite Beauty aesthetic: premium, minimal, earth tones and black-and-white accents, natural light, no text overlay. Vertical 9:16 Story frame, 1080x1920 px."
+          },
+          "schedule": {
+            "date": "2026-07-19",
+            "time": "20:00"
+          },
+          "compliance": {
+            "approved": true,
+            "platforms": {
+              "instagram": {
+                "approved": true,
+                "blockers": []
+              }
+            }
+          }
+        }
+      ],
+      "rejected": []
+    }
+  }
+}

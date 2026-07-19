@@ -1,0 +1,14 @@
+{
+  "date": "2026-07-19",
+  "generatedAt": "2026-07-19T12:00:04.552Z",
+  "mode": "ai-enhanced",
+  "summary": {
+    "generated": 8,
+    "approved": 8,
+    "rejected": 0,
+    "scheduled": 12,
+    "published": 0,
+    "aiEnhanced": 0
+  },
+  "blocked": []
+}
