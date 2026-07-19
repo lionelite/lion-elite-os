@@ -41,6 +41,7 @@ test('parses a post commit event into a normalized post with URL', () => {
   assert.equal(post.text, 'hello world');
   assert.equal(post.timeUs, 1725911162329308);
   assert.equal(post.isReply, false);
+  assert.deepEqual(post.mentionedDids, []);
   assert.equal(post.url, 'https://bsky.app/profile/did:plc:abc123/post/3l3qo2vutsw2b');
 });
 
@@ -62,6 +63,18 @@ test('ignores deletes, other collections, and malformed payloads', () => {
   const noText = JSON.parse(SAMPLE_COMMIT);
   delete noText.commit.record.text;
   assert.equal(parseEvent(JSON.stringify(noText)), null);
+});
+
+test('extracts unique structured mention DIDs', () => {
+  const mention = JSON.parse(SAMPLE_COMMIT);
+  mention.commit.record.facets = [
+    { features: [
+      { $type: 'app.bsky.richtext.facet#mention', did: 'did:plc:lionbot' },
+      { $type: 'app.bsky.richtext.facet#link', uri: 'https://example.com' }
+    ] },
+    { features: [{ $type: 'app.bsky.richtext.facet#mention', did: 'did:plc:lionbot' }] }
+  ];
+  assert.deepEqual(parseEvent(JSON.stringify(mention)).mentionedDids, ['did:plc:lionbot']);
 });
 
 test('marks reply posts', () => {
