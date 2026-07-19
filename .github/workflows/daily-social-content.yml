@@ -64,6 +64,18 @@ jobs:
         with:
           node-version: 22
 
+      # Optional: pull live lionelitewellness.com product copy so Wellness
+      # captions are grounded in the real site (sentence-filtered for
+      # compliance). Inert until the SITE_PRODUCT_URLS repo variable lists
+      # the product-page URLs. Runs here — the GitHub runner can reach the
+      # site even though the dev sandbox's network policy cannot.
+      - name: Sync site product copy
+        if: steps.guard.outputs.skip != 'true' && vars.SITE_PRODUCT_URLS != ''
+        continue-on-error: true
+        env:
+          SITE_PRODUCT_URLS: ${{ vars.SITE_PRODUCT_URLS }}
+        run: node scripts/fetch-site-catalog.js
+
       # The generator uses only Node built-ins, so no npm install is needed.
       - name: Generate content
         if: steps.guard.outputs.skip != 'true'

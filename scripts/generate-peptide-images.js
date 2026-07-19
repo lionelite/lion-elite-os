@@ -20,8 +20,44 @@ const path = require('path');
 const { PEPTIDE_CATALOG, EXCLUDED_PRODUCTS, peptideForDate } = require('../lib/social/peptide-catalog');
 const { validateContent } = require('../lib/social/social-compliance');
 const { resolveImageConfig, generateImage } = require('../lib/social/media-hosting');
+const { buildSiteSourcedCaption, matchPeptide } = require('../lib/social/site-catalog');
 
 const REPO_ROOT = path.join(__dirname, '..');
+
+// Load cached lionelitewellness.com product copy (written by
+// scripts/fetch-site-catalog.js). When a peptide matches a site product,
+// its caption is grounded in the site's own words — sentence-filtered for
+// compliance — instead of the catalog default.
+function loadSiteCaptions() {
+  const file = path.join(REPO_ROOT, 'content', 'site-catalog.json');
+  if (!fs.existsSync(file)) return {};
+  let catalog;
+  try {
+    catalog = JSON.parse(fs.readFileSync(file, 'utf8'));
+  } catch {
+    return {};
+  }
+  const bySlug = {};
+  for (const product of catalog.products || []) {
+    const peptide = matchPeptide(product, PEPTIDE_CATALOG);
+    if (!peptide) continue;
+    const caption = buildSiteSourcedCaption(product.name, `${product.description} ${product.text}`);
+    if (caption) bySlug[peptide.slug] = { caption, sourceUrl: product.url };
+  }
+  return bySlug;
+}
+
+const SITE_CAPTIONS = loadSiteCaptions();
+
+// A peptide's caption, preferring compliant site-sourced copy when available.
+function captionFor(peptide) {
+  const site = SITE_CAPTIONS[peptide.slug];
+  return {
+    caption: site ? site.caption : peptide.caption,
+    source: site ? 'site' : 'catalog',
+    sourceUrl: site ? site.sourceUrl : null
+  };
+}
 
 function parseArgs(argv) {
   const args = { start: null, date: null, list: false, all: false };
@@ -43,15 +79,16 @@ function pieceIdFor(dateStr) {
   return `${dateStr}-wellness-feed`;
 }
 
-function assertCompliant(peptide) {
-  const result = validateContent({ text: peptide.caption, complianceMode: 'research-only' });
+function assertCompliant(text, name) {
+  const result = validateContent({ text, complianceMode: 'research-only' });
   if (!result.approved) {
-    throw new Error(`Caption for ${peptide.name} failed compliance: ${result.blockers.map((b) => b.code).join(', ')}`);
+    throw new Error(`Caption for ${name} failed compliance: ${result.blockers.map((b) => b.code).join(', ')}`);
   }
 }
 
 async function renderOne(peptide, dateStr, imageConfig) {
-  assertCompliant(peptide);
+  const { caption, source, sourceUrl } = captionFor(peptide);
+  assertCompliant(caption, peptide.name); // site or catalog, both gated
   const rel = `content/media/${dateStr}/${pieceIdFor(dateStr)}.jpg`;
   const abs = path.join(REPO_ROOT, rel);
   let generated = false;
@@ -63,7 +100,7 @@ async function renderOne(peptide, dateStr, imageConfig) {
       generated = true;
     }
   }
-  return { slug: peptide.slug, name: peptide.name, date: dateStr, mediaFile: rel, caption: peptide.caption, imagePrompt: peptide.imagePrompt, imageGenerated: generated, imageExists: fs.existsSync(abs) };
+  return { slug: peptide.slug, name: peptide.name, date: dateStr, mediaFile: rel, caption, captionSource: source, sourceUrl, imagePrompt: peptide.imagePrompt, imageGenerated: generated, imageExists: fs.existsSync(abs) };
 }
 
 async function main() {
@@ -77,12 +114,14 @@ async function main() {
   }
 
   if (args.list) {
+    const siteCount = Object.keys(SITE_CAPTIONS).length;
     for (let i = 0; i < PEPTIDE_CATALOG.length; i += 1) {
       const p = PEPTIDE_CATALOG[i];
-      assertCompliant(p);
-      console.log(`  Day ${String(i + 1).padStart(2)} · ${p.name} — ${p.researchArea} [caption OK]`);
+      const { caption, source } = captionFor(p);
+      assertCompliant(caption, p.name);
+      console.log(`  Day ${String(i + 1).padStart(2)} · ${p.name} — ${p.researchArea} [${source} caption OK]`);
     }
-    console.log(`[peptide] ${PEPTIDE_CATALOG.length} approved peptides, all captions pass compliance.`);
+    console.log(`[peptide] ${PEPTIDE_CATALOG.length} approved peptides, all captions pass compliance (${siteCount} grounded in site copy).`);
     return;
   }
 
