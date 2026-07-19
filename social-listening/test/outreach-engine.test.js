@@ -2,7 +2,7 @@
 
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { buildMessage, keyFor } = require('../src/outreach-engine');
+const { buildMessage, keyFor, isExplicitlyTagged } = require('../src/outreach-engine');
 
 test('buildMessage uses configured suggested opener', () => {
   const entry = {
@@ -26,4 +26,20 @@ test('keyFor produces stable per-post per-audience dedupe key', () => {
     match: { audience: 'business-scaling' }
   };
   assert.equal(keyFor(entry), 'did:plc:test/abc/business-scaling');
+});
+
+test('requires an explicit structured tag of the configured bot DID', () => {
+  const tagged = {
+    post: { did: 'did:plc:prospect', mentionedDids: ['did:plc:lionbot'] }
+  };
+  assert.equal(isExplicitlyTagged(tagged, 'did:plc:lionbot'), true);
+  assert.equal(isExplicitlyTagged({ post: { did: 'did:plc:prospect', mentionedDids: [] } }, 'did:plc:lionbot'), false);
+  assert.equal(isExplicitlyTagged(tagged, ''), false);
+});
+
+test('does not treat the bot tagging itself as prospect opt-in', () => {
+  const selfPost = {
+    post: { did: 'did:plc:lionbot', mentionedDids: ['did:plc:lionbot'] }
+  };
+  assert.equal(isExplicitlyTagged(selfPost, 'did:plc:lionbot'), false);
 });
