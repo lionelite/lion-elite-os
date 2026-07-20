@@ -130,6 +130,35 @@ drop JPEGs at the listed paths.
    Regeneration & Anti-Aging", etc.) are **not** used verbatim — they are
    human-use claims the validator blocks.
 
+## Marketing quality gate
+
+Before anything publishes, each publishable piece's lead caption is judged
+on marketing/advertising/conversion merit and scored 0–10
+(`lib/social/marketing-judge.js`). Only pieces **at or above the threshold**
+(default **9.5**, set by `MARKETING_THRESHOLD` or `--threshold=`) are
+cleared; the publisher skips anything held below it, and the piece is
+flagged in `social-content.json` (`marketing.approved: false`) for review.
+Nothing weak posts.
+
+- **AI judge (primary):** an LLM scores the copy against a rubric (hook,
+  clarity, relevance, CTA, conversion, brand voice) using the configured
+  `AI_API_KEY`. On a miss it regenerates from the judge's feedback and
+  re-judges, up to 4 attempts — and every regenerated caption must still
+  pass the compliance validator before it can be judged or posted.
+- **Heuristic judge (fallback / CI):** deterministic scoring when no AI key
+  is set, so the gate never silently no-ops.
+
+**Reality check on the 9.5 bar.** 9.5/10 is intentionally near-perfect. In
+testing, the deterministic templates score ~7.3–8.2, and even AI-regenerated
+**research-use-only** Wellness copy struggles at 9.5 because it can't use
+punchy benefit/conversion language (compliance forbids it). Expect a strict
+9.5 to hold most posts — which means with auto-publish on, many days post
+nothing. That is the gate working as asked, not a bug. Practical options:
+run the AI judge (regeneration lifts scores materially), review the held
+pieces and hand-finish the best, or set a realistic threshold (e.g.
+`MARKETING_THRESHOLD=8.5`) for the constrained Wellness lane. The generation
+log records `marketingPassed` / `marketingHeld` each run.
+
 ## Compliance note
 
 Lion Elite Wellness content published here is the same research-education

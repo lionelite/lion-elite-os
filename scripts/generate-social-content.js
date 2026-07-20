@@ -27,6 +27,8 @@ const { loadHistoryFromDir } = require('../lib/social/topic-rotation');
 const { buildMetricoolCsv } = require('../lib/social/metricool-csv');
 const { resolveConfig, enhanceCaption } = require('../lib/social/ai-provider');
 const { mediaRelativePath, mediaUrlFor, resolveImageConfig, generateImage } = require('../lib/social/media-hosting');
+const { qualifyCaption, DEFAULT_THRESHOLD } = require('../lib/social/marketing-judge');
+const { validateContent } = require('../lib/social/social-compliance');
 
 const REPO_ROOT = path.join(__dirname, '..');
 const GENERATED_DIR = path.join(REPO_ROOT, 'content', 'generated');
@@ -37,11 +39,12 @@ const IMPORT_DIR = path.join(REPO_ROOT, 'content', 'metricool-import');
 const AI_ELIGIBLE = { feed: ['instagram', 'facebook', 'linkedin'], reel: ['instagram'] };
 
 function parseArgs(argv) {
-  const args = { date: null, dryRun: false, ai: true };
+  const args = { date: null, dryRun: false, ai: true, threshold: Number(process.env.MARKETING_THRESHOLD || DEFAULT_THRESHOLD) };
   for (const arg of argv.slice(2)) {
     if (arg.startsWith('--date=')) args.date = arg.slice('--date='.length);
     else if (arg === '--dry-run') args.dryRun = true;
     else if (arg === '--no-ai') args.ai = false;
+    else if (arg.startsWith('--threshold=')) args.threshold = Number(arg.slice('--threshold='.length));
     else throw new Error(`Unknown argument: ${arg}`);
   }
   if (!args.date) {
@@ -75,6 +78,62 @@ async function maybeEnhanceWithAI(piece, profile, aiConfig) {
     }
     // A blocked AI rewrite silently keeps the pre-validated template text.
   }
+}
+
+// Marketing quality gate: judge the primary caption of each publishable
+// piece (feed/reel → the platform a human would lead with) and only clear
+// it for publishing at or above the threshold. When AI is enabled, a
+// sub-threshold caption is regenerated from the judge's feedback and
+// re-judged — but every regeneration must still pass compliance before it
+// counts. Sub-threshold pieces are flagged, never posted.
+const GATE_PLATFORM = { feed: 'instagram', reel: 'instagram' };
+
+async function marketingGate(piece, profile, aiConfig, threshold) {
+  const platform = GATE_PLATFORM[piece.slot];
+  if (!platform || !piece.platforms[platform]) return null; // stories aren't auto-published
+
+  const brandName = profile.name;
+  const regenerate = aiConfig.enabled
+    ? async (feedback) => {
+        const candidate = await enhanceCaption({
+          profile,
+          baseText: `${piece.platforms[platform].text}\n\n[Marketing note to address: ${feedback}]`,
+          platform,
+          config: aiConfig
+        });
+        if (!candidate) return null;
+        // Regenerated copy must still be compliant, else reject it.
+        const check = validateContent({
+          text: candidate,
+          complianceMode: profile.complianceMode,
+          requireDisclaimer: piece.slot === 'feed' || piece.slot === 'reel'
+        });
+        return check.approved ? candidate : null;
+      }
+    : null;
+
+  const result = await qualifyCaption({
+    text: piece.platforms[platform].text,
+    brand: brandName,
+    platform,
+    regenerate,
+    threshold,
+    config: aiConfig
+  });
+
+  if (result.approved && result.text !== piece.platforms[platform].text) {
+    piece.platforms[platform].text = result.text; // adopt the winning rewrite
+  }
+  piece.marketing = {
+    platform,
+    score: result.score,
+    threshold,
+    approved: result.approved,
+    attempts: result.attempts,
+    judge: result.history[result.history.length - 1].judge,
+    reason: result.reason || null
+  };
+  return piece.marketing;
 }
 
 function mondayOf(dateStr) {
@@ -166,8 +225,14 @@ async function main() {
         .filter((variant) => variant.aiEnhanced).length;
 
       if (compliance.approved) {
+        const gate = await marketingGate(piece, profile, aiConfig, args.threshold);
         approved.push(piece);
-        console.log(`[social] generated  ${piece.id} (${piece.topic.slug}, cta=${piece.cta})`);
+        if (gate) {
+          const verdict = gate.approved ? `PASS ${gate.score}/10` : `HOLD ${gate.score}/10 < ${gate.threshold}`;
+          console.log(`[social] generated  ${piece.id} (${piece.topic.slug}, cta=${piece.cta}) — marketing ${verdict} [${gate.judge}, ${gate.attempts} try]`);
+        } else {
+          console.log(`[social] generated  ${piece.id} (${piece.topic.slug}, cta=${piece.cta})`);
+        }
       } else {
         rejected.push(piece);
         for (const [platform, result] of Object.entries(compliance.platforms)) {
@@ -230,10 +295,13 @@ async function main() {
     published: 0, // Phase 1 has no direct publishing; Metricool CSV import is manual.
     aiEnhanced: aiEnhancedCount,
     imagesGenerated,
-    piecesWithMedia
+    piecesWithMedia,
+    marketingThreshold: args.threshold,
+    marketingPassed: approvedPieces.filter((p) => p.marketing && p.marketing.approved).length,
+    marketingHeld: approvedPieces.filter((p) => p.marketing && p.marketing.approved === false).length
   };
 
-  console.log(`[social] Summary: generated=${summary.generated} rejected=${summary.rejected} scheduled=${summary.scheduled} published=${summary.published}`);
+  console.log(`[social] Summary: generated=${summary.generated} rejected=${summary.rejected} scheduled=${summary.scheduled} published=${summary.published} · marketing ${summary.marketingPassed} pass / ${summary.marketingHeld} held @ ${summary.marketingThreshold}`);
 
   if (args.dryRun) {
     console.log('[social] Dry run — nothing written.');
