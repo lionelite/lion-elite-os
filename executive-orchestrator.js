@@ -2,9 +2,11 @@
 
 const express = require('express');
 const crypto = require('crypto');
+const path = require('path');
 const { addJob, queueMetrics } = require('./lib/job-queues');
 const { getRedis, ensureConnected } = require('./lib/redis');
 const killSwitch = require('./lib/kill-switch');
+const { renderLeadsHtml } = require('./lib/leads-dashboard');
 
 const app = express();
 app.use(express.json({ limit: '256kb' }));
@@ -53,6 +55,34 @@ app.get('/outreach/kill-switch', requireConfiguredAuth, async (_req, res) => {
   res.json(await killSwitch.status());
 });
 
+// Leads dashboard (HTML). A browser navigation can't set an Authorization
+// header, so this route also accepts the token as ?token= (timing-safe
+// compared). Same fail-closed rule: no configured token → 503.
+function authorizeDashboard(req, res) {
+  if (!apiToken) {
+    res.status(503).send('EXECUTIVE_API_TOKEN not configured.');
+    return false;
+  }
+  const supplied = String(req.query.token || String(req.headers.authorization || '').replace(/^Bearer\s+/i, ''));
+  const ok = supplied.length === apiToken.length &&
+    crypto.timingSafeEqual(Buffer.from(supplied), Buffer.from(apiToken));
+  if (!ok) {
+    res.status(401).send('Unauthorized. Append ?token=YOUR_EXECUTIVE_API_TOKEN to the URL.');
+    return false;
+  }
+  return true;
+}
+
+app.get('/leads', async (req, res) => {
+  if (!authorizeDashboard(req, res)) return;
+  try {
+    const { buildLeadsDigest } = require('./lib/leads-digest');
+    res.type('html').send(renderLeadsHtml(await buildLeadsDigest()));
+  } catch (error) {
+    res.status(503).type('html').send(renderLeadsHtml({ generatedAt: new Date().toISOString(), prospects: {}, outreach: {}, error: error.message }));
+  }
+});
+
 // On-demand leads digest ("what leads are we getting and how do they
 // rate"). Token-required: the digest contains prospect names.
 app.get('/leads/digest', requireConfiguredAuth, async (_req, res) => {
@@ -98,4 +128,8 @@ app.use((error, _req, res, _next) => {
   res.status(500).json({ error: 'INTERNAL_ERROR' });
 });
 
-app.listen(port, () => console.log(JSON.stringify({ level: 'info', event: 'executive.api.started', port })));
+if (require.main === module) {
+  app.listen(port, () => console.log(JSON.stringify({ level: 'info', event: 'executive.api.started', port })));
+}
+
+module.exports = { app };
