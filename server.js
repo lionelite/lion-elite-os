@@ -1,5 +1,6 @@
 const express = require('express');
 const path = require('path');
+const { leadAutomationReadiness } = require('./lib/lead-automation-readiness');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -314,7 +315,13 @@ async function saveRunToGitHub(run) {
 }
 
 app.get('/health', (req, res) => {
-  res.json({ status: 'ok', service: 'lion-elite-os', mode: commandCenter.mode, timestamp: new Date().toISOString() });
+  res.json({
+    status: 'ok',
+    service: 'lion-elite-os',
+    mode: commandCenter.mode,
+    leadAutomation: leadAutomationReadiness(),
+    timestamp: new Date().toISOString()
+  });
 });
 
 app.get('/api/integrations', (req, res) => {
