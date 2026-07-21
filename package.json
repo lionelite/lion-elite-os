@@ -16,6 +16,7 @@
     "db:migrate": "node scripts/migrate.js",
     "validate:render": "node scripts/validate-render-blueprint.js",
     "outreach:kill-switch": "node scripts/outreach-kill-switch.js",
+    "outreach:enqueue": "node scripts/enqueue-outreach.js",
     "social:generate": "node scripts/generate-social-content.js",
     "social:publish": "node scripts/publish-social-content.js",
     "social:peptide-images": "node scripts/generate-peptide-images.js",

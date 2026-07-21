@@ -47,6 +47,33 @@ switch for "stop right now", the env var for "stay off until I say so" —
 in an emergency, flip both. The worker's health endpoint reports
 `sendingHalted` so the state is always visible.
 
+## "Reach out to all" — the governed enqueue
+
+`scripts/enqueue-outreach.js` (`npm run outreach:enqueue`) feeds eligible
+prospects into the validated pipeline. It is **not** a blast: selected
+prospects still pass per-prospect 16-check validation and suppression, and
+dispatch is metered by the daily quota + kill switch. "Reach out to all"
+means "enqueue everyone eligible and let the worker send at the governed
+daily pace," which unfolds over days — not one send.
+
+```bash
+npm run outreach:enqueue                     # DRY RUN — who would be contacted, and who's skipped + why
+npm run outreach:enqueue -- --limit=15       # dry run, top 15 by score
+npm run outreach:enqueue -- --confirm --limit=15   # actually enqueue the top 15
+```
+
+- **Dry run by default** — nothing is enqueued without `--confirm`.
+- **Eligibility** (`lib/outreach-enqueue.js`): has an email, not suppressed,
+  and not already contacted/terminal (`sent`/`engaged`/`customer`/… are
+  skipped). Highest-scoring first, so a capped run reaches the best leads.
+- **Refuses to run while the kill switch is engaged.**
+- **Does not bypass the deliverability ramp** — run it at your daily cap
+  (`--limit` = today's `DAILY_EMAIL_LIMIT`); the pipeline meters real sends.
+- Requires `DATABASE_URL` + `REDIS_URL`, and of course sends nothing until
+  the Resend vars below are set. The Bluesky listener's "leads" and inbound
+  affiliate applicants are **not** in this path — they aren't cold-email
+  targets.
+
 ## Enablement checklist
 
 ### In Resend (resend.com dashboard)
