@@ -24,6 +24,8 @@ services:
         sync: false
       - key: AFFILIATE_WEBHOOK_SECRET
         sync: false
+      - key: STRIPE_WEBHOOK_SECRET
+        sync: false
       - key: JOB_ATTEMPTS
         value: 4
       - key: JOB_BACKOFF_MS

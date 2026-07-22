@@ -44,3 +44,32 @@ test('existing classify behavior for shopify/gmail/calendar/ads is unchanged', (
   assert.equal(classify('ads', 'performance', {}), 'marketing_performance');
   assert.equal(classify('unknown-source', 'unknown', {}), 'general');
 });
+
+test('normalizes Stripe subscription revenue without retaining the full provider payload', () => {
+  const payload = {
+    id: 'evt_synthetic_paid', created: 1790000000,
+    type: 'invoice.paid',
+    data: { object: {
+      id: 'in_synthetic', subscription: 'sub_synthetic', customer: 'cus_synthetic',
+      customer_email: 'synthetic@example.test', amount_paid: 29999, currency: 'USD',
+      lines: { data: [{ period: { end: 1800000000 } }] },
+      metadata: { program: 'lion_elite_beauty_basic', internal_note: 'must-not-survive' }
+    }}
+  };
+  const summary = summarize('stripe', 'invoice.paid', payload);
+  assert.deepEqual(summary, {
+    subscriptionId: 'sub_synthetic', customerId: 'cus_synthetic', customerEmail: 'synthetic@example.test',
+    status: 'active', amountCents: 29999, currency: 'usd',
+    currentPeriodEnd: new Date(1800000000 * 1000).toISOString(), cancelAtPeriodEnd: false,
+    program: 'lion_elite_beauty_basic', eventCreatedAt: new Date(1790000000 * 1000).toISOString()
+  });
+  assert.equal(JSON.stringify(summary).includes('must-not-survive'), false);
+  assert.equal(classify('stripe', 'invoice.paid', payload), 'subscription_revenue');
+});
+
+test('classifies failed Stripe subscription payments as retention risk', () => {
+  const payload = { data: { object: { subscription: 'sub_synthetic', amount_due: 29999, currency: 'usd' } } };
+  const summary = summarize('stripe', 'invoice.payment_failed', payload);
+  assert.equal(summary.status, 'past_due');
+  assert.equal(classify('stripe', 'invoice.payment_failed', payload), 'retention_risk');
+});

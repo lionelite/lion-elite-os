@@ -3,7 +3,7 @@
 const { Worker } = require('bullmq');
 const { createRedisConnection, ensureConnected, getRedis, closeRedis } = require('../lib/redis');
 const { QUEUE_NAMES, addJob, moveToDeadLetter } = require('../lib/job-queues');
-const { summarize, classify, recordAffiliateLead } = require('../lib/integration-normalization');
+const { summarize, classify, recordAffiliateLead, recordStripeSubscription } = require('../lib/integration-normalization');
 
 const concurrency = Number(process.env.INTEGRATION_WORKER_CONCURRENCY || 5);
 let shuttingDown = false;
@@ -28,6 +28,21 @@ const worker = new Worker(QUEUE_NAMES.integrations, async job => {
     record.affiliate = affiliateResult;
   }
 
+  if (record.source === 'stripe') {
+    const result = await recordStripeSubscription(record);
+    record.subscription = {
+      duplicate: result.duplicate,
+      tracked: result.tracked,
+      eventType: result.eventType,
+      status: result.status || null
+    };
+    record.summary = {
+      ...record.summary,
+      customerId: record.summary.customerId ? '[redacted]' : null,
+      customerEmail: record.summary.customerEmail ? '[redacted]' : null
+    };
+  }
+
   const encoded = JSON.stringify(record);
   await redis.multi()
     .lpush('integrations:events', encoded)
@@ -36,9 +51,9 @@ const worker = new Worker(QUEUE_NAMES.integrations, async job => {
     .hincrby('integrations:counts', event.source, 1)
     .exec();
 
-  const executiveJob = record.category === 'revenue'
+  const executiveJob = ['revenue', 'subscription_revenue'].includes(record.category)
     ? 'midday-revenue-check'
-    : record.category === 'lead_or_support'
+    : ['lead_or_support', 'retention_risk'].includes(record.category)
       ? 'business-health-snapshot'
       : null;
 
