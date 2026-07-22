@@ -1,0 +1,16 @@
+{
+  "_note": "SEED list from public web search (July 2026) for the med-spa + Pilates concept. Names are real; service/tier/membership/pricing fields are a first-pass structuring and MUST be verified and expanded from live sources (Google Business, Yelp, each site). This environment cannot crawl Maps/Yelp — treat as a starting frame, not a finished audit.",
+  "market": "Greater Cleveland",
+  "asOf": "2026-07",
+  "competitors": [
+    { "name": "Cleveland Primecare MedSpa", "location": "Beachwood", "type": "medspa", "tier": "mid", "membership": false, "services": ["botox", "xeomin", "fillers", "aesthetics"] },
+    { "name": "The Well House", "location": "Westlake / Rocky River area", "type": "wellness", "tier": "upscale", "membership": false, "services": ["medspa", "wellness", "aesthetics"] },
+    { "name": "Urban Haven", "location": "Cleveland Heights", "type": "wellness", "tier": "mid", "membership": false, "services": ["massage", "facials", "sauna", "cold plunge"] },
+    { "name": "Wellness Center Cleveland", "location": "Cleveland", "type": "medspa", "tier": "mid", "membership": true, "services": ["botox", "fillers", "skin treatments", "weight loss"] },
+    { "name": "Club Pilates Chagrin Falls", "location": "Chagrin Falls", "type": "pilates", "tier": "mid", "membership": true, "services": ["reformer pilates"] },
+    { "name": "Studio One Pilates", "location": "Bay Village / Avon / Chagrin Falls", "type": "pilates", "tier": "upscale", "membership": true, "services": ["reformer pilates", "private pilates"] },
+    { "name": "White Cloud Studios", "location": "Van Aken (Shaker Heights) / Chagrin Falls", "type": "pilates", "tier": "upscale", "membership": true, "services": ["reformer pilates", "private pilates", "duet"] },
+    { "name": "ab&flow Pilates", "location": "Cleveland", "type": "pilates", "tier": "upscale", "membership": true, "services": ["reformer pilates", "chair", "tower", "private pilates"] },
+    { "name": "Callie's Pilates", "location": "Downtown Cleveland / Brecksville", "type": "pilates", "tier": "mid", "membership": true, "services": ["reformer pilates", "hot mat pilates"] }
+  ]
+}
