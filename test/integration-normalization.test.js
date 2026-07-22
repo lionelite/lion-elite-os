@@ -60,7 +60,7 @@ test('normalizes Stripe subscription revenue without retaining the full provider
   assert.deepEqual(summary, {
     subscriptionId: 'sub_synthetic', customerId: 'cus_synthetic', customerEmail: 'synthetic@example.test',
     status: 'active', amountCents: 29999, currency: 'usd',
-    currentPeriodEnd: new Date(1800000000 * 1000).toISOString(), cancelAtPeriodEnd: false,
+    currentPeriodEnd: new Date(1800000000 * 1000).toISOString(), cancelAtPeriodEnd: null,
     program: 'lion_elite_beauty_basic', eventCreatedAt: new Date(1790000000 * 1000).toISOString()
   });
   assert.equal(JSON.stringify(summary).includes('must-not-survive'), false);
