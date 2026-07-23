@@ -1,0 +1,1 @@
+Binary vial assets are being committed via Git blobs on this branch.
