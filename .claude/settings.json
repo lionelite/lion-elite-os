@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node scripts/claude-bluesky-context.js",
+            "timeout": 30
+          }
+        ]
+      }
+    ]
+  }
+}
