@@ -92,15 +92,35 @@ async function renderOne(peptide, dateStr, imageConfig) {
   const rel = `content/media/${dateStr}/${pieceIdFor(dateStr)}.jpg`;
   const abs = path.join(REPO_ROOT, rel);
   let generated = false;
+  let mode = null;
   if (imageConfig.enabled && !fs.existsSync(abs)) {
-    const image = await generateImage({ prompt: peptide.imagePrompt, config: imageConfig });
-    if (image) {
-      fs.mkdirSync(path.dirname(abs), { recursive: true });
-      fs.writeFileSync(abs, image);
-      generated = true;
+    // Approach B (default): AI renders the cinematic background (no text),
+    // then the compositor overlays crisp brand typography. Falls back to
+    // approach A (single full-AI prompt) only if compositing is unavailable.
+    const background = await generateImage({ prompt: peptide.backgroundPrompt, config: imageConfig });
+    if (background) {
+      try {
+        const { composeCreative } = require('../lib/social/creative-compositor');
+        const final = await composeCreative({
+          backgroundBuffer: background,
+          headline: peptide.headline,
+          pathways: peptide.pathways
+        });
+        fs.mkdirSync(path.dirname(abs), { recursive: true });
+        fs.writeFileSync(abs, final);
+        generated = true;
+        mode = 'composited';
+      } catch (error) {
+        // Compositor unavailable (e.g. sharp missing) — write the raw AI
+        // background so the run still produces an image.
+        fs.mkdirSync(path.dirname(abs), { recursive: true });
+        fs.writeFileSync(abs, background);
+        generated = true;
+        mode = `background-only (${error.message})`;
+      }
     }
   }
-  return { slug: peptide.slug, name: peptide.name, date: dateStr, mediaFile: rel, caption, captionSource: source, sourceUrl, imagePrompt: peptide.imagePrompt, imageGenerated: generated, imageExists: fs.existsSync(abs) };
+  return { slug: peptide.slug, name: peptide.name, date: dateStr, mediaFile: rel, caption, captionSource: source, sourceUrl, headline: peptide.headline, pathways: peptide.pathways, imageMode: mode, imageGenerated: generated, imageExists: fs.existsSync(abs) };
 }
 
 async function main() {

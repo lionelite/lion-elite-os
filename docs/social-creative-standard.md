@@ -47,13 +47,18 @@ long text unreliably (garbled words). The reference post's text is crisp
 because it was laid over the AI background with a design template. So for
 production-grade posts, two options:
 
-- **Recommended — background from AI, text from a brand template.** Generate
-  the lion+vial background here, then composite the headline, pathway icons,
-  RUO bar, and logo with a **Canva brand kit** (or an SVG/HTML → PNG
-  renderer). Reliable, pixel-perfect text; still one asset per post.
-- **Fully-AI (fast, lower text fidelity).** Let `gpt-image-1` render the
-  whole thing from the prompt. Fine for the scene and vial; proofread the
-  text before it goes to Metricool.
+- **Approach B — BUILT (default).** `lib/social/creative-compositor.js`:
+  ChatGPT/`gpt-image-1` renders the cinematic lion+vial **background only**
+  (from `buildBackgroundPrompt`, which explicitly asks for NO text), then
+  `sharp` composites the headline, wordmark, gold pathway column, and RUO
+  bar as **real vector text** — always crisp, never garbled, correct
+  product. `scripts/generate-peptide-images.js` uses this automatically when
+  `AI_IMAGE_ENABLED=true`; it falls back to writing the raw background if
+  `sharp` is unavailable. Requires `npm install` (adds the `sharp`
+  dependency) in whatever runs generation.
+- **Approach A — fully-AI (fast, lower text fidelity).** `buildCreativePrompt`
+  asks `gpt-image-1` to render the whole poster including text. Fine for the
+  scene; **proofread the text** before Metricool — image models misspell.
 
 Either way the **product-to-post mapping is locked** in code, so the
 wrong-vial bug can't recur, and one clean composed image per post replaces
