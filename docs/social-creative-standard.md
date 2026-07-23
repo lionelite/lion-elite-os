@@ -64,6 +64,25 @@ Either way the **product-to-post mapping is locked** in code, so the
 wrong-vial bug can't recur, and one clean composed image per post replaces
 the broken overlay.
 
+## The real-vial library (correct product image, every time)
+
+`lib/social/vial-registry.js` + `content/media/vials/` are the **single
+source of truth for the actual product image**. Lookup is `resolveVial(name)`
+— keyed by the post's own product — so the correct vial is chosen
+automatically and a mismatch (the old SELANK-on-CJC bug) is impossible.
+
+- Drop a real vial at `content/media/vials/<slug>.png` (transparent-background
+  PNG preferred). Slugs match `lib/social/peptide-catalog.js`; products beyond
+  the catalog go in `content/media/vials/manifest.json` first.
+- `npm run social:vials` reports coverage (which products have a real asset).
+- When a product's real vial exists, `scripts/generate-peptide-images.js`
+  asks `gpt-image-1` for a **vial-free** background (an empty rock pedestal via
+  `buildBackgroundPrompt({ withVial: false })`) and the compositor drops the
+  **real** vial onto the pedestal (`composeCreative({ vialBuffer })`) before
+  the text overlay. No real asset yet → it falls back to the AI-rendered vial.
+
+See `content/media/vials/README.md` for the drop-in workflow.
+
 ## Where this plugs in
 
 `lib/social/peptide-catalog.js` now builds every peptide's `imagePrompt`

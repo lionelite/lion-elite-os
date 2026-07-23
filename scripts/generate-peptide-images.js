@@ -21,6 +21,8 @@ const { PEPTIDE_CATALOG, EXCLUDED_PRODUCTS, peptideForDate } = require('../lib/s
 const { validateContent } = require('../lib/social/social-compliance');
 const { resolveImageConfig, generateImage } = require('../lib/social/media-hosting');
 const { buildSiteSourcedCaption, matchPeptide } = require('../lib/social/site-catalog');
+const { resolveVial } = require('../lib/social/vial-registry');
+const { buildBackgroundPrompt } = require('../lib/social/creative-template');
 
 const REPO_ROOT = path.join(__dirname, '..');
 
@@ -91,25 +93,35 @@ async function renderOne(peptide, dateStr, imageConfig) {
   assertCompliant(caption, peptide.name); // site or catalog, both gated
   const rel = `content/media/${dateStr}/${pieceIdFor(dateStr)}.jpg`;
   const abs = path.join(REPO_ROOT, rel);
+  // The correct real vial for THIS product, keyed by name so a mismatch
+  // (the old SELANK-on-CJC bug) is impossible. When the asset exists we
+  // composite it and ask the AI for a vial-free background (empty pedestal).
+  const vial = resolveVial(peptide.name);
+  const realVial = vial && vial.provided ? vial : null;
   let generated = false;
   let mode = null;
+  let vialUsed = realVial ? realVial.file : null;
   if (imageConfig.enabled && !fs.existsSync(abs)) {
     // Approach B (default): AI renders the cinematic background (no text),
-    // then the compositor overlays crisp brand typography. Falls back to
-    // approach A (single full-AI prompt) only if compositing is unavailable.
-    const background = await generateImage({ prompt: peptide.backgroundPrompt, config: imageConfig });
+    // then the compositor overlays the real vial + crisp brand typography.
+    // Falls back to writing the raw background if compositing is unavailable.
+    const prompt = realVial
+      ? buildBackgroundPrompt({ name: peptide.name, flair: peptide.flair, withVial: false })
+      : peptide.backgroundPrompt;
+    const background = await generateImage({ prompt, config: imageConfig });
     if (background) {
       try {
         const { composeCreative } = require('../lib/social/creative-compositor');
         const final = await composeCreative({
           backgroundBuffer: background,
           headline: peptide.headline,
-          pathways: peptide.pathways
+          pathways: peptide.pathways,
+          vialBuffer: realVial ? fs.readFileSync(realVial.absFile) : undefined
         });
         fs.mkdirSync(path.dirname(abs), { recursive: true });
         fs.writeFileSync(abs, final);
         generated = true;
-        mode = 'composited';
+        mode = realVial ? 'composited+real-vial' : 'composited';
       } catch (error) {
         // Compositor unavailable (e.g. sharp missing) — write the raw AI
         // background so the run still produces an image.
@@ -120,7 +132,7 @@ async function renderOne(peptide, dateStr, imageConfig) {
       }
     }
   }
-  return { slug: peptide.slug, name: peptide.name, date: dateStr, mediaFile: rel, caption, captionSource: source, sourceUrl, headline: peptide.headline, pathways: peptide.pathways, imageMode: mode, imageGenerated: generated, imageExists: fs.existsSync(abs) };
+  return { slug: peptide.slug, name: peptide.name, date: dateStr, mediaFile: rel, caption, captionSource: source, sourceUrl, headline: peptide.headline, pathways: peptide.pathways, vialFile: vialUsed, imageMode: mode, imageGenerated: generated, imageExists: fs.existsSync(abs) };
 }
 
 async function main() {
