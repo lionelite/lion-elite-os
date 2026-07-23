@@ -6,3 +6,6 @@ bun.lockb
 
 # Social-listening monitor output (third-party post content stays local)
 social-listening/data/
+
+# Generated Claude Code lead context (contains third-party public post content)
+claude-context/
