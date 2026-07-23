@@ -1,0 +1,1 @@
+Canonical Lion Elite vial binaries live in this directory. Product-specific marketing must use the exact mapped asset and pass Marketing Intelligence quality gates before publication.
