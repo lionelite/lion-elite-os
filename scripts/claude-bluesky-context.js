@@ -3,14 +3,14 @@
 const fs = require('fs');
 const path = require('path');
 const { loadRecentMatches } = require('../social-listening/src/store');
-const { classifyUniversalLead } = require('../social-listening/src/universal-lead-intelligence');
+const { detectUniversalLead } = require('../social-listening/src/universal-lead-intelligence');
 
 const OUT_DIR = path.join(process.cwd(), 'claude-context');
 const OUT_FILE = path.join(OUT_DIR, 'bluesky-leads.json');
 
 function normalizeLocalEntry(entry) {
   const post = entry?.post || {};
-  const universal = classifyUniversalLead(post.text || '');
+  const universal = detectUniversalLead(post.text || '');
   const score = Number(entry?.match?.score || universal?.opportunityScore || 0);
   const niche = universal?.niche || entry?.match?.audience || 'Other / Emerging Opportunity';
   return {
