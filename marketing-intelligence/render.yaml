@@ -1,0 +1,29 @@
+services:
+  - type: worker
+    name: lion-elite-marketing-intelligence
+    runtime: python
+    rootDir: marketing-intelligence
+    buildCommand: "python -m compileall ."
+    startCommand: "python quality_worker.py"
+    autoDeploy: true
+    envVars:
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: OPENAI_MODEL
+        value: gpt-5.6-terra
+      - key: QUALITY_THRESHOLD
+        value: "90"
+      - key: MAX_REVISIONS
+        value: "6"
+      - key: POLL_SECONDS
+        value: "60"
+      - key: MARKETING_QUEUE_FILE
+        value: /data/marketing_queue.json
+      - key: AUTO_PUBLISH
+        value: "false"
+      - key: PUBLISH_WEBHOOK_URL
+        sync: false
+    disk:
+      name: marketing-intelligence-data
+      mountPath: /data
+      sizeGB: 1
