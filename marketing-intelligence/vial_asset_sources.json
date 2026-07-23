@@ -1,0 +1,38 @@
+{
+  "gmail_sources": [
+    {
+      "subject": "Fwd: Pics for bus",
+      "message_id": "19ca179c7e010432",
+      "priority": 100,
+      "expected_use": "primary real-world vial photo source",
+      "attachments": ["IMG_5053.jpeg", "IMG_5054.jpeg", "IMG_5056.jpeg", "IMG_5057.jpeg", "IMG_5058.jpeg"]
+    },
+    {
+      "subject": "Lion Vial Pic",
+      "message_id": "19ef5682b7025a2f",
+      "priority": 90,
+      "expected_use": "single approved Lion vial reference"
+    },
+    {
+      "subject": "Vial Label",
+      "thread_id": "19efa2e7fc9c85c4",
+      "priority": 85,
+      "expected_use": "label and vial design reference"
+    },
+    {
+      "subject": "Rotating vial",
+      "message_id": "19f84eed538fa185",
+      "priority": 80,
+      "expected_use": "video/3D motion reference"
+    }
+  ],
+  "library_root": "assets/vials",
+  "manifest_path": "assets/vials/manifest.json",
+  "rules": {
+    "never_use_unmapped_vial": true,
+    "exact_product_match_required": true,
+    "prefer_real_product_photo_over_generated_vial": true,
+    "generated_scene_may_use_real_vial_as_reference": true,
+    "publish_block_if_product_asset_missing": true
+  }
+}
