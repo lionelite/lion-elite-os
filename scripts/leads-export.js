@@ -12,9 +12,10 @@
 const fs = require('fs');
 
 function parseArgs(argv) {
-  const args = { out: 'leads-export' };
+  const args = { out: 'leads-export', full: false };
   for (const arg of argv.slice(2)) {
     if (arg.startsWith('--out=')) args.out = arg.slice('--out='.length);
+    else if (arg === '--full') args.full = true;
     else throw new Error(`Unknown argument: ${arg}`);
   }
   return args;
@@ -28,12 +29,28 @@ async function main() {
     return;
   }
 
+  // --full includes names + emails. HARD BOUNDARY: never inside GitHub
+  // Actions — this repo is public and full third-party PII must not be
+  // written to a CI artifact. Full detail is a LOCAL/private-run only.
+  if (args.full && String(process.env.GITHUB_ACTIONS).toLowerCase() === 'true') {
+    console.error('[leads-export] Refusing --full inside GitHub Actions: full names/emails must not be written to CI artifacts on a public repo. Run it locally (or against a private replica) instead.');
+    process.exitCode = 1;
+    return;
+  }
+
   const { buildLeadsDigest } = require('../lib/leads-digest');
-  const { sanitizeDigest, renderSummaryMarkdown } = require('../lib/leads-export');
+  const { sanitizeDigest, renderSummaryMarkdown, renderFullMarkdown } = require('../lib/leads-export');
 
   const digest = await buildLeadsDigest();
-  const sanitized = sanitizeDigest(digest);
 
+  if (args.full) {
+    fs.writeFileSync(`${args.out}.json`, `${JSON.stringify(digest, null, 2)}\n`);
+    fs.writeFileSync(`${args.out}.md`, `${renderFullMarkdown(digest)}\n`);
+    console.log(`[leads-export] Wrote ${args.out}.json and ${args.out}.md (FULL — names + emails, ${digest.prospects.total} prospects). Keep these files local; do not commit or upload.`);
+    return;
+  }
+
+  const sanitized = sanitizeDigest(digest);
   fs.writeFileSync(`${args.out}.json`, `${JSON.stringify(sanitized, null, 2)}\n`);
   fs.writeFileSync(`${args.out}.md`, `${renderSummaryMarkdown(sanitized)}\n`);
   console.log(`[leads-export] Wrote ${args.out}.json and ${args.out}.md (sanitized, ${sanitized.prospects.total} prospects).`);

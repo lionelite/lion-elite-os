@@ -66,3 +66,18 @@ test('handles an empty digest gracefully', () => {
   assert.equal(s.prospects.total, 0);
   assert.match(renderSummaryMarkdown(s), /Total prospects:\*\* 0/);
 });
+
+test('renderFullMarkdown includes names and emails (private local use)', () => {
+  const md = require('../lib/leads-export').renderFullMarkdown({
+    generatedAt: 't', prospects: { total: 1, topRated: [{ name: 'Legacy Fit', email: 'ops@legacyfit.co', score: 88, stage: 'qualified', campaign_id: 'sdr', created: '2026-07-21' }] }
+  });
+  assert.match(md, /Legacy Fit/);
+  assert.match(md, /ops@legacyfit\.co/);
+  assert.match(md, /keep private/i);
+});
+
+test('--full is blocked inside GitHub Actions (source guard)', () => {
+  const src = require('fs').readFileSync(require('path').join(__dirname, '..', 'scripts', 'leads-export.js'), 'utf8');
+  assert.match(src, /GITHUB_ACTIONS/);
+  assert.match(src, /Refusing --full inside GitHub Actions/);
+});
