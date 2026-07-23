@@ -22,7 +22,6 @@
     "listen:opportunities": "node social-listening/src/opportunity-analyzer.js",
     "listen:outreach": "node social-listening/src/outreach-engine.js",
     "listen:outreach-worker": "node social-listening/src/outreach-worker.js",
-    "claude:bluesky": "node scripts/claude-bluesky-context.js",
     "real-estate": "node real-estate/intelligence/src/dashboard-server.js",
     "real-estate:demo": "node real-estate/intelligence/src/demo.js",
     "real-estate:import": "node real-estate/intelligence/src/import-csv.js",
