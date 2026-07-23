@@ -1,0 +1,118 @@
+{
+  "version": "2.0",
+  "objective": "Maximize qualified attention, conversations, consultations, orders, partner leads, repeat buyers, and ethical impulse conversion while protecting brand quality and compliance.",
+  "global_rules": {
+    "one_primary_idea_per_asset": true,
+    "minimum_quality_score": 92,
+    "all_mandatory_gates_must_pass": true,
+    "retired_formats": [
+      "generic PEPTIDE INFO SERIES title card",
+      "textbook-style static compound cards",
+      "generic AI motivational copy",
+      "mismatched product and vial creative"
+    ],
+    "preferred_visual_direction": [
+      "premium realism",
+      "nature x science",
+      "luxury product photography",
+      "mechanism visualization",
+      "human transformation storytelling for coaching brands",
+      "high contrast mobile-first compositions"
+    ]
+  },
+  "brands": {
+    "Lion Elite Wellness": {
+      "primary_goal": "Become the most credible, visually compelling research-peptide education brand in the audience's feed.",
+      "content_mix": {
+        "mechanism_curiosity": 30,
+        "myth_vs_fact": 20,
+        "pathway_or_receptor_explainer": 15,
+        "research_comparison": 15,
+        "premium_product_story": 10,
+        "research_question": 10
+      },
+      "hook_examples": [
+        "Why are researchers looking at this pathway differently?",
+        "The compound gets the attention. The mechanism is what matters.",
+        "Two peptides can sound similar and signal through completely different systems.",
+        "What actually makes this research pathway interesting?"
+      ],
+      "cta_priority": [
+        "Save this research breakdown",
+        "Follow for mechanism-first peptide education",
+        "Explore the research library",
+        "See the full research profile"
+      ],
+      "prohibited": [
+        "dosing",
+        "human-use instructions",
+        "treatment claims",
+        "unsupported medical outcomes",
+        "before-and-after human claims tied to research products"
+      ]
+    },
+    "Lion Elite Beauty": {
+      "primary_goal": "Turn transformation desire into coaching conversations and applications.",
+      "content_mix": {
+        "transformation_problem": 25,
+        "identity_and_aspiration": 20,
+        "coach_education": 15,
+        "client_accountability": 15,
+        "social_proof": 10,
+        "trainer_business_growth": 10,
+        "beauty_wellness_education": 5
+      },
+      "cta_priority": [
+        "DM ELITE",
+        "Apply for coaching",
+        "Book a consultation",
+        "Send this to someone ready to change"
+      ]
+    },
+    "AlexTheLionLifts": {
+      "primary_goal": "Build trust, authority, aspiration, lifestyle desire, and coaching demand around the personal brand.",
+      "content_mix": {
+        "lifestyle_proof": 25,
+        "training_credibility": 20,
+        "transformation_mindset": 15,
+        "coach_business_scaling": 15,
+        "fitness_education": 10,
+        "behind_the_scenes": 10,
+        "direct_offer": 5
+      },
+      "cta_priority": [
+        "DM COACHING",
+        "Apply to work with me",
+        "Comment READY",
+        "Book a strategy call"
+      ]
+    }
+  },
+  "performance_learning": {
+    "increase_weight_when": [
+      "shares outperform account median",
+      "saves outperform account median",
+      "engagement rate outperforms account median",
+      "qualified comments or DMs increase",
+      "profile visits or downstream conversions increase"
+    ],
+    "decrease_weight_when": [
+      "three consecutive posts underperform account median",
+      "format produces low reach and zero meaningful interactions",
+      "audience feedback indicates confusion or mismatch",
+      "creative requires repeated QA failures"
+    ],
+    "current_observation": "Mechanism curiosity, myth-vs-fact, and stronger research storytelling have shown better engagement than the recent static textbook-style peptide info series."
+  },
+  "impulse_conversion": {
+    "principles": [
+      "Make the desired outcome immediately understandable",
+      "Reduce the number of decisions",
+      "Use one obvious next action",
+      "Show credible proof where available",
+      "Create visual desire before adding explanation",
+      "Use appropriate urgency only when truthful",
+      "Remove unnecessary friction between attention and action"
+    ]
+  }
+}
