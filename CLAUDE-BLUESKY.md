@@ -4,7 +4,7 @@ This file is the current source of truth for how Claude Code should use Bluesky 
 
 ## Current architecture
 
-Bluesky is no longer only a local two-lane review tool. The merged system now includes:
+Bluesky is a native LionOS lead-intelligence source, not a separate manual tool. The merged system includes:
 
 - Jetstream listener in `social-listening/src/monitor.js`.
 - Universal lead-intent detection across niches.
@@ -16,17 +16,22 @@ Bluesky is no longer only a local two-lane review tool. The merged system now in
 
 Existing platform safeguards remain authoritative. Do not bypass channel authorization, opt-out/suppression rules, or Bluesky's explicit-tag requirement for automated replies.
 
-## Claude Code operating rule
+## Always-on Claude Code integration
 
-When the owner asks about Bluesky leads, revenue opportunities, niches, marketing opportunities, or lead-generation performance:
+Claude Code must treat Bluesky lead intelligence as part of the standard LionOS operating context for marketing, sales, lead generation, niche analysis, revenue analysis, business-development strategy, and opportunity prioritization.
 
-1. Run `npm run claude:bluesky`.
-2. Read `claude-context/bluesky-leads.json`.
-3. Prioritize leads by `score`, then buying/hiring intent, then recency.
-4. Group leads by niche and report which niches have the strongest combination of volume and score.
-5. For each high-priority lead, recommend a concrete marketing/sales angle based only on public lead context.
-6. Never invent contact information. Use only public profile/post information and enrichment already stored by LionOS.
-7. Never expose secrets or database credentials.
+A Claude Code `SessionStart` hook automatically refreshes `claude-context/bluesky-leads.json` from the best available source. The owner should not need to run a special Bluesky command or function.
+
+When working on any relevant business task, Claude should read `claude-context/bluesky-leads.json` when current lead evidence could improve the answer or decision. It should combine that information with the rest of LionOS rather than treating Bluesky as a standalone workflow.
+
+Claude should:
+
+1. Prioritize leads by `score`, buying/hiring intent, value signals, and recency.
+2. Group leads by niche and identify which niches have the strongest combination of volume and quality.
+3. Surface high-value prospects and concrete marketing/sales angles based on public context.
+4. Use lead trends to inform content, offers, partnerships, and business-development priorities.
+5. Never invent contact information. Use only public profile/post information and enrichment already stored by LionOS.
+6. Never expose secrets or database credentials.
 
 ## Priority bands
 
@@ -37,6 +42,6 @@ When the owner asks about Bluesky leads, revenue opportunities, niches, marketin
 
 ## Data sources
 
-`npm run claude:bluesky` uses PostgreSQL when `DATABASE_URL` is available. If PostgreSQL is unavailable, it falls back to the local Bluesky JSONL mirror so Claude can still reason over the leads collected on the owner's always-on laptop.
+The automatic context refresh uses PostgreSQL when `DATABASE_URL` is available. If PostgreSQL is unavailable, it falls back to the local Bluesky JSONL mirror so Claude can still reason over leads collected on the owner's always-on laptop.
 
-The generated `claude-context/bluesky-leads.json` is runtime context, not a source file. It should not contain secrets and should not be treated as permanent configuration.
+The generated `claude-context/bluesky-leads.json` is runtime context, not source code. It is ignored by Git and must never contain secrets.
