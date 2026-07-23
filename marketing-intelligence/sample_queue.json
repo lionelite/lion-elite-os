@@ -1,0 +1,18 @@
+[
+  {
+    "id": "lew-example-001",
+    "status": "pending",
+    "brand": "Lion Elite Wellness",
+    "platform": "instagram",
+    "content_type": "carousel",
+    "product_name": "tesamorelin",
+    "vial_product_name": "tesamorelin",
+    "expected_quantity": "5 mg",
+    "vial_quantity": "5 mg",
+    "approved_asset_url": "REPLACE_WITH_APPROVED_LION_ELITE_ASSET_URL",
+    "headline": "Tesamorelin: what pathway are researchers actually studying?",
+    "caption": "Tesamorelin research focuses on growth-hormone-axis signaling and metabolic research pathways. For research and educational purposes only. Not for human consumption.",
+    "visual_description": "Premium realistic Lion Elite vial integrated into a natural science-forward scene. Mobile-readable typography and exact approved vial identity.",
+    "cta": "Follow Lion Elite Wellness for research-focused peptide education."
+  }
+]
