@@ -1,0 +1,35 @@
+{
+  "version": 2,
+  "source": "Canonical Gmail vial email thread 19f8527828e0900f; optimized library prepared 2026-07-23",
+  "status": "canonical_product_mapping_complete",
+  "rules": {
+    "never_use_unmapped_vial": true,
+    "exact_product_match_required": true,
+    "prefer_real_product_photo_over_generated_vial": true,
+    "generated_scene_may_use_real_vial_as_reference": true,
+    "publish_block_if_product_asset_missing": true,
+    "product_vial_mismatch_is_hard_fail": true
+  },
+  "assets": [
+    {"slug":"igf-1-lr3","product_name":"IGF-1 LR3","asset_path":"assets/vials/igf-1-lr3.webp","approved_for_content":true},
+    {"slug":"selank","product_name":"SELANK","asset_path":"assets/vials/selank.webp","approved_for_content":true},
+    {"slug":"cjc-ipamorelin","product_name":"CJC IPAMORELIN","asset_path":"assets/vials/cjc-ipamorelin.webp","approved_for_content":true},
+    {"slug":"ss-31","product_name":"SS-31","asset_path":"assets/vials/ss-31.webp","approved_for_content":true},
+    {"slug":"tesamorelin","product_name":"TESAMORELIN","asset_path":"assets/vials/tesamorelin.webp","approved_for_content":true},
+    {"slug":"semax","product_name":"SEMAX","asset_path":"assets/vials/semax.webp","approved_for_content":true},
+    {"slug":"ghk-cu","product_name":"GHK-CU","asset_path":"assets/vials/ghk-cu.webp","approved_for_content":true},
+    {"slug":"klow-blend","product_name":"KLOW BLEND","asset_path":"assets/vials/klow-blend.webp","approved_for_content":true},
+    {"slug":"glutathione","product_name":"GLUTATHIONE","asset_path":"assets/vials/glutathione.webp","approved_for_content":true},
+    {"slug":"nad-plus","product_name":"NAD+","asset_path":"assets/vials/nad-plus.webp","approved_for_content":true},
+    {"slug":"mots-c","product_name":"MOTS-C","asset_path":"assets/vials/mots-c.webp","approved_for_content":true},
+    {"slug":"retatrutide","product_name":"RETATRUTIDE","asset_path":"assets/vials/retatrutide.webp","approved_for_content":true},
+    {"slug":"bpc157-tb500","product_name":"BPC-157 / TB-500","asset_path":"assets/vials/bpc157-tb500.webp","approved_for_content":true},
+    {"slug":"epithalon","product_name":"EPITHALON","asset_path":"assets/vials/epithalon.webp","approved_for_content":true},
+    {"slug":"aod9604","product_name":"AOD-9604","asset_path":"assets/vials/aod9604.webp","approved_for_content":true},
+    {"slug":"thymosin-alpha","product_name":"THYMOSIN ALPHA","asset_path":"assets/vials/thymosin-alpha.webp","approved_for_content":true},
+    {"slug":"kpv","product_name":"KPV","asset_path":"assets/vials/kpv.webp","approved_for_content":true},
+    {"slug":"pt141","product_name":"PT-141","asset_path":"assets/vials/pt141.webp","approved_for_content":true},
+    {"slug":"tirzepatide","product_name":"TIRZEPATIDE","asset_path":"assets/vials/tirzepatide.webp","approved_for_content":true},
+    {"slug":"kisspeptin","product_name":"KISSPEPTIN","asset_path":"assets/vials/kisspeptin.webp","approved_for_content":true}
+  ]
+}
