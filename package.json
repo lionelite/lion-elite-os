@@ -33,7 +33,8 @@
     "real-estate:fha": "node real-estate/intelligence/src/fha-demo.js",
     "real-estate:concept": "node real-estate/intelligence/src/concept-demo.js",
     "real-estate:import": "node real-estate/intelligence/src/import-csv.js",
-    "test": "node --test test/*.test.js real-estate/intelligence/test/*.test.js business-scaling/founder-intelligence/test/*.test.js social-listening/test/*.test.js"
+    "swipe:report": "node marketing-intelligence/src/report.js",
+    "test": "node --test test/*.test.js real-estate/intelligence/test/*.test.js business-scaling/founder-intelligence/test/*.test.js social-listening/test/*.test.js marketing-intelligence/test/*.test.js"
   },
   "dependencies": {
     "bullmq": "^5.34.10",
