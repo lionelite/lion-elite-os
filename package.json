@@ -5,7 +5,7 @@
   "main": "server.js",
   "type": "commonjs",
   "scripts": {
-    "start": "node server.js",
+    "start": "node start.js",
     "dev": "node server.js",
     "outreach": "node outreach-server-postgres.js",
     "executive": "node executive-orchestrator.js",
@@ -28,6 +28,8 @@
     "listen:review": "node social-listening/src/review-server.js",
     "listen:replay": "node social-listening/src/replay.js",
     "listen:opportunities": "node social-listening/src/opportunity-analyzer.js",
+    "listen:outreach": "node social-listening/src/outreach-engine.js",
+    "listen:outreach-worker": "node social-listening/src/outreach-worker.js",
     "real-estate": "node real-estate/intelligence/src/dashboard-server.js",
     "real-estate:demo": "node real-estate/intelligence/src/demo.js",
     "real-estate:fha": "node real-estate/intelligence/src/fha-demo.js",

@@ -1,27 +1,19 @@
 #!/usr/bin/env node
 'use strict';
 
-// Bluesky firehose listening monitor — READ-ONLY.
+// Bluesky firehose listening monitor.
 //
-// Usage: node social-listening/src/monitor.js [options]
-//   --audience=research-peptides|personal-training  (repeatable; default both)
-//   --min-score=40        minimum keyword score to surface
-//   --no-model            skip Ollama refinement even if available
-//   --quiet               only print matches, not periodic stats
-//
-// Streams public posts from Jetstream, classifies them against the
-// audience profiles, optionally refines matches with a local Ollama
-// model, prints them live, and appends them to social-listening/data/
-// for the review dashboard (review-server.js).
-//
-// This tool has no Bluesky credentials and no write path to any social
-// platform. Engagement is a human decision made outside this tool.
+// Streams public posts from Jetstream, captures broad niche-agnostic lead
+// intent into the durable LionOS prospect database, and separately keeps the
+// existing brand-specific audience classification used by Lion Elite.
 
 const { JetstreamListener, isEnglish } = require('./jetstream');
 const { classifyPost } = require('./classifier');
 const { AUDIENCE_KEYS } = require('./audience-profiles');
 const { resolveOllamaConfig, checkOllama, analyzeIntent, applyModelAssessment } = require('./ollama-intent');
 const { appendMatch, DATA_DIR } = require('./store');
+const { detectUniversalLead } = require('./universal-lead-intelligence');
+const { persistUniversalLead } = require('./universal-lead-store');
 
 function parseArgs(argv) {
   const args = { audiences: [], minScore: 40, useModel: true, quiet: false };
@@ -56,9 +48,27 @@ function formatMatch(post, match) {
   if (match.doNotEngage) {
     lines.push(`  reason: ${match.doNotEngageReason}`);
   } else if (match.suggestedOpener) {
-    lines.push(`  suggested opener (manual use only): ${match.suggestedOpener}`);
+    lines.push(`  suggested opener: ${match.suggestedOpener}`);
   }
   return lines.join('\n');
+}
+
+function universalMatch(lead) {
+  return {
+    audience: 'universal-lead',
+    brand: 'lionos',
+    label: lead.niche,
+    score: lead.opportunityScore,
+    doNotEngage: false,
+    lowPriority: lead.opportunityScore < 50,
+    matched: {
+      subject: [lead.niche],
+      intent: lead.intentSignals
+    },
+    universalLead: true,
+    opportunity: lead,
+    suggestedOpener: null
+  };
 }
 
 async function main() {
@@ -73,12 +83,21 @@ async function main() {
   } else {
     console.log('[listen] Model refinement disabled (--no-model).');
   }
-  console.log(`[listen] Audiences: ${args.audiences.join(', ')} (min score ${args.minScore})`);
-  console.log(`[listen] Matches append to ${DATA_DIR} — run 'npm run listen:review' for the dashboard.`);
-  console.log('[listen] Read-only monitor: this tool never posts, replies, or DMs.');
+  console.log(`[listen] Brand audiences: ${args.audiences.join(', ')} (min score ${args.minScore})`);
+  console.log('[listen] Universal lead intelligence: ON — broad buying/hiring/help-seeking intent is categorized and scored across niches.');
+  console.log(`[listen] Local match mirror: ${DATA_DIR}`);
+  console.log(`[listen] Durable lead storage: ${process.env.DATABASE_URL ? 'PostgreSQL ON' : 'PostgreSQL unavailable; local mirror only'}`);
 
-  const stats = { posts: 0, english: 0, matches: 0, doNotEngage: 0, startedAt: Date.now() };
-  const seen = new Set(); // did+rkey dedupe across reconnect replays
+  const stats = {
+    posts: 0,
+    english: 0,
+    matches: 0,
+    universalLeads: 0,
+    durableLeads: 0,
+    doNotEngage: 0,
+    startedAt: Date.now()
+  };
+  const seen = new Set();
 
   const listener = new JetstreamListener();
   listener.on('status', (message) => console.log(`[listen] ${message}`));
@@ -87,13 +106,41 @@ async function main() {
     if (!isEnglish(post)) return;
     stats.english += 1;
 
-    const { relevant, matches } = classifyPost(post.text, { audiences: args.audiences });
-    if (!relevant) return;
-
     const key = `${post.did}/${post.rkey}`;
     if (seen.has(key)) return;
     seen.add(key);
     if (seen.size > 50000) seen.clear();
+
+    // Universal lane: capture lead intent regardless of the existing Lion Elite niche.
+    const lead = detectUniversalLead(post.text);
+    if (lead) {
+      stats.universalLeads += 1;
+      const match = universalMatch(lead);
+      appendMatch({
+        seenAt: new Date().toISOString(),
+        post: {
+          did: post.did,
+          rkey: post.rkey,
+          url: post.url,
+          text: post.text,
+          createdAt: post.createdAt,
+          isReply: post.isReply,
+          mentionedDids: Array.isArray(post.mentionedDids) ? post.mentionedDids : []
+        },
+        match
+      });
+      console.log(formatMatch(post, match));
+      try {
+        const stored = await persistUniversalLead(post, lead);
+        if (stored.stored) stats.durableLeads += 1;
+      } catch (error) {
+        console.error(`[listen] Universal lead persistence error ${key}: ${error.message}`);
+      }
+    }
+
+    // Existing brand-specific lanes remain available for LionOS/Beauty/Wellness workflows.
+    const { relevant, matches } = classifyPost(post.text, { audiences: args.audiences });
+    if (!relevant) return;
 
     for (let match of matches) {
       if (match.score < args.minScore) continue;
@@ -111,7 +158,8 @@ async function main() {
           url: post.url,
           text: post.text,
           createdAt: post.createdAt,
-          isReply: post.isReply
+          isReply: post.isReply,
+          mentionedDids: Array.isArray(post.mentionedDids) ? post.mentionedDids : []
         },
         match
       });
@@ -123,7 +171,8 @@ async function main() {
       const minutes = ((Date.now() - stats.startedAt) / 60000).toFixed(1);
       console.log(
         `[listen] ${minutes}min: ${listener.eventCount} events, ${stats.posts} posts, ` +
-        `${stats.english} english, ${stats.matches} matches (${stats.doNotEngage} do-not-engage)`
+        `${stats.english} english, ${stats.universalLeads} universal leads, ${stats.durableLeads} DB stores, ` +
+        `${stats.matches} brand matches (${stats.doNotEngage} do-not-engage)`
       );
     }, 60000).unref();
   }
