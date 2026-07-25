@@ -7,6 +7,7 @@ const { QUEUE_NAMES, addJob, moveToDeadLetter, queueMetrics } = require('../lib/
 const { buildEmail: generateEmailDraft, scoreEmail: scoreEmailDraft } = require('../lib/email-generation');
 const { validateProspect, authorizeOutreach } = require('../lib/outreach-validation');
 const { sendEmail } = require('../lib/email-delivery');
+const { sendSms } = require('../lib/twilio-delivery');
 const { PostgresProspectStore } = require('../lib/postgres-prospect-store');
 const { log, runtimeMetrics } = require('../lib/observability');
 
@@ -77,7 +78,7 @@ startWorker(QUEUE_NAMES.validation, async job => {
       await addJob('dispatch', 'dispatch-authorized-outreach', {
         queueId: item.queueId,
         prospect,
-        draft: { recipient: item.recipient, subject: item.subject, body: item.body },
+        draft: { channel: item.channel, recipient: item.recipient, subject: item.subject, body: item.body },
         authorization: { authorized: true, idempotencyKey: item.idempotencyKey, validationRunId: item.validationRunId }
       }, { jobId: item.idempotencyKey });
       queued += 1;
@@ -99,7 +100,10 @@ startWorker(QUEUE_NAMES.dispatch, async job => {
   const context = job.data || {};
   if (context.queueId) await store.markQueue(context.queueId, 'processing', {}, 'outreach-worker');
   try {
-    const delivery = await sendEmail({ prospect: context.prospect, draft: context.draft, authorization: context.authorization });
+    const channel = String(context.draft?.channel || context.prospect?.channel || 'email').toLowerCase();
+    const delivery = channel === 'sms'
+      ? await sendSms({ prospect: context.prospect, draft: context.draft, authorization: context.authorization })
+      : await sendEmail({ prospect: context.prospect, draft: context.draft, authorization: context.authorization });
     if (context.queueId) await store.markQueue(context.queueId, 'sent', { providerMessageId: delivery.providerId }, 'outreach-worker');
     return { ...delivery, authorization: context.authorization, quality: context.quality };
   } catch (error) {
@@ -133,11 +137,13 @@ const server = http.createServer(async (req, res) => {
   try {
     const redis = await healthcheck();
     const queues = req.url === '/metrics' ? await queueMetrics() : undefined;
-    const deliveryConfigured = Boolean(process.env.RESEND_API_KEY && process.env.OUTREACH_FROM_EMAIL && String(process.env.OUTREACH_SEND_ENABLED).toLowerCase() === 'true');
+    const emailConfigured = Boolean(process.env.RESEND_API_KEY && process.env.OUTREACH_FROM_EMAIL && String(process.env.OUTREACH_SEND_ENABLED).toLowerCase() === 'true');
+    const smsConfigured = Boolean(process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN && process.env.TWILIO_MESSAGING_SERVICE_SID && String(process.env.SMS_SEND_ENABLED).toLowerCase() === 'true');
+    const deliveryConfigured = emailConfigured || smsConfigured;
     const ready = !shuttingDown && redis.ok && workers.length > 0 && deliveryConfigured;
     const statusCode = req.url === '/ready' && !ready ? 503 : 200;
     res.writeHead(statusCode, { 'content-type': 'application/json' });
-    res.end(JSON.stringify({ status: ready ? 'ok' : 'degraded', ready, deliveryConfigured, service: 'lion-elite-outreach-worker', redis, queues, workers: workers.length, ...runtimeMetrics() }));
+    res.end(JSON.stringify({ status: ready ? 'ok' : 'degraded', ready, deliveryConfigured, emailConfigured, smsConfigured, service: 'lion-elite-outreach-worker', redis, queues, workers: workers.length, ...runtimeMetrics() }));
   } catch (error) {
     res.writeHead(503, { 'content-type': 'application/json' });
     res.end(JSON.stringify({ status: 'degraded', ready: false, error: error.message }));
