@@ -124,11 +124,25 @@ follows, or anything directed at other people's posts, and
   published contact email (no data broker). Actually enabling sends remains a
   human action (`OUTREACH_SEND_ENABLED` + Resend vars) — Claude does not flip
   the send switch.
-- Never make paid purchases, upgrade billing/plan tiers, or spend money on
-  any connected service.
+- Never make unrelated paid purchases or upgrade billing/plan tiers without
+  explicit owner authorization.
 
-If a task would require crossing one of these lines, stop and ask a human
-instead of proceeding.
+### Pre-authorized paid advertising execution
+
+Paid advertising is an explicit exception to the general spending limit. When the
+owner has connected the ad account and established an approved campaign, daily,
+or total spend cap, Claude may create, publish, launch, pause, resume, and optimize
+ads without asking for an additional confirmation each time, provided all spend
+remains within that approved cap. Claude may also make normal bid, budget-allocation,
+audience, placement, and creative changes within the approved campaign envelope.
+
+Claude must not add or change payment methods, purchase unrelated products or
+services, upgrade account plans, or raise total/daily/campaign spending above the
+owner-approved cap without fresh owner authorization. If no spend cap has been
+established, Claude must obtain one before incurring paid media spend.
+
+If a task would require crossing one of the remaining hard limits, stop and ask a
+human instead of proceeding.
 
 ## Architecture map
 
