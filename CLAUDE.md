@@ -106,6 +106,24 @@ follows, or anything directed at other people's posts, and
   covers still stands: no SMS, no DMs, no social posting/replies, no new
   send paths, and no weakening of the pipeline's validation, quota,
   suppression, or kill-switch controls without a fresh owner decision.
+  *Owner amendment 2026-07-25:* two additional e-mail campaigns are
+  authorized, both defined in `lib/outreach/campaigns.js` and documented in
+  `docs/outreach-campaigns.md`: (1) **med-spa research-supply (B2B)** —
+  introduce Lion Elite Wellness as a Research-Use-Only peptide *supplier* to
+  med spas / aesthetics / wellness clinics; and (2) **client research
+  reorder (B2C)** — a new consumer send path reminding EXISTING research
+  customers that previously purchased research-grade items are available to
+  reorder. Owner has confirmed all product is sold Research-Use-Only and the
+  posture is legally reviewed. Conditions that do NOT relax: content stays
+  RUO and is hard-gated by `lib/social/social-compliance.js` (no
+  human-use/dosing/treatment/transformation language — the builders in
+  `lib/outreach/campaign-emails.js` fail closed if it creeps in); the
+  consumer campaign must carry a working unsubscribe + postal address
+  (CAN-SPAM); suppression, transactional daily quota, and the Redis kill
+  switch still apply to every send; discovery enriches only a business's own
+  published contact email (no data broker). Actually enabling sends remains a
+  human action (`OUTREACH_SEND_ENABLED` + Resend vars) — Claude does not flip
+  the send switch.
 - Never make paid purchases, upgrade billing/plan tiers, or spend money on
   any connected service.
 
