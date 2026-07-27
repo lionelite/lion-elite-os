@@ -36,17 +36,29 @@ email `beauty-sample.html`'s HTML (Beauty branding) to your ops inbox with
 subject `🛒 New Order — Lion Elite Beauty — {orderId}`. This is an Orchids
 builder action (owner/Orchids task); hand them this template as the spec.
 
-**Option B — own it in LionOS (durable, both sites from one place).**
-Point each store's **Stripe webhook** (`checkout.session.completed`) at the
-LionOS integration gateway (`/webhooks/stripe`). A worker step calls
-`buildOrderNotification('stripe', event.data.object, { brandKey })` and emails
-the owner. Enable behind:
-- `ORDER_NOTIFY_ENABLED=true`
-- `OWNER_ORDER_NOTIFICATION_EMAIL` (where alerts go)
-- an email provider (reuse `RESEND_API_KEY` + a from address)
+**Option B — own it in LionOS (durable, both sites from one place) — WIRED.**
+`workers/integration-worker.js` now detects order webhooks (`isOrderEvent`),
+picks the brand (`brandFromEvent`), renders the email (`buildOrderNotification`),
+and sends it via `lib/orders/notify-transport.js`. Fail-closed and **non-fatal**
+— a missing switch or provider hiccup never blocks order processing.
 
-Fail-closed: with those unset, nothing sends. Claude does not flip these or add
-the email/Stripe accounts.
+Owner steps to go live (Claude does none of these — no switch-flipping, no
+account/payment changes):
+1. **Deploy the integration gateway** — it lives in `render-integrations.yaml`
+   (a separate blueprint), so it must be applied in Render and share the Redis
+   URL. Until it's deployed, no store webhook is received.
+2. **Point each store's Stripe webhook** at the gateway `/webhooks/stripe`
+   (event `checkout.session.completed`), and set `SHOPIFY_WEBHOOK_SECRET` /
+   `STRIPE_WEBHOOK_SECRET` so signatures verify. Add `metadata.brand` =
+   `beauty`|`wellness` on the checkout (or rely on the shop-domain inference).
+3. **Set the notification env** on the integration worker service:
+   - `ORDER_NOTIFY_ENABLED=true`
+   - `OWNER_ORDER_NOTIFICATION_EMAIL=<where alerts go>`
+   - `ORDER_NOTIFY_FROM=<verified sender>` (falls back to `OUTREACH_FROM_EMAIL`)
+   - `RESEND_API_KEY=<reused email provider key>`
+
+With those unset, `sendOrderNotification` returns `{status:'skipped'}` and
+nothing sends.
 
 ## Note on the inventory sync
 
