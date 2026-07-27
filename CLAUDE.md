@@ -103,9 +103,11 @@ follows, or anything directed at other people's posts, and
   B2B e-mail pipeline (`outreach-worker.js` → `lib/email-delivery.js`) is
   explicitly authorized to send unattended, governed by the safeguards and
   kill switch in `docs/automated-outreach.md`. Everything else this bullet
-  covers still stands: no SMS, no DMs, no social posting/replies, no new
+  covers still stands: no DMs, no social posting/replies, no new
   send paths, and no weakening of the pipeline's validation, quota,
   suppression, or kill-switch controls without a fresh owner decision.
+  (SMS was later authorized as a governed, consent-gated channel — see the
+  2026-07-27 amendment below.)
   *Owner amendment 2026-07-25:* two additional e-mail campaigns are
   authorized, both defined in `lib/outreach/campaigns.js` and documented in
   `docs/outreach-campaigns.md`: (1) **med-spa research-supply (B2B)** —
@@ -124,18 +126,18 @@ follows, or anything directed at other people's posts, and
   published contact email (no data broker). Actually enabling sends remains a
   human action (`OUTREACH_SEND_ENABLED` + Resend vars) — Claude does not flip
   the send switch.
-  *Owner amendment 2026-07-27:* a **consumer SMS ("text") reorder campaign**
-  is authorized (`client_research_reorder_sms` in `lib/sms/sms-campaigns.js`,
-  docs `docs/sms-campaigns.md`) — texting EXISTING, CONSENTED research
-  customers that previously purchased research-grade items are available to
-  reorder. This lifts the prior blanket "no SMS" for this one governed path
-  only; SMS otherwise (cold texts, non-consented numbers, any other message
-  type) remains disallowed without a fresh owner decision. Conditions that do
-  NOT relax and are enforced in code: TCPA prior-express-written-consent per
-  recipient (`smsConsent === true`), STOP opt-out honored + suppression,
-  quiet-hours only (8am–9pm recipient local time; unknown local time fails
-  closed), E.164 mobile validation, the 45-day reorder cooldown, the
-  transactional daily quota, and the Redis kill switch; content stays RUO and
+  *Owner amendment 2026-07-27 (SMS authorized):* **SMS ("text") is authorized**
+  as a governed outreach channel — the prior blanket "no SMS" is lifted. The
+  first live campaign is `client_research_reorder_sms`
+  (`lib/sms/sms-campaigns.js`, docs `docs/sms-campaigns.md`); additional SMS
+  campaigns may be added on the same rails. What "yes SMS" does NOT mean, and
+  what stays enforced in code because it is a legal requirement (TCPA), not an
+  owner-waivable preference: **every recipient must have given prior express
+  written consent** (`smsConsent === true`) — cold texting or texting
+  purchased/non-consented numbers stays prohibited; plus STOP opt-out honored +
+  suppression, quiet-hours only (8am–9pm recipient local time; unknown local
+  time fails closed), E.164 mobile validation, per-campaign cooldown, the
+  transactional daily quota, and the Redis kill switch. Content stays RUO and
   is hard-gated by `lib/social/social-compliance.js` (the builder in
   `lib/sms/sms-message.js` fails closed on human-use/dosing/transformation
   language). Actually enabling sends remains a human action
