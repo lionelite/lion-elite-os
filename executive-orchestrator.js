@@ -4,6 +4,7 @@ const express = require('express');
 const crypto = require('crypto');
 const { addJob, queueMetrics } = require('./lib/job-queues');
 const { getRedis, ensureConnected } = require('./lib/redis');
+const { runExecutiveAgent } = require('./lib/openai-executive-agent');
 
 const app = express();
 app.use(express.json({ limit: '256kb' }));
@@ -24,7 +25,12 @@ app.get('/health', async (_req, res) => {
   try {
     const redis = await ensureConnected(getRedis());
     await redis.ping();
-    res.json({ status: 'ok', service: 'lion-elite-executive-orchestrator', time: new Date().toISOString() });
+    res.json({
+      status: 'ok',
+      service: 'lion-elite-executive-orchestrator',
+      openaiConfigured: Boolean(process.env.OPENAI_API_KEY),
+      time: new Date().toISOString()
+    });
   } catch (error) {
     res.status(503).json({ status: 'degraded', error: error.message });
   }
@@ -32,11 +38,34 @@ app.get('/health', async (_req, res) => {
 
 app.get('/status', requireAuth, async (_req, res) => {
   const redis = await ensureConnected(getRedis());
-  const [metrics, lastReport] = await Promise.all([
+  const [metrics, lastReport, lastAiPlan] = await Promise.all([
     queueMetrics(),
-    redis.get('executive:last-report')
+    redis.get('executive:last-report'),
+    redis.get('executive:last-ai-plan')
   ]);
-  res.json({ metrics, lastReport: lastReport ? JSON.parse(lastReport) : null, time: new Date().toISOString() });
+  res.json({
+    metrics,
+    lastReport: lastReport ? JSON.parse(lastReport) : null,
+    lastAiPlan: lastAiPlan ? JSON.parse(lastAiPlan) : null,
+    time: new Date().toISOString()
+  });
+});
+
+app.post('/ai/command', requireAuth, async (req, res, next) => {
+  try {
+    const result = await runExecutiveAgent(req.body || {});
+    const redis = await ensureConnected(getRedis());
+    await redis.set('executive:last-ai-plan', JSON.stringify(result), 'EX', 60 * 60 * 24 * 30);
+    res.status(200).json(result);
+  } catch (error) {
+    if (error.code === 'COMMAND_REQUIRED' || error.code === 'COMMAND_TOO_LARGE') {
+      return res.status(400).json({ error: error.code });
+    }
+    if (error.code === 'OPENAI_API_KEY_MISSING') {
+      return res.status(503).json({ error: error.code });
+    }
+    next(error);
+  }
 });
 
 app.post('/run/:job', requireAuth, async (req, res) => {
