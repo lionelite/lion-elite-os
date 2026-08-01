@@ -5,6 +5,7 @@ const crypto = require('crypto');
 const { addJob, queueMetrics } = require('./lib/job-queues');
 const { getRedis, ensureConnected } = require('./lib/redis');
 const { runExecutiveAgent } = require('./lib/openai-executive-agent');
+const { dispatchPlan } = require('./lib/openai-action-dispatcher');
 
 const app = express();
 app.use(express.json({ limit: '256kb' }));
@@ -29,6 +30,7 @@ app.get('/health', async (_req, res) => {
       status: 'ok',
       service: 'lion-elite-executive-orchestrator',
       openaiConfigured: Boolean(process.env.OPENAI_API_KEY),
+      liveExecution: true,
       time: new Date().toISOString()
     });
   } catch (error) {
@@ -38,25 +40,28 @@ app.get('/health', async (_req, res) => {
 
 app.get('/status', requireAuth, async (_req, res) => {
   const redis = await ensureConnected(getRedis());
-  const [metrics, lastReport, lastAiPlan] = await Promise.all([
+  const [metrics, lastReport, lastAiExecution] = await Promise.all([
     queueMetrics(),
     redis.get('executive:last-report'),
-    redis.get('executive:last-ai-plan')
+    redis.get('executive:last-ai-execution')
   ]);
   res.json({
     metrics,
     lastReport: lastReport ? JSON.parse(lastReport) : null,
-    lastAiPlan: lastAiPlan ? JSON.parse(lastAiPlan) : null,
+    lastAiExecution: lastAiExecution ? JSON.parse(lastAiExecution) : null,
     time: new Date().toISOString()
   });
 });
 
 app.post('/ai/command', requireAuth, async (req, res, next) => {
   try {
-    const result = await runExecutiveAgent(req.body || {});
+    const plan = await runExecutiveAgent(req.body || {});
+    const result = await dispatchPlan(plan);
     const redis = await ensureConnected(getRedis());
-    await redis.set('executive:last-ai-plan', JSON.stringify(result), 'EX', 60 * 60 * 24 * 30);
-    res.status(200).json(result);
+    await redis.set('executive:last-ai-execution', JSON.stringify(result), 'EX', 60 * 60 * 24 * 30);
+    await redis.lpush('executive:ai-audit-log', JSON.stringify(result));
+    await redis.ltrim('executive:ai-audit-log', 0, 999);
+    res.status(202).json(result);
   } catch (error) {
     if (error.code === 'COMMAND_REQUIRED' || error.code === 'COMMAND_TOO_LARGE') {
       return res.status(400).json({ error: error.code });
@@ -94,4 +99,4 @@ app.use((error, _req, res, _next) => {
   res.status(500).json({ error: 'INTERNAL_ERROR' });
 });
 
-app.listen(port, () => console.log(JSON.stringify({ level: 'info', event: 'executive.api.started', port })));
+app.listen(port, () => console.log(JSON.stringify({ level: 'info', event: 'executive.api.started', port, liveExecution: true })));
