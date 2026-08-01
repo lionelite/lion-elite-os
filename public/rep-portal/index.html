@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Lion Elite Rep Weekly Check-In</title>
+  <style>
+    :root{font-family:Inter,system-ui,sans-serif;background:#0b0b0c;color:#f5f5f5}body{margin:0}.wrap{max-width:980px;margin:auto;padding:28px}.card{background:#151518;border:1px solid #2a2a30;border-radius:18px;padding:22px;margin-bottom:18px;box-shadow:0 15px 50px #0006}h1{margin:0 0 8px;font-size:32px}p{color:#b8b8c2}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.full{grid-column:1/-1}label{display:block;font-size:13px;color:#c7c7d0;margin-bottom:6px}input,select,textarea,button{width:100%;box-sizing:border-box;border-radius:10px;border:1px solid #34343b;background:#0f0f12;color:#fff;padding:12px;font:inherit}textarea{min-height:100px;resize:vertical}button{background:#fff;color:#111;font-weight:700;cursor:pointer}.muted{font-size:13px;color:#8f8f9a}.success{color:#8ee6a3}.error{color:#ff9797}@media(max-width:700px){.grid{grid-template-columns:1fr}.full{grid-column:auto}}
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <section class="card">
+      <h1>Weekly Rep Check-In</h1>
+      <p>Track activity, results, blockers, and the commitment that moves next week forward.</p>
+      <div class="grid">
+        <div><label>Portal token</label><input id="token" type="password" autocomplete="off" /></div>
+        <div><label>Representative</label><select id="rep"><option>Enter token, then load reps</option></select></div>
+        <div><label>Week start</label><input id="weekStart" type="date" /></div>
+        <div><label>Confidence this week (1–10)</label><input id="confidenceScore" type="number" min="1" max="10" value="7" /></div>
+        <div><label>Leads contacted</label><input id="leadsContacted" type="number" min="0" value="0" /></div>
+        <div><label>Conversations started</label><input id="conversationsStarted" type="number" min="0" value="0" /></div>
+        <div><label>Follow-ups completed</label><input id="followupsCompleted" type="number" min="0" value="0" /></div>
+        <div><label>Consultations booked</label><input id="consultationsBooked" type="number" min="0" value="0" /></div>
+        <div><label>Sales closed</label><input id="salesClosed" type="number" min="0" value="0" /></div>
+        <div><label>Revenue generated ($)</label><input id="revenue" type="number" min="0" step="0.01" value="0" /></div>
+        <div class="full"><label>Biggest wins</label><textarea id="wins"></textarea></div>
+        <div class="full"><label>Blockers</label><textarea id="blockers"></textarea></div>
+        <div class="full"><label>Support needed from leadership</label><textarea id="supportNeeded"></textarea></div>
+        <div class="full"><label>Specific commitment for next week</label><textarea id="nextWeekCommitment"></textarea></div>
+        <div class="full"><button id="submit">Submit Weekly Check-In</button></div>
+      </div>
+      <p id="status" class="muted"></p>
+    </section>
+  </main>
+  <script>
+    const $=id=>document.getElementById(id);
+    const token=()=>$('token').value.trim();
+    const headers=()=>({'Content-Type':'application/json','Authorization':`Bearer ${token()}`});
+    function currentMonday(){const d=new Date();const day=d.getDay()||7;d.setDate(d.getDate()-day+1);return d.toISOString().slice(0,10)}
+    $('weekStart').value=currentMonday();
+    $('token').addEventListener('change',loadReps);
+    async function loadReps(){
+      const r=await fetch('/api/reps',{headers:headers()});
+      if(!r.ok){$('status').textContent='Unable to load representatives. Check the token.';return}
+      const data=await r.json();$('rep').innerHTML=data.reps.map(x=>`<option value="${x.id}">${x.name}</option>`).join('');
+      $('status').textContent='Representative list loaded.';
+    }
+    $('submit').addEventListener('click',async()=>{
+      $('status').className='muted';$('status').textContent='Submitting…';
+      const fields=['weekStart','confidenceScore','leadsContacted','conversationsStarted','followupsCompleted','consultationsBooked','salesClosed','revenue','wins','blockers','supportNeeded','nextWeekCommitment'];
+      const body={repId:$('rep').value};fields.forEach(id=>body[id]=$(id).value);
+      const r=await fetch('/api/checkins',{method:'POST',headers:headers(),body:JSON.stringify(body)});
+      const data=await r.json();
+      if(!r.ok){$('status').className='error';$('status').textContent=data.error||'Submission failed';return}
+      $('status').className='success';$('status').textContent=`Submitted. Performance score: ${data.checkin.performance_score}/100.`;
+    });
+  </script>
+</body>
+</html>
