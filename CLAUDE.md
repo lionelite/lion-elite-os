@@ -8,6 +8,49 @@ architecture map — trust it over `README.md` and the docs under `docs/`,
 several of which describe aspirational scope rather than what is actually
 built (see "Docs landscape" below).
 
+## Which repo serves which live site (read this before touching a storefront)
+
+Getting this wrong wasted two rounds of work on 2026-08-03: ARA-290 was
+"added to the website" twice, in a repo customers never see, and reported as
+verified both times.
+
+| Live site | Repo that serves it | Host |
+|---|---|---|
+| **lionelitewellness.com** | `lionelite/peptide-science-animations-store` | Vercel — the production deployment's alias list literally contains `lionelitewellness.com` and `www.lionelitewellness.com`. Default branch is `master`. |
+| lionelitebeauty.com | `lionelite/lionelitebeauty` | Vercel (Vite/React) |
+| *(nothing customer-facing)* | `lionelite/lionelite-lion-elite-website` | A separate, mostly text-only Next.js app on Render. **Not** the storefront. |
+
+Wellness storefront specifics:
+- The catalog is `src/lib/peptideData.ts`. Adding a product there covers the
+  grid, `generateStaticParams` (so `/products/<id>` exists instead of 404ing),
+  the `categories` counts, and the `visiblePeptides` `stock !== 0` gate.
+  Appending to `ProductGrid`'s `catalog` array instead reaches the grid and
+  nothing else — and if the product is already in `peptideData.ts`, it renders
+  the card **twice** with duplicate React keys.
+- `public/data/*.json` in the *other* repo (`current-inventory.json`,
+  `product-copy-*.json`) is read by no application code anywhere. Editing it
+  changes nothing a customer sees.
+- Vial images live in `src/lib/vials/*.ts` as inline base64 WebP.
+  `scripts/build-vial-assets.mjs` regenerates them from `public/products/*.png`
+  at a chosen scale; `scripts/relabel-vial.mjs` produces a stand-in render for
+  a product with no photography by swapping the label's name lozenge.
+
+## Working agreement (owner, 2026-08-03)
+
+When the owner asks for something: do it, finish it, and verify it actually
+works before replying. Do not report back mid-way, and do not report success
+on a proxy for the result — a merged commit, a green build, or a fired deploy
+hook is not evidence the thing works. Run the real thing and look at it
+(build it, serve it, load the page, screenshot it).
+
+Where a claim genuinely cannot be verified from this environment, say exactly
+what was verified and what was not, rather than rounding up. Known gap: the
+sandbox proxy returns 403 for `lionelitewellness.com`, so live-domain fetches
+fail; verify against a local production build of the deployed commit plus the
+Vercel deployment state instead.
+
+This does not override the hard limits below.
+
 ## Autonomous Development Contract
 
 On the `claude-automation` branch, Claude may without asking first: edit
