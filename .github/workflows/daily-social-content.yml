@@ -29,15 +29,35 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Decide from WHICH cron fired, not from the wall clock at execution time.
+      # GitHub routinely starts scheduled runs 30-120 minutes late, so an
+      # execution-time check for "is it 07:00 in New York" is almost never true —
+      # it silently skipped every run between 2026-07-19 and 2026-08-04 while
+      # still reporting success.
       - name: Keep only the 7 AM New York run
         id: guard
         run: |
-          if [ "${{ github.event_name }}" = "schedule" ]; then
-            hour="$(TZ=America/New_York date +%H)"
-            if [ "$hour" != "07" ]; then
-              echo "Not 7 AM in America/New_York (local hour: $hour). Skipping."
-              echo "skip=true" >> "$GITHUB_OUTPUT"
-            fi
+          if [ "${{ github.event_name }}" != "schedule" ]; then
+            echo "Manual dispatch — running."
+            exit 0
+          fi
+
+          offset="$(TZ=America/New_York date +%z)"
+          case "$offset" in
+            -0400) want='0 11 * * *' ;;   # EDT: 07:00 New York == 11:00 UTC
+            -0500) want='0 12 * * *' ;;   # EST: 07:00 New York == 12:00 UTC
+            *)
+              echo "Unexpected America/New_York offset '$offset' — running rather than silently skipping."
+              exit 0
+              ;;
+          esac
+
+          fired='${{ github.event.schedule }}'
+          if [ "$fired" != "$want" ]; then
+            echo "Cron '$fired' is not the 7 AM New York cron for offset $offset (that is '$want'). Skipping."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "Cron '$fired' is the 7 AM New York run for offset $offset. Running."
           fi
 
       - name: Checkout repo
