@@ -29,15 +29,35 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Decide from WHICH cron fired, not from the wall clock at execution time.
+      # GitHub routinely starts scheduled runs 30-120 minutes late, so an
+      # execution-time check for "is it 07:00 in New York" is almost never true —
+      # it silently skipped every run between 2026-07-19 and 2026-08-04 while
+      # still reporting success.
       - name: Keep only the 7 AM New York run
         id: guard
         run: |
-          if [ "${{ github.event_name }}" = "schedule" ]; then
-            hour="$(TZ=America/New_York date +%H)"
-            if [ "$hour" != "07" ]; then
-              echo "Not 7 AM in America/New_York (local hour: $hour). Skipping."
-              echo "skip=true" >> "$GITHUB_OUTPUT"
-            fi
+          if [ "${{ github.event_name }}" != "schedule" ]; then
+            echo "Manual dispatch — running."
+            exit 0
+          fi
+
+          offset="$(TZ=America/New_York date +%z)"
+          case "$offset" in
+            -0400) want='0 11 * * *' ;;   # EDT: 07:00 New York == 11:00 UTC
+            -0500) want='0 12 * * *' ;;   # EST: 07:00 New York == 12:00 UTC
+            *)
+              echo "Unexpected America/New_York offset '$offset' — running rather than silently skipping."
+              exit 0
+              ;;
+          esac
+
+          fired='${{ github.event.schedule }}'
+          if [ "$fired" != "$want" ]; then
+            echo "Cron '$fired' is not the 7 AM New York cron for offset $offset (that is '$want'). Skipping."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "Cron '$fired' is the 7 AM New York run for offset $offset. Running."
           fi
 
       - name: Checkout repo
@@ -64,6 +84,18 @@ jobs:
         with:
           node-version: 22
 
+      # Optional: pull live lionelitewellness.com product copy so Wellness
+      # captions are grounded in the real site (sentence-filtered for
+      # compliance). Inert until the SITE_PRODUCT_URLS repo variable lists
+      # the product-page URLs. Runs here — the GitHub runner can reach the
+      # site even though the dev sandbox's network policy cannot.
+      - name: Sync site product copy
+        if: steps.guard.outputs.skip != 'true' && vars.SITE_PRODUCT_URLS != ''
+        continue-on-error: true
+        env:
+          SITE_PRODUCT_URLS: ${{ vars.SITE_PRODUCT_URLS }}
+        run: node scripts/fetch-site-catalog.js
+
       # The generator uses only Node built-ins, so no npm install is needed.
       - name: Generate content
         if: steps.guard.outputs.skip != 'true'
@@ -73,6 +105,15 @@ jobs:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           AI_MODEL: ${{ vars.AI_MODEL }}
           OPENAI_MODEL: ${{ vars.OPENAI_MODEL }}
+          # Media hosting: images commit to the automation branch and are
+          # referenced by stable raw.githubusercontent.com URLs in the CSV.
+          # AI image generation is opt-in (per-image API cost) via the
+          # AI_IMAGE_ENABLED repo variable; human-dropped images in
+          # content/media/<date>/ are used either way.
+          AI_IMAGE_ENABLED: ${{ vars.AI_IMAGE_ENABLED }}
+          AI_IMAGE_MODEL: ${{ vars.AI_IMAGE_MODEL }}
+          MEDIA_BASE_URL: ${{ vars.MEDIA_BASE_URL }}
+          MEDIA_BRANCH: ${{ vars.MEDIA_BRANCH }}
         run: |
           if [ -n "${{ github.event.inputs.date }}" ]; then
             node scripts/generate-social-content.js --date="${{ github.event.inputs.date }}"
@@ -112,6 +153,54 @@ jobs:
           else
             git commit -m "Add daily social content output"
             git push origin HEAD:automation/social-content || echo "Push skipped because remote changed. Next run will retry."
+          fi
+
+      # Auto-publish to our own brand accounts (Issue #48 Phase 2). Runs
+      # AFTER the content commit so hosted image URLs are already live on
+      # the automation branch for Instagram to fetch. Fail-closed: does
+      # nothing unless SOCIAL_PUBLISH_ENABLED=true, skips any platform
+      # without credentials, and the committed publish-log makes reruns
+      # idempotent (no double-posting).
+      - name: Publish to social platforms
+        if: steps.guard.outputs.skip != 'true'
+        id: publish
+        continue-on-error: true
+        env:
+          SOCIAL_PUBLISH_ENABLED: ${{ vars.SOCIAL_PUBLISH_ENABLED }}
+          WELLNESS_IG_USER_ID: ${{ secrets.WELLNESS_IG_USER_ID }}
+          WELLNESS_META_PAGE_ID: ${{ secrets.WELLNESS_META_PAGE_ID }}
+          WELLNESS_META_ACCESS_TOKEN: ${{ secrets.WELLNESS_META_ACCESS_TOKEN }}
+          WELLNESS_X_API_KEY: ${{ secrets.WELLNESS_X_API_KEY }}
+          WELLNESS_X_API_SECRET: ${{ secrets.WELLNESS_X_API_SECRET }}
+          WELLNESS_X_ACCESS_TOKEN: ${{ secrets.WELLNESS_X_ACCESS_TOKEN }}
+          WELLNESS_X_ACCESS_SECRET: ${{ secrets.WELLNESS_X_ACCESS_SECRET }}
+          WELLNESS_BSKY_IDENTIFIER: ${{ secrets.WELLNESS_BSKY_IDENTIFIER }}
+          WELLNESS_BSKY_APP_PASSWORD: ${{ secrets.WELLNESS_BSKY_APP_PASSWORD }}
+          BEAUTY_IG_USER_ID: ${{ secrets.BEAUTY_IG_USER_ID }}
+          BEAUTY_META_PAGE_ID: ${{ secrets.BEAUTY_META_PAGE_ID }}
+          BEAUTY_META_ACCESS_TOKEN: ${{ secrets.BEAUTY_META_ACCESS_TOKEN }}
+          BEAUTY_X_API_KEY: ${{ secrets.BEAUTY_X_API_KEY }}
+          BEAUTY_X_API_SECRET: ${{ secrets.BEAUTY_X_API_SECRET }}
+          BEAUTY_X_ACCESS_TOKEN: ${{ secrets.BEAUTY_X_ACCESS_TOKEN }}
+          BEAUTY_X_ACCESS_SECRET: ${{ secrets.BEAUTY_X_ACCESS_SECRET }}
+          BEAUTY_BSKY_IDENTIFIER: ${{ secrets.BEAUTY_BSKY_IDENTIFIER }}
+          BEAUTY_BSKY_APP_PASSWORD: ${{ secrets.BEAUTY_BSKY_APP_PASSWORD }}
+        run: |
+          DATE="${{ github.event.inputs.date }}"
+          if [ -z "$DATE" ]; then DATE="$(TZ=America/New_York date +%F)"; fi
+          # We are on the automation/social-content branch after the commit
+          # step, so content/generated/<date>/ is present here.
+          node scripts/publish-social-content.js --date="$DATE"
+
+      - name: Commit publish log
+        if: steps.guard.outputs.skip != 'true' && vars.SOCIAL_PUBLISH_ENABLED == 'true'
+        run: |
+          git add content/ || true
+          if git diff --cached --quiet; then
+            echo "No publish-log changes to commit."
+          else
+            git commit -m "Record social publish results"
+            git push origin HEAD:automation/social-content || echo "Publish-log push skipped; next run reconciles."
           fi
 
       - name: Open issue on failure or compliance block

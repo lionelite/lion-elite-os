@@ -5,6 +5,12 @@ on:
     branches: [main, claude-automation]
   pull_request:
     branches: [main]
+  # Manual trigger. Pushes made with an Actions-scoped token do not raise
+  # push/pull_request events, so a PR can end up with zero check runs and an
+  # enabled auto-merge that waits forever on a `test` check that will never
+  # start. This lets the same required job be run on demand for that head.
+  # It adds a way to RUN the check, not a way to skip it.
+  workflow_dispatch:
 
 permissions:
   contents: read

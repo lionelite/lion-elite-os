@@ -7,6 +7,7 @@ const { QUEUE_NAMES, addJob, moveToDeadLetter, queueMetrics } = require('../lib/
 const { buildEmail: generateEmailDraft, scoreEmail: scoreEmailDraft } = require('../lib/email-generation');
 const { validateProspect, authorizeOutreach } = require('../lib/outreach-validation');
 const { sendEmail } = require('../lib/email-delivery');
+const { isHalted } = require('../lib/kill-switch');
 const { PostgresProspectStore } = require('../lib/postgres-prospect-store');
 const { log, runtimeMetrics } = require('../lib/observability');
 
@@ -64,6 +65,10 @@ startWorker(QUEUE_NAMES.validation, async job => {
   const context = job.data || {};
 
   if (job.name === 'schedule-due-followups') {
+    if (await isHalted()) {
+      log('warn', 'followups.skipped_halted', {});
+      return { halted: true, queued: 0 };
+    }
     const pending = await store.listQueue({ status: 'pending' });
     const now = Date.now();
     const due = pending
@@ -91,12 +96,52 @@ startWorker(QUEUE_NAMES.validation, async job => {
     error.code = 'OUTREACH_BLOCKED'; error.validation = validation; throw error;
   }
   const authorization = authorizeOutreach(context.prospect, context.policy || {});
-  await addJob('dispatch', 'dispatch-authorized-outreach', { prospect: context.prospect, draft: context.draft, quality: context.quality, authorization }, { jobId: authorization.idempotencyKey });
-  return { validation, authorization };
+
+  // Every send must flow through outreach_queue: the store's transactional
+  // daily-quota ledger, suppression re-check, and audit events only apply
+  // to queue-backed dispatches. Direct dispatch (no queueId) previously
+  // bypassed the quota entirely, which unattended sending cannot afford.
+  if (!context.prospect?.prospectId) {
+    const error = new Error('A stored prospect (prospectId) is required to dispatch outreach.');
+    error.code = 'PROSPECT_ID_REQUIRED';
+    throw error;
+  }
+  const queued = await store.enqueue(context.prospect.prospectId, authorization, {
+    channel: context.draft?.channel || 'email',
+    recipient: context.draft?.recipient || context.prospect?.contact?.email,
+    subject: context.draft?.subject || null,
+    body: context.draft?.body,
+    messageVersion: context.draft?.messageVersion || context.prospect?.messageVersion || 'auto-v1'
+  }, new Date().toISOString(), 'outreach-worker');
+
+  if (await isHalted()) {
+    // Kill switch: park the item as 'pending' without a dispatch job. The
+    // follow-ups scheduler picks it up automatically after resume.
+    log('warn', 'validation.dispatch_skipped_halted', { queueId: queued.item.queueId });
+    return { validation, authorization, queueId: queued.item.queueId, halted: true };
+  }
+
+  // Deterministic jobId (same value the follow-ups scheduler uses for this
+  // item) so the two paths dedupe instead of double-dispatching.
+  await addJob('dispatch', 'dispatch-authorized-outreach', {
+    queueId: queued.item.queueId,
+    prospect: context.prospect,
+    draft: context.draft,
+    quality: context.quality,
+    authorization
+  }, { jobId: authorization.idempotencyKey });
+  return { validation, authorization, queueId: queued.item.queueId };
 });
 
 startWorker(QUEUE_NAMES.dispatch, async job => {
   const context = job.data || {};
+  if (await isHalted()) {
+    // Complete WITHOUT sending: the queue row stays 'pending', the
+    // completed job is pruned, and the follow-ups scheduler re-dispatches
+    // the item under the same jobId once the switch is cleared.
+    log('warn', 'dispatch.skipped_halted', { queueId: context.queueId || null });
+    return { skipped: 'outreach_halted', queueId: context.queueId || null };
+  }
   if (context.queueId) await store.markQueue(context.queueId, 'processing', {}, 'outreach-worker');
   try {
     const delivery = await sendEmail({ prospect: context.prospect, draft: context.draft, authorization: context.authorization });
@@ -134,10 +179,13 @@ const server = http.createServer(async (req, res) => {
     const redis = await healthcheck();
     const queues = req.url === '/metrics' ? await queueMetrics() : undefined;
     const deliveryConfigured = Boolean(process.env.RESEND_API_KEY && process.env.OUTREACH_FROM_EMAIL && String(process.env.OUTREACH_SEND_ENABLED).toLowerCase() === 'true');
+    // A tripped kill switch is intentional, so it does not fail /ready —
+    // but it is always visible here and in the operations monitor.
+    const sendingHalted = await isHalted();
     const ready = !shuttingDown && redis.ok && workers.length > 0 && deliveryConfigured;
     const statusCode = req.url === '/ready' && !ready ? 503 : 200;
     res.writeHead(statusCode, { 'content-type': 'application/json' });
-    res.end(JSON.stringify({ status: ready ? 'ok' : 'degraded', ready, deliveryConfigured, service: 'lion-elite-outreach-worker', redis, queues, workers: workers.length, ...runtimeMetrics() }));
+    res.end(JSON.stringify({ status: ready ? 'ok' : 'degraded', ready, deliveryConfigured, sendingHalted, service: 'lion-elite-outreach-worker', redis, queues, workers: workers.length, ...runtimeMetrics() }));
   } catch (error) {
     res.writeHead(503, { 'content-type': 'application/json' });
     res.end(JSON.stringify({ status: 'degraded', ready: false, error: error.message }));

@@ -83,6 +83,76 @@ content/
     week-of-YYYY-MM-DD.csv # Mon–Sun combined CSV, refreshed daily
 ```
 
+### Public media hosting
+
+The public repo doubles as the media host: image files committed under
+`content/media/YYYY-MM-DD/<piece-id>.jpg` on the `automation/social-content`
+branch are served as stable HTTPS URLs via `raw.githubusercontent.com`, and
+those URLs are written into the Metricool CSV's `Picture Url 1` column
+automatically (all platform rows of a piece share its image).
+
+Image sources, in priority order:
+
+1. **Human-dropped** — put a finished **JPEG** at
+   `content/media/<date>/<piece-id>.jpg` on the automation branch (piece
+   ids are printed in the run log and in `social-content.json`). Always
+   wins over generation. JPEG specifically: Instagram's publishing API
+   rejects PNG.
+2. **AI-generated (opt-in)** — set the repo *variable* `AI_IMAGE_ENABLED=true`
+   (with the existing `AI_API_KEY`/`OPENAI_API_KEY` secret) and the daily
+   run generates portrait images (gpt-image-1, 1024x1536) from each
+   feed/reel piece's media prompt. Off by default because every image is a
+   paid API call (~6/day when on). `AI_IMAGE_MODEL` overrides the model.
+3. **Neither** — the CSV row has an empty `Picture Url 1`, exactly as
+   before. Note Instagram/TikTok require media, so imageless rows for
+   those networks still need an image attached inside Metricool.
+
+`MEDIA_BASE_URL` (repo variable) swaps `raw.githubusercontent.com` for any
+future CDN or site host without touching code; `MEDIA_BRANCH` overrides the
+branch. URLs become live when the workflow's commit lands on the automation
+branch — which always happens before a human downloads the CSV, so
+Metricool can fetch them at import time.
+
+This closes the full media path the pipeline needs — **image → controlled
+public storage → stable HTTPS URL → Metricool `Picture Url 1` → the
+Instagram/Facebook publisher** (`docs/social-auto-publish.md`). The stable
+public URL is no longer a bottleneck.
+
+**Hosting a provided image directly.** For an image you already have (a
+finished graphic, a product photo, an image from chat), skip generation and
+ingest it straight into the store:
+
+```bash
+npm run social:host-media -- --file=./retatrutide.jpg --date=2026-07-19 --id=2026-07-19-wellness-feed
+# → prints the stable raw.githubusercontent.com URL; commit content/ to publish it
+```
+
+Use JPEG — Instagram's publishing API rejects PNG (the tool warns if the
+source isn't `.jpg`). The `--id` is the piece id from the run log /
+`social-content.json` (e.g. `<date>-wellness-feed`) so the image binds to
+that day's post automatically.
+
+### Grounding captions in the live site
+
+The Wellness lane can source its wording from the real
+lionelitewellness.com product pages instead of the built-in research
+angles. Because the storefront is a custom Orchids build (no product API),
+copy is extracted from rendered HTML and — critically — **filtered sentence
+by sentence through the compliance validator**, so only research-safe
+wording from the site survives into a caption (`lib/social/site-catalog.js`).
+
+```bash
+# list product-page URLs (one per line) in content/site-urls.txt, or:
+SITE_PRODUCT_URLS="https://lionelitewellness.com/…,https://…" npm run social:fetch-site
+```
+
+This writes `content/site-catalog.json`, which the peptide-image generator
+reads to prefer site-grounded captions (falling back to the catalog default
+when a product has no compliance-safe sentences). In the daily workflow,
+set the `SITE_PRODUCT_URLS` repo variable and the "Sync site product copy"
+step runs automatically — on the GitHub runner, which can reach the site
+even though the dev sandbox's network policy cannot.
+
 ## Importing into Metricool
 
 1. Open the weekly file under `content/metricool-import/` on the

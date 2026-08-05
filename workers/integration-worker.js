@@ -4,6 +4,8 @@ const { Worker } = require('bullmq');
 const { createRedisConnection, ensureConnected, getRedis, closeRedis } = require('../lib/redis');
 const { QUEUE_NAMES, addJob, moveToDeadLetter } = require('../lib/job-queues');
 const { summarize, classify, recordAffiliateLead, recordStripeSubscription } = require('../lib/integration-normalization');
+const { isOrderEvent, brandFromEvent, buildOrderNotification } = require('../lib/orders/order-notification');
+const { sendOrderNotification } = require('../lib/orders/notify-transport');
 
 const concurrency = Number(process.env.INTEGRATION_WORKER_CONCURRENCY || 5);
 let shuttingDown = false;
@@ -41,6 +43,20 @@ const worker = new Worker(QUEUE_NAMES.integrations, async job => {
       customerId: record.summary.customerId ? '[redacted]' : null,
       customerEmail: record.summary.customerEmail ? '[redacted]' : null
     };
+  }
+
+  // Internal owner order-notification (the "NEW ORDER — ACTION REQUIRED" email)
+  // for Shopify/Stripe order webhooks — fail-closed + non-fatal so a missing
+  // switch or a provider hiccup never blocks order processing.
+  if (isOrderEvent(event.source, event.eventType)) {
+    try {
+      const brandKey = brandFromEvent(event);
+      const notification = buildOrderNotification(event.source, event.payload || {}, { brandKey });
+      const sent = await sendOrderNotification(notification);
+      record.orderNotification = { brand: brandKey, orderId: notification.order.orderId, status: sent.status };
+    } catch (error) {
+      record.orderNotification = { status: 'error', message: error.message };
+    }
   }
 
   const encoded = JSON.stringify(record);
