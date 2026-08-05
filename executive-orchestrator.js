@@ -4,6 +4,8 @@ const express = require('express');
 const crypto = require('crypto');
 const { addJob, queueMetrics } = require('./lib/job-queues');
 const { getRedis, ensureConnected } = require('./lib/redis');
+const { runExecutiveAgent } = require('./lib/openai-executive-agent');
+const { dispatchPlan } = require('./lib/openai-action-dispatcher');
 
 const app = express();
 app.use(express.json({ limit: '256kb' }));
@@ -24,7 +26,13 @@ app.get('/health', async (_req, res) => {
   try {
     const redis = await ensureConnected(getRedis());
     await redis.ping();
-    res.json({ status: 'ok', service: 'lion-elite-executive-orchestrator', time: new Date().toISOString() });
+    res.json({
+      status: 'ok',
+      service: 'lion-elite-executive-orchestrator',
+      openaiConfigured: Boolean(process.env.OPENAI_API_KEY),
+      liveExecution: true,
+      time: new Date().toISOString()
+    });
   } catch (error) {
     res.status(503).json({ status: 'degraded', error: error.message });
   }
@@ -32,11 +40,37 @@ app.get('/health', async (_req, res) => {
 
 app.get('/status', requireAuth, async (_req, res) => {
   const redis = await ensureConnected(getRedis());
-  const [metrics, lastReport] = await Promise.all([
+  const [metrics, lastReport, lastAiExecution] = await Promise.all([
     queueMetrics(),
-    redis.get('executive:last-report')
+    redis.get('executive:last-report'),
+    redis.get('executive:last-ai-execution')
   ]);
-  res.json({ metrics, lastReport: lastReport ? JSON.parse(lastReport) : null, time: new Date().toISOString() });
+  res.json({
+    metrics,
+    lastReport: lastReport ? JSON.parse(lastReport) : null,
+    lastAiExecution: lastAiExecution ? JSON.parse(lastAiExecution) : null,
+    time: new Date().toISOString()
+  });
+});
+
+app.post('/ai/command', requireAuth, async (req, res, next) => {
+  try {
+    const plan = await runExecutiveAgent(req.body || {});
+    const result = await dispatchPlan(plan);
+    const redis = await ensureConnected(getRedis());
+    await redis.set('executive:last-ai-execution', JSON.stringify(result), 'EX', 60 * 60 * 24 * 30);
+    await redis.lpush('executive:ai-audit-log', JSON.stringify(result));
+    await redis.ltrim('executive:ai-audit-log', 0, 999);
+    res.status(202).json(result);
+  } catch (error) {
+    if (error.code === 'COMMAND_REQUIRED' || error.code === 'COMMAND_TOO_LARGE') {
+      return res.status(400).json({ error: error.code });
+    }
+    if (error.code === 'OPENAI_API_KEY_MISSING') {
+      return res.status(503).json({ error: error.code });
+    }
+    next(error);
+  }
 });
 
 app.post('/run/:job', requireAuth, async (req, res) => {
@@ -65,4 +99,4 @@ app.use((error, _req, res, _next) => {
   res.status(500).json({ error: 'INTERNAL_ERROR' });
 });
 
-app.listen(port, () => console.log(JSON.stringify({ level: 'info', event: 'executive.api.started', port })));
+app.listen(port, () => console.log(JSON.stringify({ level: 'info', event: 'executive.api.started', port, liveExecution: true })));
