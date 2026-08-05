@@ -181,6 +181,8 @@ services:
         value: 4
       - key: JOB_BACKOFF_MS
         value: 5000
+      - key: MORNING_BRIEF_INCLUDE_ABUNDANCE_MINDSET
+        value: true
 
   - type: cron
     name: lion-elite-stale-data-refresh
