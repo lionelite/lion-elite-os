@@ -8,10 +8,11 @@ const databaseConfigured = Boolean(process.env.DATABASE_URL);
 test('Postgres prospect lifecycle executes against the real schema', { skip: !databaseConfigured }, async t => {
   const { migrate, query, close } = require('../lib/database');
   const { PostgresProspectStore } = require('../lib/postgres-prospect-store');
+  const { PostgresSubscriptionStore } = require('../lib/postgres-subscription-store');
 
   t.after(async () => close());
   await migrate();
-  await query('TRUNCATE outreach_queue, prospect_events, prospects, daily_usage RESTART IDENTITY CASCADE');
+  await query('TRUNCATE subscription_events, coaching_subscriptions, outreach_queue, prospect_events, prospects, daily_usage RESTART IDENTITY CASCADE');
 
   process.env.DAILY_EMAIL_LIMIT = '2';
   const store = new PostgresProspectStore();
@@ -63,4 +64,45 @@ test('Postgres prospect lifecycle executes against the real schema', { skip: !da
   assert.ok(timeline.some(event => event.type === 'prospect.created'));
   assert.ok(timeline.some(event => event.type === 'prospect.stage_changed'));
   assert.ok(timeline.some(event => event.type === 'outreach.sent'));
+
+  const subscriptions = new PostgresSubscriptionStore();
+  const createdSubscription = await subscriptions.record('evt_subscription_created', 'customer.subscription.created', {
+    subscriptionId: 'sub_synthetic_ci', customerId: 'cus_synthetic_ci',
+    customerEmail: 'synthetic-client@example.test', status: 'active', amountCents: 29999,
+    currency: 'usd', currentPeriodEnd: '2026-08-21T00:00:00.000Z', cancelAtPeriodEnd: false,
+    program: 'lion_elite_beauty_basic', eventCreatedAt: '2026-07-21T16:35:17.000Z'
+  }, '2026-07-21T16:35:17.000Z');
+  assert.equal(createdSubscription.duplicate, false);
+  assert.equal(createdSubscription.tracked, true);
+
+  const duplicateSubscription = await subscriptions.record('evt_subscription_created', 'customer.subscription.created', {
+    subscriptionId: 'sub_synthetic_ci', status: 'active'
+  }, '2026-07-21T16:35:17.000Z');
+  assert.equal(duplicateSubscription.duplicate, true);
+
+  await subscriptions.record('evt_invoice_failed', 'invoice.payment_failed', {
+    subscriptionId: 'sub_synthetic_ci', status: 'past_due', amountCents: 29999, currency: 'usd',
+    eventCreatedAt: '2026-08-21T16:35:17.000Z'
+  }, '2026-08-21T16:35:17.000Z');
+  const failedSubscription = await query('SELECT * FROM coaching_subscriptions WHERE subscription_id=$1', ['sub_synthetic_ci']);
+  assert.equal(failedSubscription.rows[0].status, 'past_due');
+  assert.equal(failedSubscription.rows[0].next_action, 'recover_payment');
+
+  await subscriptions.record('evt_stale_paid', 'invoice.paid', {
+    subscriptionId: 'sub_synthetic_ci', status: 'active', amountCents: 29999, currency: 'usd',
+    eventCreatedAt: '2026-08-01T16:35:17.000Z'
+  }, '2026-08-22T16:35:17.000Z');
+  const afterStale = await query('SELECT * FROM coaching_subscriptions WHERE subscription_id=$1', ['sub_synthetic_ci']);
+  assert.equal(afterStale.rows[0].status, 'past_due');
+  assert.equal(afterStale.rows[0].next_action, 'recover_payment');
+
+  await subscriptions.record('evt_recovered_paid', 'invoice.paid', {
+    subscriptionId: 'sub_synthetic_ci', status: 'active', amountCents: 29999, currency: 'usd',
+    eventCreatedAt: '2026-08-22T16:35:17.000Z'
+  }, '2026-08-22T16:35:17.000Z');
+  const recovered = await query('SELECT * FROM coaching_subscriptions WHERE subscription_id=$1', ['sub_synthetic_ci']);
+  assert.equal(recovered.rows[0].status, 'active');
+  assert.equal(recovered.rows[0].next_action, 'confirm_recovery');
+  const subscriptionEvents = await query('SELECT COUNT(*)::int AS count FROM subscription_events WHERE subscription_id=$1', ['sub_synthetic_ci']);
+  assert.equal(subscriptionEvents.rows[0].count, 4);
 });

@@ -1,0 +1,93 @@
+services:
+  - type: worker
+    name: lion-elite-bluesky-listener
+    runtime: node
+    plan: starter
+    buildCommand: npm install --no-audit --no-fund && npm run db:migrate
+    startCommand: node social-listening/src/monitor.js --no-model --quiet
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: lion-elite-os-db
+          property: connectionString
+      - key: PG_POOL_MAX
+        value: 5
+
+  - type: web
+    name: lion-elite-lead-intelligence
+    runtime: node
+    plan: starter
+    buildCommand: npm install --no-audit --no-fund && npm run db:migrate
+    startCommand: node scripts/lead-automation-suite.js api
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: lion-elite-os-db
+          property: connectionString
+      - key: PG_POOL_MAX
+        value: 5
+
+  - type: worker
+    name: lion-elite-lead-enrichment
+    runtime: node
+    plan: starter
+    buildCommand: npm install --no-audit --no-fund && npm run db:migrate
+    startCommand: node scripts/lead-automation-suite.js enrich
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: lion-elite-os-db
+          property: connectionString
+      - key: LEAD_ENRICH_MIN_SCORE
+        value: 55
+      - key: LEAD_ENRICH_BATCH_SIZE
+        value: 25
+      - key: LEAD_ENRICH_INTERVAL_MS
+        value: 900000
+
+  - type: cron
+    name: lion-elite-daily-opportunity-digest
+    runtime: node
+    schedule: "0 12 * * *"
+    buildCommand: npm install --no-audit --no-fund && npm run db:migrate
+    startCommand: node scripts/lead-automation-suite.js digest
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: lion-elite-os-db
+          property: connectionString
+      - key: RESEND_API_KEY
+        sync: false
+      - key: OUTREACH_FROM_EMAIL
+        sync: false
+      - key: LEAD_DIGEST_TO
+        sync: false
+
+  - type: worker
+    name: lion-elite-unified-lead-router
+    runtime: node
+    plan: starter
+    buildCommand: npm install --no-audit --no-fund && npm run db:migrate
+    startCommand: node scripts/lead-automation-suite.js route
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: lion-elite-os-db
+          property: connectionString
+      - key: LEAD_ROUTER_INTERVAL_MS
+        value: 120000

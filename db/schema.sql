@@ -66,3 +66,36 @@ CREATE TABLE IF NOT EXISTS daily_usage (
   sent_count INTEGER NOT NULL DEFAULT 0 CHECK (sent_count >= 0),
   PRIMARY KEY (usage_day, channel)
 );
+
+CREATE TABLE IF NOT EXISTS coaching_subscriptions (
+  subscription_id TEXT PRIMARY KEY,
+  customer_id TEXT,
+  customer_email TEXT,
+  status TEXT NOT NULL,
+  amount_cents INTEGER CHECK (amount_cents IS NULL OR amount_cents >= 0),
+  currency TEXT,
+  current_period_end TIMESTAMPTZ,
+  cancel_at_period_end BOOLEAN NOT NULL DEFAULT false,
+  onboarding_status TEXT NOT NULL DEFAULT 'pending',
+  next_action TEXT,
+  last_event_id TEXT NOT NULL,
+  last_event_created_at TIMESTAMPTZ NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS coaching_subscriptions_status_idx ON coaching_subscriptions(status);
+CREATE INDEX IF NOT EXISTS coaching_subscriptions_next_action_idx ON coaching_subscriptions(next_action);
+
+CREATE TABLE IF NOT EXISTS subscription_events (
+  event_id TEXT PRIMARY KEY,
+  subscription_id TEXT REFERENCES coaching_subscriptions(subscription_id) ON DELETE SET NULL,
+  event_type TEXT NOT NULL,
+  category TEXT NOT NULL,
+  amount_cents INTEGER CHECK (amount_cents IS NULL OR amount_cents >= 0),
+  currency TEXT,
+  status TEXT,
+  occurred_at TIMESTAMPTZ NOT NULL,
+  data JSONB NOT NULL DEFAULT '{}'::jsonb,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS subscription_events_subscription_idx ON subscription_events(subscription_id, occurred_at);
