@@ -1,0 +1,398 @@
+{
+  "date": "2026-08-06",
+  "generatedAt": "2026-08-06T12:57:56.470Z",
+  "brands": {
+    "wellness": {
+      "brandName": "Lion Elite Wellness",
+      "pieces": [
+        {
+          "id": "2026-08-06-wellness-feed",
+          "brand": "wellness",
+          "date": "2026-08-06",
+          "slot": "feed",
+          "type": "educational_feed",
+          "topic": {
+            "slug": "third-party-testing",
+            "title": "Why third-party testing matters"
+          },
+          "cta": "wholesale",
+          "platforms": {
+            "instagram": {
+              "text": "A supplier grading its own homework is not a quality system.\n\nWhy third-party testing matters — today's research education note from Lion Elite Wellness.\n\n• Independent laboratories remove the conflict of interest.\n• Third-party results should match the supplier’s claims.\n• Verification you can check beats reputation you have to trust.\n\nSourcing for a lab or research team? Reach out about wholesale inquiries.\n\nFor laboratory research purposes only. Not for human or veterinary use.\n\n#ResearchEducation #PeptideResearch #ScientificLiteracy #LabStandards #LionEliteWellness"
+            },
+            "facebook": {
+              "text": "A supplier grading its own homework is not a quality system.\n\nWhy third-party testing matters — today's research education note from Lion Elite Wellness.\n\n• Independent laboratories remove the conflict of interest.\n• Third-party results should match the supplier’s claims.\n• Verification you can check beats reputation you have to trust.\n\nSourcing for a lab or research team? Reach out about wholesale inquiries.\n\nFor laboratory research purposes only. Not for human or veterinary use."
+            },
+            "linkedin": {
+              "text": "Why third-party testing matters\n\nA supplier grading its own homework is not a quality system.\n\n— Independent laboratories remove the conflict of interest.\n— Third-party results should match the supplier’s claims.\n— Verification you can check beats reputation you have to trust.\n\nSourcing for a lab or research team? Reach out about wholesale inquiries.\n\nFor laboratory research purposes only. Not for human or veterinary use."
+            },
+            "x": {
+              "text": "A supplier grading its own homework is not a quality system.\n\nSourcing for a lab or research team? Reach out about wholesale inquiries.\n\nFor laboratory research purposes only. Not for human or veterinary use."
+            }
+          },
+          "media": {
+            "format": "feed",
+            "dimensions": "1080x1350",
+            "aspectRatio": "4:5",
+            "prompt": "independent lab exterior and paperwork, documentary style. Lion Elite Wellness aesthetic: premium, minimal, earth tones and black-and-white accents, natural light, no text overlay. Vertical 4:5 feed image, 1080x1350 px."
+          },
+          "schedule": {
+            "date": "2026-08-06",
+            "time": "09:00"
+          },
+          "compliance": {
+            "approved": true,
+            "platforms": {
+              "instagram": {
+                "approved": true,
+                "blockers": []
+              },
+              "facebook": {
+                "approved": true,
+                "blockers": []
+              },
+              "linkedin": {
+                "approved": true,
+                "blockers": []
+              },
+              "x": {
+                "approved": true,
+                "blockers": []
+              }
+            }
+          },
+          "marketing": {
+            "platform": "instagram",
+            "score": 9.17,
+            "threshold": 9.5,
+            "approved": false,
+            "attempts": 1,
+            "judge": "heuristic",
+            "reason": "Best marketing score 9.17 < threshold 9.5 after 1 attempt(s)."
+          }
+        },
+        {
+          "id": "2026-08-06-wellness-reel",
+          "brand": "wellness",
+          "date": "2026-08-06",
+          "slot": "reel",
+          "type": "reel_script",
+          "topic": {
+            "slug": "how-to-read-a-coa",
+            "title": "How to read a Certificate of Analysis"
+          },
+          "cta": "website",
+          "platforms": {
+            "instagram": {
+              "text": "A Certificate of Analysis is the receipt science asks for.\n\nExplore the research catalog at lionelitewellness.com.\n\nFor laboratory research purposes only. Not for human or veterinary use.\n\n#ResearchEducation #PeptideResearch #ScientificLiteracy #LabStandards #LionEliteWellness"
+            },
+            "tiktok": {
+              "text": "HOOK (0-3s, on camera or bold text): A Certificate of Analysis is the receipt science asks for.\n\nBODY (talking points, one per cut):\n1. A COA documents identity and purity testing for a specific batch.\n2. Look for the testing method, the batch number, and the date.\n3. If a supplier cannot produce one, that is your answer.\n\nCTA (final 3s): Explore the research catalog at lionelitewellness.com.\n\nON-SCREEN DISCLAIMER (visible full duration): see below.\n\nFor laboratory research purposes only. Not for human or veterinary use."
+            }
+          },
+          "media": {
+            "format": "vertical",
+            "dimensions": "1080x1920",
+            "aspectRatio": "9:16",
+            "prompt": "clean lab bench, printed COA document, minimal premium styling. Lion Elite Wellness aesthetic: premium, minimal, earth tones and black-and-white accents, natural light, no text overlay. Vertical 9:16 Reel/TikTok cover, 1080x1920 px."
+          },
+          "schedule": {
+            "date": "2026-08-06",
+            "time": "12:30"
+          },
+          "compliance": {
+            "approved": true,
+            "platforms": {
+              "instagram": {
+                "approved": true,
+                "blockers": []
+              },
+              "tiktok": {
+                "approved": true,
+                "blockers": []
+              }
+            }
+          },
+          "marketing": {
+            "platform": "instagram",
+            "score": 9.33,
+            "threshold": 9.5,
+            "approved": false,
+            "attempts": 1,
+            "judge": "heuristic",
+            "reason": "Best marketing score 9.33 < threshold 9.5 after 1 attempt(s)."
+          }
+        },
+        {
+          "id": "2026-08-06-wellness-story-1",
+          "brand": "wellness",
+          "date": "2026-08-06",
+          "slot": "story-1",
+          "type": "story",
+          "topic": {
+            "slug": "third-party-testing",
+            "title": "Why third-party testing matters"
+          },
+          "cta": "product_education",
+          "platforms": {
+            "instagram": {
+              "text": "A supplier grading its own homework is not a quality system.\n\nIndependent laboratories remove the conflict of interest.\n\nNew post is live — full breakdown on the feed.\n\nFor laboratory research purposes only. Not for human or veterinary use."
+            }
+          },
+          "media": {
+            "format": "vertical",
+            "dimensions": "1080x1920",
+            "aspectRatio": "9:16",
+            "prompt": "independent lab exterior and paperwork, documentary style. Lion Elite Wellness aesthetic: premium, minimal, earth tones and black-and-white accents, natural light, no text overlay. Vertical 9:16 Story frame, 1080x1920 px."
+          },
+          "schedule": {
+            "date": "2026-08-06",
+            "time": "15:00"
+          },
+          "compliance": {
+            "approved": true,
+            "platforms": {
+              "instagram": {
+                "approved": true,
+                "blockers": []
+              }
+            }
+          }
+        },
+        {
+          "id": "2026-08-06-wellness-story-2",
+          "brand": "wellness",
+          "date": "2026-08-06",
+          "slot": "story-2",
+          "type": "story",
+          "topic": {
+            "slug": "third-party-testing",
+            "title": "Why third-party testing matters"
+          },
+          "cta": "affiliate",
+          "platforms": {
+            "instagram": {
+              "text": "Question sticker: What research-quality topic should we break down next?\n\nInterested in partnering? Ask about the Lion Elite Wellness affiliate program.\n\nFor laboratory research purposes only. Not for human or veterinary use."
+            }
+          },
+          "media": {
+            "format": "vertical",
+            "dimensions": "1080x1920",
+            "aspectRatio": "9:16",
+            "prompt": "independent lab exterior and paperwork, documentary style. Lion Elite Wellness aesthetic: premium, minimal, earth tones and black-and-white accents, natural light, no text overlay. Vertical 9:16 Story frame, 1080x1920 px."
+          },
+          "schedule": {
+            "date": "2026-08-06",
+            "time": "19:00"
+          },
+          "compliance": {
+            "approved": true,
+            "platforms": {
+              "instagram": {
+                "approved": true,
+                "blockers": []
+              }
+            }
+          }
+        }
+      ],
+      "rejected": []
+    },
+    "beauty": {
+      "brandName": "Lion Elite Beauty",
+      "pieces": [
+        {
+          "id": "2026-08-06-beauty-feed",
+          "brand": "beauty",
+          "date": "2026-08-06",
+          "slot": "feed",
+          "type": "transformation_feed",
+          "topic": {
+            "slug": "sleep-is-a-skill",
+            "title": "Sleep is a trainable skill"
+          },
+          "cta": "comment_ready",
+          "platforms": {
+            "instagram": {
+              "text": "The most underrated performance tool is free and happens in the dark.\n\nSleep is a trainable skill — today's standard from Lion Elite Beauty.\n\n• Consistent timing, cool room, morning light — the fundamentals win.\n• Recovery quality shows up in training quality.\n• Track it like you track training.\n\nComment READY and we will send you the first step.\n\n#LionEliteBeauty #DisciplineDaily #Biomarkers #WellnessCoaching #HigherStandard"
+            },
+            "facebook": {
+              "text": "The most underrated performance tool is free and happens in the dark.\n\nSleep is a trainable skill — today's standard from Lion Elite Beauty.\n\n• Consistent timing, cool room, morning light — the fundamentals win.\n• Recovery quality shows up in training quality.\n• Track it like you track training.\n\nComment READY and we will send you the first step."
+            },
+            "linkedin": {
+              "text": "Sleep is a trainable skill\n\nThe most underrated performance tool is free and happens in the dark.\n\n— Consistent timing, cool room, morning light — the fundamentals win.\n— Recovery quality shows up in training quality.\n— Track it like you track training.\n\nComment READY and we will send you the first step."
+            },
+            "x": {
+              "text": "The most underrated performance tool is free and happens in the dark.\n\nComment READY and we will send you the first step."
+            }
+          },
+          "media": {
+            "format": "feed",
+            "dimensions": "1080x1350",
+            "aspectRatio": "4:5",
+            "prompt": "dark minimal bedroom, watch on nightstand, dawn light. Lion Elite Beauty aesthetic: premium, minimal, earth tones and black-and-white accents, natural light, no text overlay. Vertical 4:5 feed image, 1080x1350 px."
+          },
+          "schedule": {
+            "date": "2026-08-06",
+            "time": "10:00"
+          },
+          "compliance": {
+            "approved": true,
+            "platforms": {
+              "instagram": {
+                "approved": true,
+                "blockers": []
+              },
+              "facebook": {
+                "approved": true,
+                "blockers": []
+              },
+              "linkedin": {
+                "approved": true,
+                "blockers": []
+              },
+              "x": {
+                "approved": true,
+                "blockers": []
+              }
+            }
+          },
+          "marketing": {
+            "platform": "instagram",
+            "score": 9,
+            "threshold": 9.5,
+            "approved": false,
+            "attempts": 1,
+            "judge": "heuristic",
+            "reason": "Best marketing score 9 < threshold 9.5 after 1 attempt(s)."
+          }
+        },
+        {
+          "id": "2026-08-06-beauty-reel",
+          "brand": "beauty",
+          "date": "2026-08-06",
+          "slot": "reel",
+          "type": "reel_script",
+          "topic": {
+            "slug": "stop-guessing-start-testing",
+            "title": "Stop guessing. Start testing."
+          },
+          "cta": "program_application",
+          "platforms": {
+            "instagram": {
+              "text": "Most people are not failing from low motivation. They are failing because they are guessing.\n\nApply for the coaching program — the link is in our bio.\n\n#LionEliteBeauty #DisciplineDaily #Biomarkers #WellnessCoaching #HigherStandard"
+            },
+            "tiktok": {
+              "text": "HOOK (0-3s, on camera or bold text): Most people are not failing from low motivation. They are failing because they are guessing.\n\nBODY (talking points, one per cut):\n1. Guessing with training, nutrition, recovery, and health data.\n2. Biomarkers replace guesswork with objective feedback.\n3. Build from foundation, data, and discipline.\n\nCTA (final 3s): Apply for the coaching program — the link is in our bio."
+            }
+          },
+          "media": {
+            "format": "vertical",
+            "dimensions": "1080x1920",
+            "aspectRatio": "9:16",
+            "prompt": "lab report beside training shoes, morning light, premium minimal. Lion Elite Beauty aesthetic: premium, minimal, earth tones and black-and-white accents, natural light, no text overlay. Vertical 9:16 Reel/TikTok cover, 1080x1920 px."
+          },
+          "schedule": {
+            "date": "2026-08-06",
+            "time": "13:30"
+          },
+          "compliance": {
+            "approved": true,
+            "platforms": {
+              "instagram": {
+                "approved": true,
+                "blockers": []
+              },
+              "tiktok": {
+                "approved": true,
+                "blockers": []
+              }
+            }
+          },
+          "marketing": {
+            "platform": "instagram",
+            "score": 8.83,
+            "threshold": 9.5,
+            "approved": false,
+            "attempts": 1,
+            "judge": "heuristic",
+            "reason": "Best marketing score 8.83 < threshold 9.5 after 1 attempt(s)."
+          }
+        },
+        {
+          "id": "2026-08-06-beauty-story-1",
+          "brand": "beauty",
+          "date": "2026-08-06",
+          "slot": "story-1",
+          "type": "story",
+          "topic": {
+            "slug": "sleep-is-a-skill",
+            "title": "Sleep is a trainable skill"
+          },
+          "cta": "dm_elite",
+          "platforms": {
+            "instagram": {
+              "text": "The most underrated performance tool is free and happens in the dark.\n\nConsistent timing, cool room, morning light — the fundamentals win.\n\nNew post is live — full breakdown on the feed."
+            }
+          },
+          "media": {
+            "format": "vertical",
+            "dimensions": "1080x1920",
+            "aspectRatio": "9:16",
+            "prompt": "dark minimal bedroom, watch on nightstand, dawn light. Lion Elite Beauty aesthetic: premium, minimal, earth tones and black-and-white accents, natural light, no text overlay. Vertical 9:16 Story frame, 1080x1920 px."
+          },
+          "schedule": {
+            "date": "2026-08-06",
+            "time": "16:00"
+          },
+          "compliance": {
+            "approved": true,
+            "platforms": {
+              "instagram": {
+                "approved": true,
+                "blockers": []
+              }
+            }
+          }
+        },
+        {
+          "id": "2026-08-06-beauty-story-2",
+          "brand": "beauty",
+          "date": "2026-08-06",
+          "slot": "story-2",
+          "type": "story",
+          "topic": {
+            "slug": "sleep-is-a-skill",
+            "title": "Sleep is a trainable skill"
+          },
+          "cta": "comment_ready",
+          "platforms": {
+            "instagram": {
+              "text": "Question sticker: What is the one habit you refuse to skip this week?\n\nComment READY and we will send you the first step."
+            }
+          },
+          "media": {
+            "format": "vertical",
+            "dimensions": "1080x1920",
+            "aspectRatio": "9:16",
+            "prompt": "dark minimal bedroom, watch on nightstand, dawn light. Lion Elite Beauty aesthetic: premium, minimal, earth tones and black-and-white accents, natural light, no text overlay. Vertical 9:16 Story frame, 1080x1920 px."
+          },
+          "schedule": {
+            "date": "2026-08-06",
+            "time": "20:00"
+          },
+          "compliance": {
+            "approved": true,
+            "platforms": {
+              "instagram": {
+                "approved": true,
+                "blockers": []
+              }
+            }
+          }
+        }
+      ],
+      "rejected": []
+    }
+  }
+}
