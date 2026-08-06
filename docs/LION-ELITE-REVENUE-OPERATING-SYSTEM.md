@@ -128,6 +128,192 @@ Daily dashboard minimum:
 - Coaching recurring revenue
 - System health and data freshness
 
+## Revenue Scoreboard Contract
+
+The executive scoreboard must refresh daily and expose both output and trend:
+
+- Revenue today vs daily target
+- Revenue yesterday and 7-day average
+- Month-to-date revenue vs target
+- Orders, average order value, and repeat-order share
+- Qualified leads created today
+- Outreach attempts, replies, booked meetings, proposals, and closed sales
+- Pipeline value weighted by stage probability
+- Revenue by source and campaign
+- Cost per qualified lead and customer acquisition cost where available
+- Customer lifetime value estimate
+- Follow-ups due and overdue
+- System freshness, last successful run, and failure state
+
+Every metric must identify its source system and last update time. Stale or unavailable data must be shown as stale or unavailable—not as zero.
+
+## Revenue Leak Detector
+
+The system must detect and rank likely revenue constraints every day.
+
+Minimum leak categories:
+
+- Acquisition volume below target
+- Qualified-lead rate below target
+- Enrichment failure or missing contact paths
+- Outreach volume below target
+- Reply rate below target
+- Meeting-booking rate below target
+- Proposal/checkout conversion below target
+- Cart abandonment above target
+- Follow-ups overdue
+- Returning customers not reactivated
+- Repeat-purchase rate declining
+- Attribution coverage incomplete
+- Source/campaign spending without measurable revenue
+- Automation stale, failing, or producing zero output
+
+Each detected leak must include:
+
+- Severity
+- Estimated revenue impact
+- Evidence and affected date range
+- Responsible owner
+- Recommended next action
+- Deadline
+- Verification metric
+
+The executive view should present the top three constraints ordered by estimated recoverable revenue.
+
+## Lead Quality and Expected-Value Engine
+
+Every qualified lead receives a score based on observable factors, not unsupported assumptions.
+
+Suggested scoring inputs:
+
+- Contactability and verified contact path
+- Business type and fit
+- Product/service interest
+- Purchase intent signals
+- Previous engagement
+- Revenue potential
+- Geographic/service eligibility
+- Recency
+- Response behavior
+- Existing customer relationship
+
+The system should also calculate an expected opportunity value:
+
+`expected value = estimated deal value × stage probability × lead-quality factor`
+
+Lead scores must be recalibrated using actual outcomes. A score is useful only when higher-scored leads demonstrably convert at a higher rate.
+
+## Automated Sales Playbook Rules
+
+Every lifecycle event should create the appropriate next action without allowing uncontrolled or duplicate outreach.
+
+Minimum triggers:
+
+- New qualified lead → assign owner and first-touch deadline
+- No response after first contact → create follow-up task based on channel and consent
+- Positive reply → stop generic sequence and route to human owner
+- Meeting booked → confirmation and preparation workflow
+- Missed meeting → respectful rescheduling follow-up
+- Proposal or checkout sent → timed follow-up task
+- Purchase completed → onboarding and customer-success workflow
+- Positive outcome/review → referral request workflow
+- Past customer reaches reactivation window → owner-approved reactivation task
+- Manual Gmail reply detected → suppress automated duplicate reply on that thread
+- Unsubscribe/opt-out → suppress future promotional contact as required
+
+All outbound automation must include audit history, suppression logic, rate limits, and owner visibility.
+
+## Revenue Experiment Framework
+
+Every campaign or funnel change must be registered as an experiment with:
+
+- Hypothesis
+- Audience
+- Offer
+- Channel
+- Primary KPI
+- Guardrail metrics
+- Baseline
+- Target improvement
+- Start/end dates
+- Minimum sample requirement where appropriate
+- Owner
+- Decision rule: scale, iterate, pause, or stop
+
+Do not declare a winner from anecdotal performance or insufficient data. Preserve customer trust and regulatory/compliance requirements while testing.
+
+## Channel Portfolio Rules
+
+No single source should be treated as the entire revenue engine.
+
+Maintain at least three independent acquisition paths over time:
+
+1. Existing-customer reactivation/referrals
+2. Direct B2B outbound and partnerships
+3. Inbound storefront/content/search/paid acquisition
+
+A channel may be scaled only when:
+
+- Attribution is working
+- Lead and customer quality are verified
+- Conversion is measurable
+- Economics are acceptable
+- Operations can fulfill demand reliably
+
+## Executive AI Review Cadence
+
+### Daily
+
+- Identify the largest measurable revenue constraint
+- Show the evidence
+- Recommend one highest-leverage action
+- Assign owner and deadline
+- Verify whether yesterday's action moved the KPI
+
+### Weekly
+
+- Rank channels by qualified leads, sales, revenue, and efficiency
+- Review missed follow-ups and stalled opportunities
+- Review experiments and make scale/iterate/stop decisions
+- Review system failures and stale data
+- Confirm that engineering work maps to revenue or reliability outcomes
+
+### Monthly
+
+- Review revenue growth, contribution by channel, acquisition cost, conversion, retention, repeat revenue, and lifetime value
+- Reallocate effort and budget toward verified winners
+- Remove or pause systems that consume resources without measurable output
+
+## System Proof-of-Output Standard
+
+Every revenue automation must expose:
+
+- Purpose
+- Owner
+- Production location
+- Last run time
+- Last successful run time
+- Inputs processed
+- Output produced
+- Qualified output count
+- Errors
+- Next scheduled run
+- Business KPI affected
+- Recovery procedure
+
+A running process with zero usable output is not healthy. It must be classified as `degraded`, `broken`, or `unproven` based on evidence.
+
+## Revenue Before Features Policy
+
+New feature work is blocked unless one of the following is true:
+
+- It directly addresses the current highest-impact revenue bottleneck
+- It repairs a reliability issue in a production revenue system
+- It makes revenue, conversion, attribution, retention, or system health measurable
+- It is required for compliance, security, or customer trust
+
+Everything else goes to backlog until existing revenue systems are verified.
+
 ## Operating Roles
 
 ### Owner
@@ -260,6 +446,18 @@ Phase One is complete only when all of the following are verified:
 - A daily dashboard displays fresh revenue and pipeline metrics
 - Failures trigger visible alerts
 - Documentation identifies production systems, owners, and recovery steps
+
+## Phase Two Capability Targets
+
+After Phase One is verified, Phase Two must deliver:
+
+- Daily ranked revenue leaks with estimated recoverable revenue
+- Lead scores validated against conversion outcomes
+- Automated lifecycle tasks with manual-reply suppression
+- Experiment registry and decision history
+- Channel-level acquisition cost and revenue contribution
+- Executive daily/weekly/monthly review outputs
+- System proof-of-output cards for every production revenue automation
 
 ## Decision Filter
 
