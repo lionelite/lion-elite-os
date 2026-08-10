@@ -1,0 +1,398 @@
+{
+  "date": "2026-08-10",
+  "generatedAt": "2026-08-10T11:48:11.196Z",
+  "brands": {
+    "wellness": {
+      "brandName": "Lion Elite Wellness",
+      "pieces": [
+        {
+          "id": "2026-08-10-wellness-feed",
+          "brand": "wellness",
+          "date": "2026-08-10",
+          "slot": "feed",
+          "type": "educational_feed",
+          "topic": {
+            "slug": "reading-a-study-abstract",
+            "title": "How to read a study abstract in 60 seconds"
+          },
+          "cta": "wholesale",
+          "platforms": {
+            "instagram": {
+              "text": "Most claims fall apart in the methods section.\n\nHow to read a study abstract in 60 seconds — today's research education note from Lion Elite Wellness.\n\n• Check the model: cells, animal models, or human trials.\n• Check the sample size and whether there was a control.\n• The conclusion sentence is written to be quoted — read past it.\n\nSourcing for a lab or research team? Reach out about wholesale inquiries.\n\nFor laboratory research purposes only. Not for human or veterinary use.\n\n#ResearchEducation #PeptideResearch #ScientificLiteracy #LabStandards #LionEliteWellness"
+            },
+            "facebook": {
+              "text": "Most claims fall apart in the methods section.\n\nHow to read a study abstract in 60 seconds — today's research education note from Lion Elite Wellness.\n\n• Check the model: cells, animal models, or human trials.\n• Check the sample size and whether there was a control.\n• The conclusion sentence is written to be quoted — read past it.\n\nSourcing for a lab or research team? Reach out about wholesale inquiries.\n\nFor laboratory research purposes only. Not for human or veterinary use."
+            },
+            "linkedin": {
+              "text": "How to read a study abstract in 60 seconds\n\nMost claims fall apart in the methods section.\n\n— Check the model: cells, animal models, or human trials.\n— Check the sample size and whether there was a control.\n— The conclusion sentence is written to be quoted — read past it.\n\nSourcing for a lab or research team? Reach out about wholesale inquiries.\n\nFor laboratory research purposes only. Not for human or veterinary use."
+            },
+            "x": {
+              "text": "Most claims fall apart in the methods section.\n\nSourcing for a lab or research team? Reach out about wholesale inquiries.\n\nFor laboratory research purposes only. Not for human or veterinary use."
+            }
+          },
+          "media": {
+            "format": "feed",
+            "dimensions": "1080x1350",
+            "aspectRatio": "4:5",
+            "prompt": "highlighted journal article, coffee, disciplined morning desk scene. Lion Elite Wellness aesthetic: premium, minimal, earth tones and black-and-white accents, natural light, no text overlay. Vertical 4:5 feed image, 1080x1350 px."
+          },
+          "schedule": {
+            "date": "2026-08-10",
+            "time": "09:00"
+          },
+          "compliance": {
+            "approved": true,
+            "platforms": {
+              "instagram": {
+                "approved": true,
+                "blockers": []
+              },
+              "facebook": {
+                "approved": true,
+                "blockers": []
+              },
+              "linkedin": {
+                "approved": true,
+                "blockers": []
+              },
+              "x": {
+                "approved": true,
+                "blockers": []
+              }
+            }
+          },
+          "marketing": {
+            "platform": "instagram",
+            "score": 9.67,
+            "threshold": 9.5,
+            "approved": true,
+            "attempts": 1,
+            "judge": "heuristic",
+            "reason": null
+          }
+        },
+        {
+          "id": "2026-08-10-wellness-reel",
+          "brand": "wellness",
+          "date": "2026-08-10",
+          "slot": "reel",
+          "type": "reel_script",
+          "topic": {
+            "slug": "cold-chain-logistics",
+            "title": "Cold chain: the invisible part of research quality"
+          },
+          "cta": "website",
+          "platforms": {
+            "instagram": {
+              "text": "Quality can be lost in transit and no one would see it happen.\n\nExplore the research catalog at lionelitewellness.com.\n\nFor laboratory research purposes only. Not for human or veterinary use.\n\n#ResearchEducation #PeptideResearch #ScientificLiteracy #LabStandards #LionEliteWellness"
+            },
+            "tiktok": {
+              "text": "HOOK (0-3s, on camera or bold text): Quality can be lost in transit and no one would see it happen.\n\nBODY (talking points, one per cut):\n1. Temperature-sensitive materials need cold-chain shipping discipline.\n2. Insulated packaging and fast transit protect material integrity.\n3. A serious supplier treats logistics as part of the product.\n\nCTA (final 3s): Explore the research catalog at lionelitewellness.com.\n\nON-SCREEN DISCLAIMER (visible full duration): see below.\n\nFor laboratory research purposes only. Not for human or veterinary use."
+            }
+          },
+          "media": {
+            "format": "vertical",
+            "dimensions": "1080x1920",
+            "aspectRatio": "9:16",
+            "prompt": "insulated shipping box with cold packs, clean studio product shot. Lion Elite Wellness aesthetic: premium, minimal, earth tones and black-and-white accents, natural light, no text overlay. Vertical 9:16 Reel/TikTok cover, 1080x1920 px."
+          },
+          "schedule": {
+            "date": "2026-08-10",
+            "time": "12:30"
+          },
+          "compliance": {
+            "approved": true,
+            "platforms": {
+              "instagram": {
+                "approved": true,
+                "blockers": []
+              },
+              "tiktok": {
+                "approved": true,
+                "blockers": []
+              }
+            }
+          },
+          "marketing": {
+            "platform": "instagram",
+            "score": 9.33,
+            "threshold": 9.5,
+            "approved": false,
+            "attempts": 1,
+            "judge": "heuristic",
+            "reason": "Best marketing score 9.33 < threshold 9.5 after 1 attempt(s)."
+          }
+        },
+        {
+          "id": "2026-08-10-wellness-story-1",
+          "brand": "wellness",
+          "date": "2026-08-10",
+          "slot": "story-1",
+          "type": "story",
+          "topic": {
+            "slug": "reading-a-study-abstract",
+            "title": "How to read a study abstract in 60 seconds"
+          },
+          "cta": "product_education",
+          "platforms": {
+            "instagram": {
+              "text": "Most claims fall apart in the methods section.\n\nCheck the model: cells, animal models, or human trials.\n\nNew post is live — full breakdown on the feed.\n\nFor laboratory research purposes only. Not for human or veterinary use."
+            }
+          },
+          "media": {
+            "format": "vertical",
+            "dimensions": "1080x1920",
+            "aspectRatio": "9:16",
+            "prompt": "highlighted journal article, coffee, disciplined morning desk scene. Lion Elite Wellness aesthetic: premium, minimal, earth tones and black-and-white accents, natural light, no text overlay. Vertical 9:16 Story frame, 1080x1920 px."
+          },
+          "schedule": {
+            "date": "2026-08-10",
+            "time": "15:00"
+          },
+          "compliance": {
+            "approved": true,
+            "platforms": {
+              "instagram": {
+                "approved": true,
+                "blockers": []
+              }
+            }
+          }
+        },
+        {
+          "id": "2026-08-10-wellness-story-2",
+          "brand": "wellness",
+          "date": "2026-08-10",
+          "slot": "story-2",
+          "type": "story",
+          "topic": {
+            "slug": "reading-a-study-abstract",
+            "title": "How to read a study abstract in 60 seconds"
+          },
+          "cta": "affiliate",
+          "platforms": {
+            "instagram": {
+              "text": "Question sticker: What research-quality topic should we break down next?\n\nInterested in partnering? Ask about the Lion Elite Wellness affiliate program.\n\nFor laboratory research purposes only. Not for human or veterinary use."
+            }
+          },
+          "media": {
+            "format": "vertical",
+            "dimensions": "1080x1920",
+            "aspectRatio": "9:16",
+            "prompt": "highlighted journal article, coffee, disciplined morning desk scene. Lion Elite Wellness aesthetic: premium, minimal, earth tones and black-and-white accents, natural light, no text overlay. Vertical 9:16 Story frame, 1080x1920 px."
+          },
+          "schedule": {
+            "date": "2026-08-10",
+            "time": "19:00"
+          },
+          "compliance": {
+            "approved": true,
+            "platforms": {
+              "instagram": {
+                "approved": true,
+                "blockers": []
+              }
+            }
+          }
+        }
+      ],
+      "rejected": []
+    },
+    "beauty": {
+      "brandName": "Lion Elite Beauty",
+      "pieces": [
+        {
+          "id": "2026-08-10-beauty-feed",
+          "brand": "beauty",
+          "date": "2026-08-10",
+          "slot": "feed",
+          "type": "transformation_feed",
+          "topic": {
+            "slug": "recovery-is-training",
+            "title": "Recovery is part of training"
+          },
+          "cta": "program_application",
+          "platforms": {
+            "instagram": {
+              "text": "You do not get stronger in the session. You get stronger in the recovery.\n\nRecovery is part of training — today's standard from Lion Elite Beauty.\n\n• Sleep and stress management are performance inputs.\n• Under-recovered is the most common state we see.\n• Plan recovery with the same discipline as training.\n\nApply for the coaching program — the link is in our bio.\n\n#LionEliteBeauty #DisciplineDaily #Biomarkers #WellnessCoaching #HigherStandard"
+            },
+            "facebook": {
+              "text": "You do not get stronger in the session. You get stronger in the recovery.\n\nRecovery is part of training — today's standard from Lion Elite Beauty.\n\n• Sleep and stress management are performance inputs.\n• Under-recovered is the most common state we see.\n• Plan recovery with the same discipline as training.\n\nApply for the coaching program — the link is in our bio."
+            },
+            "linkedin": {
+              "text": "Recovery is part of training\n\nYou do not get stronger in the session. You get stronger in the recovery.\n\n— Sleep and stress management are performance inputs.\n— Under-recovered is the most common state we see.\n— Plan recovery with the same discipline as training.\n\nApply for the coaching program — the link is in our bio."
+            },
+            "x": {
+              "text": "You do not get stronger in the session. You get stronger in the recovery.\n\nApply for the coaching program — the link is in our bio."
+            }
+          },
+          "media": {
+            "format": "feed",
+            "dimensions": "1080x1350",
+            "aspectRatio": "4:5",
+            "prompt": "rest day scene, nature, stretching at sunset. Lion Elite Beauty aesthetic: premium, minimal, earth tones and black-and-white accents, natural light, no text overlay. Vertical 4:5 feed image, 1080x1350 px."
+          },
+          "schedule": {
+            "date": "2026-08-10",
+            "time": "10:00"
+          },
+          "compliance": {
+            "approved": true,
+            "platforms": {
+              "instagram": {
+                "approved": true,
+                "blockers": []
+              },
+              "facebook": {
+                "approved": true,
+                "blockers": []
+              },
+              "linkedin": {
+                "approved": true,
+                "blockers": []
+              },
+              "x": {
+                "approved": true,
+                "blockers": []
+              }
+            }
+          },
+          "marketing": {
+            "platform": "instagram",
+            "score": 9,
+            "threshold": 9.5,
+            "approved": false,
+            "attempts": 1,
+            "judge": "heuristic",
+            "reason": "Best marketing score 9 < threshold 9.5 after 1 attempt(s)."
+          }
+        },
+        {
+          "id": "2026-08-10-beauty-reel",
+          "brand": "beauty",
+          "date": "2026-08-10",
+          "slot": "reel",
+          "type": "reel_script",
+          "topic": {
+            "slug": "executive-energy",
+            "title": "Energy is the executive advantage"
+          },
+          "cta": "dm_elite",
+          "platforms": {
+            "instagram": {
+              "text": "High performers do not have more hours. They have more usable energy.\n\nDM ELITE if you are ready to build with purpose.\n\n#LionEliteBeauty #DisciplineDaily #Biomarkers #WellnessCoaching #HigherStandard"
+            },
+            "tiktok": {
+              "text": "HOOK (0-3s, on camera or bold text): High performers do not have more hours. They have more usable energy.\n\nBODY (talking points, one per cut):\n1. Energy management is built on sleep, training, and data.\n2. A structured wellness plan is a business asset.\n3. Lead yourself first.\n\nCTA (final 3s): DM ELITE if you are ready to build with purpose."
+            }
+          },
+          "media": {
+            "format": "vertical",
+            "dimensions": "1080x1920",
+            "aspectRatio": "9:16",
+            "prompt": "professional in gym before work, city skyline, premium tone. Lion Elite Beauty aesthetic: premium, minimal, earth tones and black-and-white accents, natural light, no text overlay. Vertical 9:16 Reel/TikTok cover, 1080x1920 px."
+          },
+          "schedule": {
+            "date": "2026-08-10",
+            "time": "13:30"
+          },
+          "compliance": {
+            "approved": true,
+            "platforms": {
+              "instagram": {
+                "approved": true,
+                "blockers": []
+              },
+              "tiktok": {
+                "approved": true,
+                "blockers": []
+              }
+            }
+          },
+          "marketing": {
+            "platform": "instagram",
+            "score": 8.83,
+            "threshold": 9.5,
+            "approved": false,
+            "attempts": 1,
+            "judge": "heuristic",
+            "reason": "Best marketing score 8.83 < threshold 9.5 after 1 attempt(s)."
+          }
+        },
+        {
+          "id": "2026-08-10-beauty-story-1",
+          "brand": "beauty",
+          "date": "2026-08-10",
+          "slot": "story-1",
+          "type": "story",
+          "topic": {
+            "slug": "recovery-is-training",
+            "title": "Recovery is part of training"
+          },
+          "cta": "comment_ready",
+          "platforms": {
+            "instagram": {
+              "text": "You do not get stronger in the session. You get stronger in the recovery.\n\nSleep and stress management are performance inputs.\n\nNew post is live — full breakdown on the feed."
+            }
+          },
+          "media": {
+            "format": "vertical",
+            "dimensions": "1080x1920",
+            "aspectRatio": "9:16",
+            "prompt": "rest day scene, nature, stretching at sunset. Lion Elite Beauty aesthetic: premium, minimal, earth tones and black-and-white accents, natural light, no text overlay. Vertical 9:16 Story frame, 1080x1920 px."
+          },
+          "schedule": {
+            "date": "2026-08-10",
+            "time": "16:00"
+          },
+          "compliance": {
+            "approved": true,
+            "platforms": {
+              "instagram": {
+                "approved": true,
+                "blockers": []
+              }
+            }
+          }
+        },
+        {
+          "id": "2026-08-10-beauty-story-2",
+          "brand": "beauty",
+          "date": "2026-08-10",
+          "slot": "story-2",
+          "type": "story",
+          "topic": {
+            "slug": "recovery-is-training",
+            "title": "Recovery is part of training"
+          },
+          "cta": "program_application",
+          "platforms": {
+            "instagram": {
+              "text": "Question sticker: What is the one habit you refuse to skip this week?\n\nApply for the coaching program — the link is in our bio."
+            }
+          },
+          "media": {
+            "format": "vertical",
+            "dimensions": "1080x1920",
+            "aspectRatio": "9:16",
+            "prompt": "rest day scene, nature, stretching at sunset. Lion Elite Beauty aesthetic: premium, minimal, earth tones and black-and-white accents, natural light, no text overlay. Vertical 9:16 Story frame, 1080x1920 px."
+          },
+          "schedule": {
+            "date": "2026-08-10",
+            "time": "20:00"
+          },
+          "compliance": {
+            "approved": true,
+            "platforms": {
+              "instagram": {
+                "approved": true,
+                "blockers": []
+              }
+            }
+          }
+        }
+      ],
+      "rejected": []
+    }
+  }
+}
