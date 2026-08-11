@@ -1,0 +1,398 @@
+{
+  "date": "2026-08-11",
+  "generatedAt": "2026-08-11T11:44:26.450Z",
+  "brands": {
+    "wellness": {
+      "brandName": "Lion Elite Wellness",
+      "pieces": [
+        {
+          "id": "2026-08-11-wellness-feed",
+          "brand": "wellness",
+          "date": "2026-08-11",
+          "slot": "feed",
+          "type": "educational_feed",
+          "topic": {
+            "slug": "lab-documentation-standards",
+            "title": "Documentation standards separate serious labs"
+          },
+          "cta": "website",
+          "platforms": {
+            "instagram": {
+              "text": "If it was not written down, it did not happen.\n\nDocumentation standards separate serious labs — today's research education note from Lion Elite Wellness.\n\n• Batch records, receiving logs, and storage logs build traceability.\n• Good documentation makes research repeatable.\n• The habit of recording is the habit of rigor.\n\nExplore the research catalog at lionelitewellness.com.\n\nFor laboratory research purposes only. Not for human or veterinary use.\n\n#ResearchEducation #PeptideResearch #ScientificLiteracy #LabStandards #LionEliteWellness"
+            },
+            "facebook": {
+              "text": "If it was not written down, it did not happen.\n\nDocumentation standards separate serious labs — today's research education note from Lion Elite Wellness.\n\n• Batch records, receiving logs, and storage logs build traceability.\n• Good documentation makes research repeatable.\n• The habit of recording is the habit of rigor.\n\nExplore the research catalog at lionelitewellness.com.\n\nFor laboratory research purposes only. Not for human or veterinary use."
+            },
+            "linkedin": {
+              "text": "Documentation standards separate serious labs\n\nIf it was not written down, it did not happen.\n\n— Batch records, receiving logs, and storage logs build traceability.\n— Good documentation makes research repeatable.\n— The habit of recording is the habit of rigor.\n\nExplore the research catalog at lionelitewellness.com.\n\nFor laboratory research purposes only. Not for human or veterinary use."
+            },
+            "x": {
+              "text": "If it was not written down, it did not happen.\n\nExplore the research catalog at lionelitewellness.com.\n\nFor laboratory research purposes only. Not for human or veterinary use."
+            }
+          },
+          "media": {
+            "format": "feed",
+            "dimensions": "1080x1350",
+            "aspectRatio": "4:5",
+            "prompt": "lab notebook and pen, black and white, minimal luxury. Lion Elite Wellness aesthetic: premium, minimal, earth tones and black-and-white accents, natural light, no text overlay. Vertical 4:5 feed image, 1080x1350 px."
+          },
+          "schedule": {
+            "date": "2026-08-11",
+            "time": "09:00"
+          },
+          "compliance": {
+            "approved": true,
+            "platforms": {
+              "instagram": {
+                "approved": true,
+                "blockers": []
+              },
+              "facebook": {
+                "approved": true,
+                "blockers": []
+              },
+              "linkedin": {
+                "approved": true,
+                "blockers": []
+              },
+              "x": {
+                "approved": true,
+                "blockers": []
+              }
+            }
+          },
+          "marketing": {
+            "platform": "instagram",
+            "score": 9.33,
+            "threshold": 9.5,
+            "approved": false,
+            "attempts": 1,
+            "judge": "heuristic",
+            "reason": "Best marketing score 9.33 < threshold 9.5 after 1 attempt(s)."
+          }
+        },
+        {
+          "id": "2026-08-11-wellness-reel",
+          "brand": "wellness",
+          "date": "2026-08-11",
+          "slot": "reel",
+          "type": "reel_script",
+          "topic": {
+            "slug": "research-vendor-red-flags",
+            "title": "Red flags when evaluating research vendors"
+          },
+          "cta": "product_education",
+          "platforms": {
+            "instagram": {
+              "text": "The louder the promises, the fewer the documents.\n\nRead the product information pages to learn how we document quality.\n\nFor laboratory research purposes only. Not for human or veterinary use.\n\n#ResearchEducation #PeptideResearch #ScientificLiteracy #LabStandards #LionEliteWellness"
+            },
+            "tiktok": {
+              "text": "HOOK (0-3s, on camera or bold text): The louder the promises, the fewer the documents.\n\nBODY (talking points, one per cut):\n1. No batch testing, no COA, no clear labeling — walk away.\n2. Medical claims on a research product are a compliance failure.\n3. Professional vendors educate; they do not promise.\n\nCTA (final 3s): Read the product information pages to learn how we document quality.\n\nON-SCREEN DISCLAIMER (visible full duration): see below.\n\nFor laboratory research purposes only. Not for human or veterinary use."
+            }
+          },
+          "media": {
+            "format": "vertical",
+            "dimensions": "1080x1920",
+            "aspectRatio": "9:16",
+            "prompt": "magnifying glass over paperwork, investigative premium tone. Lion Elite Wellness aesthetic: premium, minimal, earth tones and black-and-white accents, natural light, no text overlay. Vertical 9:16 Reel/TikTok cover, 1080x1920 px."
+          },
+          "schedule": {
+            "date": "2026-08-11",
+            "time": "12:30"
+          },
+          "compliance": {
+            "approved": true,
+            "platforms": {
+              "instagram": {
+                "approved": true,
+                "blockers": []
+              },
+              "tiktok": {
+                "approved": true,
+                "blockers": []
+              }
+            }
+          },
+          "marketing": {
+            "platform": "instagram",
+            "score": 8.17,
+            "threshold": 9.5,
+            "approved": false,
+            "attempts": 1,
+            "judge": "heuristic",
+            "reason": "Best marketing score 8.17 < threshold 9.5 after 1 attempt(s)."
+          }
+        },
+        {
+          "id": "2026-08-11-wellness-story-1",
+          "brand": "wellness",
+          "date": "2026-08-11",
+          "slot": "story-1",
+          "type": "story",
+          "topic": {
+            "slug": "lab-documentation-standards",
+            "title": "Documentation standards separate serious labs"
+          },
+          "cta": "affiliate",
+          "platforms": {
+            "instagram": {
+              "text": "If it was not written down, it did not happen.\n\nBatch records, receiving logs, and storage logs build traceability.\n\nNew post is live — full breakdown on the feed.\n\nFor laboratory research purposes only. Not for human or veterinary use."
+            }
+          },
+          "media": {
+            "format": "vertical",
+            "dimensions": "1080x1920",
+            "aspectRatio": "9:16",
+            "prompt": "lab notebook and pen, black and white, minimal luxury. Lion Elite Wellness aesthetic: premium, minimal, earth tones and black-and-white accents, natural light, no text overlay. Vertical 9:16 Story frame, 1080x1920 px."
+          },
+          "schedule": {
+            "date": "2026-08-11",
+            "time": "15:00"
+          },
+          "compliance": {
+            "approved": true,
+            "platforms": {
+              "instagram": {
+                "approved": true,
+                "blockers": []
+              }
+            }
+          }
+        },
+        {
+          "id": "2026-08-11-wellness-story-2",
+          "brand": "wellness",
+          "date": "2026-08-11",
+          "slot": "story-2",
+          "type": "story",
+          "topic": {
+            "slug": "lab-documentation-standards",
+            "title": "Documentation standards separate serious labs"
+          },
+          "cta": "wholesale",
+          "platforms": {
+            "instagram": {
+              "text": "Question sticker: What research-quality topic should we break down next?\n\nSourcing for a lab or research team? Reach out about wholesale inquiries.\n\nFor laboratory research purposes only. Not for human or veterinary use."
+            }
+          },
+          "media": {
+            "format": "vertical",
+            "dimensions": "1080x1920",
+            "aspectRatio": "9:16",
+            "prompt": "lab notebook and pen, black and white, minimal luxury. Lion Elite Wellness aesthetic: premium, minimal, earth tones and black-and-white accents, natural light, no text overlay. Vertical 9:16 Story frame, 1080x1920 px."
+          },
+          "schedule": {
+            "date": "2026-08-11",
+            "time": "19:00"
+          },
+          "compliance": {
+            "approved": true,
+            "platforms": {
+              "instagram": {
+                "approved": true,
+                "blockers": []
+              }
+            }
+          }
+        }
+      ],
+      "rejected": []
+    },
+    "beauty": {
+      "brandName": "Lion Elite Beauty",
+      "pieces": [
+        {
+          "id": "2026-08-11-beauty-feed",
+          "brand": "beauty",
+          "date": "2026-08-11",
+          "slot": "feed",
+          "type": "transformation_feed",
+          "topic": {
+            "slug": "natural-first-not-anti-science",
+            "title": "Natural first is not anti-science"
+          },
+          "cta": "dm_elite",
+          "platforms": {
+            "instagram": {
+              "text": "It means respecting the foundation first.\n\nNatural first is not anti-science — today's standard from Lion Elite Beauty.\n\n• Sunlight, sleep, hydration, minerals, whole foods, training.\n• Then objective feedback to refine the plan.\n• Optimization with respect for the body.\n\nDM ELITE if you are ready to build with purpose.\n\n#LionEliteBeauty #DisciplineDaily #Biomarkers #WellnessCoaching #HigherStandard"
+            },
+            "facebook": {
+              "text": "It means respecting the foundation first.\n\nNatural first is not anti-science — today's standard from Lion Elite Beauty.\n\n• Sunlight, sleep, hydration, minerals, whole foods, training.\n• Then objective feedback to refine the plan.\n• Optimization with respect for the body.\n\nDM ELITE if you are ready to build with purpose."
+            },
+            "linkedin": {
+              "text": "Natural first is not anti-science\n\nIt means respecting the foundation first.\n\n— Sunlight, sleep, hydration, minerals, whole foods, training.\n— Then objective feedback to refine the plan.\n— Optimization with respect for the body.\n\nDM ELITE if you are ready to build with purpose."
+            },
+            "x": {
+              "text": "It means respecting the foundation first.\n\nDM ELITE if you are ready to build with purpose."
+            }
+          },
+          "media": {
+            "format": "feed",
+            "dimensions": "1080x1350",
+            "aspectRatio": "4:5",
+            "prompt": "ocean and forest imagery, grounded natural aesthetic. Lion Elite Beauty aesthetic: premium, minimal, earth tones and black-and-white accents, natural light, no text overlay. Vertical 4:5 feed image, 1080x1350 px."
+          },
+          "schedule": {
+            "date": "2026-08-11",
+            "time": "10:00"
+          },
+          "compliance": {
+            "approved": true,
+            "platforms": {
+              "instagram": {
+                "approved": true,
+                "blockers": []
+              },
+              "facebook": {
+                "approved": true,
+                "blockers": []
+              },
+              "linkedin": {
+                "approved": true,
+                "blockers": []
+              },
+              "x": {
+                "approved": true,
+                "blockers": []
+              }
+            }
+          },
+          "marketing": {
+            "platform": "instagram",
+            "score": 8.83,
+            "threshold": 9.5,
+            "approved": false,
+            "attempts": 1,
+            "judge": "heuristic",
+            "reason": "Best marketing score 8.83 < threshold 9.5 after 1 attempt(s)."
+          }
+        },
+        {
+          "id": "2026-08-11-beauty-reel",
+          "brand": "beauty",
+          "date": "2026-08-11",
+          "slot": "reel",
+          "type": "reel_script",
+          "topic": {
+            "slug": "identity-shift",
+            "title": "Become the person the goal requires"
+          },
+          "cta": "comment_ready",
+          "platforms": {
+            "instagram": {
+              "text": "The transformation is who you become, not just how you look.\n\nComment READY and we will send you the first step.\n\n#LionEliteBeauty #DisciplineDaily #Biomarkers #WellnessCoaching #HigherStandard"
+            },
+            "tiktok": {
+              "text": "HOOK (0-3s, on camera or bold text): The transformation is who you become, not just how you look.\n\nBODY (talking points, one per cut):\n1. Standards change before results do.\n2. Identity is built through kept promises to yourself.\n3. The plan is the practice of becoming.\n\nCTA (final 3s): Comment READY and we will send you the first step."
+            }
+          },
+          "media": {
+            "format": "vertical",
+            "dimensions": "1080x1920",
+            "aspectRatio": "9:16",
+            "prompt": "mirror reflection in training environment, black and white. Lion Elite Beauty aesthetic: premium, minimal, earth tones and black-and-white accents, natural light, no text overlay. Vertical 9:16 Reel/TikTok cover, 1080x1920 px."
+          },
+          "schedule": {
+            "date": "2026-08-11",
+            "time": "13:30"
+          },
+          "compliance": {
+            "approved": true,
+            "platforms": {
+              "instagram": {
+                "approved": true,
+                "blockers": []
+              },
+              "tiktok": {
+                "approved": true,
+                "blockers": []
+              }
+            }
+          },
+          "marketing": {
+            "platform": "instagram",
+            "score": 8.5,
+            "threshold": 9.5,
+            "approved": false,
+            "attempts": 1,
+            "judge": "heuristic",
+            "reason": "Best marketing score 8.5 < threshold 9.5 after 1 attempt(s)."
+          }
+        },
+        {
+          "id": "2026-08-11-beauty-story-1",
+          "brand": "beauty",
+          "date": "2026-08-11",
+          "slot": "story-1",
+          "type": "story",
+          "topic": {
+            "slug": "natural-first-not-anti-science",
+            "title": "Natural first is not anti-science"
+          },
+          "cta": "program_application",
+          "platforms": {
+            "instagram": {
+              "text": "It means respecting the foundation first.\n\nSunlight, sleep, hydration, minerals, whole foods, training.\n\nNew post is live — full breakdown on the feed."
+            }
+          },
+          "media": {
+            "format": "vertical",
+            "dimensions": "1080x1920",
+            "aspectRatio": "9:16",
+            "prompt": "ocean and forest imagery, grounded natural aesthetic. Lion Elite Beauty aesthetic: premium, minimal, earth tones and black-and-white accents, natural light, no text overlay. Vertical 9:16 Story frame, 1080x1920 px."
+          },
+          "schedule": {
+            "date": "2026-08-11",
+            "time": "16:00"
+          },
+          "compliance": {
+            "approved": true,
+            "platforms": {
+              "instagram": {
+                "approved": true,
+                "blockers": []
+              }
+            }
+          }
+        },
+        {
+          "id": "2026-08-11-beauty-story-2",
+          "brand": "beauty",
+          "date": "2026-08-11",
+          "slot": "story-2",
+          "type": "story",
+          "topic": {
+            "slug": "natural-first-not-anti-science",
+            "title": "Natural first is not anti-science"
+          },
+          "cta": "dm_elite",
+          "platforms": {
+            "instagram": {
+              "text": "Question sticker: What is the one habit you refuse to skip this week?\n\nDM ELITE if you are ready to build with purpose."
+            }
+          },
+          "media": {
+            "format": "vertical",
+            "dimensions": "1080x1920",
+            "aspectRatio": "9:16",
+            "prompt": "ocean and forest imagery, grounded natural aesthetic. Lion Elite Beauty aesthetic: premium, minimal, earth tones and black-and-white accents, natural light, no text overlay. Vertical 9:16 Story frame, 1080x1920 px."
+          },
+          "schedule": {
+            "date": "2026-08-11",
+            "time": "20:00"
+          },
+          "compliance": {
+            "approved": true,
+            "platforms": {
+              "instagram": {
+                "approved": true,
+                "blockers": []
+              }
+            }
+          }
+        }
+      ],
+      "rejected": []
+    }
+  }
+}
