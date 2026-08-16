@@ -8,17 +8,21 @@ Purpose: Single source of truth for Lion Elite weekly coaching check-ins. Update
 - Program: Lion Elite coaching / peptide coaching
 - Height: 5'11"
 - Baseline weight recorded: 201.2 lb
+- Current weight (2026-08-16): 192.7 lb
+- Change from baseline: -8.5 lb
 - Primary goal: Get lean with a visible six-pack while maintaining muscle, strength, performance, and recovery.
 - Main physique focus: Lower-belly / abdominal fat reduction while preserving lean mass.
 - Activity context: 75 Hard was in progress at intake.
 - Family context: Family tendency toward being overweight was noted.
 
 ## Lifestyle & Recovery Baseline
-- Typical sleep reported: 4.5–6 hours/night
+- Typical sleep reported at intake: 4.5–6 hours/night
+- Current sleep reported 2026-08-16: 6–7 hours/night
 - Recovery tracking: WHOOP
 - Recovery target discussed: move toward 7–9 hours of sleep
 - Alcohol: none reported
-- Marijuana: smoking reported
+- Marijuana at intake: smoking reported
+- Marijuana current 2026-08-16: none reported
 - Cigarettes: had quit approximately 2 weeks before the 2026-07-21 intake
 - Nicotine use was noted in prior records
 - Testosterone: reported around 900
@@ -47,6 +51,9 @@ Purpose: Single source of truth for Lion Elite weekly coaching check-ins. Update
 - Weekly check-ins should confirm which version is currently active before treating it as current.
 
 ## Supplement / Nutrition Notes
+- Current nutrition target reported 2026-08-16: 2,500 calories/day
+- Client reportedly has a diet/macro plan; exact protein/carbohydrate/fat split still needs to be recorded.
+
 Recorded supplement categories/products included:
 - Whey and plant protein
 - Creatine
@@ -106,7 +113,59 @@ The following details were previously consolidated in conversation but were not 
 - Earlier 2026-07-09 order previously stated: CJC-1295/Ipamorelin, KLOW Blend, bacteriostatic water
 
 ## Weekly Check-In Log
-Add a dated entry below after every check-in. Preserve old entries; do not overwrite history.
+
+### 2026-08-16 Check-In
+**Measurements / Progress**
+- Current weight: 192.7 lb
+- Baseline weight: 201.2 lb
+- Total change from recorded baseline: -8.5 lb
+- Visual progress: comparison photos from 2026-08-01 and 2026-08-16 show a somewhat tighter waist/midsection while maintaining upper-body size; lower abdomen remains the primary physique focus.
+- Progress photos received: Yes
+
+**Training**
+- Sessions completed: not yet recorded
+- Strength/performance: not yet recorded
+- Cardio / steps: not yet recorded
+- Soreness / injuries: not yet recorded
+
+**Nutrition**
+- Daily calorie target: 2,500 calories
+- Diet/macro plan: Yes, reported; exact macro split not yet recorded
+- Adherence: not yet recorded
+- Protein consistency: not yet recorded
+- Hunger / cravings: not yet recorded
+- Digestion: not yet recorded
+
+**Sleep & Recovery**
+- Average sleep: 6–7 hours/night, improved from intake baseline of 4.5–6 hours
+- Marijuana: none currently reported; major positive change because marijuana use had been associated with his sleep difficulties
+- WHOOP recovery trend: not yet recorded
+- Energy: not yet recorded
+- Stress: not yet recorded
+
+**Protocol Adherence**
+- KLOW: needs current confirmation
+- CJC/Ipamorelin: needs current confirmation
+- DSIP: needs current confirmation
+- Retatrutide: needs current confirmation, including current weekly amount
+- Missed doses / schedule issues: not yet recorded
+- Reported side effects or concerns: not yet recorded
+
+**Coach Assessment**
+- What improved: body weight, visual waist tightness, sleep duration, and elimination of marijuana use.
+- Main bottleneck: lower-abdominal fat remains the main visual holdout; current rate of weight loss should be monitored alongside strength, energy, recovery, and food adherence to make sure lean mass/performance are maintained.
+- What stays the same: maintain structured nutrition and recovery focus unless performance, energy, hunger, or other feedback indicates a need to adjust.
+- What changes this week: no change documented yet; finish call assessment before altering variables.
+
+**Next-Week Targets / Items to Confirm**
+- Record exact macro split, especially daily protein.
+- Record training frequency and strength trend.
+- Record WHOOP recovery/resting HR trend.
+- Confirm exact active peptide schedule.
+- Ask about appetite, nausea, constipation, reflux, fatigue, dizziness, and any injection-site issues.
+- Continue tracking sleep and marijuana abstinence.
+
+**Next check-in:** TBD
 
 ### Check-In Template
 **Date:** YYYY-MM-DD
@@ -164,4 +223,5 @@ Add a dated entry below after every check-in. Preserve old entries; do not overw
 **Next check-in:**
 
 ## Change Log
+- 2026-08-16: Added current weekly check-in: 192.7 lb, 2,500-calorie nutrition target, sleep improved to 6–7 hours, no marijuana, and progress-photo assessment.
 - 2026-08-16: Centralized available Joel information into this master client file and added a repeatable weekly check-in structure.
