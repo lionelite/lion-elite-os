@@ -112,8 +112,18 @@ they bloat diffs, and the timestamp links already point at the source. Pass
 
 ## Tests
 
-`test/video-learning-sources.test.js`, `-parsers`, `-lesson`, and `-store` cover
-URL parsing, all four caption formats (including YouTube's rolling-caption
-duplication), utterance rebuilding, extraction, the compliance gate, hard-limit
-flagging, rendering, and the inbox round-trip. They are pure — no network, no
-`yt-dlp` — and run in the root `npm test`.
+72 tests across six files, all in the root `npm test`:
+
+| File | Covers |
+|---|---|
+| `-sources` | URL parsing for every YouTube/Instagram link shape, rejection of non-video links, timestamp links |
+| `-parsers` | json3, timedtext XML, WebVTT (including rolling-caption collapsing), hand-pasted transcripts |
+| `-fetcher` | the strategy ladder: which source wins, fallback on failure, whisper gating, the fail-closed result |
+| `-lesson` | utterance rebuilding, extraction, lane routing, hard-limit flagging, the compliance gate |
+| `-store` | rendering, index merging, the inbox round-trip |
+| `-cli` | `scripts/learn-from-video.js` end to end: writes, idempotent re-runs, dry run, argument errors |
+
+None of them touch the network or need `yt-dlp` — the fetcher's side effects are
+injected. That matters because the live-fetch path cannot be exercised from the
+dev sandbox at all, so the decision logic around it is tested even though the
+network calls themselves are only exercised on the GitHub runner.
