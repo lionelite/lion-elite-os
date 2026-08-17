@@ -26,6 +26,8 @@
     "social:vials": "node scripts/vial-coverage.js",
     "social:host-media": "node scripts/host-media.js",
     "social:fetch-site": "node scripts/fetch-site-catalog.js",
+    "learn:video": "node scripts/learn-from-video.js",
+    "learn:inbox": "node scripts/learn-from-video.js --inbox",
     "listen:bluesky": "node social-listening/src/monitor.js",
     "listen:review": "node social-listening/src/review-server.js",
     "listen:replay": "node social-listening/src/replay.js",
