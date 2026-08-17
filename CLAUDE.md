@@ -145,7 +145,12 @@ lane. Entry point `scripts/learn-from-video.js` (`npm run learn:video`,
 `knowledge/video-lessons/inbox.md`. Read-only by design: it never publishes,
 sends, or spends — a tactic implying any of those is flagged with the control
 that gates it (`OUTREACH_SEND_ENABLED`, `SMS_SEND_ENABLED`,
-`SOCIAL_PUBLISH_ENABLED`, the ad spend cap) instead of acted on. Two behaviors
+`SOCIAL_PUBLISH_ENABLED`, the ad spend cap) instead of acted on. Every
+proposal across every lesson is also collected into
+`knowledge/video-lessons/backlog.md`, a lane-grouped checklist whose ticked
+boxes survive regeneration (stable per-proposal ids, carried across by
+`lib/video-learning/backlog.js`) — edit the checkboxes, not the generated
+prose. Two behaviors
 worth knowing: when **no** transcript can be obtained it writes nothing and
 reports what each strategy tried (a lesson invented from a title is worse than
 no lesson), and every transcript is run through

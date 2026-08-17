@@ -74,7 +74,8 @@ test('re-running the same video updates in place instead of duplicating', () => 
     assert.equal(runCli(args).status, 0);
 
     const lessonDir = path.join(dir, 'knowledge', 'video-lessons');
-    const lessons = fs.readdirSync(lessonDir).filter((file) => file.endsWith('.md') && file !== 'README.md');
+    const generated = new Set(['README.md', 'backlog.md']);
+    const lessons = fs.readdirSync(lessonDir).filter((file) => file.endsWith('.md') && !generated.has(file));
     assert.deepEqual(lessons, ['youtube-dQw4w9WgXcQ.md']);
     assert.equal(JSON.parse(fs.readFileSync(path.join(lessonDir, 'index.json'), 'utf8')).length, 1);
   });

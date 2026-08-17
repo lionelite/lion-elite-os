@@ -17,6 +17,13 @@ instead of piling up duplicates.
   or transformation language. When they do, the lesson is marked **internal
   only**: the mechanism may be worth adopting, the wording never ships.
 
+## The working list
+
+[`backlog.md`](backlog.md) gathers every proposal from every lesson into one
+checklist, grouped by business lane. Tick an item when you have decided to do
+it — the tick survives regeneration, so adding new videos never resets your
+progress. Edit the checkboxes; everything else in that file is generated.
+
 ## Reading these correctly
 
 Every lesson is an **operational inference**, per the knowledge base's update

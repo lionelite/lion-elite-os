@@ -19,6 +19,8 @@ retyping what the video said.
    is flagged with the control that gates it.
 5. **Writes it down** (`lib/video-learning/lesson-store.js`) — one markdown file
    per video under `knowledge/video-lessons/`, plus a regenerated index.
+6. **Collects it into one list** (`lib/video-learning/backlog.js`) —
+   `backlog.md` holds every proposal from every lesson, grouped by lane.
 
 Nothing in this pipeline publishes, sends, or spends. It reads videos and
 writes notes.
@@ -55,6 +57,23 @@ npm run learn:video -- <url> --dry-run  # report, write nothing
 Useful flags: `--transcript-file=PATH` (supply a transcript yourself),
 `--no-whisper` (never use the paid audio path), `--save-transcript`,
 `--limit=N`, `--json`, `--base-dir=PATH`.
+
+## The backlog
+
+A folder of one-file-per-video is a filing cabinet, not a to-do list.
+`knowledge/video-lessons/backlog.md` is the working view: every proposal from
+every lesson, grouped by business lane, each line keeping its timestamp
+citation and a link back to the lesson it came from. Items that would cross a
+hard limit are marked ⚠ with the control that gates them.
+
+It is a checklist, and **ticking a box sticks**. Each proposal carries a stable
+id derived from its video and its source line, written into the line as an HTML
+comment. Regeneration reads the ticks back out and carries them across, so
+re-processing a video — or adding a new one — never resets your progress.
+Completed items sink to the bottom of their lane; the header counts only what
+is still open.
+
+Edit the checkboxes, not the prose: everything else in that file is generated.
 
 ## How transcripts are obtained
 
@@ -112,7 +131,7 @@ they bloat diffs, and the timestamp links already point at the source. Pass
 
 ## Tests
 
-72 tests across six files, all in the root `npm test`:
+83 tests across seven files, all in the root `npm test`:
 
 | File | Covers |
 |---|---|
@@ -121,6 +140,7 @@ they bloat diffs, and the timestamp links already point at the source. Pass
 | `-fetcher` | the strategy ladder: which source wins, fallback on failure, whisper gating, the fail-closed result |
 | `-lesson` | utterance rebuilding, extraction, lane routing, hard-limit flagging, the compliance gate |
 | `-store` | rendering, index merging, the inbox round-trip |
+| `-backlog` | id stability, lane grouping, and that a ticked box survives regeneration |
 | `-cli` | `scripts/learn-from-video.js` end to end: writes, idempotent re-runs, dry run, argument errors |
 
 None of them touch the network or need `yt-dlp` — the fetcher's side effects are
