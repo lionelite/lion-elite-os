@@ -47,6 +47,14 @@ The outreach service can:
 
 It does not guess email addresses, use people-search data, or send messages directly.
 
+## Lion Elite Coaching PWA
+
+The main web service now includes an installable, mobile-first coaching portal at `/coaching/`. Coaches can create private client links, build video-backed workout plans, publish nutrition and supplement guidance, record clinician-confirmed peptide protocols, message clients in real time, and review check-ins. Clients can install the portal from their link without an App Store, follow exercise videos, log workouts, message their coach, and track progress.
+
+The workout assistant uses only exercises already approved in the coach's video library and always creates a draft for human review. It never generates peptide, supplement, diet, rehabilitation, or medical instructions. Peptide protocols are display-only and cannot be published without explicit licensed-clinician confirmation.
+
+Setup, production variables, install instructions, and verification: [`docs/coaching-pwa.md`](docs/coaching-pwa.md).
+
 Primary success metrics:
 
 - Qualified leads created
