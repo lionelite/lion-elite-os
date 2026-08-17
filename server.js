@@ -1,11 +1,46 @@
 const express = require('express');
 const path = require('path');
 const { leadAutomationReadiness } = require('./lib/lead-automation-readiness');
+const { MemoryCoachingStore, PostgresCoachingStore } = require('./lib/coaching/store');
+const { createPushService } = require('./lib/coaching/push');
+const { createCoachingRouter } = require('./routes/coaching');
 
 const app = express();
 const port = process.env.PORT || 3000;
 
+app.disable('x-powered-by');
+app.set('trust proxy', 1);
 app.use(express.json({ limit: '1mb' }));
+const coachingStore = process.env.COACHING_DEMO_MODE === 'true'
+  ? new MemoryCoachingStore()
+  : new PostgresCoachingStore();
+const coachingPush = createPushService(coachingStore);
+app.use('/api/coaching', createCoachingRouter({ store: coachingStore, pushService: coachingPush }));
+app.use('/coaching', (_req, res, next) => {
+  res.set({
+    'Content-Security-Policy': [
+      "default-src 'self'",
+      "base-uri 'none'",
+      "connect-src 'self'",
+      "font-src 'self'",
+      "frame-ancestors 'none'",
+      'frame-src https://www.youtube-nocookie.com https://player.vimeo.com',
+      "img-src 'self' data:",
+      "manifest-src 'self'",
+      "media-src 'self' https:",
+      "object-src 'none'",
+      "script-src 'self'",
+      "style-src 'self' 'unsafe-inline'",
+      "worker-src 'self'"
+    ].join('; '),
+    'Cross-Origin-Opener-Policy': 'same-origin',
+    'Permissions-Policy': 'camera=(), geolocation=(), microphone=()',
+    'Referrer-Policy': 'no-referrer',
+    'X-Content-Type-Options': 'nosniff',
+    'X-Frame-Options': 'DENY'
+  });
+  next();
+});
 app.use(express.static(path.join(__dirname, 'public')));
 
 const customerCommunicationRules = [

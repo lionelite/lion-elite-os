@@ -242,7 +242,7 @@ Five independent Node entry points, sharing `lib/`:
 
 | Entry point | Render service | Purpose |
 |---|---|---|
-| `server.js` | `lion-elite-os` (web) | Agent command-center dashboard. Inline agent definitions (executive/marketing/sales/operations/research-compliance/finance-kpi), template-based fallback plus optional OpenAI generation, can save approved outputs back to GitHub via `GITHUB_TOKEN`. |
+| `server.js` | `lion-elite-os` (web) | Agent command-center dashboard plus the installable Lion Elite Coaching PWA at `/coaching/`. The coaching API is mounted at `/api/coaching`, persists in Postgres, and supports private invites, workouts with approved exercise videos, care plans, check-ins, live messaging, and optional Web Push. The existing command center keeps its template fallback plus optional OpenAI generation and GitHub save flow. |
 | `outreach-server-postgres.js` | `lion-elite-outreach-api` (web) | Live prospect/outreach API: fingerprinting, scoring, 16-check validation, email enrichment, email draft generation, Postgres-backed prospect store, BullMQ job submission. |
 | `executive-orchestrator.js` | `lion-elite-executive-api` (web) | Bearer-token-gated (`EXECUTIVE_API_TOKEN`) trigger for 4 whitelisted analytics jobs. |
 | `integration-gateway-server.js` | *(only in `render-integrations.yaml`, a separate blueprint — not deployed by the main `render.yaml`)* | Webhook intake for Shopify/Gmail/Calendar/Ads/Affiliate, HMAC/shared-secret verified, enqueues to `integrations` queue. The `affiliate` source (`AFFILIATE_WEBHOOK_SECRET`, `/webhooks/affiliate`) is the intake path for partner/affiliate applications (see "Recent fixes" below). |

@@ -30,6 +30,8 @@ services:
         value: 100
       - key: PG_POOL_MAX
         value: 10
+      - key: COACH_PORTAL_ADMIN_TOKEN
+        generateValue: true
 
   - type: web
     name: lion-elite-outreach-api
