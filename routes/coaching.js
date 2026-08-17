@@ -54,15 +54,28 @@ function cleanProfile(value = {}) {
   const equipment = Array.isArray(value.equipment)
     ? value.equipment.map(item => cleanText(item, { field: 'Equipment', max: 80 })).filter(Boolean).slice(0, 30)
     : [];
+  const experienceLevel = cleanText(value.experienceLevel || 'intermediate', { field: 'Experience level', max: 40 }).toLowerCase();
+  const preferredCheckInDay = cleanText(value.preferredCheckInDay, { field: 'Preferred check-in day', max: 20 });
+  const timestamp = input => {
+    if (!input) return null;
+    const date = new Date(input);
+    return Number.isNaN(date.getTime()) ? null : date.toISOString();
+  };
   return {
     goal: cleanText(value.goal, { field: 'Goal', max: 500 }),
-    experienceLevel: cleanText(value.experienceLevel || 'intermediate', { field: 'Experience level', max: 40 }),
+    experienceLevel: ['beginner', 'intermediate', 'advanced'].includes(experienceLevel) ? experienceLevel : 'intermediate',
     daysPerWeek: cleanInteger(value.daysPerWeek ?? 3, { field: 'Training days', min: 1, max: 7, nullable: false }),
     sessionMinutes: cleanInteger(value.sessionMinutes ?? 60, { field: 'Session length', min: 20, max: 180, nullable: false }),
     equipment,
     limitations: cleanText(value.limitations, { field: 'Limitations', max: 1500 }),
     dietaryPreferences: cleanText(value.dietaryPreferences, { field: 'Dietary preferences', max: 1000 }),
-    allergies: cleanText(value.allergies, { field: 'Allergies', max: 1000 })
+    allergies: cleanText(value.allergies, { field: 'Allergies', max: 1000 }),
+    typicalSleepHours: cleanNumber(value.typicalSleepHours, { field: 'Typical sleep', min: 0, max: 24 }),
+    primaryObstacle: cleanText(value.primaryObstacle, { field: 'Primary obstacle', max: 1500 }),
+    preferredCheckInDay: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].includes(preferredCheckInDay) ? preferredCheckInDay : '',
+    onboardingCompletedAt: timestamp(value.onboardingCompletedAt),
+    coachingAcknowledgedAt: timestamp(value.coachingAcknowledgedAt),
+    updatedByClientAt: timestamp(value.updatedByClientAt)
   };
 }
 
@@ -366,6 +379,23 @@ function createCoachingRouter({ store, pushService, adminToken = process.env.COA
     const dashboard = await store.getDashboard(req.coachingActor.clientId);
     await store.markMessagesRead(req.coachingActor.clientId, 'client');
     res.json({ dashboard });
+  }));
+  router.patch('/profile', requireClient, asyncRoute(async (req, res) => {
+    if (req.body?.coachingAcknowledged !== true) {
+      throw badRequest('Confirm the coaching and medical-use acknowledgement to save your profile.');
+    }
+    const existing = await store.getClient(req.coachingActor.clientId);
+    if (!existing) { const error = new Error('Client not found.'); error.statusCode = 404; throw error; }
+    const now = new Date().toISOString();
+    const profile = cleanProfile({
+      ...existing.profile,
+      ...(req.body?.profile || {}),
+      onboardingCompletedAt: existing.profile?.onboardingCompletedAt || now,
+      coachingAcknowledgedAt: existing.profile?.coachingAcknowledgedAt || now,
+      updatedByClientAt: now
+    });
+    const client = await store.updateClientProfile(existing.clientId, profile, 'client');
+    res.json({ client });
   }));
   router.get('/messages', requireClient, asyncRoute(async (req, res) => {
     await store.markMessagesRead(req.coachingActor.clientId, 'client');
