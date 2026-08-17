@@ -1,0 +1,166 @@
+name: Video Learning
+
+# Turn a YouTube or Instagram video into a source-cited lesson in the
+# knowledge base. Three ways in:
+#   - edit knowledge/video-lessons/inbox.md on the automation branch
+#   - run this workflow manually with a URL
+#   - wait for the daily pass over whatever is queued
+#
+# This workflow reads videos and writes notes. It never publishes, sends,
+# or spends: lessons carry proposals for the owner to accept or drop.
+on:
+  push:
+    branches:
+      - automation/video-lessons
+    paths:
+      - 'knowledge/video-lessons/inbox.md'
+  schedule:
+    - cron: '0 12 * * *'
+  workflow_dispatch:
+    inputs:
+      url:
+        description: 'Video URL (leave blank to process the queued inbox)'
+        required: false
+        default: ''
+      task:
+        description: 'What should be done with it'
+        required: false
+        default: ''
+
+permissions:
+  contents: write
+
+concurrency:
+  group: video-learning
+  cancel-in-progress: false
+
+jobs:
+  learn:
+    name: Extract lessons from queued videos
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # Lessons and the inbox live on the unprotected automation branch, not
+      # main — main requires the "test" status check, which a notes-only bot
+      # push can never satisfy. Restore that state over main's code so the run
+      # sees the real queue and can update existing lessons in place.
+      - name: Restore lesson history
+        run: |
+          if git fetch origin automation/video-lessons 2>/dev/null; then
+            git checkout FETCH_HEAD -- knowledge/video-lessons/ 2>/dev/null \
+              || echo "No knowledge/video-lessons/ on the history branch yet."
+          else
+            echo "No automation/video-lessons branch yet. Starting from main."
+          fi
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      # yt-dlp is what makes this work unattended: it reads real caption
+      # tracks and handles public Instagram reels. Without it the run falls
+      # back to scraping the YouTube watch page, which covers fewer videos.
+      # ffmpeg is already on the runner image and is only needed for the
+      # audio-transcription path.
+      - name: Install yt-dlp
+        continue-on-error: true
+        run: |
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+          pipx install yt-dlp || pip install --user yt-dlp || {
+            echo "yt-dlp install failed — the run will use the fallback strategies."
+            exit 0
+          }
+
+      # The extractor uses only Node built-ins, so no npm install is needed.
+      - name: Extract lessons
+        id: learn
+        continue-on-error: true
+        env:
+          # Audio transcription is the only paid path here and only fires when
+          # a video has no captions at all. Opt in with the
+          # VIDEO_TRANSCRIBE_AUDIO repo variable; captions cover most videos.
+          AI_API_KEY: ${{ secrets.AI_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          VIDEO_TRANSCRIBE_MODEL: ${{ vars.VIDEO_TRANSCRIBE_MODEL }}
+        run: |
+          whisper_flag='--no-whisper'
+          if [ "${{ vars.VIDEO_TRANSCRIBE_AUDIO }}" = "true" ]; then
+            whisper_flag=''
+          fi
+
+          url='${{ github.event.inputs.url }}'
+          task='${{ github.event.inputs.task }}'
+
+          if [ -n "$url" ]; then
+            if [ -n "$task" ]; then
+              node scripts/learn-from-video.js "$url" --task="$task" $whisper_flag 2>&1 | tee run.log
+            else
+              node scripts/learn-from-video.js "$url" $whisper_flag 2>&1 | tee run.log
+            fi
+          else
+            node scripts/learn-from-video.js --inbox $whisper_flag 2>&1 | tee run.log
+          fi
+          # tee masks the script's exit code; recover it from the pipeline.
+          exit "${PIPESTATUS[0]}"
+
+      - name: Summarize the run
+        if: always()
+        run: |
+          {
+            echo '## Video learning run'
+            echo
+            echo '```'
+            cat run.log 2>/dev/null || echo 'No output captured.'
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Commit lessons to the automation branch
+        run: |
+          git config user.name "Lion Elite Video Learning"
+          git config user.email "actions@github.com"
+
+          if [ -z "$(git status --porcelain -- knowledge/video-lessons/)" ]; then
+            echo "No lesson changes to commit."
+            exit 0
+          fi
+
+          # Carry the generated lessons across the branch switch, the same way
+          # the daily social workflow moves its output.
+          output_tmp="$(mktemp -d)"
+          trap 'rm -rf "$output_tmp"' EXIT
+          cp -a knowledge/video-lessons/. "$output_tmp/"
+          git reset --hard HEAD
+          git clean -fd -- knowledge/video-lessons/
+
+          if git ls-remote --exit-code --heads origin automation/video-lessons >/dev/null 2>&1; then
+            git fetch origin automation/video-lessons
+            git checkout automation/video-lessons
+          else
+            # Branched from main rather than orphaned, so this workflow file
+            # exists on the branch and inbox edits there can trigger it.
+            git checkout -B automation/video-lessons
+          fi
+
+          mkdir -p knowledge/video-lessons
+          cp -a "$output_tmp/." knowledge/video-lessons/
+
+          git add knowledge/video-lessons/
+          if git diff --cached --quiet; then
+            echo "No lesson changes to commit."
+          else
+            git commit -m "Add video lessons from queued videos"
+            git push origin HEAD:automation/video-lessons \
+              || echo "Push skipped because the remote moved. The next run retries."
+          fi
+
+      - name: Fail the run if no video could be processed
+        if: steps.learn.outcome == 'failure'
+        run: |
+          echo "No lesson was produced. See the run summary for what each strategy reported."
+          exit 1
