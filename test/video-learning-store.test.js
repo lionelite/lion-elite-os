@@ -220,6 +220,73 @@ test('reads links and their instructions out of the inbox', () => {
   assert.match(invalid[1].reason, /no YouTube or Instagram link/);
 });
 
+test('ignores the inbox file\'s own documentation instead of queueing it', () => {
+  // The shipped inbox.md is mostly prose plus a fenced example block. Reading
+  // those as entries made the daily scheduled run fail every single day, and
+  // made the placeholder reel below look like a real video to go and fetch.
+  const inbox = [
+    '# Video Inbox',
+    '',
+    'Drop YouTube or Instagram links here. One per line. Add what you want done',
+    'with it after the link — a dash, a pipe, or a colon all work.',
+    '',
+    '```',
+    '- https://youtu.be/VIDEOID — build an ad angle from this',
+    '- https://www.instagram.com/reel/SHORTCODE | steal the hook structure',
+    '- https://www.youtube.com/watch?v=VIDEOID',
+    '```',
+    '',
+    'Anything queued below gets picked up by the **Video learning** workflow.',
+    'Each processed link is turned into a lesson file in this folder.',
+    '',
+    '## Queue',
+    '',
+    '<!-- Add links below this line. -->'
+  ].join('\n');
+
+  const { items, invalid } = parseInbox(inbox);
+  assert.equal(items.length, 0, 'documentation is not a queue');
+  assert.equal(invalid.length, 0, 'and it must not report false failures either');
+});
+
+test('reads a real entry that follows the documentation', () => {
+  const inbox = [
+    'Drop links here. Example:',
+    '',
+    '```',
+    '- https://youtu.be/VIDEOID — placeholder',
+    '```',
+    '',
+    '## Queue',
+    '',
+    '- https://youtu.be/dQw4w9WgXcQ — build an ad angle',
+    'https://www.instagram.com/reel/Cx1yZ_abcDE/'
+  ].join('\n');
+
+  const { items, invalid } = parseInbox(inbox);
+  assert.equal(invalid.length, 0);
+  assert.deepEqual(
+    items.map((item) => item.source.sourceKey),
+    ['youtube-dQw4w9WgXcQ', 'instagram-Cx1yZ_abcDE'],
+    'a bullet and a bare pasted URL both count'
+  );
+  assert.equal(items[0].task, 'build an ad angle');
+});
+
+test('leaves fenced example links alone when clearing processed entries', () => {
+  const inbox = [
+    '```',
+    '- https://youtu.be/dQw4w9WgXcQ — example in the docs',
+    '```',
+    '',
+    '- https://youtu.be/dQw4w9WgXcQ — the real queued one'
+  ].join('\n');
+
+  const updated = removeProcessed(inbox, ['youtube-dQw4w9WgXcQ']);
+  assert.match(updated, /example in the docs/, 'the documented example survives');
+  assert.doesNotMatch(updated, /the real queued one/, 'the queued entry is cleared');
+});
+
 test('treats a link with no instruction as a plain capture', () => {
   const { items } = parseInbox('- https://youtu.be/dQw4w9WgXcQ');
   assert.equal(items[0].task, null);
