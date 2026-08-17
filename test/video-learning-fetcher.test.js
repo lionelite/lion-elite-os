@@ -14,6 +14,7 @@ const assert = require('node:assert/strict');
 const { parseVideoUrl } = require('../lib/video-learning/video-sources');
 const {
   fetchTranscript,
+  fetchYouTubePageTranscript,
   buildManualTranscript,
   extractPageMetadata,
   resolveWhisperConfig
@@ -266,6 +267,20 @@ test('when every strategy fails it returns no transcript and explains each one',
     assert.equal(attempt.ok, false);
     assert.ok(attempt.detail.length > 0);
   }
+});
+
+test('tells a blocked page apart from a video with no captions', async () => {
+  // A real 2026-08-17 runner failure reported "watch page exposed no caption
+  // track" when YouTube had actually served a bot wall — which sends whoever
+  // reads the log looking in the wrong place entirely.
+  await assert.rejects(
+    () => fetchYouTubePageTranscript(YOUTUBE, { html: '<html><body>Before you continue</body></html>' }),
+    /bot or consent wall/
+  );
+
+  // A genuine player response with no caption tracks is a different fact.
+  const noCaptions = `<script>var ytInitialPlayerResponse = ${JSON.stringify({ captions: {} })};</script>`;
+  assert.equal(await fetchYouTubePageTranscript(YOUTUBE, { html: noCaptions }), null);
 });
 
 test('refuses to run without a parsed source', async () => {
