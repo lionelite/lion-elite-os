@@ -18,6 +18,7 @@ Coach capabilities:
 Client capabilities:
 
 - Redeem the private link once, then use a hashed, 30-day server session in an HttpOnly, SameSite cookie.
+- Complete a mobile intake covering goals, experience, schedule, equipment, limitations, dietary preferences, allergies, sleep, and the client's biggest current obstacle.
 - Install the PWA from the link without an App Store.
 - See today's assignment, open an exercise demo for every movement, record sets, and log the workout.
 - See only the current published nutrition, supplement, and clinician-confirmed protocol plans.
@@ -73,10 +74,11 @@ Without the VAPID variables, live in-app messaging still works; background phone
 1. Open `/coaching/` and sign in with `COACH_PORTAL_ADMIN_TOKEN`.
 2. Add at least three exercises to **Video Library**. Use videos Lion Elite owns or has permission to display.
 3. Create a client and copy the generated private app link.
-4. Create the workout draft, inspect it, and publish it when correct.
-5. Add nutrition or supplement guidance as needed.
-6. Add a peptide protocol only when copying instructions from the named licensed clinician and check the confirmation box.
-7. Send the app link through the normal trusted client channel.
+4. Send the app link through the normal trusted client channel and have the client complete the intake.
+5. Confirm the coach checklist marks the client intake ready.
+6. Create the workout draft, inspect it, and publish it when correct.
+7. Add nutrition or supplement guidance as needed.
+8. Add a peptide protocol only when copying instructions from the named licensed clinician and check the confirmation box.
 
 The invite link is one-time use and expires after seven days. Generate a new link when needed; never place one in a public post or shared document.
 
