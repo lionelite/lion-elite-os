@@ -1,6 +1,6 @@
 'use strict';
 
-const CACHE_NAME = 'lion-elite-coaching-v1';
+const CACHE_NAME = 'lion-elite-coaching-v2';
 const APP_SHELL = [
   '/coaching/',
   '/coaching/index.html',
