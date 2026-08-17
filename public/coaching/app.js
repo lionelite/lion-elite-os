@@ -82,6 +82,10 @@
     return `<span class="status-chip status-chip--${escapeHtml(status)}">${escapeHtml(status)}</span>`;
   }
 
+  function profileReady(client) {
+    return Boolean(client?.profile?.onboardingCompletedAt);
+  }
+
   function toast(message, type = 'success') {
     const node = document.createElement('div');
     node.className = `toast ${type === 'error' ? 'toast--error' : ''}`;
@@ -158,6 +162,7 @@
       elements.avatar.textContent = initials(actor.client?.firstName, actor.client?.lastName);
       elements.sidebar.classList.add('hidden');
       await loadClient();
+      if (!profileReady(state.dashboard.client)) history.replaceState(null, '', '/coaching/#profile');
     }
     renderView(currentHash());
   }
@@ -378,10 +383,30 @@
 
   function renderProfile() {
     const client = state.dashboard.client;
-    return `<section class="page-head"><p class="eyebrow">PROFILE</p><h1>${escapeHtml(client.firstName)} ${escapeHtml(client.lastName)}</h1><p class="muted">${escapeHtml(client.email)}</p></section>
-      <div class="stack"><article class="card"><h3>Put Lion Elite on your phone</h3><p class="muted">Install this private portal like an app—no App Store required.</p><button class="button button--gold" type="button" data-action="install">Install app</button></article>
+    const profile = client.profile || {};
+    const onboarding = !profileReady(client);
+    const equipment = Array.isArray(profile.equipment) ? profile.equipment.join(', ') : '';
+    const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+    return `<section class="page-head"><p class="eyebrow">${onboarding ? 'CLIENT ONBOARDING' : 'PROFILE'}</p><h1>${onboarding ? `Welcome, ${escapeHtml(client.firstName)}.` : `${escapeHtml(client.firstName)} ${escapeHtml(client.lastName)}`}</h1><p class="muted">${onboarding ? 'Tell your coach what matters before your program is built. You can update this later.' : escapeHtml(client.email)}</p></section>
+      <div class="stack">${onboarding ? '<article class="card card--gold"><p class="eyebrow">STEP 1 OF 1</p><h2>Build your coaching baseline</h2><p class="muted">This takes about two minutes and gives your coach the context needed to personalize training and check-ins.</p></article>' : ''}
+      <article class="card"><div class="spread"><div><p class="eyebrow">COACHING INTAKE</p><h2>${onboarding ? 'Complete your profile' : 'Update your profile'}</h2></div>${profileReady(client) ? '<span class="status-chip status-chip--ready">Complete</span>' : '<span class="status-chip status-chip--pending">Required</span>'}</div>
+        <form class="stack-form" data-form="client-profile"><div class="form-grid">
+          <label class="wide">Primary goal<input name="goal" required maxlength="500" value="${escapeHtml(profile.goal || '')}" placeholder="Build strength, lose body fat, improve consistency…"></label>
+          <label>Experience level<select name="experienceLevel"><option value="beginner" ${profile.experienceLevel === 'beginner' ? 'selected' : ''}>Beginner</option><option value="intermediate" ${profile.experienceLevel !== 'beginner' && profile.experienceLevel !== 'advanced' ? 'selected' : ''}>Intermediate</option><option value="advanced" ${profile.experienceLevel === 'advanced' ? 'selected' : ''}>Advanced</option></select></label>
+          <label>Training days/week<input name="daysPerWeek" type="number" min="1" max="7" required value="${profile.daysPerWeek || 3}"></label>
+          <label>Session minutes<input name="sessionMinutes" type="number" min="20" max="180" required value="${profile.sessionMinutes || 60}"></label>
+          <label>Typical sleep (hours)<input name="typicalSleepHours" type="number" min="0" max="24" step="0.1" value="${profile.typicalSleepHours ?? ''}"></label>
+          <label>Preferred check-in day<select name="preferredCheckInDay"><option value="">No preference</option>${days.map(day => `<option value="${day}" ${profile.preferredCheckInDay === day ? 'selected' : ''}>${day}</option>`).join('')}</select></label>
+          <label class="wide">Available equipment<input name="equipment" value="${escapeHtml(equipment)}" placeholder="barbell, dumbbell, cable, bodyweight"></label>
+          <label class="wide">Limitations, injuries, or movements to avoid<textarea name="limitations" maxlength="1500" placeholder="Tell your coach what needs modification. Contact a clinician for new or serious symptoms.">${escapeHtml(profile.limitations || '')}</textarea></label>
+          <label class="wide">Dietary preferences<textarea name="dietaryPreferences" maxlength="1000" placeholder="Foods, schedule, cultural preferences, or eating style">${escapeHtml(profile.dietaryPreferences || '')}</textarea></label>
+          <label class="wide">Allergies or intolerances<textarea name="allergies" maxlength="1000" placeholder="List known food or supplement allergies">${escapeHtml(profile.allergies || '')}</textarea></label>
+          <label class="wide">Biggest obstacle right now<textarea name="primaryObstacle" maxlength="1500" placeholder="Sleep, schedule, motivation, pain, travel, consistency…">${escapeHtml(profile.primaryObstacle || '')}</textarea></label>
+          <label class="checkbox wide"><input name="coachingAcknowledged" type="checkbox" required ${profile.coachingAcknowledgedAt ? 'checked' : ''}><span>I understand this portal provides coaching—not emergency or medical care—and I will discuss symptoms, conditions, medications, and protocol changes with a licensed clinician.</span></label>
+        </div><button class="button button--gold" type="submit">${onboarding ? 'Complete onboarding' : 'Save profile'}</button></form>
+      </article>
+      <article class="card"><h3>Put Lion Elite on your phone</h3><p class="muted">Install this private portal like an app—no App Store required.</p><button class="button button--gold" type="button" data-action="install">Install app</button></article>
       <article class="card"><h3>Message alerts</h3><p class="muted">Get a private notification when your coach writes back. Message content is never shown in the lock-screen alert.</p><button class="button" type="button" data-action="notifications">Enable alerts</button></article>
-      <article class="card"><h3>Coaching profile</h3><div class="plan-list"><div class="plan-item"><div><strong>Goal</strong><p>${escapeHtml(client.profile?.goal || 'Not set')}</p></div></div><div class="plan-item"><div><strong>Training schedule</strong><p>${client.profile?.daysPerWeek || '—'} days · ${client.profile?.sessionMinutes || '—'} minutes</p></div></div><div class="plan-item"><div><strong>Limitations</strong><p>${escapeHtml(client.profile?.limitations || 'None listed')}</p></div></div></div></article>
       <button class="button button--danger" type="button" data-action="logout">Sign out</button></div>`;
   }
 
@@ -412,12 +437,15 @@
   function renderCoachClients() {
     const selected = state.selected;
     const latest = selected?.dashboard?.checkins?.[0];
+    const onboardingComplete = profileReady(selected?.client);
+    const publishedWorkout = selected?.workoutPlans?.some(plan => plan.status === 'published');
     return `
       <section class="page-head"><p class="eyebrow">COACH COMMAND CENTER</p><h1>${selected ? `${escapeHtml(selected.client.firstName)} ${escapeHtml(selected.client.lastName)}` : 'Your client roster'}</h1><p class="muted">Invite, program, communicate, and adjust from one place.</p></section>
+      <article class="card launch-card"><div class="spread"><div><p class="eyebrow">LAUNCH CHECKLIST</p><h3>Get the first client live</h3></div><span class="caption">${[state.clients.length > 0, state.exercises.length >= 3, onboardingComplete, publishedWorkout].filter(Boolean).length}/4 ready</span></div><div class="checklist"><div class="checklist-item ${state.clients.length ? 'complete' : ''}"><i>${state.clients.length ? '✓' : '1'}</i><span>Create client</span></div><div class="checklist-item ${state.exercises.length >= 3 ? 'complete' : ''}"><i>${state.exercises.length >= 3 ? '✓' : '2'}</i><span>Add 3 videos</span></div><div class="checklist-item ${onboardingComplete ? 'complete' : ''}"><i>${onboardingComplete ? '✓' : '3'}</i><span>Client intake</span></div><div class="checklist-item ${publishedWorkout ? 'complete' : ''}"><i>${publishedWorkout ? '✓' : '4'}</i><span>Publish workout</span></div></div></article>
       ${selected ? `<div class="card-grid"><article class="card card--gold wide"><div class="spread"><div><p class="eyebrow">${escapeHtml(selected.client.status).toUpperCase()} CLIENT</p><h2>${escapeHtml(selected.client.profile?.goal || 'Goal not set')}</h2><p class="muted">${escapeHtml(selected.client.email)} · ${selected.client.profile?.daysPerWeek || 3} training days</p></div><span class="avatar">${initials(selected.client.firstName, selected.client.lastName)}</span></div><div class="cluster"><button class="button button--gold button--small" type="button" data-action="create-invite">Create app link</button><button class="button button--small" type="button" data-view="coach-workouts">Build workout</button><button class="button button--small" type="button" data-view="coach-messages">Message</button></div></article>
         <article class="card metric"><span>Latest weight</span><strong>${latest?.weightLbs ? `${latest.weightLbs} lb` : '—'}</strong><small class="caption">${formatDate(latest?.createdAt)}</small></article>
         <article class="card metric"><span>Energy</span><strong>${latest?.energy ? `${latest.energy}/10` : '—'}</strong><small class="caption">Latest check-in</small></article>
-        <article class="card metric"><span>Workouts</span><strong>${selected.dashboard.workoutLogs.filter(log => log.status === 'completed').length}</strong><small class="caption">Logged sessions</small></article></div>
+        <article class="card metric"><span>Client intake</span><strong>${onboardingComplete ? 'Ready' : 'Pending'}</strong><small class="caption">${onboardingComplete ? `Updated ${formatDate(selected.client.profile.updatedByClientAt || selected.client.profile.onboardingCompletedAt)}` : 'Send the private app link'}</small></article></div>
         ${state.lastInvite ? `<article class="card" style="margin-top:14px"><p class="eyebrow">PRIVATE INSTALL LINK · EXPIRES ${formatDate(state.lastInvite.expiresAt)}</p><div class="cluster"><input id="invite-link" readonly value="${escapeHtml(state.lastInvite.url)}"><button class="button button--gold" type="button" data-action="copy-invite">Copy</button></div></article>` : ''}` : ''}
       <div class="section-head"><h2>Add a client</h2><span class="caption">Creates a private profile first</span></div>
       <article class="card"><form class="stack-form" data-form="create-client"><div class="form-grid"><label>First name<input name="firstName" required maxlength="80"></label><label>Last name<input name="lastName" maxlength="80"></label><label class="wide">Email<input name="email" type="email" required autocomplete="email"></label><label class="wide">Primary goal<input name="goal" maxlength="500" placeholder="Lean six-pack, strength, consistency…"></label><label>Training days/week<input name="daysPerWeek" type="number" min="1" max="7" value="3"></label><label>Session minutes<input name="sessionMinutes" type="number" min="20" max="180" value="60"></label><label class="wide">Available equipment<input name="equipment" placeholder="barbell, dumbbell, cable, bodyweight"></label><label class="wide">Limitations / injuries<textarea name="limitations" maxlength="1500"></textarea></label></div><button class="button button--gold" type="submit">Create client and app link</button></form></article>`;
@@ -542,6 +570,28 @@
       } else if (kind === 'checkin') {
         await api('/checkins', { method: 'POST', body: data });
         await loadClient(); renderView('progress'); toast('Check-in sent to your coach.');
+      } else if (kind === 'client-profile') {
+        const wasOnboarding = !profileReady(state.dashboard.client);
+        const response = await api('/profile', { method: 'PATCH', body: {
+          coachingAcknowledged: form.elements.coachingAcknowledged.checked,
+          profile: {
+            goal: data.goal,
+            experienceLevel: data.experienceLevel,
+            daysPerWeek: Number(data.daysPerWeek),
+            sessionMinutes: Number(data.sessionMinutes),
+            typicalSleepHours: data.typicalSleepHours === '' ? null : Number(data.typicalSleepHours),
+            preferredCheckInDay: data.preferredCheckInDay,
+            equipment: data.equipment.split(',').map(item => item.trim()).filter(Boolean),
+            limitations: data.limitations,
+            dietaryPreferences: data.dietaryPreferences,
+            allergies: data.allergies,
+            primaryObstacle: data.primaryObstacle
+          }
+        } });
+        state.dashboard.client = response.client;
+        state.actor.client = response.client;
+        if (wasOnboarding) navigate('today'); else renderView('profile');
+        toast(wasOnboarding ? 'Onboarding complete. Your coach can build from this.' : 'Profile updated.');
       } else if (kind === 'workout-log') {
         const performance = [...form.querySelectorAll('[data-exercise-log]')].map(exercise => ({
           workoutExerciseId: exercise.dataset.exerciseLog,
