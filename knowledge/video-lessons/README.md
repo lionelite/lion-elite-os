@@ -37,7 +37,5 @@ they bloat diffs, and the timestamp links already point at the source.
 ## Index
 
 <!-- lesson-index:start -->
-| Lesson | Source | Captured | Proposals | Reuse |
-| --- | --- | --- | --- | --- |
-| [Rick Astley - Never Gonna Give You Up (Official Video) (4K Remaster)](youtube-dQw4w9WgXcQ.md) | [youtube](https://www.youtube.com/watch?v=dQw4w9WgXcQ) | 2026-08-17 | 2 | clear |
+_No lessons captured yet._
 <!-- lesson-index:end -->
