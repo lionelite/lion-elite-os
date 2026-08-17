@@ -183,6 +183,30 @@ test('coach invite → client PWA → workout and messaging flow works end to en
   const reusedInvite = await request('/auth/invite', { method: 'POST', body: { token: rawInvite } });
   assert.equal(reusedInvite.response.status, 401, 'invite link must be single use');
 
+  const missingAcknowledgement = await request('/profile', {
+    method: 'PATCH', cookie: clientLogin.cookie,
+    body: { coachingAcknowledged: false, profile: { goal: 'Get stronger' } }
+  });
+  assert.equal(missingAcknowledgement.response.status, 400);
+
+  const onboarding = await request('/profile', {
+    method: 'PATCH', cookie: clientLogin.cookie,
+    body: {
+      coachingAcknowledged: true,
+      profile: {
+        goal: 'Build strength and consistency', experienceLevel: 'intermediate', daysPerWeek: 3, sessionMinutes: 50,
+        equipment: ['bodyweight', 'dumbbell'], limitations: 'Avoid painful ranges', dietaryPreferences: 'Simple meals',
+        allergies: 'None known', typicalSleepHours: 7.5, primaryObstacle: 'Travel', preferredCheckInDay: 'Friday'
+      }
+    }
+  });
+  assert.equal(onboarding.response.status, 200);
+  assert.equal(onboarding.payload.client.profile.goal, 'Build strength and consistency');
+  assert.equal(onboarding.payload.client.profile.typicalSleepHours, 7.5);
+  assert.ok(onboarding.payload.client.profile.onboardingCompletedAt);
+  assert.ok(onboarding.payload.client.profile.coachingAcknowledgedAt);
+  assert.ok(store.auditEvents.some(event => event.actorType === 'client' && event.eventType === 'client.profile.updated'));
+
   const dashboard = await request('/dashboard', { cookie: clientLogin.cookie });
   assert.equal(dashboard.response.status, 200);
   assert.equal(dashboard.payload.dashboard.workoutPlan.days.length, 2);
@@ -190,6 +214,7 @@ test('coach invite → client PWA → workout and messaging flow works end to en
   assert.equal(dashboard.payload.dashboard.nutrition.title, 'Performance foundation');
   assert.equal(dashboard.payload.dashboard.supplements.title, 'Clinician-reviewed fundamentals');
   assert.equal(dashboard.payload.dashboard.protocol.clinicianConfirmed, true);
+  assert.equal(dashboard.payload.dashboard.client.profile.preferredCheckInDay, 'Friday');
 
   const firstDay = dashboard.payload.dashboard.workoutPlan.days[0];
   const workoutLog = await request(`/workout-days/${firstDay.workoutDayId}/logs`, {
