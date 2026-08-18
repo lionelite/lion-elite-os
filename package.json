@@ -5,7 +5,7 @@
   "main": "server.js",
   "type": "commonjs",
   "scripts": {
-    "start": "node -r ./preview-open.js start.js",
+    "start": "node start.js",
     "dev": "node server.js",
     "outreach": "node outreach-server-postgres.js",
     "executive": "node executive-orchestrator.js",
