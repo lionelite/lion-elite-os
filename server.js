@@ -4,18 +4,28 @@ const { leadAutomationReadiness } = require('./lib/lead-automation-readiness');
 const { MemoryCoachingStore, PostgresCoachingStore } = require('./lib/coaching/store');
 const { createPushService } = require('./lib/coaching/push');
 const { createCoachingRouter } = require('./routes/coaching');
+const { createCheckoutRouter } = require('./routes/checkout');
 
 const app = express();
 const port = process.env.PORT || 3000;
 
 app.disable('x-powered-by');
 app.set('trust proxy', 1);
-app.use(express.json({ limit: '1mb' }));
+// The raw bytes are kept so the Stripe webhook can verify its signature; the
+// signature is computed over exactly what was sent, not over a re-serialized
+// copy of the parsed object.
+app.use(express.json({
+  limit: '1mb',
+  verify: (req, _res, buffer) => { req.rawBody = buffer; }
+}));
 const coachingStore = process.env.COACHING_DEMO_MODE === 'true'
   ? new MemoryCoachingStore()
   : new PostgresCoachingStore();
 const coachingPush = createPushService(coachingStore);
 app.use('/api/coaching', createCoachingRouter({ store: coachingStore, pushService: coachingPush }));
+// Payment. Paying creates a coaching client, which is what sends the invite
+// email, so a completed checkout ends with the customer able to log in.
+app.use('/api/checkout', createCheckoutRouter({ store: coachingStore }));
 app.use('/coaching', (_req, res, next) => {
   res.set({
     'Content-Security-Policy': [

@@ -32,6 +32,18 @@ services:
         value: 10
       - key: COACH_PORTAL_ADMIN_TOKEN
         generateValue: true
+      # Payment. Checkout stays disabled (503) until the first two are set,
+      # and the webhook refuses to process anything without the third, so
+      # leaving these blank is safe — it simply means nothing can be sold yet.
+      - key: STRIPE_SECRET_KEY
+        sync: false
+      - key: STRIPE_PRICE_ID
+        sync: false
+      - key: STRIPE_WEBHOOK_SECRET
+        sync: false
+      # Public origin used for Stripe return URLs and coaching invite links.
+      - key: COACHING_PUBLIC_URL
+        sync: false
 
   - type: web
     name: lion-elite-outreach-api
