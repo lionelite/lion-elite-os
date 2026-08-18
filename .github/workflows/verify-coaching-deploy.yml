@@ -67,6 +67,18 @@ jobs:
               --write-out '%{http_code}' \
               "$APP_URL/api/coaching/auth/coach" || true)"
 
+            if [ "$attempt" = "1" ]; then
+              case "$login_status" in
+                200) report_status production-login-http-200 success "Coach login returned HTTP 200" ;;
+                401) report_status production-login-http-401 failure "Coach login returned HTTP 401" ;;
+                403) report_status production-login-http-403 failure "Coach login returned HTTP 403" ;;
+                429) report_status production-login-http-429 failure "Coach login returned HTTP 429" ;;
+                500) report_status production-login-http-500 failure "Coach login returned HTTP 500" ;;
+                503) report_status production-login-http-503 failure "Coach login returned HTTP 503" ;;
+                *) report_status "production-login-http-${login_status:-unknown}" failure "Coach login returned unexpected HTTP status" ;;
+              esac
+            fi
+
             session_status="$(curl --silent --show-error \
               --cookie /tmp/cookies.txt \
               --output /tmp/session.json \
