@@ -2,6 +2,9 @@
 
 const { spawn } = require('child_process');
 const path = require('path');
+const { installAutomaticCoachingInvites } = require('./lib/coaching/invite-email-bootstrap');
+
+installAutomaticCoachingInvites();
 
 function hasBlueskyCredentials() {
   return Boolean(
