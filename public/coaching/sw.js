@@ -1,11 +1,16 @@
 'use strict';
 
-const CACHE_NAME = 'lion-elite-coaching-v2';
+const CACHE_NAME = 'lion-elite-coaching-v3';
 const APP_SHELL = [
   '/coaching/',
   '/coaching/index.html',
   '/coaching/styles.css',
   '/coaching/app.js',
+  '/coaching/preview.js',
+  '/coaching/coach-theme.css',
+  '/coaching/coach-theme.js',
+  '/coaching/coach-client-detail.css',
+  '/coaching/coach-client-detail.js',
   '/coaching/manifest.webmanifest',
   '/coaching/icons/icon.svg',
   '/coaching/icons/icon-192.png',
@@ -13,7 +18,11 @@ const APP_SHELL = [
 ];
 
 self.addEventListener('install', event => {
-  event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(APP_SHELL)).then(() => self.skipWaiting()));
+  event.waitUntil(
+    caches.open(CACHE_NAME)
+      .then(cache => cache.addAll(APP_SHELL))
+      .then(() => self.skipWaiting())
+  );
 });
 
 self.addEventListener('activate', event => {
@@ -32,7 +41,33 @@ self.addEventListener('fetch', event => {
   if (!url.pathname.startsWith('/coaching/')) return;
 
   if (request.mode === 'navigate') {
-    event.respondWith(fetch(request).catch(() => caches.match('/coaching/index.html')));
+    event.respondWith(
+      fetch(request)
+        .then(response => {
+          if (response.ok) {
+            const copy = response.clone();
+            caches.open(CACHE_NAME).then(cache => cache.put('/coaching/index.html', copy));
+          }
+          return response;
+        })
+        .catch(() => caches.match('/coaching/index.html'))
+    );
+    return;
+  }
+
+  const isCodeAsset = url.pathname.endsWith('.js') || url.pathname.endsWith('.css');
+  if (isCodeAsset) {
+    event.respondWith(
+      fetch(request, { cache: 'no-store' })
+        .then(response => {
+          if (response.ok) {
+            const copy = response.clone();
+            caches.open(CACHE_NAME).then(cache => cache.put(request, copy));
+          }
+          return response;
+        })
+        .catch(() => caches.match(request))
+    );
     return;
   }
 
