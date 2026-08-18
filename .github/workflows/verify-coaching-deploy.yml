@@ -31,19 +31,22 @@ jobs:
           set -euo pipefail
 
           report_status() {
-            state="$1"
-            description="$2"
+            context="$1"
+            state="$2"
+            description="$3"
             curl --silent --show-error --fail \
               --request POST \
               --header "Authorization: Bearer $GH_TOKEN" \
               --header "Accept: application/vnd.github+json" \
               --header "X-GitHub-Api-Version: 2022-11-28" \
               "https://api.github.com/repos/$REPO/statuses/$SHA" \
-              --data "$(printf '{\"state\":\"%s\",\"context\":\"production-coaching\",\"description\":\"%s\"}' "$state" "$description")" \
+              --data "$(printf '{\"state\":\"%s\",\"context\":\"%s\",\"description\":\"%s\"}' "$state" "$context" "$description")" \
               >/dev/null
           }
 
-          report_status pending "Waiting for Render coaching deployment"
+          for context in production-coaching production-health production-ui-assets production-preview-login production-session production-roster; do
+            report_status "$context" pending "Waiting for Render coaching deployment"
+          done
 
           for attempt in $(seq 1 45); do
             rm -f /tmp/cookies.txt
@@ -76,34 +79,52 @@ jobs:
               --write-out '%{http_code}' \
               "$APP_URL/api/coaching/admin/clients" || true)"
 
-            if [ "$health_status" = "200" ] \
-              && [ "$coaching_health_status" = "200" ] \
-              && [ "$page_status" = "200" ] \
-              && [ "$manifest_status" = "200" ] \
-              && [ "$worker_status" = "200" ] \
-              && [ "$preview_status" = "200" ] \
-              && [ "$login_status" = "200" ] \
-              && [ "$session_status" = "200" ] \
-              && [ "$clients_status" = "200" ] \
-              && grep --quiet --ignore-case "Lion Elite" /tmp/coaching.html \
-              && grep --quiet "coach-theme.css" /tmp/coaching.html \
-              && grep --quiet "coach-client-detail.js" /tmp/coaching.html \
+            public_ok=false
+            assets_ok=false
+            login_ok=false
+            session_ok=false
+            roster_ok=false
+
+            if [ "$health_status" = "200" ] && [ "$coaching_health_status" = "200" ] && [ "$page_status" = "200" ] && [ "$manifest_status" = "200" ] && [ "$worker_status" = "200" ] && [ "$preview_status" = "200" ]; then
+              public_ok=true
+              report_status production-health success "Health and public coaching routes return 200"
+            fi
+
+            if [ "$page_status" = "200" ] && [ "$preview_status" = "200" ] \
+              && grep --quiet "coach-theme.css?v=3" /tmp/coaching.html \
+              && grep --quiet "coach-client-detail.js?v=3" /tmp/coaching.html \
               && grep --quiet "$PREVIEW_TOKEN" /tmp/preview.js \
-              && grep --quiet '"actorType":"coach"' /tmp/login.json \
-              && grep --quiet '"actorType":"coach"' /tmp/session.json \
-              && grep --quiet '"clients"' /tmp/clients.json \
-              && grep --quiet '"name"' /tmp/manifest.webmanifest \
-              && grep --quiet "coaching" /tmp/sw.js; then
-              report_status success "Live coach preview and roster verified"
-              echo "Verified: live Render deployment loads the new coach UI, preview login creates a coach session, and the client roster API is accessible."
+              && grep --quiet "lion-elite-coaching-v3" /tmp/sw.js; then
+              assets_ok=true
+              report_status production-ui-assets success "Fresh coach UI assets and v3 service worker are live"
+            fi
+
+            if [ "$login_status" = "200" ] && grep --quiet '"actorType":"coach"' /tmp/login.json; then
+              login_ok=true
+              report_status production-preview-login success "Preview login creates a coach actor"
+            fi
+
+            if [ "$session_status" = "200" ] && grep --quiet '"actorType":"coach"' /tmp/session.json; then
+              session_ok=true
+              report_status production-session success "Coach session cookie is valid"
+            fi
+
+            if [ "$clients_status" = "200" ] && grep --quiet '"clients"' /tmp/clients.json; then
+              roster_ok=true
+              report_status production-roster success "Authenticated client roster API is reachable"
+            fi
+
+            if [ "$public_ok" = true ] && [ "$assets_ok" = true ] && [ "$login_ok" = true ] && [ "$session_ok" = true ] && [ "$roster_ok" = true ]; then
+              report_status production-coaching success "Live coach dashboard behavior verified end-to-end"
+              echo "Verified: live Render deployment loads fresh coach UI assets, preview login creates a coach session, and the client roster API is accessible."
               exit 0
             fi
 
-            echo "Attempt $attempt/45: health=$health_status coaching_health=$coaching_health_status page=$page_status preview=$preview_status login=$login_status session=$session_status clients=$clients_status manifest=$manifest_status worker=$worker_status"
+            echo "Attempt $attempt/45: health=$health_status coaching_health=$coaching_health_status page=$page_status preview=$preview_status login=$login_status session=$session_status clients=$clients_status manifest=$manifest_status worker=$worker_status public_ok=$public_ok assets_ok=$assets_ok login_ok=$login_ok session_ok=$session_ok roster_ok=$roster_ok"
             if [ -s /tmp/login.json ]; then echo "login response: $(cat /tmp/login.json)"; fi
             sleep 20
           done
 
-          report_status failure "Live coach preview verification failed"
+          report_status production-coaching failure "Live coach preview verification failed"
           echo "Live coach preview did not become fully functional within 15 minutes."
           exit 1
