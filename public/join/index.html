@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lion Elite Coaching</title>
+<meta name="description" content="Premium one-to-one coaching with structure, accountability, and direct access to your coach.">
+<style>
+  :root {
+    --bg: #0b0b0d;
+    --panel: #141418;
+    --line: #26262e;
+    --text: #f3f3f5;
+    --muted: #a1a1ad;
+    --gold: #c8a349;
+    --gold-bright: #e0bd63;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 660px; margin: 0 auto; padding: 56px 20px 72px; }
+  .eyebrow {
+    letter-spacing: .18em; text-transform: uppercase; font-size: 12px;
+    color: var(--gold); font-weight: 600; margin: 0 0 14px;
+  }
+  h1 { font-size: clamp(30px, 6vw, 44px); line-height: 1.15; margin: 0 0 16px; font-weight: 650; }
+  .lede { font-size: 18px; color: var(--muted); margin: 0 0 36px; }
+  .card {
+    background: var(--panel); border: 1px solid var(--line);
+    border-radius: 14px; padding: 28px; margin: 0 0 24px;
+  }
+  h2 { font-size: 13px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin: 0 0 18px; font-weight: 600; }
+  ul { list-style: none; margin: 0; padding: 0; }
+  li { padding: 11px 0 11px 30px; position: relative; border-bottom: 1px solid var(--line); }
+  li:last-child { border-bottom: 0; }
+  li::before {
+    content: ""; position: absolute; left: 4px; top: 19px;
+    width: 7px; height: 7px; border-radius: 50%; background: var(--gold);
+  }
+  label { display: block; font-size: 14px; color: var(--muted); margin: 0 0 8px; }
+  input {
+    width: 100%; padding: 14px 16px; font-size: 16px;
+    background: #0e0e12; color: var(--text);
+    border: 1px solid var(--line); border-radius: 10px;
+  }
+  input:focus { outline: 2px solid var(--gold); outline-offset: 1px; }
+  button {
+    width: 100%; margin-top: 16px; padding: 16px 20px;
+    font-size: 16px; font-weight: 650; color: #1a1508;
+    background: linear-gradient(180deg, var(--gold-bright), var(--gold));
+    border: 0; border-radius: 10px; cursor: pointer;
+  }
+  button:hover { filter: brightness(1.06); }
+  button:disabled { opacity: .6; cursor: default; filter: none; }
+  .note { font-size: 13px; color: var(--muted); margin: 14px 0 0; text-align: center; }
+  .msg { margin: 18px 0 0; padding: 14px 16px; border-radius: 10px; font-size: 15px; display: none; }
+  .msg.show { display: block; }
+  .msg.err { background: #2a1416; border: 1px solid #52242a; color: #f6c9cd; }
+  .msg.info { background: #14202a; border: 1px solid #24455c; color: #bfe0f5; }
+  footer { margin-top: 34px; text-align: center; color: var(--muted); font-size: 13px; }
+  a { color: var(--gold); }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <p class="eyebrow">Lion Elite Coaching</p>
+  <h1>Coaching that actually holds you to it.</h1>
+  <p class="lede">
+    One-to-one coaching built around structure and follow-through — your training,
+    your check-ins, and direct access to your coach in one place.
+  </p>
+
+  <div class="card">
+    <h2>What you get</h2>
+    <ul>
+      <li>A training plan built for you, adjusted as you progress</li>
+      <li>Weekly check-ins that keep you accountable</li>
+      <li>Direct messaging with your coach between sessions</li>
+      <li>Your plan, history, and progress in one private app</li>
+      <li>Video demonstrations for every movement in your plan</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>Start today</h2>
+    <label for="email">Your email</label>
+    <input id="email" type="email" name="email" autocomplete="email" placeholder="you@example.com" required>
+    <button id="start" type="button">Continue to secure checkout</button>
+    <p class="note">Payments are handled by Stripe. Your card details never touch our servers.</p>
+    <div id="msg" class="msg" role="status" aria-live="polite"></div>
+  </div>
+
+  <footer>
+    Already a client? <a href="/coaching/">Open the coaching app</a>
+  </footer>
+</main>
+
+<script>
+(function () {
+  var button = document.getElementById('start');
+  var email = document.getElementById('email');
+  var msg = document.getElementById('msg');
+
+  function show(text, kind) {
+    msg.textContent = text;
+    msg.className = 'msg show ' + (kind || 'info');
+  }
+
+  if (new URLSearchParams(location.search).get('checkout') === 'cancelled') {
+    show('Checkout was cancelled — nothing was charged. You can start again whenever you are ready.', 'info');
+  }
+
+  button.addEventListener('click', async function () {
+    var value = (email.value || '').trim();
+    if (!value || value.indexOf('@') === -1) {
+      show('Please enter your email address so we know where to send your access.', 'err');
+      email.focus();
+      return;
+    }
+
+    button.disabled = true;
+    button.textContent = 'Starting checkout…';
+    msg.className = 'msg';
+
+    try {
+      var response = await fetch('/api/checkout/session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: value })
+      });
+      var data = await response.json().catch(function () { return {}; });
+
+      if (response.ok && data.url) {
+        location.href = data.url;
+        return;
+      }
+      if (response.status === 503) {
+        show('Checkout is not switched on yet. Please check back shortly.', 'err');
+      } else if (response.status === 429) {
+        show('That is a few too many attempts. Please wait a minute and try again.', 'err');
+      } else {
+        show('We could not start checkout just now. Please try again in a moment.', 'err');
+      }
+    } catch (error) {
+      show('Network problem — please check your connection and try again.', 'err');
+    }
+
+    button.disabled = false;
+    button.textContent = 'Continue to secure checkout';
+  });
+})();
+</script>
+</body>
+</html>
