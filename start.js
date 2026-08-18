@@ -4,6 +4,11 @@ const { spawn } = require('child_process');
 const path = require('path');
 const { installAutomaticCoachingInvites } = require('./lib/coaching/invite-email-bootstrap');
 
+// Temporary review mode: keep coaching usable even if the Render database
+// is not attached yet. This is intentionally non-persistent and should be
+// removed once the owner finishes reviewing the app.
+if (!process.env.DATABASE_URL) process.env.COACHING_DEMO_MODE = 'true';
+
 installAutomaticCoachingInvites();
 
 function hasBlueskyCredentials() {
@@ -42,7 +47,6 @@ function startManaged(name, script, args = []) {
 const stopHandlers = [];
 
 if (hasBlueskyCredentials()) {
-  // Explicit owner activation: credentials present means Bluesky automation should run.
   if (process.env.BLUESKY_OUTREACH_ENABLED == null) process.env.BLUESKY_OUTREACH_ENABLED = 'true';
   if (process.env.BLUESKY_OUTREACH_DRY_RUN == null) process.env.BLUESKY_OUTREACH_DRY_RUN = 'false';
   if (process.env.BLUESKY_OUTREACH_DELIVERY_MODE == null) process.env.BLUESKY_OUTREACH_DELIVERY_MODE = 'direct';
