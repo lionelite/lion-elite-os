@@ -19,32 +19,70 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      - name: Wait for Render and verify public assets
+      - name: Wait for Render and verify live coach preview
         env:
           APP_URL: https://lion-elite-os.onrender.com
+          PREVIEW_TOKEN: preview-mode-enabled
         run: |
           set -euo pipefail
 
           for attempt in $(seq 1 45); do
+            rm -f /tmp/cookies.txt
             health_status="$(curl --location --silent --show-error --output /tmp/health.json --write-out '%{http_code}' "$APP_URL/health" || true)"
+            coaching_health_status="$(curl --location --silent --show-error --output /tmp/coaching-health.json --write-out '%{http_code}' "$APP_URL/api/coaching/health" || true)"
             page_status="$(curl --location --silent --show-error --output /tmp/coaching.html --write-out '%{http_code}' "$APP_URL/coaching/" || true)"
             manifest_status="$(curl --location --silent --show-error --output /tmp/manifest.webmanifest --write-out '%{http_code}' "$APP_URL/coaching/manifest.webmanifest" || true)"
             worker_status="$(curl --location --silent --show-error --output /tmp/sw.js --write-out '%{http_code}' "$APP_URL/coaching/sw.js" || true)"
+            preview_status="$(curl --location --silent --show-error --output /tmp/preview.js --write-out '%{http_code}' "$APP_URL/coaching/preview.js" || true)"
+
+            login_status="$(curl --silent --show-error \
+              --cookie-jar /tmp/cookies.txt \
+              --header 'Content-Type: application/json' \
+              --header "Origin: $APP_URL" \
+              --request POST \
+              --data "{\"token\":\"$PREVIEW_TOKEN\"}" \
+              --output /tmp/login.json \
+              --write-out '%{http_code}' \
+              "$APP_URL/api/coaching/auth/coach" || true)"
+
+            session_status="$(curl --silent --show-error \
+              --cookie /tmp/cookies.txt \
+              --output /tmp/session.json \
+              --write-out '%{http_code}' \
+              "$APP_URL/api/coaching/session" || true)"
+
+            clients_status="$(curl --silent --show-error \
+              --cookie /tmp/cookies.txt \
+              --output /tmp/clients.json \
+              --write-out '%{http_code}' \
+              "$APP_URL/api/coaching/admin/clients" || true)"
 
             if [ "$health_status" = "200" ] \
+              && [ "$coaching_health_status" = "200" ] \
               && [ "$page_status" = "200" ] \
               && [ "$manifest_status" = "200" ] \
               && [ "$worker_status" = "200" ] \
+              && [ "$preview_status" = "200" ] \
+              && [ "$login_status" = "200" ] \
+              && [ "$session_status" = "200" ] \
+              && [ "$clients_status" = "200" ] \
               && grep --quiet --ignore-case "Lion Elite" /tmp/coaching.html \
+              && grep --quiet "coach-theme.css" /tmp/coaching.html \
+              && grep --quiet "coach-client-detail.js" /tmp/coaching.html \
+              && grep --quiet "$PREVIEW_TOKEN" /tmp/preview.js \
+              && grep --quiet '"actorType":"coach"' /tmp/login.json \
+              && grep --quiet '"actorType":"coach"' /tmp/session.json \
+              && grep --quiet '"clients"' /tmp/clients.json \
               && grep --quiet '"name"' /tmp/manifest.webmanifest \
               && grep --quiet "coaching" /tmp/sw.js; then
-              echo "Coaching deployment is live and install assets are available."
+              echo "Verified: live Render deployment loads the new coach UI, preview login creates a coach session, and the client roster API is accessible."
               exit 0
             fi
 
-            echo "Attempt $attempt/45: health=$health_status page=$page_status manifest=$manifest_status worker=$worker_status"
+            echo "Attempt $attempt/45: health=$health_status coaching_health=$coaching_health_status page=$page_status preview=$preview_status login=$login_status session=$session_status clients=$clients_status manifest=$manifest_status worker=$worker_status"
+            if [ -s /tmp/login.json ]; then echo "login response: $(cat /tmp/login.json)"; fi
             sleep 20
           done
 
-          echo "Coaching deployment did not become healthy within 15 minutes."
+          echo "Live coach preview did not become fully functional within 15 minutes."
           exit 1
