@@ -34,9 +34,9 @@
     <div class="auth-panel">
       <div class="auth-card">
         <p class="eyebrow">COACH PORTAL</p>
-        <h2>Welcome back</h2>
-        <p class="muted">Clients enter through their private invitation link. Coaches can sign in below.</p>
-        <form id="coach-login-form" class="stack-form">
+        <h2>Opening preview…</h2>
+        <p class="muted">Temporary owner preview mode is enabled. The coach dashboard will open automatically.</p>
+        <form id="coach-login-form" class="stack-form" style="display:none">
           <label>Coach access token
             <input name="token" type="password" autocomplete="current-password" required placeholder="Enter secure token">
           </label>
@@ -70,5 +70,6 @@
   <div id="toast-root" class="toast-root" aria-live="polite"></div>
   <noscript>This app requires JavaScript.</noscript>
   <script src="/coaching/app.js" defer></script>
+  <script src="/coaching/preview.js" defer></script>
 </body>
 </html>
