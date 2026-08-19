@@ -36,15 +36,19 @@
     <div class="auth-panel">
       <div class="auth-card">
         <p class="eyebrow">COACH PORTAL</p>
-        <h2>Opening preview…</h2>
-        <p class="muted">Temporary owner preview mode is enabled. The coach dashboard will open automatically.</p>
-        <form id="coach-login-form" class="stack-form" style="display:none">
+        <h2>Sign in</h2>
+        <p class="muted">Clients: open the invite link from your welcome email.</p>
+        <form id="coach-login-form" class="stack-form">
           <label>Coach access token
             <input name="token" type="password" autocomplete="current-password" required placeholder="Enter secure token">
           </label>
           <button class="button button--gold" type="submit">Open coach portal</button>
         </form>
         <p id="auth-message" class="form-message" role="status"></p>
+        <div class="auth-join">
+          <p class="muted">Not working with a coach yet?</p>
+          <a class="button button--ghost" href="/join/">Start coaching</a>
+        </div>
       </div>
     </div>
   </section>
