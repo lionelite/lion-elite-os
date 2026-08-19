@@ -9,6 +9,13 @@ const { installAutomaticCoachingInvites } = require('./lib/coaching/invite-email
 // removed once the owner finishes reviewing the app.
 if (!process.env.DATABASE_URL) process.env.COACHING_DEMO_MODE = 'true';
 
+// Temporary owner preview access. The browser preview bootstrap already sends
+// this exact value; setting it at normal startup prevents the coach auth route
+// from returning 503 when Render has not been given a separate admin token yet.
+if (!process.env.COACH_PORTAL_ADMIN_TOKEN) {
+  process.env.COACH_PORTAL_ADMIN_TOKEN = 'preview-mode-enabled';
+}
+
 installAutomaticCoachingInvites();
 
 function hasBlueskyCredentials() {
