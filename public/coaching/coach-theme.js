@@ -46,6 +46,31 @@
     return new Date(Math.max(...times.map(dateValue))).toISOString();
   }
 
+  function ageDays(value) {
+    if (!value) return Infinity;
+    return Math.floor((Date.now() - new Date(value).getTime()) / 86400000);
+  }
+
+  function attentionStats() {
+    return {
+      unread: rosterClients.filter(client => Number(client.unreadCount || 0) > 0).length,
+      checkins: rosterClients.filter(client => client.status === 'active' && ageDays(client.lastCheckinAt) >= 7).length,
+      inactive: rosterClients.filter(client => client.status === 'active' && ageDays(latestActivity(client)) >= 7).length,
+      paused: rosterClients.filter(client => client.status === 'paused').length
+    };
+  }
+
+  function attentionPanel() {
+    const stats = attentionStats();
+    return `
+      <div class="le-coach-kpis" aria-label="Coach attention summary">
+        <button type="button" data-le-attention="unread"><span>Unread Messages</span><strong>${stats.unread}</strong><small>Needs reply</small></button>
+        <button type="button" data-le-attention="checkins"><span>Check-ins Due</span><strong>${stats.checkins}</strong><small>7+ days</small></button>
+        <button type="button" data-le-attention="inactive"><span>Inactive Clients</span><strong>${stats.inactive}</strong><small>No activity 7+ days</small></button>
+        <button type="button" data-le-attention="paused"><span>Paused</span><strong>${stats.paused}</strong><small>Review status</small></button>
+      </div>`;
+  }
+
   function createPanel() {
     return `
       <section class="le-create-panel" id="le-create-panel">
@@ -69,13 +94,20 @@
       </section>`;
   }
 
+  function attentionLabel(client) {
+    if (Number(client.unreadCount || 0) > 0) return '<span class="le-attention-chip is-red">Reply</span>';
+    if (client.status === 'active' && ageDays(client.lastCheckinAt) >= 7) return '<span class="le-attention-chip is-gold">Check-in due</span>';
+    if (client.status === 'active' && ageDays(latestActivity(client)) >= 7) return '<span class="le-attention-chip">Inactive</span>';
+    return '';
+  }
+
   function row(client, selected) {
     const activity = latestActivity(client);
     const unread = Number(client.unreadCount || 0);
     const status = client.status || 'active';
     return `
       <tr data-action="select-client" data-client-id="${esc(client.clientId)}" class="${selected === client.clientId ? 'is-selected' : ''}">
-        <td><div class="le-client-name"><span class="le-client-avatar">${esc(initials(client))}</span><span>${esc(`${client.firstName || ''} ${client.lastName || ''}`.trim())}</span></div></td>
+        <td><div class="le-client-name"><span class="le-client-avatar">${esc(initials(client))}</span><span><b>${esc(`${client.firstName || ''} ${client.lastName || ''}`.trim())}</b>${attentionLabel(client)}</span></div></td>
         <td class="le-activity">${esc(relative(activity))}</td>
         <td>${unread ? `<span class="le-message-badge">${unread}</span>` : '—'}</td>
         <td>—</td>
@@ -94,9 +126,10 @@
     main.innerHTML = `
       <div class="le-roster" data-le-roster>
         <header class="le-roster__header">
-          <div class="le-roster__title"><button class="le-roster__menu" type="button" aria-label="Menu">☰</button><h1>All Clients (${rosterClients.length})</h1></div>
+          <div class="le-roster__title"><button class="le-roster__menu" type="button" aria-label="Menu">☰</button><div><p class="le-roster__eyebrow">COACH COMMAND CENTER</p><h1>All Clients (${rosterClients.length})</h1></div></div>
           <div class="le-roster__actions"><button class="le-roster__add" type="button" data-le-add-client>+ Add Client</button></div>
         </header>
+        ${attentionPanel()}
         <div class="le-roster__filters">
           <select class="le-filter" data-le-status><option value="all">Status: All</option><option value="active">Status: Connected</option><option value="paused">Status: Paused</option><option value="archived">Status: Archived</option></select>
           <select class="le-filter" data-le-activity><option value="all">Last Activity</option><option value="7">Last 7 days</option><option value="30">Last 30 days</option><option value="90">Last 90 days</option></select>
@@ -115,7 +148,7 @@
     rendering = false;
   }
 
-  function applyFilters() {
+  function applyFilters(custom = '') {
     const search = (document.querySelector('[data-le-search]')?.value || '').trim().toLowerCase();
     const status = document.querySelector('[data-le-status]')?.value || 'all';
     const activityDays = document.querySelector('[data-le-activity]')?.value || 'all';
@@ -130,10 +163,14 @@
         const last = latestActivity(client);
         if (!last || Date.now() - new Date(last).getTime() > Number(activityDays) * 86400000) return false;
       }
+      if (custom === 'unread' && !Number(client.unreadCount || 0)) return false;
+      if (custom === 'checkins' && !(client.status === 'active' && ageDays(client.lastCheckinAt) >= 7)) return false;
+      if (custom === 'inactive' && !(client.status === 'active' && ageDays(latestActivity(client)) >= 7)) return false;
+      if (custom === 'paused' && client.status !== 'paused') return false;
       return true;
     });
     const tbody = document.querySelector('[data-le-tbody]');
-    if (tbody) tbody.innerHTML = filtered.length ? filtered.map(client => row(client, selected)).join('') : `<tr><td colspan="7"><div class="le-empty">No clients match these filters.</div></td></tr>`;
+    if (tbody) tbody.innerHTML = filtered.length ? filtered.map(client => row(client, selected)).join('') : `<tr><td colspan="7"><div class="le-empty">No clients match this attention filter.</div></td></tr>`;
   }
 
   async function refresh() {
@@ -147,6 +184,8 @@
   document.addEventListener('click', event => {
     if (event.target.closest('[data-le-add-client]')) document.querySelector('#le-create-panel')?.classList.add('is-open');
     if (event.target.closest('[data-le-close-create]')) document.querySelector('#le-create-panel')?.classList.remove('is-open');
+    const attention = event.target.closest('[data-le-attention]');
+    if (attention) applyFilters(attention.dataset.leAttention);
   });
   document.addEventListener('input', event => { if (event.target.matches('[data-le-search]')) applyFilters(); });
   document.addEventListener('change', event => { if (event.target.matches('[data-le-status],[data-le-activity],[data-le-messages]')) applyFilters(); });
