@@ -58,6 +58,11 @@ h3 { font-size: 1.05rem; letter-spacing: -.01em; }
 .auth-card { width: min(100%, 410px); }
 .auth-card h2 { margin-bottom: 10px; }
 .auth-card > .muted { line-height: 1.6; margin-bottom: 28px; }
+/* The way in for someone who is not a client yet. Without this the sign-in
+   screen is a dead end for every visitor who has never been invited. */
+.auth-join { margin-top: 26px; padding-top: 22px; border-top: 1px solid var(--line); }
+.auth-join .muted { margin: 0 0 12px; font-size: .9rem; }
+.auth-join .button { width: 100%; }
 
 .stack-form { display: grid; gap: 16px; }
 label { display: grid; gap: 8px; color: #d9d2c8; font-size: .82rem; font-weight: 650; }
