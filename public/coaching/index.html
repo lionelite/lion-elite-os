@@ -8,13 +8,31 @@
   <meta name="description" content="Lion Elite Coaching — workouts, nutrition, protocols, progress, and direct coach communication.">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Lion Elite">
-  <link rel="manifest" href="/coaching/manifest.webmanifest">
+  <meta id="apple-app-title" name="apple-mobile-web-app-title" content="Lion Elite">
+  <link id="app-manifest" rel="manifest" href="/coaching/manifest.webmanifest">
+  <script>
+    (() => {
+      const requestedMode = new URLSearchParams(location.search).get('app');
+      const mode = requestedMode === 'coach' || requestedMode === 'client' ? requestedMode : '';
+      window.LION_ELITE_APP_MODE = mode;
+      if (!mode) return;
+      document.documentElement.dataset.appMode = mode;
+      const manifest = document.querySelector('#app-manifest');
+      const appleTitle = document.querySelector('#apple-app-title');
+      if (mode === 'coach') {
+        manifest.href = '/coaching/manifest-coach.webmanifest';
+        appleTitle.content = 'Lion Elite Coach';
+      } else {
+        manifest.href = '/coaching/manifest-client.webmanifest';
+        appleTitle.content = 'Lion Elite';
+      }
+    })();
+  </script>
   <link rel="icon" href="/coaching/icons/icon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="/coaching/icons/icon-192.png">
-  <link rel="stylesheet" href="/coaching/styles.css?v=4">
-  <link rel="stylesheet" href="/coaching/coach-theme.css?v=4">
-  <link rel="stylesheet" href="/coaching/coach-client-detail.css?v=4">
+  <link rel="stylesheet" href="/coaching/styles.css?v=5">
+  <link rel="stylesheet" href="/coaching/coach-theme.css?v=5">
+  <link rel="stylesheet" href="/coaching/coach-client-detail.css?v=5">
   <title>Lion Elite Coaching</title>
 </head>
 <body>
@@ -22,5 +40,5 @@
   <section id="auth-screen" class="auth-screen hidden" aria-labelledby="auth-title"><div class="auth-visual"><div class="auth-glow"></div><div class="auth-brand"><div class="brand-mark brand-mark--large"><span>LE</span></div><p class="eyebrow">LION ELITE</p><h1 id="auth-title">Your coaching.<br>Your standard.</h1><p class="muted auth-copy">Training, nutrition, accountability, and direct access to your coach—together in one private app.</p></div></div><div class="auth-panel"><div class="auth-card"><p class="eyebrow">COACH PORTAL</p><h2>Sign in</h2><p class="muted">Clients: open the invite link from your welcome email.</p><form id="coach-login-form" class="stack-form"><label>Coach access token<input name="token" type="password" autocomplete="current-password" required placeholder="Enter secure token"></label><button class="button button--gold" type="submit">Open coach portal</button></form><p id="auth-message" class="form-message" role="status"></p><div class="auth-join"><p class="muted">Not working with a coach yet?</p><a class="button button--ghost" href="/join/">Start coaching</a></div></div></div></section>
   <div id="app-shell" class="app-shell hidden"><header class="topbar"><button class="brand-button" type="button" data-action="home" aria-label="Go home"><span class="brand-mark"><span>LE</span></span><span><strong>Lion Elite</strong><small id="portal-label">Coaching</small></span></button><div class="topbar-actions"><span id="live-pill" class="live-pill"><i></i> Live</span><button id="install-top-button" class="icon-button" type="button" data-action="install" aria-label="Install app" title="Install app">⇩</button><button id="avatar-button" class="avatar" type="button" data-action="profile" aria-label="Open profile">LE</button></div></header><div id="coach-layout" class="coach-layout"><aside id="coach-sidebar" class="coach-sidebar hidden"></aside><main id="main-content" class="main-content" tabindex="-1"></main></div><nav id="bottom-nav" class="bottom-nav" aria-label="Primary navigation"></nav></div>
   <div id="modal-root"></div><div id="toast-root" class="toast-root" aria-live="polite"></div><noscript>This app requires JavaScript.</noscript>
-  <script src="/coaching/app.js?v=4" defer></script><script src="/coaching/preview.js?v=4" defer></script><script src="/coaching/coach-theme.js?v=4" defer></script><script src="/coaching/coach-command-center.js?v=4" defer></script><script src="/coaching/coach-client-detail.js?v=4" defer></script>
+  <script src="/coaching/app-mode.js?v=5" defer></script><script src="/coaching/app.js?v=5" defer></script><script src="/coaching/preview.js?v=5" defer></script><script src="/coaching/coach-theme.js?v=5" defer></script><script src="/coaching/coach-command-center.js?v=5" defer></script><script src="/coaching/coach-client-detail.js?v=5" defer></script>
 </body></html>
