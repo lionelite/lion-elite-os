@@ -1,17 +1,21 @@
 'use strict';
 
-const CACHE_NAME = 'lion-elite-coaching-v3';
+const CACHE_NAME = 'lion-elite-coaching-v4';
 const APP_SHELL = [
   '/coaching/',
   '/coaching/index.html',
   '/coaching/styles.css',
+  '/coaching/app-mode.js',
   '/coaching/app.js',
   '/coaching/preview.js',
   '/coaching/coach-theme.css',
   '/coaching/coach-theme.js',
+  '/coaching/coach-command-center.js',
   '/coaching/coach-client-detail.css',
   '/coaching/coach-client-detail.js',
   '/coaching/manifest.webmanifest',
+  '/coaching/manifest-coach.webmanifest',
+  '/coaching/manifest-client.webmanifest',
   '/coaching/icons/icon.svg',
   '/coaching/icons/icon-192.png',
   '/coaching/icons/icon-512.png'
