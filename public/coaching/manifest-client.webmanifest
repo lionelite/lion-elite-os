@@ -1,0 +1,23 @@
+{
+  "id": "/coaching/client-app",
+  "name": "Lion Elite",
+  "short_name": "Lion Elite",
+  "description": "Your private Lion Elite client app for training, nutrition, protocols, progress, check-ins, and coach messaging.",
+  "start_url": "/coaching/?app=client#today",
+  "scope": "/coaching/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#0a0908",
+  "theme_color": "#0a0908",
+  "categories": ["fitness", "health", "lifestyle"],
+  "icons": [
+    {"src":"/coaching/icons/icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"},
+    {"src":"/coaching/icons/icon-192.png","sizes":"192x192","type":"image/png","purpose":"any"},
+    {"src":"/coaching/icons/icon-512.png","sizes":"512x512","type":"image/png","purpose":"any maskable"}
+  ],
+  "shortcuts": [
+    {"name":"Today's Plan","short_name":"Today","url":"/coaching/?app=client#today","icons":[{"src":"/coaching/icons/icon-192.png","sizes":"192x192"}]},
+    {"name":"Training","short_name":"Training","url":"/coaching/?app=client#workouts","icons":[{"src":"/coaching/icons/icon-192.png","sizes":"192x192"}]},
+    {"name":"Message Coach","short_name":"Messages","url":"/coaching/?app=client#messages","icons":[{"src":"/coaching/icons/icon-192.png","sizes":"192x192"}]}
+  ]
+}
