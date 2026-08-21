@@ -17,7 +17,7 @@
 const express = require('express');
 
 const { createCheckoutSession, resolveCheckoutConfig } = require('../lib/coaching/stripe-checkout');
-const { verifyStripeSignature, provisionFromEvent } = require('../lib/coaching/stripe-webhook');
+const { verifyStripeSignature, provisionFromEvent, applyLifecycle } = require('../lib/coaching/stripe-webhook');
 
 function asyncRoute(handler) {
   return (req, res, next) => Promise.resolve(handler(req, res, next)).catch(next);
@@ -112,19 +112,39 @@ function createCheckoutRouter({ store, env = process.env } = {}) {
 
     // req.body is already parsed by express.json; rawBody was only needed for
     // the signature.
-    const outcome = await provisionFromEvent({ event: req.body, store });
+    const event = req.body;
 
+    // A completed checkout grants access.
+    const outcome = await provisionFromEvent({ event, store });
     if (outcome.status === 'failed') {
       // Return 500 so Stripe retries — a paying customer without access is
       // the one failure mode worth being noisy about.
       console.error(`[checkout] provisioning failed for ${outcome.email || 'unknown'}: ${outcome.detail}`);
       return res.status(500).json({ error: 'PROVISIONING_FAILED' });
     }
-
     if (outcome.status === 'provisioned') {
       console.log(`[checkout] coaching access provisioned for ${outcome.email}`);
     }
-    return res.json({ received: true, status: outcome.status });
+
+    // Later billing events change it: a cancelled subscription ends access, a
+    // failed payment flags the client as at risk, a recovered payment restores
+    // them. Without this a customer who stops paying keeps the product.
+    const lifecycle = await applyLifecycle({ event, store });
+    if (lifecycle.status === 'failed') {
+      console.error(`[checkout] lifecycle update failed: ${lifecycle.detail}`);
+      return res.status(500).json({ error: 'LIFECYCLE_UPDATE_FAILED' });
+    }
+    if (lifecycle.status === 'applied') {
+      console.log(
+        `[checkout] client ${lifecycle.clientId} set to ${lifecycle.clientStatus} (${lifecycle.intent})`
+      );
+    }
+
+    return res.json({
+      received: true,
+      status: outcome.status,
+      lifecycle: lifecycle.status
+    });
   }));
 
   return router;
