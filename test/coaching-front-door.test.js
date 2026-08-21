@@ -88,6 +88,26 @@ test('a visitor who is not a client has a route to buy', () => {
   );
 });
 
+test('nothing auto-attempts a coach login when the page loads', () => {
+  // A previous version of preview.js called openCoachPreview() unconditionally.
+  // Every visitor then fired a login attempt with a hardcoded token, the 401
+  // rewrote the "Sign in" heading to "Preview could not open" directly above
+  // the Start coaching button, and the 12-per-15-minutes login limiter locked
+  // the real coach out after about a dozen page loads.
+  //
+  // This is runtime behaviour, so checking index.html for preview copy — as
+  // the tests above do — could not catch it.
+  const source = read('public/coaching/preview.js');
+
+  const gateIndex = source.search(/URLSearchParams\(location\.search\)/);
+  const callIndex = source.search(/^\s*openCoachPreview\(\);/m);
+
+  assert.ok(gateIndex !== -1, 'preview must be gated on an explicit opt-in');
+  assert.ok(callIndex !== -1, 'expected the preview invocation');
+  assert.ok(gateIndex < callIndex, 'the opt-in check must run before the login attempt');
+  assert.match(source, /return;/, 'the gate must return early rather than fall through');
+});
+
 test('the purchase page exists and posts to the checkout endpoint', () => {
   const html = read('public/join/index.html');
   assert.ok(html.includes('/api/checkout/session'), 'the buy button must reach checkout');
