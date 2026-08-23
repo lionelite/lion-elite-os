@@ -1,0 +1,398 @@
+{
+  "date": "2026-08-23",
+  "generatedAt": "2026-08-23T11:21:42.890Z",
+  "brands": {
+    "wellness": {
+      "brandName": "Lion Elite Wellness",
+      "pieces": [
+        {
+          "id": "2026-08-23-wellness-feed",
+          "brand": "wellness",
+          "date": "2026-08-23",
+          "slot": "feed",
+          "type": "educational_feed",
+          "topic": {
+            "slug": "research-use-only-labeling",
+            "title": "What \"research use only\" actually means"
+          },
+          "cta": "website",
+          "platforms": {
+            "instagram": {
+              "text": "Three words on a label carry an entire standard.\n\nWhat \"research use only\" actually means — today's research education note from Lion Elite Wellness.\n\n• Research-use-only products are supplied for laboratory research.\n• Clear labeling protects the researcher and the supplier.\n• Responsible vendors say what a product is for — and what it is not for.\n\nExplore the research catalog at lionelitewellness.com.\n\nFor laboratory research purposes only. Not for human or veterinary use.\n\n#ResearchEducation #PeptideResearch #ScientificLiteracy #LabStandards #LionEliteWellness"
+            },
+            "facebook": {
+              "text": "Three words on a label carry an entire standard.\n\nWhat \"research use only\" actually means — today's research education note from Lion Elite Wellness.\n\n• Research-use-only products are supplied for laboratory research.\n• Clear labeling protects the researcher and the supplier.\n• Responsible vendors say what a product is for — and what it is not for.\n\nExplore the research catalog at lionelitewellness.com.\n\nFor laboratory research purposes only. Not for human or veterinary use."
+            },
+            "linkedin": {
+              "text": "What \"research use only\" actually means\n\nThree words on a label carry an entire standard.\n\n— Research-use-only products are supplied for laboratory research.\n— Clear labeling protects the researcher and the supplier.\n— Responsible vendors say what a product is for — and what it is not for.\n\nExplore the research catalog at lionelitewellness.com.\n\nFor laboratory research purposes only. Not for human or veterinary use."
+            },
+            "x": {
+              "text": "Three words on a label carry an entire standard.\n\nExplore the research catalog at lionelitewellness.com.\n\nFor laboratory research purposes only. Not for human or veterinary use."
+            }
+          },
+          "media": {
+            "format": "feed",
+            "dimensions": "1080x1350",
+            "aspectRatio": "4:5",
+            "prompt": "labeled vials on a laboratory shelf, black and white premium look. Lion Elite Wellness aesthetic: premium, minimal, earth tones and black-and-white accents, natural light, no text overlay. Vertical 4:5 feed image, 1080x1350 px."
+          },
+          "schedule": {
+            "date": "2026-08-23",
+            "time": "09:00"
+          },
+          "compliance": {
+            "approved": true,
+            "platforms": {
+              "instagram": {
+                "approved": true,
+                "blockers": []
+              },
+              "facebook": {
+                "approved": true,
+                "blockers": []
+              },
+              "linkedin": {
+                "approved": true,
+                "blockers": []
+              },
+              "x": {
+                "approved": true,
+                "blockers": []
+              }
+            }
+          },
+          "marketing": {
+            "platform": "instagram",
+            "score": 9.17,
+            "threshold": 9.5,
+            "approved": false,
+            "attempts": 1,
+            "judge": "heuristic",
+            "reason": "Best marketing score 9.17 < threshold 9.5 after 1 attempt(s)."
+          }
+        },
+        {
+          "id": "2026-08-23-wellness-reel",
+          "brand": "wellness",
+          "date": "2026-08-23",
+          "slot": "reel",
+          "type": "reel_script",
+          "topic": {
+            "slug": "purity-testing-methods",
+            "title": "How purity is verified in the lab"
+          },
+          "cta": "product_education",
+          "platforms": {
+            "instagram": {
+              "text": "Purity is a measurement, not a marketing word.\n\nRead the product information pages to learn how we document quality.\n\nFor laboratory research purposes only. Not for human or veterinary use.\n\n#ResearchEducation #PeptideResearch #ScientificLiteracy #LabStandards #LionEliteWellness"
+            },
+            "tiktok": {
+              "text": "HOOK (0-3s, on camera or bold text): Purity is a measurement, not a marketing word.\n\nBODY (talking points, one per cut):\n1. HPLC and mass spectrometry are the standard verification methods.\n2. A purity percentage without a method behind it is just a number.\n3. Ask what was tested, how, and by whom.\n\nCTA (final 3s): Read the product information pages to learn how we document quality.\n\nON-SCREEN DISCLAIMER (visible full duration): see below.\n\nFor laboratory research purposes only. Not for human or veterinary use."
+            }
+          },
+          "media": {
+            "format": "vertical",
+            "dimensions": "1080x1920",
+            "aspectRatio": "9:16",
+            "prompt": "HPLC instrument close-up, clean laboratory environment. Lion Elite Wellness aesthetic: premium, minimal, earth tones and black-and-white accents, natural light, no text overlay. Vertical 9:16 Reel/TikTok cover, 1080x1920 px."
+          },
+          "schedule": {
+            "date": "2026-08-23",
+            "time": "12:30"
+          },
+          "compliance": {
+            "approved": true,
+            "platforms": {
+              "instagram": {
+                "approved": true,
+                "blockers": []
+              },
+              "tiktok": {
+                "approved": true,
+                "blockers": []
+              }
+            }
+          },
+          "marketing": {
+            "platform": "instagram",
+            "score": 8.5,
+            "threshold": 9.5,
+            "approved": false,
+            "attempts": 1,
+            "judge": "heuristic",
+            "reason": "Best marketing score 8.5 < threshold 9.5 after 1 attempt(s)."
+          }
+        },
+        {
+          "id": "2026-08-23-wellness-story-1",
+          "brand": "wellness",
+          "date": "2026-08-23",
+          "slot": "story-1",
+          "type": "story",
+          "topic": {
+            "slug": "research-use-only-labeling",
+            "title": "What \"research use only\" actually means"
+          },
+          "cta": "affiliate",
+          "platforms": {
+            "instagram": {
+              "text": "Three words on a label carry an entire standard.\n\nResearch-use-only products are supplied for laboratory research.\n\nNew post is live — full breakdown on the feed.\n\nFor laboratory research purposes only. Not for human or veterinary use."
+            }
+          },
+          "media": {
+            "format": "vertical",
+            "dimensions": "1080x1920",
+            "aspectRatio": "9:16",
+            "prompt": "labeled vials on a laboratory shelf, black and white premium look. Lion Elite Wellness aesthetic: premium, minimal, earth tones and black-and-white accents, natural light, no text overlay. Vertical 9:16 Story frame, 1080x1920 px."
+          },
+          "schedule": {
+            "date": "2026-08-23",
+            "time": "15:00"
+          },
+          "compliance": {
+            "approved": true,
+            "platforms": {
+              "instagram": {
+                "approved": true,
+                "blockers": []
+              }
+            }
+          }
+        },
+        {
+          "id": "2026-08-23-wellness-story-2",
+          "brand": "wellness",
+          "date": "2026-08-23",
+          "slot": "story-2",
+          "type": "story",
+          "topic": {
+            "slug": "research-use-only-labeling",
+            "title": "What \"research use only\" actually means"
+          },
+          "cta": "wholesale",
+          "platforms": {
+            "instagram": {
+              "text": "Question sticker: What research-quality topic should we break down next?\n\nSourcing for a lab or research team? Reach out about wholesale inquiries.\n\nFor laboratory research purposes only. Not for human or veterinary use."
+            }
+          },
+          "media": {
+            "format": "vertical",
+            "dimensions": "1080x1920",
+            "aspectRatio": "9:16",
+            "prompt": "labeled vials on a laboratory shelf, black and white premium look. Lion Elite Wellness aesthetic: premium, minimal, earth tones and black-and-white accents, natural light, no text overlay. Vertical 9:16 Story frame, 1080x1920 px."
+          },
+          "schedule": {
+            "date": "2026-08-23",
+            "time": "19:00"
+          },
+          "compliance": {
+            "approved": true,
+            "platforms": {
+              "instagram": {
+                "approved": true,
+                "blockers": []
+              }
+            }
+          }
+        }
+      ],
+      "rejected": []
+    },
+    "beauty": {
+      "brandName": "Lion Elite Beauty",
+      "pieces": [
+        {
+          "id": "2026-08-23-beauty-feed",
+          "brand": "beauty",
+          "date": "2026-08-23",
+          "slot": "feed",
+          "type": "transformation_feed",
+          "topic": {
+            "slug": "discipline-beats-motivation",
+            "title": "Discipline beats motivation"
+          },
+          "cta": "dm_elite",
+          "platforms": {
+            "instagram": {
+              "text": "Motivation shows up sometimes. Discipline shows up daily.\n\nDiscipline beats motivation — today's standard from Lion Elite Beauty.\n\n• Systems outlast feelings.\n• The standard is what you do on the days you do not feel like it.\n• Small non-negotiables compound into transformation.\n\nDM ELITE if you are ready to build with purpose.\n\n#LionEliteBeauty #DisciplineDaily #Biomarkers #WellnessCoaching #HigherStandard"
+            },
+            "facebook": {
+              "text": "Motivation shows up sometimes. Discipline shows up daily.\n\nDiscipline beats motivation — today's standard from Lion Elite Beauty.\n\n• Systems outlast feelings.\n• The standard is what you do on the days you do not feel like it.\n• Small non-negotiables compound into transformation.\n\nDM ELITE if you are ready to build with purpose."
+            },
+            "linkedin": {
+              "text": "Discipline beats motivation\n\nMotivation shows up sometimes. Discipline shows up daily.\n\n— Systems outlast feelings.\n— The standard is what you do on the days you do not feel like it.\n— Small non-negotiables compound into transformation.\n\nDM ELITE if you are ready to build with purpose."
+            },
+            "x": {
+              "text": "Motivation shows up sometimes. Discipline shows up daily.\n\nDM ELITE if you are ready to build with purpose."
+            }
+          },
+          "media": {
+            "format": "feed",
+            "dimensions": "1080x1350",
+            "aspectRatio": "4:5",
+            "prompt": "pre-dawn training environment, black and white, solitary athlete. Lion Elite Beauty aesthetic: premium, minimal, earth tones and black-and-white accents, natural light, no text overlay. Vertical 4:5 feed image, 1080x1350 px."
+          },
+          "schedule": {
+            "date": "2026-08-23",
+            "time": "10:00"
+          },
+          "compliance": {
+            "approved": true,
+            "platforms": {
+              "instagram": {
+                "approved": true,
+                "blockers": []
+              },
+              "facebook": {
+                "approved": true,
+                "blockers": []
+              },
+              "linkedin": {
+                "approved": true,
+                "blockers": []
+              },
+              "x": {
+                "approved": true,
+                "blockers": []
+              }
+            }
+          },
+          "marketing": {
+            "platform": "instagram",
+            "score": 8.83,
+            "threshold": 9.5,
+            "approved": false,
+            "attempts": 1,
+            "judge": "heuristic",
+            "reason": "Best marketing score 8.83 < threshold 9.5 after 1 attempt(s)."
+          }
+        },
+        {
+          "id": "2026-08-23-beauty-reel",
+          "brand": "beauty",
+          "date": "2026-08-23",
+          "slot": "reel",
+          "type": "reel_script",
+          "topic": {
+            "slug": "foundation-first",
+            "title": "Foundation first"
+          },
+          "cta": "comment_ready",
+          "platforms": {
+            "instagram": {
+              "text": "Before optimization, there has to be a foundation.\n\nComment READY and we will send you the first step.\n\n#LionEliteBeauty #DisciplineDaily #Biomarkers #WellnessCoaching #HigherStandard"
+            },
+            "tiktok": {
+              "text": "HOOK (0-3s, on camera or bold text): Before optimization, there has to be a foundation.\n\nBODY (talking points, one per cut):\n1. Sleep, sunlight, hydration, minerals, whole foods, training, recovery.\n2. The body is already powerful — support it, do not fight it.\n3. Then use objective feedback to refine the plan.\n\nCTA (final 3s): Comment READY and we will send you the first step."
+            }
+          },
+          "media": {
+            "format": "vertical",
+            "dimensions": "1080x1920",
+            "aspectRatio": "9:16",
+            "prompt": "sunrise over mountains, nature and training merged, earth tones. Lion Elite Beauty aesthetic: premium, minimal, earth tones and black-and-white accents, natural light, no text overlay. Vertical 9:16 Reel/TikTok cover, 1080x1920 px."
+          },
+          "schedule": {
+            "date": "2026-08-23",
+            "time": "13:30"
+          },
+          "compliance": {
+            "approved": true,
+            "platforms": {
+              "instagram": {
+                "approved": true,
+                "blockers": []
+              },
+              "tiktok": {
+                "approved": true,
+                "blockers": []
+              }
+            }
+          },
+          "marketing": {
+            "platform": "instagram",
+            "score": 8.5,
+            "threshold": 9.5,
+            "approved": false,
+            "attempts": 1,
+            "judge": "heuristic",
+            "reason": "Best marketing score 8.5 < threshold 9.5 after 1 attempt(s)."
+          }
+        },
+        {
+          "id": "2026-08-23-beauty-story-1",
+          "brand": "beauty",
+          "date": "2026-08-23",
+          "slot": "story-1",
+          "type": "story",
+          "topic": {
+            "slug": "discipline-beats-motivation",
+            "title": "Discipline beats motivation"
+          },
+          "cta": "program_application",
+          "platforms": {
+            "instagram": {
+              "text": "Motivation shows up sometimes. Discipline shows up daily.\n\nSystems outlast feelings.\n\nNew post is live — full breakdown on the feed."
+            }
+          },
+          "media": {
+            "format": "vertical",
+            "dimensions": "1080x1920",
+            "aspectRatio": "9:16",
+            "prompt": "pre-dawn training environment, black and white, solitary athlete. Lion Elite Beauty aesthetic: premium, minimal, earth tones and black-and-white accents, natural light, no text overlay. Vertical 9:16 Story frame, 1080x1920 px."
+          },
+          "schedule": {
+            "date": "2026-08-23",
+            "time": "16:00"
+          },
+          "compliance": {
+            "approved": true,
+            "platforms": {
+              "instagram": {
+                "approved": true,
+                "blockers": []
+              }
+            }
+          }
+        },
+        {
+          "id": "2026-08-23-beauty-story-2",
+          "brand": "beauty",
+          "date": "2026-08-23",
+          "slot": "story-2",
+          "type": "story",
+          "topic": {
+            "slug": "discipline-beats-motivation",
+            "title": "Discipline beats motivation"
+          },
+          "cta": "dm_elite",
+          "platforms": {
+            "instagram": {
+              "text": "Question sticker: What is the one habit you refuse to skip this week?\n\nDM ELITE if you are ready to build with purpose."
+            }
+          },
+          "media": {
+            "format": "vertical",
+            "dimensions": "1080x1920",
+            "aspectRatio": "9:16",
+            "prompt": "pre-dawn training environment, black and white, solitary athlete. Lion Elite Beauty aesthetic: premium, minimal, earth tones and black-and-white accents, natural light, no text overlay. Vertical 9:16 Story frame, 1080x1920 px."
+          },
+          "schedule": {
+            "date": "2026-08-23",
+            "time": "20:00"
+          },
+          "compliance": {
+            "approved": true,
+            "platforms": {
+              "instagram": {
+                "approved": true,
+                "blockers": []
+              }
+            }
+          }
+        }
+      ],
+      "rejected": []
+    }
+  }
+}
