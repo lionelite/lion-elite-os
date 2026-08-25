@@ -1,0 +1,398 @@
+{
+  "date": "2026-08-25",
+  "generatedAt": "2026-08-25T11:29:11.245Z",
+  "brands": {
+    "wellness": {
+      "brandName": "Lion Elite Wellness",
+      "pieces": [
+        {
+          "id": "2026-08-25-wellness-feed",
+          "brand": "wellness",
+          "date": "2026-08-25",
+          "slot": "feed",
+          "type": "educational_feed",
+          "topic": {
+            "slug": "evaluating-supplier-standards",
+            "title": "How to evaluate a research supplier"
+          },
+          "cta": "affiliate",
+          "platforms": {
+            "instagram": {
+              "text": "The supplier sets the ceiling on your research quality.\n\nHow to evaluate a research supplier — today's research education note from Lion Elite Wellness.\n\n• Batch-specific testing, clear labeling, and traceability are the baseline.\n• Professional language is a signal — hype is a red flag.\n• Consistency across orders matters more than a single good batch.\n\nInterested in partnering? Ask about the Lion Elite Wellness affiliate program.\n\nFor laboratory research purposes only. Not for human or veterinary use.\n\n#ResearchEducation #PeptideResearch #ScientificLiteracy #LabStandards #LionEliteWellness"
+            },
+            "facebook": {
+              "text": "The supplier sets the ceiling on your research quality.\n\nHow to evaluate a research supplier — today's research education note from Lion Elite Wellness.\n\n• Batch-specific testing, clear labeling, and traceability are the baseline.\n• Professional language is a signal — hype is a red flag.\n• Consistency across orders matters more than a single good batch.\n\nInterested in partnering? Ask about the Lion Elite Wellness affiliate program.\n\nFor laboratory research purposes only. Not for human or veterinary use."
+            },
+            "linkedin": {
+              "text": "How to evaluate a research supplier\n\nThe supplier sets the ceiling on your research quality.\n\n— Batch-specific testing, clear labeling, and traceability are the baseline.\n— Professional language is a signal — hype is a red flag.\n— Consistency across orders matters more than a single good batch.\n\nInterested in partnering? Ask about the Lion Elite Wellness affiliate program.\n\nFor laboratory research purposes only. Not for human or veterinary use."
+            },
+            "x": {
+              "text": "The supplier sets the ceiling on your research quality.\n\nInterested in partnering? Ask about the Lion Elite Wellness affiliate program.\n\nFor laboratory research purposes only. Not for human or veterinary use."
+            }
+          },
+          "media": {
+            "format": "feed",
+            "dimensions": "1080x1350",
+            "aspectRatio": "4:5",
+            "prompt": "organized fulfillment area, clean packaging, premium minimal. Lion Elite Wellness aesthetic: premium, minimal, earth tones and black-and-white accents, natural light, no text overlay. Vertical 4:5 feed image, 1080x1350 px."
+          },
+          "schedule": {
+            "date": "2026-08-25",
+            "time": "09:00"
+          },
+          "compliance": {
+            "approved": true,
+            "platforms": {
+              "instagram": {
+                "approved": true,
+                "blockers": []
+              },
+              "facebook": {
+                "approved": true,
+                "blockers": []
+              },
+              "linkedin": {
+                "approved": true,
+                "blockers": []
+              },
+              "x": {
+                "approved": true,
+                "blockers": []
+              }
+            }
+          },
+          "marketing": {
+            "platform": "instagram",
+            "score": 8.5,
+            "threshold": 9.5,
+            "approved": false,
+            "attempts": 1,
+            "judge": "heuristic",
+            "reason": "Best marketing score 8.5 < threshold 9.5 after 1 attempt(s)."
+          }
+        },
+        {
+          "id": "2026-08-25-wellness-reel",
+          "brand": "wellness",
+          "date": "2026-08-25",
+          "slot": "reel",
+          "type": "reel_script",
+          "topic": {
+            "slug": "preclinical-vs-clinical",
+            "title": "Preclinical vs. clinical: reading research honestly"
+          },
+          "cta": "wholesale",
+          "platforms": {
+            "instagram": {
+              "text": "A cell study and an approved therapy are separated by years of work.\n\nSourcing for a lab or research team? Reach out about wholesale inquiries.\n\nFor laboratory research purposes only. Not for human or veterinary use.\n\n#ResearchEducation #PeptideResearch #ScientificLiteracy #LabStandards #LionEliteWellness"
+            },
+            "tiktok": {
+              "text": "HOOK (0-3s, on camera or bold text): A cell study and an approved therapy are separated by years of work.\n\nBODY (talking points, one per cut):\n1. Preclinical research happens in laboratory models, not in patients.\n2. Interesting early findings are the start of a question, not an answer.\n3. Scientific literacy means knowing which stage a study belongs to.\n\nCTA (final 3s): Sourcing for a lab or research team? Reach out about wholesale inquiries.\n\nON-SCREEN DISCLAIMER (visible full duration): see below.\n\nFor laboratory research purposes only. Not for human or veterinary use."
+            }
+          },
+          "media": {
+            "format": "vertical",
+            "dimensions": "1080x1920",
+            "aspectRatio": "9:16",
+            "prompt": "research journal on a desk, reading glasses, warm natural light. Lion Elite Wellness aesthetic: premium, minimal, earth tones and black-and-white accents, natural light, no text overlay. Vertical 9:16 Reel/TikTok cover, 1080x1920 px."
+          },
+          "schedule": {
+            "date": "2026-08-25",
+            "time": "12:30"
+          },
+          "compliance": {
+            "approved": true,
+            "platforms": {
+              "instagram": {
+                "approved": true,
+                "blockers": []
+              },
+              "tiktok": {
+                "approved": true,
+                "blockers": []
+              }
+            }
+          },
+          "marketing": {
+            "platform": "instagram",
+            "score": 9.33,
+            "threshold": 9.5,
+            "approved": false,
+            "attempts": 1,
+            "judge": "heuristic",
+            "reason": "Best marketing score 9.33 < threshold 9.5 after 1 attempt(s)."
+          }
+        },
+        {
+          "id": "2026-08-25-wellness-story-1",
+          "brand": "wellness",
+          "date": "2026-08-25",
+          "slot": "story-1",
+          "type": "story",
+          "topic": {
+            "slug": "evaluating-supplier-standards",
+            "title": "How to evaluate a research supplier"
+          },
+          "cta": "website",
+          "platforms": {
+            "instagram": {
+              "text": "The supplier sets the ceiling on your research quality.\n\nBatch-specific testing, clear labeling, and traceability are the baseline.\n\nNew post is live — full breakdown on the feed.\n\nFor laboratory research purposes only. Not for human or veterinary use."
+            }
+          },
+          "media": {
+            "format": "vertical",
+            "dimensions": "1080x1920",
+            "aspectRatio": "9:16",
+            "prompt": "organized fulfillment area, clean packaging, premium minimal. Lion Elite Wellness aesthetic: premium, minimal, earth tones and black-and-white accents, natural light, no text overlay. Vertical 9:16 Story frame, 1080x1920 px."
+          },
+          "schedule": {
+            "date": "2026-08-25",
+            "time": "15:00"
+          },
+          "compliance": {
+            "approved": true,
+            "platforms": {
+              "instagram": {
+                "approved": true,
+                "blockers": []
+              }
+            }
+          }
+        },
+        {
+          "id": "2026-08-25-wellness-story-2",
+          "brand": "wellness",
+          "date": "2026-08-25",
+          "slot": "story-2",
+          "type": "story",
+          "topic": {
+            "slug": "evaluating-supplier-standards",
+            "title": "How to evaluate a research supplier"
+          },
+          "cta": "product_education",
+          "platforms": {
+            "instagram": {
+              "text": "Question sticker: What research-quality topic should we break down next?\n\nRead the product information pages to learn how we document quality.\n\nFor laboratory research purposes only. Not for human or veterinary use."
+            }
+          },
+          "media": {
+            "format": "vertical",
+            "dimensions": "1080x1920",
+            "aspectRatio": "9:16",
+            "prompt": "organized fulfillment area, clean packaging, premium minimal. Lion Elite Wellness aesthetic: premium, minimal, earth tones and black-and-white accents, natural light, no text overlay. Vertical 9:16 Story frame, 1080x1920 px."
+          },
+          "schedule": {
+            "date": "2026-08-25",
+            "time": "19:00"
+          },
+          "compliance": {
+            "approved": true,
+            "platforms": {
+              "instagram": {
+                "approved": true,
+                "blockers": []
+              }
+            }
+          }
+        }
+      ],
+      "rejected": []
+    },
+    "beauty": {
+      "brandName": "Lion Elite Beauty",
+      "pieces": [
+        {
+          "id": "2026-08-25-beauty-feed",
+          "brand": "beauty",
+          "date": "2026-08-25",
+          "slot": "feed",
+          "type": "transformation_feed",
+          "topic": {
+            "slug": "accountability-gap",
+            "title": "The accountability gap"
+          },
+          "cta": "program_application",
+          "platforms": {
+            "instagram": {
+              "text": "Most plans do not fail from bad information. They fail alone.\n\nThe accountability gap — today's standard from Lion Elite Beauty.\n\n• Accountability is a structure, not a personality trait.\n• Weekly check-ins keep the plan honest.\n• Coaching closes the gap between knowing and doing.\n\nApply for the coaching program — the link is in our bio.\n\n#LionEliteBeauty #DisciplineDaily #Biomarkers #WellnessCoaching #HigherStandard"
+            },
+            "facebook": {
+              "text": "Most plans do not fail from bad information. They fail alone.\n\nThe accountability gap — today's standard from Lion Elite Beauty.\n\n• Accountability is a structure, not a personality trait.\n• Weekly check-ins keep the plan honest.\n• Coaching closes the gap between knowing and doing.\n\nApply for the coaching program — the link is in our bio."
+            },
+            "linkedin": {
+              "text": "The accountability gap\n\nMost plans do not fail from bad information. They fail alone.\n\n— Accountability is a structure, not a personality trait.\n— Weekly check-ins keep the plan honest.\n— Coaching closes the gap between knowing and doing.\n\nApply for the coaching program — the link is in our bio."
+            },
+            "x": {
+              "text": "Most plans do not fail from bad information. They fail alone.\n\nApply for the coaching program — the link is in our bio."
+            }
+          },
+          "media": {
+            "format": "feed",
+            "dimensions": "1080x1350",
+            "aspectRatio": "4:5",
+            "prompt": "coach and client reviewing progress, professional setting. Lion Elite Beauty aesthetic: premium, minimal, earth tones and black-and-white accents, natural light, no text overlay. Vertical 4:5 feed image, 1080x1350 px."
+          },
+          "schedule": {
+            "date": "2026-08-25",
+            "time": "10:00"
+          },
+          "compliance": {
+            "approved": true,
+            "platforms": {
+              "instagram": {
+                "approved": true,
+                "blockers": []
+              },
+              "facebook": {
+                "approved": true,
+                "blockers": []
+              },
+              "linkedin": {
+                "approved": true,
+                "blockers": []
+              },
+              "x": {
+                "approved": true,
+                "blockers": []
+              }
+            }
+          },
+          "marketing": {
+            "platform": "instagram",
+            "score": 10,
+            "threshold": 9.5,
+            "approved": true,
+            "attempts": 1,
+            "judge": "heuristic",
+            "reason": null
+          }
+        },
+        {
+          "id": "2026-08-25-beauty-reel",
+          "brand": "beauty",
+          "date": "2026-08-25",
+          "slot": "reel",
+          "type": "reel_script",
+          "topic": {
+            "slug": "data-driven-checkins",
+            "title": "What a data-driven check-in looks like"
+          },
+          "cta": "dm_elite",
+          "platforms": {
+            "instagram": {
+              "text": "Feelings lie week to week. Trends do not.\n\nDM ELITE if you are ready to build with purpose.\n\n#LionEliteBeauty #DisciplineDaily #Biomarkers #WellnessCoaching #HigherStandard"
+            },
+            "tiktok": {
+              "text": "HOOK (0-3s, on camera or bold text): Feelings lie week to week. Trends do not.\n\nBODY (talking points, one per cut):\n1. Track sleep, training, nutrition adherence, and recovery markers.\n2. Review trends weekly, adjust one variable at a time.\n3. Objective feedback keeps emotion out of the decision.\n\nCTA (final 3s): DM ELITE if you are ready to build with purpose."
+            }
+          },
+          "media": {
+            "format": "vertical",
+            "dimensions": "1080x1920",
+            "aspectRatio": "9:16",
+            "prompt": "dashboard of wellness metrics on screen, minimal premium. Lion Elite Beauty aesthetic: premium, minimal, earth tones and black-and-white accents, natural light, no text overlay. Vertical 9:16 Reel/TikTok cover, 1080x1920 px."
+          },
+          "schedule": {
+            "date": "2026-08-25",
+            "time": "13:30"
+          },
+          "compliance": {
+            "approved": true,
+            "platforms": {
+              "instagram": {
+                "approved": true,
+                "blockers": []
+              },
+              "tiktok": {
+                "approved": true,
+                "blockers": []
+              }
+            }
+          },
+          "marketing": {
+            "platform": "instagram",
+            "score": 8.83,
+            "threshold": 9.5,
+            "approved": false,
+            "attempts": 1,
+            "judge": "heuristic",
+            "reason": "Best marketing score 8.83 < threshold 9.5 after 1 attempt(s)."
+          }
+        },
+        {
+          "id": "2026-08-25-beauty-story-1",
+          "brand": "beauty",
+          "date": "2026-08-25",
+          "slot": "story-1",
+          "type": "story",
+          "topic": {
+            "slug": "accountability-gap",
+            "title": "The accountability gap"
+          },
+          "cta": "comment_ready",
+          "platforms": {
+            "instagram": {
+              "text": "Most plans do not fail from bad information. They fail alone.\n\nAccountability is a structure, not a personality trait.\n\nNew post is live — full breakdown on the feed."
+            }
+          },
+          "media": {
+            "format": "vertical",
+            "dimensions": "1080x1920",
+            "aspectRatio": "9:16",
+            "prompt": "coach and client reviewing progress, professional setting. Lion Elite Beauty aesthetic: premium, minimal, earth tones and black-and-white accents, natural light, no text overlay. Vertical 9:16 Story frame, 1080x1920 px."
+          },
+          "schedule": {
+            "date": "2026-08-25",
+            "time": "16:00"
+          },
+          "compliance": {
+            "approved": true,
+            "platforms": {
+              "instagram": {
+                "approved": true,
+                "blockers": []
+              }
+            }
+          }
+        },
+        {
+          "id": "2026-08-25-beauty-story-2",
+          "brand": "beauty",
+          "date": "2026-08-25",
+          "slot": "story-2",
+          "type": "story",
+          "topic": {
+            "slug": "accountability-gap",
+            "title": "The accountability gap"
+          },
+          "cta": "program_application",
+          "platforms": {
+            "instagram": {
+              "text": "Question sticker: What is the one habit you refuse to skip this week?\n\nApply for the coaching program — the link is in our bio."
+            }
+          },
+          "media": {
+            "format": "vertical",
+            "dimensions": "1080x1920",
+            "aspectRatio": "9:16",
+            "prompt": "coach and client reviewing progress, professional setting. Lion Elite Beauty aesthetic: premium, minimal, earth tones and black-and-white accents, natural light, no text overlay. Vertical 9:16 Story frame, 1080x1920 px."
+          },
+          "schedule": {
+            "date": "2026-08-25",
+            "time": "20:00"
+          },
+          "compliance": {
+            "approved": true,
+            "platforms": {
+              "instagram": {
+                "approved": true,
+                "blockers": []
+              }
+            }
+          }
+        }
+      ],
+      "rejected": []
+    }
+  }
+}
