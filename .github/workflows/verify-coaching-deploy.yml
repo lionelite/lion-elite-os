@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      - name: Wait for Render and verify live coach preview
+      - name: Wait for Render and verify live coaching app
         env:
           APP_URL: https://lion-elite-os.onrender.com
           PREVIEW_TOKEN: preview-mode-enabled
@@ -56,6 +56,8 @@ jobs:
             manifest_status="$(curl --location --silent --show-error --output /tmp/manifest.webmanifest --write-out '%{http_code}' "$APP_URL/coaching/manifest.webmanifest" || true)"
             worker_status="$(curl --location --silent --show-error --output /tmp/sw.js --write-out '%{http_code}' "$APP_URL/coaching/sw.js" || true)"
             preview_status="$(curl --location --silent --show-error --output /tmp/preview.js --write-out '%{http_code}' "$APP_URL/coaching/preview.js" || true)"
+            client_js_status="$(curl --location --silent --show-error --output /tmp/client-experience.js --write-out '%{http_code}' "$APP_URL/coaching/client-experience.js" || true)"
+            client_css_status="$(curl --location --silent --show-error --output /tmp/client-experience.css --write-out '%{http_code}' "$APP_URL/coaching/client-experience.css" || true)"
 
             login_status="$(curl --silent --show-error \
               --cookie-jar /tmp/cookies.txt \
@@ -97,18 +99,24 @@ jobs:
             session_ok=false
             roster_ok=false
 
-            if [ "$health_status" = "200" ] && [ "$coaching_health_status" = "200" ] && [ "$page_status" = "200" ] && [ "$manifest_status" = "200" ] && [ "$worker_status" = "200" ] && [ "$preview_status" = "200" ]; then
+            if [ "$health_status" = "200" ] && [ "$coaching_health_status" = "200" ] && [ "$page_status" = "200" ] && [ "$manifest_status" = "200" ] && [ "$worker_status" = "200" ] && [ "$preview_status" = "200" ] && [ "$client_js_status" = "200" ] && [ "$client_css_status" = "200" ]; then
               public_ok=true
-              report_status production-health success "Health and public coaching routes return 200"
+              report_status production-health success "Health and coaching client assets return 200"
             fi
 
             if [ "$page_status" = "200" ] && [ "$preview_status" = "200" ] \
-              && grep --quiet "coach-theme.css?v=3" /tmp/coaching.html \
-              && grep --quiet "coach-client-detail.js?v=3" /tmp/coaching.html \
+              && grep --quiet "coach-theme.css?v=7" /tmp/coaching.html \
+              && grep --quiet "coach-client-detail.js?v=7" /tmp/coaching.html \
+              && grep --quiet "client-experience.css?v=7" /tmp/coaching.html \
+              && grep --quiet "client-experience.js?v=7" /tmp/coaching.html \
+              && grep --quiet "Everything in one place" /tmp/client-experience.js \
+              && grep --quiet "Lion Assistant" /tmp/client-experience.js \
               && grep --quiet "$PREVIEW_TOKEN" /tmp/preview.js \
-              && grep --quiet "lion-elite-coaching-v3" /tmp/sw.js; then
+              && grep --quiet "lion-elite-coaching-v5" /tmp/sw.js \
+              && grep --quiet "/coaching/client-experience.js" /tmp/sw.js \
+              && grep --quiet "/coaching/client-experience.css" /tmp/sw.js; then
               assets_ok=true
-              report_status production-ui-assets success "Fresh coach UI assets and v3 service worker are live"
+              report_status production-ui-assets success "Current coach and client-care PWA assets are live"
             fi
 
             if [ "$login_status" = "200" ] && grep --quiet '"actorType":"coach"' /tmp/login.json; then
@@ -127,16 +135,16 @@ jobs:
             fi
 
             if [ "$public_ok" = true ] && [ "$assets_ok" = true ] && [ "$login_ok" = true ] && [ "$session_ok" = true ] && [ "$roster_ok" = true ]; then
-              report_status production-coaching success "Live coach dashboard behavior verified end-to-end"
-              echo "Verified: live Render deployment loads fresh coach UI assets, preview login creates a coach session, and the client roster API is accessible."
+              report_status production-coaching success "Live coaching app verified end-to-end"
+              echo "Verified: Render serves current coach UI, Training/Nutrition/Supplements/Protocol client-care assets, Lion Assistant, PWA cache assets, preview coach session, and client roster API."
               exit 0
             fi
 
-            echo "Attempt $attempt/45: health=$health_status coaching_health=$coaching_health_status page=$page_status preview=$preview_status login=$login_status session=$session_status clients=$clients_status manifest=$manifest_status worker=$worker_status public_ok=$public_ok assets_ok=$assets_ok login_ok=$login_ok session_ok=$session_ok roster_ok=$roster_ok"
+            echo "Attempt $attempt/45: health=$health_status coaching_health=$coaching_health_status page=$page_status preview=$preview_status client_js=$client_js_status client_css=$client_css_status login=$login_status session=$session_status clients=$clients_status manifest=$manifest_status worker=$worker_status public_ok=$public_ok assets_ok=$assets_ok login_ok=$login_ok session_ok=$session_ok roster_ok=$roster_ok"
             if [ -s /tmp/login.json ]; then echo "login response: $(cat /tmp/login.json)"; fi
             sleep 20
           done
 
-          report_status production-coaching failure "Live coach preview verification failed"
-          echo "Live coach preview did not become fully functional within 15 minutes."
+          report_status production-coaching failure "Live coaching production verification failed"
+          echo "Live coaching app did not become fully functional within 15 minutes."
           exit 1
