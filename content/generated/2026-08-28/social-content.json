@@ -1,0 +1,398 @@
+{
+  "date": "2026-08-28",
+  "generatedAt": "2026-08-28T21:19:51.331Z",
+  "brands": {
+    "wellness": {
+      "brandName": "Lion Elite Wellness",
+      "pieces": [
+        {
+          "id": "2026-08-28-wellness-feed",
+          "brand": "wellness",
+          "date": "2026-08-28",
+          "slot": "feed",
+          "type": "educational_feed",
+          "topic": {
+            "slug": "research-terminology-glossary",
+            "title": "Research terminology, translated"
+          },
+          "cta": "product_education",
+          "platforms": {
+            "instagram": {
+              "text": "Scientific literacy starts with vocabulary.\n\nResearch terminology, translated — today's research education note from Lion Elite Wellness.\n\n• In vitro means in glass — cell and tissue studies in the lab.\n• In vivo means in a living model, still preclinical.\n• Knowing the terms lets you read the research yourself.\n\nRead the product information pages to learn how we document quality.\n\nFor laboratory research purposes only. Not for human or veterinary use.\n\n#ResearchEducation #PeptideResearch #ScientificLiteracy #LabStandards #LionEliteWellness"
+            },
+            "facebook": {
+              "text": "Scientific literacy starts with vocabulary.\n\nResearch terminology, translated — today's research education note from Lion Elite Wellness.\n\n• In vitro means in glass — cell and tissue studies in the lab.\n• In vivo means in a living model, still preclinical.\n• Knowing the terms lets you read the research yourself.\n\nRead the product information pages to learn how we document quality.\n\nFor laboratory research purposes only. Not for human or veterinary use."
+            },
+            "linkedin": {
+              "text": "Research terminology, translated\n\nScientific literacy starts with vocabulary.\n\n— In vitro means in glass — cell and tissue studies in the lab.\n— In vivo means in a living model, still preclinical.\n— Knowing the terms lets you read the research yourself.\n\nRead the product information pages to learn how we document quality.\n\nFor laboratory research purposes only. Not for human or veterinary use."
+            },
+            "x": {
+              "text": "Scientific literacy starts with vocabulary.\n\nRead the product information pages to learn how we document quality.\n\nFor laboratory research purposes only. Not for human or veterinary use."
+            }
+          },
+          "media": {
+            "format": "feed",
+            "dimensions": "1080x1350",
+            "aspectRatio": "4:5",
+            "prompt": "chalkboard-style typographic layout, earth tones. Lion Elite Wellness aesthetic: premium, minimal, earth tones and black-and-white accents, natural light, no text overlay. Vertical 4:5 feed image, 1080x1350 px."
+          },
+          "schedule": {
+            "date": "2026-08-28",
+            "time": "09:00"
+          },
+          "compliance": {
+            "approved": true,
+            "platforms": {
+              "instagram": {
+                "approved": true,
+                "blockers": []
+              },
+              "facebook": {
+                "approved": true,
+                "blockers": []
+              },
+              "linkedin": {
+                "approved": true,
+                "blockers": []
+              },
+              "x": {
+                "approved": true,
+                "blockers": []
+              }
+            }
+          },
+          "marketing": {
+            "platform": "instagram",
+            "score": 8.33,
+            "threshold": 9.5,
+            "approved": false,
+            "attempts": 1,
+            "judge": "heuristic",
+            "reason": "Best marketing score 8.33 < threshold 9.5 after 1 attempt(s)."
+          }
+        },
+        {
+          "id": "2026-08-28-wellness-reel",
+          "brand": "wellness",
+          "date": "2026-08-28",
+          "slot": "reel",
+          "type": "reel_script",
+          "topic": {
+            "slug": "what-peptides-are",
+            "title": "What peptides actually are"
+          },
+          "cta": "affiliate",
+          "platforms": {
+            "instagram": {
+              "text": "Short chains of amino acids — that is the whole definition.\n\nInterested in partnering? Ask about the Lion Elite Wellness affiliate program.\n\nFor laboratory research purposes only. Not for human or veterinary use.\n\n#ResearchEducation #PeptideResearch #ScientificLiteracy #LabStandards #LionEliteWellness"
+            },
+            "tiktok": {
+              "text": "HOOK (0-3s, on camera or bold text): Short chains of amino acids — that is the whole definition.\n\nBODY (talking points, one per cut):\n1. Peptides are sequences of amino acids, smaller than proteins.\n2. They are studied across many fields of laboratory research.\n3. Understanding the chemistry keeps the conversation honest.\n\nCTA (final 3s): Interested in partnering? Ask about the Lion Elite Wellness affiliate program.\n\nON-SCREEN DISCLAIMER (visible full duration): see below.\n\nFor laboratory research purposes only. Not for human or veterinary use."
+            }
+          },
+          "media": {
+            "format": "vertical",
+            "dimensions": "1080x1920",
+            "aspectRatio": "9:16",
+            "prompt": "molecular structure illustration, clean scientific aesthetic. Lion Elite Wellness aesthetic: premium, minimal, earth tones and black-and-white accents, natural light, no text overlay. Vertical 9:16 Reel/TikTok cover, 1080x1920 px."
+          },
+          "schedule": {
+            "date": "2026-08-28",
+            "time": "12:30"
+          },
+          "compliance": {
+            "approved": true,
+            "platforms": {
+              "instagram": {
+                "approved": true,
+                "blockers": []
+              },
+              "tiktok": {
+                "approved": true,
+                "blockers": []
+              }
+            }
+          },
+          "marketing": {
+            "platform": "instagram",
+            "score": 8.17,
+            "threshold": 9.5,
+            "approved": false,
+            "attempts": 1,
+            "judge": "heuristic",
+            "reason": "Best marketing score 8.17 < threshold 9.5 after 1 attempt(s)."
+          }
+        },
+        {
+          "id": "2026-08-28-wellness-story-1",
+          "brand": "wellness",
+          "date": "2026-08-28",
+          "slot": "story-1",
+          "type": "story",
+          "topic": {
+            "slug": "research-terminology-glossary",
+            "title": "Research terminology, translated"
+          },
+          "cta": "wholesale",
+          "platforms": {
+            "instagram": {
+              "text": "Scientific literacy starts with vocabulary.\n\nIn vitro means in glass — cell and tissue studies in the lab.\n\nNew post is live — full breakdown on the feed.\n\nFor laboratory research purposes only. Not for human or veterinary use."
+            }
+          },
+          "media": {
+            "format": "vertical",
+            "dimensions": "1080x1920",
+            "aspectRatio": "9:16",
+            "prompt": "chalkboard-style typographic layout, earth tones. Lion Elite Wellness aesthetic: premium, minimal, earth tones and black-and-white accents, natural light, no text overlay. Vertical 9:16 Story frame, 1080x1920 px."
+          },
+          "schedule": {
+            "date": "2026-08-28",
+            "time": "15:00"
+          },
+          "compliance": {
+            "approved": true,
+            "platforms": {
+              "instagram": {
+                "approved": true,
+                "blockers": []
+              }
+            }
+          }
+        },
+        {
+          "id": "2026-08-28-wellness-story-2",
+          "brand": "wellness",
+          "date": "2026-08-28",
+          "slot": "story-2",
+          "type": "story",
+          "topic": {
+            "slug": "research-terminology-glossary",
+            "title": "Research terminology, translated"
+          },
+          "cta": "website",
+          "platforms": {
+            "instagram": {
+              "text": "Question sticker: What research-quality topic should we break down next?\n\nExplore the research catalog at lionelitewellness.com.\n\nFor laboratory research purposes only. Not for human or veterinary use."
+            }
+          },
+          "media": {
+            "format": "vertical",
+            "dimensions": "1080x1920",
+            "aspectRatio": "9:16",
+            "prompt": "chalkboard-style typographic layout, earth tones. Lion Elite Wellness aesthetic: premium, minimal, earth tones and black-and-white accents, natural light, no text overlay. Vertical 9:16 Story frame, 1080x1920 px."
+          },
+          "schedule": {
+            "date": "2026-08-28",
+            "time": "19:00"
+          },
+          "compliance": {
+            "approved": true,
+            "platforms": {
+              "instagram": {
+                "approved": true,
+                "blockers": []
+              }
+            }
+          }
+        }
+      ],
+      "rejected": []
+    },
+    "beauty": {
+      "brandName": "Lion Elite Beauty",
+      "pieces": [
+        {
+          "id": "2026-08-28-beauty-feed",
+          "brand": "beauty",
+          "date": "2026-08-28",
+          "slot": "feed",
+          "type": "transformation_feed",
+          "topic": {
+            "slug": "weekly-non-negotiables",
+            "title": "Pick your weekly non-negotiables"
+          },
+          "cta": "program_application",
+          "platforms": {
+            "instagram": {
+              "text": "You do not need a perfect week. You need a repeatable one.\n\nPick your weekly non-negotiables — today's standard from Lion Elite Beauty.\n\n• Choose the training, sleep, and nutrition floors you will not break.\n• Consistency at the floor beats intensity at the ceiling.\n• Review and raise the floor monthly.\n\nApply for the coaching program — the link is in our bio.\n\n#LionEliteBeauty #DisciplineDaily #Biomarkers #WellnessCoaching #HigherStandard"
+            },
+            "facebook": {
+              "text": "You do not need a perfect week. You need a repeatable one.\n\nPick your weekly non-negotiables — today's standard from Lion Elite Beauty.\n\n• Choose the training, sleep, and nutrition floors you will not break.\n• Consistency at the floor beats intensity at the ceiling.\n• Review and raise the floor monthly.\n\nApply for the coaching program — the link is in our bio."
+            },
+            "linkedin": {
+              "text": "Pick your weekly non-negotiables\n\nYou do not need a perfect week. You need a repeatable one.\n\n— Choose the training, sleep, and nutrition floors you will not break.\n— Consistency at the floor beats intensity at the ceiling.\n— Review and raise the floor monthly.\n\nApply for the coaching program — the link is in our bio."
+            },
+            "x": {
+              "text": "You do not need a perfect week. You need a repeatable one.\n\nApply for the coaching program — the link is in our bio."
+            }
+          },
+          "media": {
+            "format": "feed",
+            "dimensions": "1080x1350",
+            "aspectRatio": "4:5",
+            "prompt": "simple checklist, pen, clean desk, morning discipline. Lion Elite Beauty aesthetic: premium, minimal, earth tones and black-and-white accents, natural light, no text overlay. Vertical 4:5 feed image, 1080x1350 px."
+          },
+          "schedule": {
+            "date": "2026-08-28",
+            "time": "10:00"
+          },
+          "compliance": {
+            "approved": true,
+            "platforms": {
+              "instagram": {
+                "approved": true,
+                "blockers": []
+              },
+              "facebook": {
+                "approved": true,
+                "blockers": []
+              },
+              "linkedin": {
+                "approved": true,
+                "blockers": []
+              },
+              "x": {
+                "approved": true,
+                "blockers": []
+              }
+            }
+          },
+          "marketing": {
+            "platform": "instagram",
+            "score": 9,
+            "threshold": 9.5,
+            "approved": false,
+            "attempts": 1,
+            "judge": "heuristic",
+            "reason": "Best marketing score 9 < threshold 9.5 after 1 attempt(s)."
+          }
+        },
+        {
+          "id": "2026-08-28-beauty-reel",
+          "brand": "beauty",
+          "date": "2026-08-28",
+          "slot": "reel",
+          "type": "reel_script",
+          "topic": {
+            "slug": "plateau-protocol",
+            "title": "What to audit when progress stalls"
+          },
+          "cta": "dm_elite",
+          "platforms": {
+            "instagram": {
+              "text": "A plateau is information, not failure.\n\nDM ELITE if you are ready to build with purpose.\n\n#LionEliteBeauty #DisciplineDaily #Biomarkers #WellnessCoaching #HigherStandard"
+            },
+            "tiktok": {
+              "text": "HOOK (0-3s, on camera or bold text): A plateau is information, not failure.\n\nBODY (talking points, one per cut):\n1. Audit sleep, stress, adherence, and training load — in that order.\n2. Most stalls are recovery problems wearing a nutrition costume.\n3. Change one variable, measure, repeat.\n\nCTA (final 3s): DM ELITE if you are ready to build with purpose."
+            }
+          },
+          "media": {
+            "format": "vertical",
+            "dimensions": "1080x1920",
+            "aspectRatio": "9:16",
+            "prompt": "flat progress chart turning upward, analytical premium look. Lion Elite Beauty aesthetic: premium, minimal, earth tones and black-and-white accents, natural light, no text overlay. Vertical 9:16 Reel/TikTok cover, 1080x1920 px."
+          },
+          "schedule": {
+            "date": "2026-08-28",
+            "time": "13:30"
+          },
+          "compliance": {
+            "approved": true,
+            "platforms": {
+              "instagram": {
+                "approved": true,
+                "blockers": []
+              },
+              "tiktok": {
+                "approved": true,
+                "blockers": []
+              }
+            }
+          },
+          "marketing": {
+            "platform": "instagram",
+            "score": 8.83,
+            "threshold": 9.5,
+            "approved": false,
+            "attempts": 1,
+            "judge": "heuristic",
+            "reason": "Best marketing score 8.83 < threshold 9.5 after 1 attempt(s)."
+          }
+        },
+        {
+          "id": "2026-08-28-beauty-story-1",
+          "brand": "beauty",
+          "date": "2026-08-28",
+          "slot": "story-1",
+          "type": "story",
+          "topic": {
+            "slug": "weekly-non-negotiables",
+            "title": "Pick your weekly non-negotiables"
+          },
+          "cta": "comment_ready",
+          "platforms": {
+            "instagram": {
+              "text": "You do not need a perfect week. You need a repeatable one.\n\nChoose the training, sleep, and nutrition floors you will not break.\n\nNew post is live — full breakdown on the feed."
+            }
+          },
+          "media": {
+            "format": "vertical",
+            "dimensions": "1080x1920",
+            "aspectRatio": "9:16",
+            "prompt": "simple checklist, pen, clean desk, morning discipline. Lion Elite Beauty aesthetic: premium, minimal, earth tones and black-and-white accents, natural light, no text overlay. Vertical 9:16 Story frame, 1080x1920 px."
+          },
+          "schedule": {
+            "date": "2026-08-28",
+            "time": "16:00"
+          },
+          "compliance": {
+            "approved": true,
+            "platforms": {
+              "instagram": {
+                "approved": true,
+                "blockers": []
+              }
+            }
+          }
+        },
+        {
+          "id": "2026-08-28-beauty-story-2",
+          "brand": "beauty",
+          "date": "2026-08-28",
+          "slot": "story-2",
+          "type": "story",
+          "topic": {
+            "slug": "weekly-non-negotiables",
+            "title": "Pick your weekly non-negotiables"
+          },
+          "cta": "program_application",
+          "platforms": {
+            "instagram": {
+              "text": "Question sticker: What is the one habit you refuse to skip this week?\n\nApply for the coaching program — the link is in our bio."
+            }
+          },
+          "media": {
+            "format": "vertical",
+            "dimensions": "1080x1920",
+            "aspectRatio": "9:16",
+            "prompt": "simple checklist, pen, clean desk, morning discipline. Lion Elite Beauty aesthetic: premium, minimal, earth tones and black-and-white accents, natural light, no text overlay. Vertical 9:16 Story frame, 1080x1920 px."
+          },
+          "schedule": {
+            "date": "2026-08-28",
+            "time": "20:00"
+          },
+          "compliance": {
+            "approved": true,
+            "platforms": {
+              "instagram": {
+                "approved": true,
+                "blockers": []
+              }
+            }
+          }
+        }
+      ],
+      "rejected": []
+    }
+  }
+}
