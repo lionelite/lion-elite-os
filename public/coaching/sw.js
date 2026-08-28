@@ -1,6 +1,6 @@
 'use strict';
 
-const CACHE_NAME = 'lion-elite-coaching-v4';
+const CACHE_NAME = 'lion-elite-coaching-v5';
 const APP_SHELL = [
   '/coaching/',
   '/coaching/index.html',
@@ -13,6 +13,8 @@ const APP_SHELL = [
   '/coaching/coach-command-center.js',
   '/coaching/coach-client-detail.css',
   '/coaching/coach-client-detail.js',
+  '/coaching/client-experience.css',
+  '/coaching/client-experience.js',
   '/coaching/manifest.webmanifest',
   '/coaching/manifest-coach.webmanifest',
   '/coaching/manifest-client.webmanifest',
