@@ -1,0 +1,398 @@
+{
+  "date": "2026-08-29",
+  "generatedAt": "2026-08-29T15:31:28.784Z",
+  "brands": {
+    "wellness": {
+      "brandName": "Lion Elite Wellness",
+      "pieces": [
+        {
+          "id": "2026-08-29-wellness-feed",
+          "brand": "wellness",
+          "date": "2026-08-29",
+          "slot": "feed",
+          "type": "educational_feed",
+          "topic": {
+            "slug": "quality-over-hype",
+            "title": "A higher standard for the research space"
+          },
+          "cta": "affiliate",
+          "platforms": {
+            "instagram": {
+              "text": "The research product space has a hype problem. Standards fix it.\n\nA higher standard for the research space — today's research education note from Lion Elite Wellness.\n\n• Clear labels, professional language, and quality documentation.\n• Education builds trust; exaggeration destroys it.\n• Lion Elite Wellness exists to raise the standard.\n\nInterested in partnering? Ask about the Lion Elite Wellness affiliate program.\n\nFor laboratory research purposes only. Not for human or veterinary use.\n\n#ResearchEducation #PeptideResearch #ScientificLiteracy #LabStandards #LionEliteWellness"
+            },
+            "facebook": {
+              "text": "The research product space has a hype problem. Standards fix it.\n\nA higher standard for the research space — today's research education note from Lion Elite Wellness.\n\n• Clear labels, professional language, and quality documentation.\n• Education builds trust; exaggeration destroys it.\n• Lion Elite Wellness exists to raise the standard.\n\nInterested in partnering? Ask about the Lion Elite Wellness affiliate program.\n\nFor laboratory research purposes only. Not for human or veterinary use."
+            },
+            "linkedin": {
+              "text": "A higher standard for the research space\n\nThe research product space has a hype problem. Standards fix it.\n\n— Clear labels, professional language, and quality documentation.\n— Education builds trust; exaggeration destroys it.\n— Lion Elite Wellness exists to raise the standard.\n\nInterested in partnering? Ask about the Lion Elite Wellness affiliate program.\n\nFor laboratory research purposes only. Not for human or veterinary use."
+            },
+            "x": {
+              "text": "The research product space has a hype problem. Standards fix it.\n\nInterested in partnering? Ask about the Lion Elite Wellness affiliate program.\n\nFor laboratory research purposes only. Not for human or veterinary use."
+            }
+          },
+          "media": {
+            "format": "feed",
+            "dimensions": "1080x1350",
+            "aspectRatio": "4:5",
+            "prompt": "brand flat-lay, black and white premium, lion motif subtle. Lion Elite Wellness aesthetic: premium, minimal, earth tones and black-and-white accents, natural light, no text overlay. Vertical 4:5 feed image, 1080x1350 px."
+          },
+          "schedule": {
+            "date": "2026-08-29",
+            "time": "09:00"
+          },
+          "compliance": {
+            "approved": true,
+            "platforms": {
+              "instagram": {
+                "approved": true,
+                "blockers": []
+              },
+              "facebook": {
+                "approved": true,
+                "blockers": []
+              },
+              "linkedin": {
+                "approved": true,
+                "blockers": []
+              },
+              "x": {
+                "approved": true,
+                "blockers": []
+              }
+            }
+          },
+          "marketing": {
+            "platform": "instagram",
+            "score": 8.5,
+            "threshold": 9.5,
+            "approved": false,
+            "attempts": 1,
+            "judge": "heuristic",
+            "reason": "Best marketing score 8.5 < threshold 9.5 after 1 attempt(s)."
+          }
+        },
+        {
+          "id": "2026-08-29-wellness-reel",
+          "brand": "wellness",
+          "date": "2026-08-29",
+          "slot": "reel",
+          "type": "reel_script",
+          "topic": {
+            "slug": "batch-traceability",
+            "title": "Batch numbers: small print, big deal"
+          },
+          "cta": "wholesale",
+          "platforms": {
+            "instagram": {
+              "text": "A batch number is a promise that someone can trace the answer.\n\nSourcing for a lab or research team? Reach out about wholesale inquiries.\n\nFor laboratory research purposes only. Not for human or veterinary use.\n\n#ResearchEducation #PeptideResearch #ScientificLiteracy #LabStandards #LionEliteWellness"
+            },
+            "tiktok": {
+              "text": "HOOK (0-3s, on camera or bold text): A batch number is a promise that someone can trace the answer.\n\nBODY (talking points, one per cut):\n1. Batch identifiers link a vial to its specific test results.\n2. Traceability means problems can be found, scoped, and answered.\n3. No batch number, no accountability.\n\nCTA (final 3s): Sourcing for a lab or research team? Reach out about wholesale inquiries.\n\nON-SCREEN DISCLAIMER (visible full duration): see below.\n\nFor laboratory research purposes only. Not for human or veterinary use."
+            }
+          },
+          "media": {
+            "format": "vertical",
+            "dimensions": "1080x1920",
+            "aspectRatio": "9:16",
+            "prompt": "macro shot of a batch label on a vial, premium studio lighting. Lion Elite Wellness aesthetic: premium, minimal, earth tones and black-and-white accents, natural light, no text overlay. Vertical 9:16 Reel/TikTok cover, 1080x1920 px."
+          },
+          "schedule": {
+            "date": "2026-08-29",
+            "time": "12:30"
+          },
+          "compliance": {
+            "approved": true,
+            "platforms": {
+              "instagram": {
+                "approved": true,
+                "blockers": []
+              },
+              "tiktok": {
+                "approved": true,
+                "blockers": []
+              }
+            }
+          },
+          "marketing": {
+            "platform": "instagram",
+            "score": 9.5,
+            "threshold": 9.5,
+            "approved": true,
+            "attempts": 1,
+            "judge": "heuristic",
+            "reason": null
+          }
+        },
+        {
+          "id": "2026-08-29-wellness-story-1",
+          "brand": "wellness",
+          "date": "2026-08-29",
+          "slot": "story-1",
+          "type": "story",
+          "topic": {
+            "slug": "quality-over-hype",
+            "title": "A higher standard for the research space"
+          },
+          "cta": "website",
+          "platforms": {
+            "instagram": {
+              "text": "The research product space has a hype problem. Standards fix it.\n\nClear labels, professional language, and quality documentation.\n\nNew post is live — full breakdown on the feed.\n\nFor laboratory research purposes only. Not for human or veterinary use."
+            }
+          },
+          "media": {
+            "format": "vertical",
+            "dimensions": "1080x1920",
+            "aspectRatio": "9:16",
+            "prompt": "brand flat-lay, black and white premium, lion motif subtle. Lion Elite Wellness aesthetic: premium, minimal, earth tones and black-and-white accents, natural light, no text overlay. Vertical 9:16 Story frame, 1080x1920 px."
+          },
+          "schedule": {
+            "date": "2026-08-29",
+            "time": "15:00"
+          },
+          "compliance": {
+            "approved": true,
+            "platforms": {
+              "instagram": {
+                "approved": true,
+                "blockers": []
+              }
+            }
+          }
+        },
+        {
+          "id": "2026-08-29-wellness-story-2",
+          "brand": "wellness",
+          "date": "2026-08-29",
+          "slot": "story-2",
+          "type": "story",
+          "topic": {
+            "slug": "quality-over-hype",
+            "title": "A higher standard for the research space"
+          },
+          "cta": "product_education",
+          "platforms": {
+            "instagram": {
+              "text": "Question sticker: What research-quality topic should we break down next?\n\nRead the product information pages to learn how we document quality.\n\nFor laboratory research purposes only. Not for human or veterinary use."
+            }
+          },
+          "media": {
+            "format": "vertical",
+            "dimensions": "1080x1920",
+            "aspectRatio": "9:16",
+            "prompt": "brand flat-lay, black and white premium, lion motif subtle. Lion Elite Wellness aesthetic: premium, minimal, earth tones and black-and-white accents, natural light, no text overlay. Vertical 9:16 Story frame, 1080x1920 px."
+          },
+          "schedule": {
+            "date": "2026-08-29",
+            "time": "19:00"
+          },
+          "compliance": {
+            "approved": true,
+            "platforms": {
+              "instagram": {
+                "approved": true,
+                "blockers": []
+              }
+            }
+          }
+        }
+      ],
+      "rejected": []
+    },
+    "beauty": {
+      "brandName": "Lion Elite Beauty",
+      "pieces": [
+        {
+          "id": "2026-08-29-beauty-feed",
+          "brand": "beauty",
+          "date": "2026-08-29",
+          "slot": "feed",
+          "type": "transformation_feed",
+          "topic": {
+            "slug": "client-journey-structure",
+            "title": "What structured coaching actually looks like"
+          },
+          "cta": "dm_elite",
+          "platforms": {
+            "instagram": {
+              "text": "Assessment. Plan. Check-ins. Adjustments. Accountability.\n\nWhat structured coaching actually looks like — today's standard from Lion Elite Beauty.\n\n• It starts with understanding where you are today.\n• Objective feedback drives every adjustment.\n• Structure is the service.\n\nDM ELITE if you are ready to build with purpose.\n\n#LionEliteBeauty #DisciplineDaily #Biomarkers #WellnessCoaching #HigherStandard"
+            },
+            "facebook": {
+              "text": "Assessment. Plan. Check-ins. Adjustments. Accountability.\n\nWhat structured coaching actually looks like — today's standard from Lion Elite Beauty.\n\n• It starts with understanding where you are today.\n• Objective feedback drives every adjustment.\n• Structure is the service.\n\nDM ELITE if you are ready to build with purpose."
+            },
+            "linkedin": {
+              "text": "What structured coaching actually looks like\n\nAssessment. Plan. Check-ins. Adjustments. Accountability.\n\n— It starts with understanding where you are today.\n— Objective feedback drives every adjustment.\n— Structure is the service.\n\nDM ELITE if you are ready to build with purpose."
+            },
+            "x": {
+              "text": "Assessment. Plan. Check-ins. Adjustments. Accountability.\n\nDM ELITE if you are ready to build with purpose."
+            }
+          },
+          "media": {
+            "format": "feed",
+            "dimensions": "1080x1350",
+            "aspectRatio": "4:5",
+            "prompt": "coaching roadmap graphic, five steps, brand colors. Lion Elite Beauty aesthetic: premium, minimal, earth tones and black-and-white accents, natural light, no text overlay. Vertical 4:5 feed image, 1080x1350 px."
+          },
+          "schedule": {
+            "date": "2026-08-29",
+            "time": "10:00"
+          },
+          "compliance": {
+            "approved": true,
+            "platforms": {
+              "instagram": {
+                "approved": true,
+                "blockers": []
+              },
+              "facebook": {
+                "approved": true,
+                "blockers": []
+              },
+              "linkedin": {
+                "approved": true,
+                "blockers": []
+              },
+              "x": {
+                "approved": true,
+                "blockers": []
+              }
+            }
+          },
+          "marketing": {
+            "platform": "instagram",
+            "score": 9.33,
+            "threshold": 9.5,
+            "approved": false,
+            "attempts": 1,
+            "judge": "heuristic",
+            "reason": "Best marketing score 9.33 < threshold 9.5 after 1 attempt(s)."
+          }
+        },
+        {
+          "id": "2026-08-29-beauty-reel",
+          "brand": "beauty",
+          "date": "2026-08-29",
+          "slot": "reel",
+          "type": "reel_script",
+          "topic": {
+            "slug": "environment-design",
+            "title": "Design the environment, not just the plan"
+          },
+          "cta": "comment_ready",
+          "platforms": {
+            "instagram": {
+              "text": "Willpower loses to environment every single time.\n\nComment READY and we will send you the first step.\n\n#LionEliteBeauty #DisciplineDaily #Biomarkers #WellnessCoaching #HigherStandard"
+            },
+            "tiktok": {
+              "text": "HOOK (0-3s, on camera or bold text): Willpower loses to environment every single time.\n\nBODY (talking points, one per cut):\n1. Make the right choice the easy choice — prep, layout, defaults.\n2. Remove the friction between you and the standard.\n3. Your surroundings vote on your habits daily.\n\nCTA (final 3s): Comment READY and we will send you the first step."
+            }
+          },
+          "media": {
+            "format": "vertical",
+            "dimensions": "1080x1920",
+            "aspectRatio": "9:16",
+            "prompt": "organized kitchen and gym bag laid out the night before. Lion Elite Beauty aesthetic: premium, minimal, earth tones and black-and-white accents, natural light, no text overlay. Vertical 9:16 Reel/TikTok cover, 1080x1920 px."
+          },
+          "schedule": {
+            "date": "2026-08-29",
+            "time": "13:30"
+          },
+          "compliance": {
+            "approved": true,
+            "platforms": {
+              "instagram": {
+                "approved": true,
+                "blockers": []
+              },
+              "tiktok": {
+                "approved": true,
+                "blockers": []
+              }
+            }
+          },
+          "marketing": {
+            "platform": "instagram",
+            "score": 8.5,
+            "threshold": 9.5,
+            "approved": false,
+            "attempts": 1,
+            "judge": "heuristic",
+            "reason": "Best marketing score 8.5 < threshold 9.5 after 1 attempt(s)."
+          }
+        },
+        {
+          "id": "2026-08-29-beauty-story-1",
+          "brand": "beauty",
+          "date": "2026-08-29",
+          "slot": "story-1",
+          "type": "story",
+          "topic": {
+            "slug": "client-journey-structure",
+            "title": "What structured coaching actually looks like"
+          },
+          "cta": "program_application",
+          "platforms": {
+            "instagram": {
+              "text": "Assessment. Plan. Check-ins. Adjustments. Accountability.\n\nIt starts with understanding where you are today.\n\nNew post is live — full breakdown on the feed."
+            }
+          },
+          "media": {
+            "format": "vertical",
+            "dimensions": "1080x1920",
+            "aspectRatio": "9:16",
+            "prompt": "coaching roadmap graphic, five steps, brand colors. Lion Elite Beauty aesthetic: premium, minimal, earth tones and black-and-white accents, natural light, no text overlay. Vertical 9:16 Story frame, 1080x1920 px."
+          },
+          "schedule": {
+            "date": "2026-08-29",
+            "time": "16:00"
+          },
+          "compliance": {
+            "approved": true,
+            "platforms": {
+              "instagram": {
+                "approved": true,
+                "blockers": []
+              }
+            }
+          }
+        },
+        {
+          "id": "2026-08-29-beauty-story-2",
+          "brand": "beauty",
+          "date": "2026-08-29",
+          "slot": "story-2",
+          "type": "story",
+          "topic": {
+            "slug": "client-journey-structure",
+            "title": "What structured coaching actually looks like"
+          },
+          "cta": "dm_elite",
+          "platforms": {
+            "instagram": {
+              "text": "Question sticker: What is the one habit you refuse to skip this week?\n\nDM ELITE if you are ready to build with purpose."
+            }
+          },
+          "media": {
+            "format": "vertical",
+            "dimensions": "1080x1920",
+            "aspectRatio": "9:16",
+            "prompt": "coaching roadmap graphic, five steps, brand colors. Lion Elite Beauty aesthetic: premium, minimal, earth tones and black-and-white accents, natural light, no text overlay. Vertical 9:16 Story frame, 1080x1920 px."
+          },
+          "schedule": {
+            "date": "2026-08-29",
+            "time": "20:00"
+          },
+          "compliance": {
+            "approved": true,
+            "platforms": {
+              "instagram": {
+                "approved": true,
+                "blockers": []
+              }
+            }
+          }
+        }
+      ],
+      "rejected": []
+    }
+  }
+}
