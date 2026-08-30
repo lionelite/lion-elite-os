@@ -1,0 +1,19 @@
+{
+  "date": "2026-08-30",
+  "generatedAt": "2026-08-30T15:11:55.711Z",
+  "mode": "ai-enhanced",
+  "summary": {
+    "generated": 8,
+    "approved": 8,
+    "rejected": 0,
+    "scheduled": 12,
+    "published": 0,
+    "aiEnhanced": 0,
+    "imagesGenerated": 0,
+    "piecesWithMedia": 0,
+    "marketingThreshold": 9.5,
+    "marketingPassed": 0,
+    "marketingHeld": 4
+  },
+  "blocked": []
+}
