@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Lion Elite Wellness Partner Program</title>
+  <meta name="description" content="Apply to partner with Lion Elite Wellness as an affiliate or wholesale account." />
+  <style>
+    :root { color-scheme: dark; --bg:#0b0b0b; --panel:#151515; --line:#2a2a2a; --text:#f4f4f4; --muted:#aaa; --gold:#d9b768; }
+    * { box-sizing: border-box; }
+    body { margin:0; font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; background:radial-gradient(circle at top,#1d1a13 0,#0b0b0b 38%); color:var(--text); }
+    .wrap { width:min(1040px,calc(100% - 32px)); margin:0 auto; padding:72px 0; }
+    .eyebrow { letter-spacing:.18em; text-transform:uppercase; color:var(--gold); font-size:.78rem; font-weight:700; }
+    h1 { font-size:clamp(2.4rem,7vw,5.8rem); line-height:.96; margin:.5rem 0 1rem; max-width:900px; }
+    .lead { color:#c8c8c8; font-size:1.15rem; line-height:1.6; max-width:760px; }
+    .grid { display:grid; grid-template-columns:1fr 1.15fr; gap:28px; margin-top:44px; align-items:start; }
+    .panel { background:rgba(21,21,21,.94); border:1px solid var(--line); border-radius:20px; padding:28px; box-shadow:0 24px 80px rgba(0,0,0,.28); }
+    .option { padding:18px 0; border-bottom:1px solid var(--line); }
+    .option:last-child { border-bottom:0; }
+    .option h3 { margin:0 0 8px; }
+    .option p,.fine { color:var(--muted); line-height:1.55; }
+    form { display:grid; gap:15px; }
+    .two { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    label { display:grid; gap:7px; font-size:.9rem; color:#ddd; }
+    input,select,textarea { width:100%; border:1px solid #353535; background:#0f0f0f; color:white; border-radius:11px; padding:13px 14px; font:inherit; }
+    textarea { min-height:110px; resize:vertical; }
+    input:focus,select:focus,textarea:focus { outline:2px solid rgba(217,183,104,.3); border-color:var(--gold); }
+    button { border:0; border-radius:999px; padding:15px 22px; background:var(--gold); color:#111; font-weight:800; font-size:1rem; cursor:pointer; }
+    button:disabled { opacity:.55; cursor:wait; }
+    .status { min-height:24px; font-size:.95rem; }
+    .success { color:#9ee7a6; }
+    .error { color:#ff9e9e; }
+    .disclaimer { margin-top:34px; border-top:1px solid var(--line); padding-top:20px; color:#8f8f8f; font-size:.85rem; line-height:1.5; }
+    @media (max-width:800px) { .grid,.two { grid-template-columns:1fr; } .wrap { padding-top:42px; } }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <div class="eyebrow">Lion Elite Wellness · Partner With Us</div>
+    <h1>Build recurring revenue with a brand focused on research quality.</h1>
+    <p class="lead">Apply for the Lion Elite Wellness affiliate or wholesale program. Tell us about your audience, market, business, or research-supply needs and our team will review the fit personally.</p>
+
+    <section class="grid">
+      <aside class="panel">
+        <div class="option">
+          <h3>Affiliate Program</h3>
+          <p>For creators, educators, communities, and partners with an audience aligned to research education and quality-focused laboratory sourcing.</p>
+        </div>
+        <div class="option">
+          <h3>Wholesale Accounts</h3>
+          <p>For qualified labs, research organizations, resellers, and businesses seeking recurring B2B purchasing relationships.</p>
+        </div>
+        <div class="option">
+          <h3>What happens next?</h3>
+          <p>Applications are reviewed for fit, market, audience, and partnership potential. Qualified applicants will receive a direct follow-up from the Lion Elite team.</p>
+        </div>
+      </aside>
+
+      <section class="panel">
+        <form id="partner-form">
+          <label>I'm applying for
+            <select name="program" required>
+              <option value="">Choose one</option>
+              <option value="affiliate">Affiliate Program</option>
+              <option value="wholesale">Wholesale Account</option>
+            </select>
+          </label>
+          <div class="two">
+            <label>First name<input name="firstName" autocomplete="given-name" /></label>
+            <label>Last name<input name="lastName" autocomplete="family-name" /></label>
+          </div>
+          <label>Business / organization<input name="organization" autocomplete="organization" placeholder="Company, lab, brand, or creator name" /></label>
+          <div class="two">
+            <label>Email<input type="email" name="email" autocomplete="email" required /></label>
+            <label>Phone<input name="phone" autocomplete="tel" /></label>
+          </div>
+          <div class="two">
+            <label>Country<input name="country" autocomplete="country-name" /></label>
+            <label>Territory / market<input name="territory" placeholder="Example: Florida, USA or Latin America" /></label>
+          </div>
+          <label>Website<input name="website" type="url" placeholder="https://" /></label>
+          <label>Social profile / community URL<input name="profileUrl" type="url" placeholder="https://" /></label>
+          <div class="two">
+            <label>Audience size / reach<input name="audienceEstimate" placeholder="Example: 25k followers or 2,000 email subscribers" /></label>
+            <label>Business type<input name="businessType" placeholder="Lab, creator, reseller, clinic, ecommerce, etc." /></label>
+          </div>
+          <label>Expected monthly purchasing or referral volume<input name="monthlyVolume" placeholder="Optional estimate" /></label>
+          <label>Tell us about your experience<textarea name="experience" placeholder="Your audience, business, current partnerships, research market, or relevant experience"></textarea></label>
+          <label>What are you hoping to build with Lion Elite?<textarea name="goals" placeholder="Tell us what a successful partnership would look like"></textarea></label>
+          <label>How did you hear about us?<input name="referralSource" /></label>
+          <button type="submit">Submit Application</button>
+          <div id="status" class="status" role="status" aria-live="polite"></div>
+        </form>
+      </section>
+    </section>
+
+    <p class="disclaimer">Lion Elite Wellness products and educational materials are intended for laboratory research purposes only and are not for human or veterinary use. Partnership approval is not guaranteed and is subject to internal review.</p>
+  </main>
+
+  <script>
+    const form = document.getElementById('partner-form');
+    const status = document.getElementById('status');
+    const button = form.querySelector('button');
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      status.className = 'status';
+      status.textContent = 'Submitting your application…';
+      button.disabled = true;
+
+      const payload = Object.fromEntries(new FormData(form).entries());
+      try {
+        const response = await fetch('/api/partner-applications', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(data.error || 'Unable to submit your application.');
+        status.className = 'status success';
+        status.textContent = data.message || 'Application received. Our team will review it and follow up by email.';
+        form.reset();
+      } catch (error) {
+        status.className = 'status error';
+        status.textContent = error.message;
+      } finally {
+        button.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>
