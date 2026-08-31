@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: lion-elite-sdr
+    runtime: node
+    plan: starter
+    buildCommand: npm install --no-audit --no-fund
+    startCommand: node sdr-server.js
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        sync: false
+      - key: SDR_API_TOKEN
+        generateValue: true
