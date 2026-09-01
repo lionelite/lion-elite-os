@@ -267,3 +267,11 @@ services:
     buildCommand: npm install --no-audit --no-fund
     startCommand: node scripts/revenue-report.js --days=1
     envVars: *cronEnv
+
+  - type: cron
+    name: lion-elite-revenue-scan
+    runtime: node
+    schedule: "0 11 * * *"
+    buildCommand: npm install --no-audit --no-fund
+    startCommand: node scripts/revenue-scan.js
+    envVars: *cronEnv
