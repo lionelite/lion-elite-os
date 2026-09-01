@@ -1,0 +1,398 @@
+{
+  "date": "2026-09-01",
+  "generatedAt": "2026-09-01T15:24:18.143Z",
+  "brands": {
+    "wellness": {
+      "brandName": "Lion Elite Wellness",
+      "pieces": [
+        {
+          "id": "2026-09-01-wellness-feed",
+          "brand": "wellness",
+          "date": "2026-09-01",
+          "slot": "feed",
+          "type": "educational_feed",
+          "topic": {
+            "slug": "peptide-storage-handling",
+            "title": "Storage and handling standards in research settings"
+          },
+          "cta": "product_education",
+          "platforms": {
+            "instagram": {
+              "text": "How a material is stored decides whether it is still the material.\n\nStorage and handling standards in research settings — today's research education note from Lion Elite Wellness.\n\n• Lyophilized research peptides are stable when kept cold, dry, and sealed.\n• Temperature logs and handling records are part of good lab practice.\n• Documentation is what separates a supply chain from a guess.\n\nRead the product information pages to learn how we document quality.\n\nFor laboratory research purposes only. Not for human or veterinary use.\n\n#ResearchEducation #PeptideResearch #ScientificLiteracy #LabStandards #LionEliteWellness"
+            },
+            "facebook": {
+              "text": "How a material is stored decides whether it is still the material.\n\nStorage and handling standards in research settings — today's research education note from Lion Elite Wellness.\n\n• Lyophilized research peptides are stable when kept cold, dry, and sealed.\n• Temperature logs and handling records are part of good lab practice.\n• Documentation is what separates a supply chain from a guess.\n\nRead the product information pages to learn how we document quality.\n\nFor laboratory research purposes only. Not for human or veterinary use."
+            },
+            "linkedin": {
+              "text": "Storage and handling standards in research settings\n\nHow a material is stored decides whether it is still the material.\n\n— Lyophilized research peptides are stable when kept cold, dry, and sealed.\n— Temperature logs and handling records are part of good lab practice.\n— Documentation is what separates a supply chain from a guess.\n\nRead the product information pages to learn how we document quality.\n\nFor laboratory research purposes only. Not for human or veterinary use."
+            },
+            "x": {
+              "text": "How a material is stored decides whether it is still the material.\n\nRead the product information pages to learn how we document quality.\n\nFor laboratory research purposes only. Not for human or veterinary use."
+            }
+          },
+          "media": {
+            "format": "feed",
+            "dimensions": "1080x1350",
+            "aspectRatio": "4:5",
+            "prompt": "laboratory freezer, organized sample storage, earth-tone minimal. Lion Elite Wellness aesthetic: premium, minimal, earth tones and black-and-white accents, natural light, no text overlay. Vertical 4:5 feed image, 1080x1350 px."
+          },
+          "schedule": {
+            "date": "2026-09-01",
+            "time": "09:00"
+          },
+          "compliance": {
+            "approved": true,
+            "platforms": {
+              "instagram": {
+                "approved": true,
+                "blockers": []
+              },
+              "facebook": {
+                "approved": true,
+                "blockers": []
+              },
+              "linkedin": {
+                "approved": true,
+                "blockers": []
+              },
+              "x": {
+                "approved": true,
+                "blockers": []
+              }
+            }
+          },
+          "marketing": {
+            "platform": "instagram",
+            "score": 8.33,
+            "threshold": 9.5,
+            "approved": false,
+            "attempts": 1,
+            "judge": "heuristic",
+            "reason": "Best marketing score 8.33 < threshold 9.5 after 1 attempt(s)."
+          }
+        },
+        {
+          "id": "2026-09-01-wellness-reel",
+          "brand": "wellness",
+          "date": "2026-09-01",
+          "slot": "reel",
+          "type": "reel_script",
+          "topic": {
+            "slug": "why-lyophilization",
+            "title": "Why research peptides are lyophilized"
+          },
+          "cta": "affiliate",
+          "platforms": {
+            "instagram": {
+              "text": "Freeze-drying is the reason a fragile molecule can travel.\n\nInterested in partnering? Ask about the Lion Elite Wellness affiliate program.\n\nFor laboratory research purposes only. Not for human or veterinary use.\n\n#ResearchEducation #PeptideResearch #ScientificLiteracy #LabStandards #LionEliteWellness"
+            },
+            "tiktok": {
+              "text": "HOOK (0-3s, on camera or bold text): Freeze-drying is the reason a fragile molecule can travel.\n\nBODY (talking points, one per cut):\n1. Lyophilization removes water to stabilize peptides for storage.\n2. It preserves structure so laboratories receive consistent material.\n3. It is a quality decision, not a cosmetic one.\n\nCTA (final 3s): Interested in partnering? Ask about the Lion Elite Wellness affiliate program.\n\nON-SCREEN DISCLAIMER (visible full duration): see below.\n\nFor laboratory research purposes only. Not for human or veterinary use."
+            }
+          },
+          "media": {
+            "format": "vertical",
+            "dimensions": "1080x1920",
+            "aspectRatio": "9:16",
+            "prompt": "lyophilized powder vial macro shot, studio lighting. Lion Elite Wellness aesthetic: premium, minimal, earth tones and black-and-white accents, natural light, no text overlay. Vertical 9:16 Reel/TikTok cover, 1080x1920 px."
+          },
+          "schedule": {
+            "date": "2026-09-01",
+            "time": "12:30"
+          },
+          "compliance": {
+            "approved": true,
+            "platforms": {
+              "instagram": {
+                "approved": true,
+                "blockers": []
+              },
+              "tiktok": {
+                "approved": true,
+                "blockers": []
+              }
+            }
+          },
+          "marketing": {
+            "platform": "instagram",
+            "score": 8.17,
+            "threshold": 9.5,
+            "approved": false,
+            "attempts": 1,
+            "judge": "heuristic",
+            "reason": "Best marketing score 8.17 < threshold 9.5 after 1 attempt(s)."
+          }
+        },
+        {
+          "id": "2026-09-01-wellness-story-1",
+          "brand": "wellness",
+          "date": "2026-09-01",
+          "slot": "story-1",
+          "type": "story",
+          "topic": {
+            "slug": "peptide-storage-handling",
+            "title": "Storage and handling standards in research settings"
+          },
+          "cta": "wholesale",
+          "platforms": {
+            "instagram": {
+              "text": "How a material is stored decides whether it is still the material.\n\nLyophilized research peptides are stable when kept cold, dry, and sealed.\n\nNew post is live — full breakdown on the feed.\n\nFor laboratory research purposes only. Not for human or veterinary use."
+            }
+          },
+          "media": {
+            "format": "vertical",
+            "dimensions": "1080x1920",
+            "aspectRatio": "9:16",
+            "prompt": "laboratory freezer, organized sample storage, earth-tone minimal. Lion Elite Wellness aesthetic: premium, minimal, earth tones and black-and-white accents, natural light, no text overlay. Vertical 9:16 Story frame, 1080x1920 px."
+          },
+          "schedule": {
+            "date": "2026-09-01",
+            "time": "15:00"
+          },
+          "compliance": {
+            "approved": true,
+            "platforms": {
+              "instagram": {
+                "approved": true,
+                "blockers": []
+              }
+            }
+          }
+        },
+        {
+          "id": "2026-09-01-wellness-story-2",
+          "brand": "wellness",
+          "date": "2026-09-01",
+          "slot": "story-2",
+          "type": "story",
+          "topic": {
+            "slug": "peptide-storage-handling",
+            "title": "Storage and handling standards in research settings"
+          },
+          "cta": "website",
+          "platforms": {
+            "instagram": {
+              "text": "Question sticker: What research-quality topic should we break down next?\n\nExplore the research catalog at lionelitewellness.com.\n\nFor laboratory research purposes only. Not for human or veterinary use."
+            }
+          },
+          "media": {
+            "format": "vertical",
+            "dimensions": "1080x1920",
+            "aspectRatio": "9:16",
+            "prompt": "laboratory freezer, organized sample storage, earth-tone minimal. Lion Elite Wellness aesthetic: premium, minimal, earth tones and black-and-white accents, natural light, no text overlay. Vertical 9:16 Story frame, 1080x1920 px."
+          },
+          "schedule": {
+            "date": "2026-09-01",
+            "time": "19:00"
+          },
+          "compliance": {
+            "approved": true,
+            "platforms": {
+              "instagram": {
+                "approved": true,
+                "blockers": []
+              }
+            }
+          }
+        }
+      ],
+      "rejected": []
+    },
+    "beauty": {
+      "brandName": "Lion Elite Beauty",
+      "pieces": [
+        {
+          "id": "2026-09-01-beauty-feed",
+          "brand": "beauty",
+          "date": "2026-09-01",
+          "slot": "feed",
+          "type": "transformation_feed",
+          "topic": {
+            "slug": "body-feedback-signals",
+            "title": "Your body gives feedback every day"
+          },
+          "cta": "dm_elite",
+          "platforms": {
+            "instagram": {
+              "text": "Energy. Sleep. Recovery. Strength. Mood. Cravings.\n\nYour body gives feedback every day — today's standard from Lion Elite Beauty.\n\n• The signals are already there — the question is whether you track them.\n• Structured check-ins turn signals into decisions.\n• Awareness is the first upgrade.\n\nDM ELITE if you are ready to build with purpose.\n\n#LionEliteBeauty #DisciplineDaily #Biomarkers #WellnessCoaching #HigherStandard"
+            },
+            "facebook": {
+              "text": "Energy. Sleep. Recovery. Strength. Mood. Cravings.\n\nYour body gives feedback every day — today's standard from Lion Elite Beauty.\n\n• The signals are already there — the question is whether you track them.\n• Structured check-ins turn signals into decisions.\n• Awareness is the first upgrade.\n\nDM ELITE if you are ready to build with purpose."
+            },
+            "linkedin": {
+              "text": "Your body gives feedback every day\n\nEnergy. Sleep. Recovery. Strength. Mood. Cravings.\n\n— The signals are already there — the question is whether you track them.\n— Structured check-ins turn signals into decisions.\n— Awareness is the first upgrade.\n\nDM ELITE if you are ready to build with purpose."
+            },
+            "x": {
+              "text": "Energy. Sleep. Recovery. Strength. Mood. Cravings.\n\nDM ELITE if you are ready to build with purpose."
+            }
+          },
+          "media": {
+            "format": "feed",
+            "dimensions": "1080x1350",
+            "aspectRatio": "4:5",
+            "prompt": "journal with tracked metrics, watch, coffee, disciplined desk. Lion Elite Beauty aesthetic: premium, minimal, earth tones and black-and-white accents, natural light, no text overlay. Vertical 4:5 feed image, 1080x1350 px."
+          },
+          "schedule": {
+            "date": "2026-09-01",
+            "time": "10:00"
+          },
+          "compliance": {
+            "approved": true,
+            "platforms": {
+              "instagram": {
+                "approved": true,
+                "blockers": []
+              },
+              "facebook": {
+                "approved": true,
+                "blockers": []
+              },
+              "linkedin": {
+                "approved": true,
+                "blockers": []
+              },
+              "x": {
+                "approved": true,
+                "blockers": []
+              }
+            }
+          },
+          "marketing": {
+            "platform": "instagram",
+            "score": 8.83,
+            "threshold": 9.5,
+            "approved": false,
+            "attempts": 1,
+            "judge": "heuristic",
+            "reason": "Best marketing score 8.83 < threshold 9.5 after 1 attempt(s)."
+          }
+        },
+        {
+          "id": "2026-09-01-beauty-reel",
+          "brand": "beauty",
+          "date": "2026-09-01",
+          "slot": "reel",
+          "type": "reel_script",
+          "topic": {
+            "slug": "ninety-day-standard",
+            "title": "The 90-day standard"
+          },
+          "cta": "comment_ready",
+          "platforms": {
+            "instagram": {
+              "text": "Ninety days of structure changes more than two years of dabbling.\n\nComment READY and we will send you the first step.\n\n#LionEliteBeauty #DisciplineDaily #Biomarkers #WellnessCoaching #HigherStandard"
+            },
+            "tiktok": {
+              "text": "HOOK (0-3s, on camera or bold text): Ninety days of structure changes more than two years of dabbling.\n\nBODY (talking points, one per cut):\n1. A defined window creates urgency and honest measurement.\n2. Weekly structure beats daily improvisation.\n3. Commit to the window, then review the data.\n\nCTA (final 3s): Comment READY and we will send you the first step."
+            }
+          },
+          "media": {
+            "format": "vertical",
+            "dimensions": "1080x1920",
+            "aspectRatio": "9:16",
+            "prompt": "calendar with training blocks marked, clean flat-lay. Lion Elite Beauty aesthetic: premium, minimal, earth tones and black-and-white accents, natural light, no text overlay. Vertical 9:16 Reel/TikTok cover, 1080x1920 px."
+          },
+          "schedule": {
+            "date": "2026-09-01",
+            "time": "13:30"
+          },
+          "compliance": {
+            "approved": true,
+            "platforms": {
+              "instagram": {
+                "approved": true,
+                "blockers": []
+              },
+              "tiktok": {
+                "approved": true,
+                "blockers": []
+              }
+            }
+          },
+          "marketing": {
+            "platform": "instagram",
+            "score": 8.5,
+            "threshold": 9.5,
+            "approved": false,
+            "attempts": 1,
+            "judge": "heuristic",
+            "reason": "Best marketing score 8.5 < threshold 9.5 after 1 attempt(s)."
+          }
+        },
+        {
+          "id": "2026-09-01-beauty-story-1",
+          "brand": "beauty",
+          "date": "2026-09-01",
+          "slot": "story-1",
+          "type": "story",
+          "topic": {
+            "slug": "body-feedback-signals",
+            "title": "Your body gives feedback every day"
+          },
+          "cta": "program_application",
+          "platforms": {
+            "instagram": {
+              "text": "Energy. Sleep. Recovery. Strength. Mood. Cravings.\n\nThe signals are already there — the question is whether you track them.\n\nNew post is live — full breakdown on the feed."
+            }
+          },
+          "media": {
+            "format": "vertical",
+            "dimensions": "1080x1920",
+            "aspectRatio": "9:16",
+            "prompt": "journal with tracked metrics, watch, coffee, disciplined desk. Lion Elite Beauty aesthetic: premium, minimal, earth tones and black-and-white accents, natural light, no text overlay. Vertical 9:16 Story frame, 1080x1920 px."
+          },
+          "schedule": {
+            "date": "2026-09-01",
+            "time": "16:00"
+          },
+          "compliance": {
+            "approved": true,
+            "platforms": {
+              "instagram": {
+                "approved": true,
+                "blockers": []
+              }
+            }
+          }
+        },
+        {
+          "id": "2026-09-01-beauty-story-2",
+          "brand": "beauty",
+          "date": "2026-09-01",
+          "slot": "story-2",
+          "type": "story",
+          "topic": {
+            "slug": "body-feedback-signals",
+            "title": "Your body gives feedback every day"
+          },
+          "cta": "dm_elite",
+          "platforms": {
+            "instagram": {
+              "text": "Question sticker: What is the one habit you refuse to skip this week?\n\nDM ELITE if you are ready to build with purpose."
+            }
+          },
+          "media": {
+            "format": "vertical",
+            "dimensions": "1080x1920",
+            "aspectRatio": "9:16",
+            "prompt": "journal with tracked metrics, watch, coffee, disciplined desk. Lion Elite Beauty aesthetic: premium, minimal, earth tones and black-and-white accents, natural light, no text overlay. Vertical 9:16 Story frame, 1080x1920 px."
+          },
+          "schedule": {
+            "date": "2026-09-01",
+            "time": "20:00"
+          },
+          "compliance": {
+            "approved": true,
+            "platforms": {
+              "instagram": {
+                "approved": true,
+                "blockers": []
+              }
+            }
+          }
+        }
+      ],
+      "rejected": []
+    }
+  }
+}
