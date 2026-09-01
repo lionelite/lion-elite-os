@@ -259,3 +259,11 @@ services:
     buildCommand: npm install --no-audit --no-fund
     startCommand: node scripts/cron-scheduler.js healthSnapshot
     envVars: *cronEnv
+
+  - type: cron
+    name: lion-elite-revenue-report
+    runtime: node
+    schedule: "0 12 * * *"
+    buildCommand: npm install --no-audit --no-fund
+    startCommand: node scripts/revenue-report.js --days=1
+    envVars: *cronEnv

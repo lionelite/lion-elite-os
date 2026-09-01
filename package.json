@@ -41,8 +41,9 @@
     "real-estate:import": "node real-estate/intelligence/src/import-csv.js",
     "swipe:report": "node marketing-intelligence/src/report.js",
     "revenue:report": "node revenue-intelligence/cli.js",
-    "test": "node --test test/*.test.js real-estate/intelligence/test/*.test.js business-scaling/founder-intelligence/test/*.test.js social-listening/test/*.test.js marketing-intelligence/test/*.test.js",
-    "leads:analyze": "node scripts/analyze-leads.js"
+    "revenue:funnel": "node scripts/revenue-report.js",
+    "leads:analyze": "node scripts/analyze-leads.js",
+    "test": "node --test test/*.test.js real-estate/intelligence/test/*.test.js business-scaling/founder-intelligence/test/*.test.js social-listening/test/*.test.js marketing-intelligence/test/*.test.js"
   },
   "dependencies": {
     "@openai/agents": "^0.3.0",

@@ -299,3 +299,25 @@ CREATE TABLE IF NOT EXISTS coaching_audit_events (
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 CREATE INDEX IF NOT EXISTS coaching_audit_events_client_idx ON coaching_audit_events(client_id, created_at DESC);
+
+-- Funnel events for the automated revenue engine (Issue #89, P1).
+-- Append-only. event_key is the idempotency guard: webhook and worker retries
+-- replay the same logical event, and double-counting revenue is worse than
+-- dropping a duplicate. No PII by design — subject_id is opaque and
+-- subject_hash is salted, so this table can be queried and exported freely.
+CREATE TABLE IF NOT EXISTS funnel_events (
+  event_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  event_key TEXT NOT NULL UNIQUE,
+  type TEXT NOT NULL,
+  brand TEXT NOT NULL,
+  source TEXT NOT NULL DEFAULT 'unknown',
+  subject_id TEXT NOT NULL,
+  subject_hash TEXT,
+  amount_cents INTEGER CHECK (amount_cents IS NULL OR amount_cents >= 0),
+  occurred_at TIMESTAMPTZ NOT NULL,
+  metadata JSONB NOT NULL DEFAULT '{}'::jsonb,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS funnel_events_window_idx ON funnel_events(occurred_at);
+CREATE INDEX IF NOT EXISTS funnel_events_brand_source_idx ON funnel_events(brand, source, occurred_at);
+CREATE INDEX IF NOT EXISTS funnel_events_subject_idx ON funnel_events(subject_id, occurred_at);
