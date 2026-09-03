@@ -9,10 +9,15 @@ const { installAutomaticCoachingInvites } = require('./lib/coaching/invite-email
 // removed once the owner finishes reviewing the app.
 if (!process.env.DATABASE_URL) process.env.COACHING_DEMO_MODE = 'true';
 
-// Temporary owner preview access. The browser preview bootstrap already sends
-// this exact value; setting it at normal startup prevents the coach auth route
-// from returning 503 when Render has not been given a separate admin token yet.
-if (!process.env.COACH_PORTAL_ADMIN_TOKEN) {
+// Temporary owner preview access, for the throwaway in-memory store only.
+//
+// This value is committed in a public repository, and since coaches gained
+// identities it would bootstrap the OWNER account — the role that sees every
+// coach's clients and can issue and rotate their access tokens. It is
+// therefore confined to demo mode, where the store is non-persistent and holds
+// no real client data. A deployment with a real database and no configured
+// token now refuses coach sign-in (401) instead of accepting a public one.
+if (!process.env.COACH_PORTAL_ADMIN_TOKEN && process.env.COACHING_DEMO_MODE === 'true') {
   process.env.COACH_PORTAL_ADMIN_TOKEN = 'preview-mode-enabled';
 }
 
