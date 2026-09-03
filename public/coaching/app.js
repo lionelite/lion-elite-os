@@ -15,7 +15,9 @@
     activeWorkoutDayId: null,
     deferredInstallPrompt: null,
     eventSource: null,
-    lastInvite: null
+    lastInvite: null,
+    coaches: [],
+    lastCoachToken: null
   };
 
   const elements = {
@@ -47,6 +49,12 @@
     ['coach-messages', 'Messages', '✦'],
     ['coach-library', 'Video Library', '▶']
   ];
+  // Coach administration belongs to the owner only; everyone else never sees
+  // the tab, and the API refuses it regardless of what the UI renders.
+  const ownerNav = [...coachNav, ['coach-coaches', 'Coaches', '⚑']];
+  function navForCoach() {
+    return state.actor?.coach?.role === 'owner' ? ownerNav : coachNav;
+  }
 
   function escapeHtml(value) {
     return String(value ?? '').replace(/[&<>'"]/g, character => ({
@@ -155,7 +163,8 @@
     elements.shell.classList.remove('hidden');
     elements.portalLabel.textContent = actor.actorType === 'coach' ? 'Coach Portal' : 'Coaching';
     if (actor.actorType === 'coach') {
-      elements.avatar.textContent = 'AR';
+      const [coachFirst = '', coachLast = ''] = String(actor.coach?.name || '').split(' ');
+      elements.avatar.textContent = initials(coachFirst, coachLast) || 'LE';
       elements.sidebar.classList.remove('hidden');
       await loadCoach();
     } else {
@@ -177,6 +186,9 @@
     const [clients, exercises] = await Promise.all([api('/admin/clients'), api('/admin/exercises')]);
     state.clients = clients.clients;
     state.exercises = exercises.exercises;
+    if (state.actor?.coach?.role === 'owner') {
+      state.coaches = (await api('/admin/coaches')).coaches;
+    }
     if (state.selectedClientId && state.clients.some(client => client.clientId === state.selectedClientId)) {
       await loadSelectedClient();
     } else if (state.clients.length) {
@@ -194,11 +206,11 @@
 
   function renderView(view) {
     if (!state.actor) return;
-    const allowed = state.actor.actorType === 'coach' ? coachNav.map(item => item[0]) : [...clientNav.map(item => item[0]), 'profile'];
+    const allowed = state.actor.actorType === 'coach' ? navForCoach().map(item => item[0]) : [...clientNav.map(item => item[0]), 'profile'];
     const fallback = state.actor.actorType === 'coach' ? 'coach-clients' : 'today';
     state.currentView = allowed.includes(view) ? view : fallback;
     if (state.actor.actorType === 'coach') {
-      renderNav(coachNav, state.currentView);
+      renderNav(navForCoach(), state.currentView);
       renderCoachSidebar();
       renderCoachView();
     } else {
@@ -413,7 +425,7 @@
   function renderCoachSidebar() {
     if (state.actor?.actorType !== 'coach') return;
     elements.sidebar.innerHTML = `
-      <nav class="coach-nav" aria-label="Coach tools">${coachNav.map(([view, label, icon]) => `<button type="button" class="${state.currentView === view ? 'active' : ''}" data-view="${view}"><span>${icon}</span>${label}</button>`).join('')}</nav>
+      <nav class="coach-nav" aria-label="Coach tools">${navForCoach().map(([view, label, icon]) => `<button type="button" class="${state.currentView === view ? 'active' : ''}" data-view="${view}"><span>${icon}</span>${label}</button>`).join('')}</nav>
       <div class="sidebar-title"><p class="eyebrow">CLIENTS</p><button class="icon-button" type="button" data-view="coach-clients" title="New client">＋</button></div>
       <div class="client-list">${state.clients.map(client => `<button class="client-row ${state.selectedClientId === client.clientId ? 'active' : ''}" type="button" data-action="select-client" data-client-id="${client.clientId}"><span class="avatar">${initials(client.firstName, client.lastName)}</span><span><strong>${escapeHtml(client.firstName)} ${escapeHtml(client.lastName)}</strong><small>${escapeHtml(client.profile?.goal || client.email)}</small></span>${client.unreadCount ? `<span class="unread">${client.unreadCount}</span>` : ''}</button>`).join('')}</div>`;
   }
@@ -424,7 +436,8 @@
       'coach-workouts': renderCoachWorkouts,
       'coach-care': renderCoachCare,
       'coach-messages': () => state.selected ? renderMessages('coach') : selectClientPrompt(),
-      'coach-library': renderExerciseLibrary
+      'coach-library': renderExerciseLibrary,
+      'coach-coaches': renderCoaches
     };
     elements.main.innerHTML = (renders[state.currentView] || renderCoachClients)();
     if (state.currentView === 'coach-messages') scrollMessages();
@@ -481,6 +494,20 @@
       ${state.exercises.length ? `<div class="card-grid">${state.exercises.map(exercise => `<article class="card"><p class="eyebrow">${escapeHtml(exercise.muscleGroup)}</p><h3>${escapeHtml(exercise.name)}</h3><p class="muted">${escapeHtml(exercise.equipment)} · ${escapeHtml(exercise.videoKind)}</p><a href="${escapeHtml(exercise.videoUrl)}" target="_blank" rel="noopener noreferrer">Preview video ↗</a></article>`).join('')}</div>` : emptyState('▶', 'No exercise videos yet', 'Add at least three approved videos to unlock assisted workout drafts.')}`;
   }
 
+  function renderCoaches() {
+    const coaches = state.coaches || [];
+    // The plaintext token exists only in this response; it is never stored and
+    // cannot be read back, so it is shown until the owner navigates away.
+    const issued = state.lastCoachToken;
+    return `<section class="page-head"><p class="eyebrow">COACH ACCOUNTS</p><h1>Who can coach on this platform.</h1><p class="muted">Each coach signs in with their own access token and sees only the clients assigned to them. You see everyone.</p></section>
+      <article class="card card--gold"><h2>Add a coach</h2><form class="stack-form" data-form="create-coach"><div class="form-grid"><label>Full name<input name="name" required placeholder="Jordan Blake"></label><label>Email<input name="email" type="email" required placeholder="jordan@example.com"></label></div><button class="button button--gold" type="submit">Create coach account</button></form></article>
+      ${issued ? `<article class="card" style="margin-top:14px"><p class="eyebrow">ACCESS TOKEN FOR ${escapeHtml(issued.name)} · SHOWN ONCE</p><p class="muted">Send this to them privately. It cannot be displayed again — if it is lost, rotate it below.</p><div class="cluster"><input id="coach-token" readonly value="${escapeHtml(issued.accessToken)}"><button class="button button--gold" type="button" data-action="copy-coach-token">Copy</button></div></article>` : ''}
+      <div class="section-head"><h2>Coaches</h2><span class="caption">${coaches.length} account${coaches.length === 1 ? '' : 's'}</span></div>
+      ${coaches.length ? `<div class="stack">${coaches.map(coach => `<article class="card"><div class="spread"><div><p class="eyebrow">${escapeHtml(coach.role).toUpperCase()}${coach.status === 'suspended' ? ' · SUSPENDED' : ''}</p><h3>${escapeHtml(coach.name)}</h3><p class="muted">${escapeHtml(coach.email)} · ${coach.clientCount} client${coach.clientCount === 1 ? '' : 's'}</p></div>${statusChip(coach.status === 'active' ? 'active' : 'paused')}</div>
+        ${coach.role === 'owner' ? '<p class="caption">The owner account cannot be suspended from here.</p>' : `<div class="cluster"><button class="button button--small" type="button" data-action="rotate-coach-token" data-coach-id="${coach.coachId}" data-coach-name="${escapeHtml(coach.name)}">Rotate token</button><button class="button button--small ${coach.status === 'active' ? 'button--danger' : ''}" type="button" data-action="toggle-coach" data-coach-id="${coach.coachId}" data-next="${coach.status === 'active' ? 'suspended' : 'active'}">${coach.status === 'active' ? 'Suspend' : 'Reactivate'}</button></div>`}
+      </article>`).join('')}</div>` : emptyState('⚑', 'No other coaches yet', 'Add a coach to give them their own client roster.')}`;
+  }
+
   function scrollMessages() {
     requestAnimationFrame(() => {
       const list = document.querySelector('#message-list');
@@ -535,6 +562,13 @@
         await loadCoach();
         renderView('coach-clients');
         toast('Client created. Their private app link is ready.');
+      } else if (kind === 'create-coach') {
+        const created = await api('/admin/coaches', { method: 'POST', body: { name: data.name, email: data.email } });
+        state.lastCoachToken = { name: created.coach.name, accessToken: created.accessToken };
+        state.coaches = (await api('/admin/coaches')).coaches;
+        form.reset();
+        renderView('coach-coaches');
+        toast('Coach created. Copy their access token now — it is shown once.');
       } else if (kind === 'create-exercise') {
         await api('/admin/exercises', { method: 'POST', body: data });
         const response = await api('/admin/exercises');
@@ -632,6 +666,23 @@
       }
       if (action === 'publish-workout') {
         await api(`/admin/workout-plans/${button.dataset.planId}/publish`, { method: 'POST', body: {} }); await loadSelectedClient(); renderView('coach-workouts'); toast('Workout plan is live for the client.');
+      }
+      if (action === 'copy-coach-token') {
+        await navigator.clipboard.writeText(state.lastCoachToken.accessToken); toast('Access token copied.');
+      }
+      if (action === 'toggle-coach') {
+        const next = button.dataset.next;
+        await api(`/admin/coaches/${button.dataset.coachId}`, { method: 'PATCH', body: { status: next } });
+        state.coaches = (await api('/admin/coaches')).coaches;
+        renderView('coach-coaches');
+        toast(next === 'suspended' ? 'Coach suspended. Their sessions ended immediately.' : 'Coach reactivated.');
+      }
+      if (action === 'rotate-coach-token') {
+        const response = await api(`/admin/coaches/${button.dataset.coachId}/token`, { method: 'POST', body: {} });
+        state.lastCoachToken = { name: button.dataset.coachName, accessToken: response.accessToken };
+        state.coaches = (await api('/admin/coaches')).coaches;
+        renderView('coach-coaches');
+        toast('New token issued. The previous one no longer works.');
       }
       if (action === 'install') await installApp();
       if (action === 'notifications') await enableNotifications();

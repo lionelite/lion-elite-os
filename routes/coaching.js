@@ -182,7 +182,16 @@ function cleanPushSubscription(value = {}) {
   return { endpoint, expirationTime: value.expirationTime || null, keys: { p256dh, auth } };
 }
 
-function createCoachingRouter({ store, pushService, adminToken = process.env.COACH_PORTAL_ADMIN_TOKEN } = {}) {
+function createCoachingRouter({
+  store,
+  pushService,
+  adminToken = process.env.COACH_PORTAL_ADMIN_TOKEN,
+  // Identity for the owner account bootstrapped from adminToken. The name is
+  // what clients see on coach messages, so it defaults to the name the portal
+  // used before coaches had identities.
+  ownerName = process.env.COACH_OWNER_NAME || 'Coach Alex',
+  ownerEmail = process.env.COACH_OWNER_EMAIL || 'owner@lionelite.internal'
+} = {}) {
   if (!store) throw new Error('Coaching store is required.');
   const router = express.Router();
   const loginLimiter = createRateLimiter({ windowMs: 15 * 60 * 1000, limit: 12 });
@@ -195,13 +204,17 @@ function createCoachingRouter({ store, pushService, adminToken = process.env.COA
     next();
   });
 
-  function streamKey(actorType, clientId) {
-    return actorType === 'coach' ? 'coach' : `client:${clientId}`;
+  // Keyed by coach, not by the literal string 'coach'. A single shared bucket
+  // delivered every client's messages to every signed-in coach.
+  function streamKey(actor, clientId) {
+    return actor.actorType === 'coach' ? `coach:${actor.coachId}` : `client:${clientId}`;
   }
 
-  function broadcastMessage(message) {
+  function broadcastMessage(message, coachId) {
     const event = `event: message\ndata: ${JSON.stringify(message)}\n\n`;
-    for (const key of ['coach', `client:${message.clientId}`]) {
+    const keys = [`client:${message.clientId}`];
+    if (coachId) keys.push(`coach:${coachId}`);
+    for (const key of keys) {
       for (const response of streams.get(key) || []) response.write(event);
     }
   }
@@ -232,6 +245,57 @@ function createCoachingRouter({ store, pushService, adminToken = process.env.COA
     next();
   }
 
+  function isOwner(actor) {
+    return actor?.actorType === 'coach' && actor?.coach?.role === 'owner';
+  }
+
+  function requireOwner(req, _res, next) {
+    if (!isOwner(req.coachingActor)) {
+      const error = new Error('Owner access required.');
+      error.statusCode = 403;
+      return next(error);
+    }
+    next();
+  }
+
+  function canAccessClient(actor, client) {
+    if (!client || actor?.actorType !== 'coach') return false;
+    return isOwner(actor) || (Boolean(client.coachId) && client.coachId === actor.coachId);
+  }
+
+  /**
+   * Load :clientId and confirm the acting coach may see it.
+   *
+   * Answers 404 rather than 403 on purpose: a coach must not be able to probe
+   * which client ids exist on another coach's roster.
+   */
+  const requireClientAccess = asyncRoute(async (req, _res, next) => {
+    const client = await store.getClient(req.params.clientId);
+    if (!canAccessClient(req.coachingActor, client)) {
+      const error = new Error('Client not found.');
+      error.statusCode = 404;
+      return next(error);
+    }
+    req.scopedClient = client;
+    next();
+  });
+
+  /** Same check, for routes addressed by a plan id instead of a client id. */
+  async function assertClientAccessById(req, clientId) {
+    const client = clientId ? await store.getClient(clientId) : null;
+    if (!canAccessClient(req.coachingActor, client)) {
+      const error = new Error('Plan not found.');
+      error.statusCode = 404;
+      throw error;
+    }
+    return client;
+  }
+
+  /** Owners see every client; every other coach sees only their own. */
+  function rosterScope(actor) {
+    return isOwner(actor) ? { coachId: null } : { coachId: actor.coachId };
+  }
+
   function requireClient(req, _res, next) {
     if (!req.coachingActor || req.coachingActor.actorType !== 'client') {
       const error = new Error('Client access required.');
@@ -256,22 +320,27 @@ function createCoachingRouter({ store, pushService, adminToken = process.env.COA
   });
 
   router.post('/auth/coach', loginLimiter, asyncRoute(async (req, res) => {
-    if (!adminToken) {
-      const error = new Error('Coach portal login is not configured yet.');
-      error.statusCode = 503;
-      throw error;
-    }
     const supplied = cleanText(req.body?.token, { field: 'Coach access token', max: 500, required: true });
-    if (!secureEquals(supplied, adminToken)) {
+
+    // COACH_PORTAL_ADMIN_TOKEN is the owner's credential, and the upgrade path
+    // from the single-shared-token model: signing in with it reconciles the
+    // owner account and claims any client that predates per-coach ownership.
+    // Every other coach authenticates against their own stored token hash.
+    const coach = adminToken && secureEquals(supplied, adminToken)
+      ? await store.ensureOwnerCoach({ tokenHash: hashToken(supplied), email: ownerEmail, name: ownerName })
+      : await store.findCoachByTokenHash(hashToken(supplied));
+
+    if (!coach) {
       const error = new Error('Coach access token is invalid.');
       error.statusCode = 401;
       throw error;
     }
+
     const token = generateToken();
     const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
-    await store.createSession(hashToken(token), 'coach', null, expiresAt);
+    await store.createSession(hashToken(token), 'coach', null, expiresAt, coach.coachId);
     res.set('Set-Cookie', sessionCookie(req, token));
-    res.json({ actor: { actorType: 'coach', expiresAt } });
+    res.json({ actor: { actorType: 'coach', coach, expiresAt } });
   }));
 
   router.post('/auth/invite', loginLimiter, asyncRoute(async (req, res) => {
@@ -297,23 +366,35 @@ function createCoachingRouter({ store, pushService, adminToken = process.env.COA
 
   router.get('/session', (req, res) => res.json({ actor: req.coachingActor || null }));
 
-  router.get('/admin/clients', requireCoach, asyncRoute(async (_req, res) => res.json({ clients: await store.listClients() })));
+  router.get('/admin/clients', requireCoach, asyncRoute(async (req, res) => {
+    res.json({ clients: await store.listClients(rosterScope(req.coachingActor)) });
+  }));
   router.post('/admin/clients', requireCoach, asyncRoute(async (req, res) => {
+    // An owner may hand a new client straight to another coach; anyone else
+    // only ever creates clients on their own roster.
+    const requestedCoachId = cleanText(req.body?.coachId, { field: 'Coach ID', max: 80 });
+    let coachId = req.coachingActor.coachId;
+    if (requestedCoachId && requestedCoachId !== coachId) {
+      if (!isOwner(req.coachingActor)) throw badRequest('Only an owner can assign a client to another coach.');
+      const target = await store.getCoach(requestedCoachId);
+      if (!target || target.status !== 'active') throw badRequest('That coach is not available.');
+      coachId = target.coachId;
+    }
     const client = await store.createClient({
       email: cleanEmail(req.body?.email),
       firstName: cleanText(req.body?.firstName, { field: 'First name', max: 80, required: true }),
       lastName: cleanText(req.body?.lastName, { field: 'Last name', max: 80 }),
       subscriptionId: cleanText(req.body?.subscriptionId, { field: 'Subscription ID', max: 160 }),
-      profile: cleanProfile(req.body?.profile)
+      profile: cleanProfile(req.body?.profile),
+      coachId
     });
     res.status(201).json({ client });
   }));
-  router.get('/admin/clients/:clientId', requireCoach, asyncRoute(async (req, res) => {
-    const client = await store.getClient(req.params.clientId);
-    if (!client) { const error = new Error('Client not found.'); error.statusCode = 404; throw error; }
+  router.get('/admin/clients/:clientId', requireCoach, requireClientAccess, asyncRoute(async (req, res) => {
+    const client = req.scopedClient;
     res.json({ client, dashboard: await store.getDashboard(client.clientId), workoutPlans: await store.listWorkoutPlans(client.clientId) });
   }));
-  router.patch('/admin/clients/:clientId', requireCoach, asyncRoute(async (req, res) => {
+  router.patch('/admin/clients/:clientId', requireCoach, requireClientAccess, asyncRoute(async (req, res) => {
     const existing = await store.getClient(req.params.clientId);
     if (!existing) { const error = new Error('Client not found.'); error.statusCode = 404; throw error; }
     const status = ['active', 'paused', 'archived'].includes(req.body?.status) ? req.body.status : existing.status;
@@ -326,7 +407,7 @@ function createCoachingRouter({ store, pushService, adminToken = process.env.COA
     });
     res.json({ client });
   }));
-  router.post('/admin/clients/:clientId/invites', requireCoach, asyncRoute(async (req, res) => {
+  router.post('/admin/clients/:clientId/invites', requireCoach, requireClientAccess, asyncRoute(async (req, res) => {
     const token = generateToken();
     const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
     await store.createInvite(req.params.clientId, hashToken(token), expiresAt);
@@ -338,14 +419,55 @@ function createCoachingRouter({ store, pushService, adminToken = process.env.COA
     res.status(201).json({ invite: { url: `${base}/coaching/#invite=${encodeURIComponent(token)}`, expiresAt } });
   }));
 
+  // --- Coach administration (owner only) -----------------------------------
+  // Access tokens are shown exactly once, at creation and at rotation. Only
+  // the hash is stored, so a lost token is rotated rather than recovered.
+
+  router.get('/admin/me', requireCoach, (req, res) => res.json({ coach: req.coachingActor.coach }));
+
+  router.get('/admin/coaches', requireCoach, requireOwner, asyncRoute(async (_req, res) => {
+    res.json({ coaches: await store.listCoaches() });
+  }));
+
+  router.post('/admin/coaches', requireCoach, requireOwner, asyncRoute(async (req, res) => {
+    const accessToken = generateToken();
+    const coach = await store.createCoach({
+      email: cleanEmail(req.body?.email),
+      name: cleanText(req.body?.name, { field: 'Coach name', max: 120, required: true }),
+      role: req.body?.role === 'owner' ? 'owner' : 'coach',
+      tokenHash: hashToken(accessToken)
+    });
+    res.status(201).json({ coach, accessToken });
+  }));
+
+  router.patch('/admin/coaches/:coachId', requireCoach, requireOwner, asyncRoute(async (req, res) => {
+    const status = req.body?.status === undefined ? undefined : cleanText(req.body.status, { field: 'Status', max: 20 });
+    if (status !== undefined && !['active', 'suspended'].includes(status)) throw badRequest('Status must be active or suspended.');
+    // Suspending yourself would lock the only owner out of coach administration.
+    if (status === 'suspended' && req.params.coachId === req.coachingActor.coachId) {
+      throw badRequest('You cannot suspend your own account.');
+    }
+    const coach = await store.updateCoach(req.params.coachId, {
+      name: req.body?.name === undefined ? undefined : cleanText(req.body.name, { field: 'Coach name', max: 120, required: true }),
+      status
+    });
+    res.json({ coach });
+  }));
+
+  router.post('/admin/coaches/:coachId/token', requireCoach, requireOwner, asyncRoute(async (req, res) => {
+    const accessToken = generateToken();
+    const coach = await store.rotateCoachToken(req.params.coachId, hashToken(accessToken));
+    res.json({ coach, accessToken });
+  }));
+
   router.get('/admin/exercises', requireCoach, asyncRoute(async (_req, res) => res.json({ exercises: await store.listExercises() })));
   router.post('/admin/exercises', requireCoach, asyncRoute(async (req, res) => res.status(201).json({ exercise: await store.createExercise(cleanExercise(req.body)) })));
 
-  router.post('/admin/clients/:clientId/workout-plans', requireCoach, asyncRoute(async (req, res) => {
+  router.post('/admin/clients/:clientId/workout-plans', requireCoach, requireClientAccess, asyncRoute(async (req, res) => {
     const plan = await store.createWorkoutPlan(req.params.clientId, sanitizeWorkoutPlan(req.body), 'manual');
     res.status(201).json({ plan });
   }));
-  router.post('/admin/clients/:clientId/workout-draft', requireCoach, asyncRoute(async (req, res) => {
+  router.post('/admin/clients/:clientId/workout-draft', requireCoach, requireClientAccess, asyncRoute(async (req, res) => {
     const client = await store.getClient(req.params.clientId);
     if (!client) { const error = new Error('Client not found.'); error.statusCode = 404; throw error; }
     const exercises = await store.listExercises();
@@ -354,24 +476,30 @@ function createCoachingRouter({ store, pushService, adminToken = process.env.COA
     const plan = await store.createWorkoutPlan(client.clientId, generated.plan, 'assisted');
     res.status(201).json({ ...generated, plan });
   }));
-  router.post('/admin/workout-plans/:planId/publish', requireCoach, asyncRoute(async (req, res) => res.json({ plan: await store.publishWorkoutPlan(req.params.planId) })));
+  router.post('/admin/workout-plans/:planId/publish', requireCoach, asyncRoute(async (req, res) => {
+    const existing = await store.getWorkoutPlan(req.params.planId);
+    await assertClientAccessById(req, existing?.clientId);
+    res.json({ plan: await store.publishWorkoutPlan(req.params.planId) });
+  }));
 
-  router.post('/admin/clients/:clientId/nutrition-plans', requireCoach, asyncRoute(async (req, res) => res.status(201).json({ plan: await store.createNutritionPlan(req.params.clientId, cleanNutritionPlan(req.body)) })));
-  router.post('/admin/clients/:clientId/supplement-plans', requireCoach, asyncRoute(async (req, res) => res.status(201).json({ plan: await store.createSupplementPlan(req.params.clientId, cleanSupplementPlan(req.body)) })));
-  router.post('/admin/clients/:clientId/protocols', requireCoach, asyncRoute(async (req, res) => res.status(201).json({ plan: await store.createProtocol(req.params.clientId, cleanProtocol(req.body)) })));
+  router.post('/admin/clients/:clientId/nutrition-plans', requireCoach, requireClientAccess, asyncRoute(async (req, res) => res.status(201).json({ plan: await store.createNutritionPlan(req.params.clientId, cleanNutritionPlan(req.body)) })));
+  router.post('/admin/clients/:clientId/supplement-plans', requireCoach, requireClientAccess, asyncRoute(async (req, res) => res.status(201).json({ plan: await store.createSupplementPlan(req.params.clientId, cleanSupplementPlan(req.body)) })));
+  router.post('/admin/clients/:clientId/protocols', requireCoach, requireClientAccess, asyncRoute(async (req, res) => res.status(201).json({ plan: await store.createProtocol(req.params.clientId, cleanProtocol(req.body)) })));
   router.post('/admin/care-plans/:kind/:id/publish', requireCoach, asyncRoute(async (req, res) => {
     if (!['nutrition', 'supplements', 'protocol'].includes(req.params.kind)) throw badRequest('Unknown care plan type.');
+    await assertClientAccessById(req, await store.carePlanClientId(req.params.kind, req.params.id));
     res.json({ plan: await store.publishCarePlan(req.params.kind, req.params.id) });
   }));
 
-  router.get('/admin/clients/:clientId/messages', requireCoach, asyncRoute(async (req, res) => {
+  router.get('/admin/clients/:clientId/messages', requireCoach, requireClientAccess, asyncRoute(async (req, res) => {
     await store.markMessagesRead(req.params.clientId, 'coach');
     res.json({ messages: await store.listMessages(req.params.clientId, { limit: 100, before: req.query.before }) });
   }));
-  router.post('/admin/clients/:clientId/messages', requireCoach, messageLimiter, asyncRoute(async (req, res) => {
-    const message = await store.createMessage(req.params.clientId, 'coach', 'Coach Alex', cleanText(req.body?.body, { field: 'Message', max: 2000, required: true }));
-    broadcastMessage(message);
-    pushService?.notifyMessage({ senderType: 'coach', clientId: message.clientId }).catch(error => console.error('[coaching] push error:', error.message));
+  router.post('/admin/clients/:clientId/messages', requireCoach, requireClientAccess, messageLimiter, asyncRoute(async (req, res) => {
+    const senderName = req.coachingActor.coach?.name || ownerName;
+    const message = await store.createMessage(req.params.clientId, 'coach', senderName, cleanText(req.body?.body, { field: 'Message', max: 2000, required: true }));
+    broadcastMessage(message, req.scopedClient.coachId);
+    pushService?.notifyMessage({ senderType: 'coach', clientId: message.clientId, coachId: req.scopedClient.coachId }).catch(error => console.error('[coaching] push error:', error.message));
     res.status(201).json({ message });
   }));
 
@@ -404,17 +532,22 @@ function createCoachingRouter({ store, pushService, adminToken = process.env.COA
   router.post('/messages', requireClient, messageLimiter, asyncRoute(async (req, res) => {
     const client = req.coachingActor.client;
     const message = await store.createMessage(client.clientId, 'client', `${client.firstName} ${client.lastName}`.trim(), cleanText(req.body?.body, { field: 'Message', max: 2000, required: true }));
-    broadcastMessage(message);
-    pushService?.notifyMessage({ senderType: 'client', clientId: message.clientId }).catch(error => console.error('[coaching] push error:', error.message));
+    broadcastMessage(message, client.coachId);
+    pushService?.notifyMessage({ senderType: 'client', clientId: message.clientId, coachId: client.coachId }).catch(error => console.error('[coaching] push error:', error.message));
     res.status(201).json({ message });
   }));
   router.post('/checkins', requireClient, asyncRoute(async (req, res) => res.status(201).json({ checkin: await store.createCheckin(req.coachingActor.clientId, cleanCheckin(req.body)) })));
   router.post('/workout-days/:workoutDayId/logs', requireClient, asyncRoute(async (req, res) => res.status(201).json({ log: await store.saveWorkoutLog(req.coachingActor.clientId, req.params.workoutDayId, cleanWorkoutLog(req.body)) })));
 
-  router.get('/messages/stream', requireAuth, (req, res) => {
+  router.get('/messages/stream', requireAuth, asyncRoute(async (req, res) => {
     const requestedClientId = req.coachingActor.actorType === 'coach' ? req.query.clientId : req.coachingActor.clientId;
-    if (req.coachingActor.actorType === 'coach' && !requestedClientId) return res.status(400).json({ error: 'clientId is required.' });
-    const key = streamKey(req.coachingActor.actorType, requestedClientId);
+    if (req.coachingActor.actorType === 'coach') {
+      if (!requestedClientId) return res.status(400).json({ error: 'clientId is required.' });
+      // Opening a stream is a read of that client, so it needs the same check.
+      const client = await store.getClient(requestedClientId);
+      if (!canAccessClient(req.coachingActor, client)) return res.status(404).json({ error: 'Client not found.' });
+    }
+    const key = streamKey(req.coachingActor, requestedClientId);
     if (!streams.has(key)) streams.set(key, new Set());
     streams.get(key).add(res);
     res.set({ 'Content-Type': 'text/event-stream', 'Cache-Control': 'no-cache, no-store', Connection: 'keep-alive', 'X-Accel-Buffering': 'no' });
@@ -426,7 +559,7 @@ function createCoachingRouter({ store, pushService, adminToken = process.env.COA
       streams.get(key)?.delete(res);
       if (!streams.get(key)?.size) streams.delete(key);
     });
-  });
+  }));
 
   router.post('/push-subscriptions', requireAuth, asyncRoute(async (req, res) => {
     if (!pushService?.configured) {
@@ -435,7 +568,7 @@ function createCoachingRouter({ store, pushService, adminToken = process.env.COA
       throw error;
     }
     const subscription = cleanPushSubscription(req.body);
-    await store.savePushSubscription(req.coachingActor.actorType, req.coachingActor.clientId, subscription);
+    await store.savePushSubscription(req.coachingActor.actorType, req.coachingActor.clientId, subscription, req.coachingActor.coachId);
     res.status(201).json({ saved: true });
   }));
 
