@@ -300,6 +300,54 @@ CREATE TABLE IF NOT EXISTS coaching_audit_events (
 );
 CREATE INDEX IF NOT EXISTS coaching_audit_events_client_idx ON coaching_audit_events(client_id, created_at DESC);
 
+-- Multi-coach support ---------------------------------------------------------
+-- Before this, "coach" was a single shared access token with no identity:
+-- every coach session could read every client. Each coach is now a row, and
+-- client ownership is an explicit foreign key so access can be scoped.
+--
+-- role 'owner' sees every client and administers coaches (the business owner).
+-- role 'coach' sees only clients whose coach_id is their own.
+CREATE TABLE IF NOT EXISTS coaching_coaches (
+  coach_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  email TEXT NOT NULL,
+  name TEXT NOT NULL,
+  -- Only the SHA-256 hash is stored; the plaintext access token is shown once
+  -- at creation/rotation and is unrecoverable afterwards.
+  access_token_hash TEXT NOT NULL UNIQUE,
+  role TEXT NOT NULL DEFAULT 'coach' CHECK (role IN ('owner', 'coach')),
+  status TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'suspended')),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE UNIQUE INDEX IF NOT EXISTS coaching_coaches_email_unique_idx ON coaching_coaches(lower(email));
+CREATE INDEX IF NOT EXISTS coaching_coaches_role_idx ON coaching_coaches(role, status);
+
+-- Client ownership. NULL means unassigned, which only an owner can see; the
+-- owner-bootstrap claims those on first login so nothing is stranded.
+ALTER TABLE coaching_clients ADD COLUMN IF NOT EXISTS coach_id UUID REFERENCES coaching_coaches(coach_id) ON DELETE SET NULL;
+CREATE INDEX IF NOT EXISTS coaching_clients_coach_idx ON coaching_clients(coach_id, status, updated_at DESC);
+
+-- Sessions carry the acting coach so authorization never depends on a shared
+-- secret alone.
+ALTER TABLE coaching_sessions ADD COLUMN IF NOT EXISTS coach_id UUID REFERENCES coaching_coaches(coach_id) ON DELETE CASCADE;
+
+-- Push subscriptions are per-coach; otherwise one coach's device receives
+-- another coach's client message alerts.
+ALTER TABLE coaching_push_subscriptions ADD COLUMN IF NOT EXISTS coach_id UUID REFERENCES coaching_coaches(coach_id) ON DELETE CASCADE;
+
+-- Identity-less coach rows predate this migration and cannot be authorized.
+-- Dropping them forces one re-login and one re-subscribe; both are cheap, and
+-- the alternative is a session that no policy can scope. Client sessions are
+-- untouched. Idempotent: after migration no coach row has a NULL coach_id.
+DELETE FROM coaching_sessions WHERE actor_type = 'coach' AND coach_id IS NULL;
+DELETE FROM coaching_push_subscriptions WHERE actor_type = 'coach' AND coach_id IS NULL;
+
+DO $$ BEGIN
+  ALTER TABLE coaching_sessions
+    ADD CONSTRAINT coaching_sessions_coach_identity_chk
+    CHECK (actor_type <> 'coach' OR coach_id IS NOT NULL);
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+
 -- Funnel events for the automated revenue engine (Issue #89, P1).
 -- Append-only. event_key is the idempotency guard: webhook and worker retries
 -- replay the same logical event, and double-counting revenue is worse than

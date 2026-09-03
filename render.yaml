@@ -30,8 +30,14 @@ services:
         value: 100
       - key: PG_POOL_MAX
         value: 10
+      # The OWNER's coach token. Every other coach signs in with their own
+      # token issued from the Coaches tab, so this is never shared out.
       - key: COACH_PORTAL_ADMIN_TOKEN
         generateValue: true
+      - key: COACH_OWNER_NAME
+        sync: false
+      - key: COACH_OWNER_EMAIL
+        sync: false
       # Payment. Checkout stays disabled (503) until the first two are set,
       # and the webhook refuses to process anything without the third, so
       # leaving these blank is safe — it simply means nothing can be sold yet.
