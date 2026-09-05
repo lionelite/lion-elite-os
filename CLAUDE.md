@@ -347,10 +347,21 @@ Standalone modules that share the repo but not the architecture above:
   Unsolicited auto-outreach was explicitly requested once and declined — it
   violates the no-customer-outreach hard limit, Bluesky's guidelines, and RUO
   marketing rules. No Render service of its own: `start.js` runs the listener
-  in-process on the `lion-elite-os` web service when credentials are present,
-  and `BLUESKY_HANDLE`/`BLUESKY_APP_PASSWORD` appear in no `render.yaml`, so
-  whether it runs at all depends on values set by hand in the Render
-  dashboard. The bootstrap logs which branch it took at startup.
+  in-process on the `lion-elite-os` web service. **Discovery needs no Bluesky
+  account** — Jetstream is a public firehose and no file in the listening path
+  reads a credential; only the reply path calls
+  `com.atproto.server.createSession`. The listener was previously gated behind
+  `hasBlueskyCredentials()`, so it was blocked on something it never used and
+  had never run; as of 2026-09-05 it runs by default and is disabled with
+  `BLUESKY_LISTENER_ENABLED=false`. `BLUESKY_HANDLE`/`BLUESKY_APP_PASSWORD` are
+  still needed for replies, appear in no `render.yaml`, and are set by hand in
+  the Render dashboard. The bootstrap logs which branch it took at startup.
+  Leads persist to the `prospects` table under campaign
+  `bluesky-audience-leads` (brand lanes) and `bluesky-universal-leads`
+  (universal lane) when `DATABASE_URL` is set; without it they go to an
+  ephemeral local JSONL mirror only. `lib/bluesky-lead-report.js` reads both
+  campaigns — keep its ids in step with `universal-lead-store.js` or stored
+  leads become invisible (pinned by `social-listening/test/lead-persistence.test.js`).
   Tests are in the root `npm test`.
 - **`mcp-server/`** — standalone MCP server (TypeScript), its own
   `package.json`/`render.yaml`. Not linked from the main blueprint or any
