@@ -119,3 +119,49 @@ reports only — it sends nothing and touches no customer.
 It measures; it does not sell. Nothing here flips `OUTREACH_SEND_ENABLED`,
 `SMS_SEND_ENABLED`, or `SOCIAL_PUBLISH_ENABLED`, and consent and suppression
 checks in the send paths are untouched.
+
+## Emitters — where events actually come from
+
+`lib/revenue/emitters.js`. Wired into `workers/integration-worker.js`, which
+already receives the Shopify and Stripe order webhooks.
+
+```
+Shopify / Stripe webhook
+   └─ integration-worker
+        ├─ owner order-notification email   (existing)
+        └─ emitOrder(...)  →  funnel_events   (new)
+```
+
+Three properties are enforced by tests, because each one turns real money into
+a wrong number:
+
+**Amounts come from the raw payload.** Shopify sends `total_price` as a string
+in major units (`"149.99"`); Stripe sends `amount_total` in cents (`14999`).
+Both land on the same integer. The formatted `"$149.99"` string used in the
+owner email is never parsed back.
+
+Major units are parsed as a **decimal string**, not multiplied as a float:
+`1.005 * 100` is `100.49999999999999` in IEEE 754, so `Math.round(n * 100)`
+quietly loses a cent. A caught test failure, not a hypothetical.
+
+**The idempotency key is the provider's own order id** — `shopify:order:<id>`,
+`stripe:order:<id>`. Webhooks retry and BullMQ retries on top of them; a
+redelivered order is recorded once.
+
+**Emitting is non-fatal.** Every emitter returns a status object and swallows
+its own errors. An analytics write must never fail an order — the same rule the
+order notification follows.
+
+Two smaller decisions:
+
+- A payload with no usable amount or identity is **skipped**, not recorded as a
+  $0 sale. A zero-value purchase would drag average order value down and look
+  like real data.
+- First vs repeat purchase is **looked up** via `hasPriorPurchase()`, not
+  guessed. If the lookup fails it falls back to `purchase_completed`, since
+  inventing a repeat inflates the repeat-revenue line while the reverse is
+  merely conservative.
+
+`emitCoachingClose` and `emitWelcomeSent` exist on the same rails for the
+coaching funnel and outreach dispatch; wiring those two into their callers is
+the remaining step.
