@@ -70,6 +70,9 @@ function buildMessage(entry) {
   if (entry.match.audience === 'business-scaling') {
     return 'Saw your post about scaling. LionOS helps businesses automate lead generation, CRM, follow-up, sales systems, marketing automation, and operations. Happy to compare notes on the bottleneck you are trying to solve.';
   }
+  if (entry.match.audience === 'coach-scaling') {
+    return 'Saw your post about growing the coaching side. Lion Elite runs a coach portal where each coach gets their own client roster, programming, check-ins and messaging in one place. Happy to compare notes on where the admin is eating your time.';
+  }
   if (entry.match.audience === 'personal-training') {
     return 'Saw your post. Lion Elite Beauty is built around structured coaching, accountability, and a personalized plan. Happy to help you map out the next step.';
   }
@@ -119,7 +122,7 @@ async function runOutreach() {
   const maxPerRun = numEnv('BLUESKY_OUTREACH_MAX_PER_RUN', 5);
   const maxPerDay = numEnv('BLUESKY_OUTREACH_MAX_PER_DAY', 25);
   const allowedAudiences = new Set(
-    String(process.env.BLUESKY_OUTREACH_AUDIENCES || 'business-scaling,personal-training')
+    String(process.env.BLUESKY_OUTREACH_AUDIENCES || 'business-scaling,personal-training,coach-scaling')
       .split(',').map((x) => x.trim()).filter(Boolean)
   );
 

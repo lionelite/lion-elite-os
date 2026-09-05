@@ -328,11 +328,19 @@ Standalone modules that share the repo but not the architecture above:
   the Render dashboard would have begun posting live replies with no separate
   enable step. Cold outreach — replies, DMs, likes, follows to people who did
   not tag you — stays prohibited; do not widen `isExplicitlyTagged`.
-  Surfaces posts matching two audiences (researchers sourcing
+  Surfaces posts matching four audiences (researchers sourcing
   peptides → Wellness lane; people publicly seeking a trainer/coach →
-  Beauty lane) via an explainable keyword/synonym classifier plus optional
+  Beauty lane; business owners scaling → LionOS; and personal
+  trainers/coaches growing their *own* coaching business → LionOS) via an
+  explainable keyword/synonym classifier plus optional
   local-Ollama refinement that can only make results more conservative.
   Human-use-intent posts are hard-flagged DO NOT ENGAGE (RUO compliance).
+  `coach-scaling` is deliberately the inverse of `personal-training`: "I'm a
+  personal trainer" and "my clients" mark someone a peer-not-prospect for
+  coaching, and are precisely what qualifies them as a platform prospect now
+  that the portal hosts multiple coaches. `doNotEngage` is evaluated per
+  audience and `classifyPost` returns every match, so one audience flagging a
+  post never suppresses another.
   Output is a local JSONL log + review dashboard
   (`npm run listen:bluesky` / `listen:review` / `listen:replay`); engagement
   beyond the opt-in reply path above is a manual human action on bsky.app.
