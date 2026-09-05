@@ -98,3 +98,38 @@ test('handles empty and non-string input', () => {
   assert.equal(classifyPost('').relevant, false);
   assert.equal(classifyPost(null).relevant, false);
 });
+
+// The two segments the owner actually wants to find: people who need a coach,
+// and coaches who want to grow their own business. The second used to be
+// unreachable — personal-training's doNotEngage patterns treat "I'm a personal
+// trainer" and "my clients" as peer-not-prospect, which is correct for that
+// audience and exactly wrong for this one.
+test('finds a trainer trying to scale their own coaching business', () => {
+  const text = "I'm a personal trainer with about 12 clients and I'm drowning in admin. "
+    + 'Writing programs in spreadsheets and chasing check-ins over text. '
+    + 'How do I scale my coaching business without working 70 hours?';
+  const best = classifyPost(text).matches[0];
+  assert.equal(best.audience, 'coach-scaling');
+  assert.equal(best.doNotEngage, false, 'being a trainer must qualify here, not disqualify');
+  assert.ok(best.score >= 60, `expected a strong score, got ${best.score}`);
+});
+
+test('still finds someone looking for a coach', () => {
+  const text = 'Looking for a personal trainer who can actually keep me accountable. '
+    + 'No idea where to start and I need a workout plan that fits a busy schedule.';
+  const best = classifyPost(text).matches[0];
+  assert.equal(best.audience, 'personal-training');
+  assert.equal(best.doNotEngage, false);
+});
+
+test('does not surface competitors selling growth services to coaches', () => {
+  const { matches } = classifyPost('We help coaches scale to 30k months. Book a free call, link in bio.');
+  const engageable = matches.filter(match => !match.doNotEngage);
+  assert.deepEqual(engageable, [], 'a competitor pitch is never an engageable lead');
+});
+
+test('does not surface a trainer broadcasting their own offer', () => {
+  const { matches } = classifyPost("I'm a certified personal trainer accepting new clients! DM me to start.");
+  const engageable = matches.filter(match => !match.doNotEngage);
+  assert.deepEqual(engageable, [], 'someone advertising is not asking for help');
+});

@@ -58,14 +58,22 @@ function startManaged(name, script, args = []) {
 
 const stopHandlers = [];
 
+// The listener is read-only and safe to run on credentials alone. Posting is
+// not: it is started only when BLUESKY_OUTREACH_ENABLED is explicitly 'true',
+// so credentials appearing in the dashboard can never by themselves put replies
+// on other people's posts. This bootstrap no longer forces ENABLED/DRY_RUN/
+// DELIVERY_MODE — the engine's own fail-closed defaults apply.
 if (hasBlueskyCredentials()) {
-  if (process.env.BLUESKY_OUTREACH_ENABLED == null) process.env.BLUESKY_OUTREACH_ENABLED = 'true';
-  if (process.env.BLUESKY_OUTREACH_DRY_RUN == null) process.env.BLUESKY_OUTREACH_DRY_RUN = 'false';
-  if (process.env.BLUESKY_OUTREACH_DELIVERY_MODE == null) process.env.BLUESKY_OUTREACH_DELIVERY_MODE = 'direct';
-
-  console.log('[bootstrap] Bluesky credentials detected; starting continuous listener and direct outreach worker.');
+  console.log('[bootstrap] Bluesky credentials detected; starting read-only listener.');
   stopHandlers.push(startManaged('bluesky-listener', 'social-listening/src/monitor.js', ['--no-model', '--quiet']));
-  stopHandlers.push(startManaged('bluesky-outreach-worker', 'social-listening/src/outreach-worker.js'));
+
+  if (String(process.env.BLUESKY_OUTREACH_ENABLED || '').toLowerCase() === 'true') {
+    const dryRun = String(process.env.BLUESKY_OUTREACH_DRY_RUN || 'true').toLowerCase() !== 'false';
+    console.log(`[bootstrap] Bluesky outreach explicitly enabled; starting worker (dryRun=${dryRun}).`);
+    stopHandlers.push(startManaged('bluesky-outreach-worker', 'social-listening/src/outreach-worker.js'));
+  } else {
+    console.log('[bootstrap] Bluesky outreach not enabled; reply worker not started. Set BLUESKY_OUTREACH_ENABLED=true to enable.');
+  }
 } else {
   console.log('[bootstrap] Bluesky credentials not configured; social automation not started.');
 }

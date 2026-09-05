@@ -312,19 +312,45 @@ Standalone modules that share the repo but not the architecture above:
   `test/scoring.test.js`), but was completely orphaned until this pass —
   not in `npm test`, no CI, no Render service. Now wired into `npm test`
   (see Recent fixes).
-- **`social-listening/`** — Bluesky firehose (Jetstream) monitor,
-  **read-only by design**: no Bluesky credentials, no write path to any
-  platform. Surfaces posts matching two audiences (researchers sourcing
+- **`social-listening/`** — Bluesky firehose (Jetstream) monitor. The
+  *listening* half is read-only. A *reply* path does exist and this file
+  previously denied it: `social-listening/src/bluesky-delivery.js` has
+  `sendReply()`, which creates real `app.bsky.feed.post` records, and
+  `start.js` can run `outreach-worker.js` against it. It is **not** the
+  declined cold-engagement bot — `outreach-engine.js` only ever replies to a
+  post that structurally @-mentions the configured bot DID
+  (`isExplicitlyTagged`), so it answers people who tagged you and nobody else.
+  As of 2026-09-05 it also fails closed like every other send path here:
+  posting needs `BLUESKY_OUTREACH_ENABLED=true` **and**
+  `BLUESKY_OUTREACH_DRY_RUN=false`, both explicit. Until then the reply worker
+  is not even started. Before that fix, both defaults keyed off the mere
+  presence of `BLUESKY_HANDLE`/`BLUESKY_APP_PASSWORD`, so adding credentials in
+  the Render dashboard would have begun posting live replies with no separate
+  enable step. Cold outreach — replies, DMs, likes, follows to people who did
+  not tag you — stays prohibited; do not widen `isExplicitlyTagged`.
+  Surfaces posts matching four audiences (researchers sourcing
   peptides → Wellness lane; people publicly seeking a trainer/coach →
-  Beauty lane) via an explainable keyword/synonym classifier plus optional
+  Beauty lane; business owners scaling → LionOS; and personal
+  trainers/coaches growing their *own* coaching business → LionOS) via an
+  explainable keyword/synonym classifier plus optional
   local-Ollama refinement that can only make results more conservative.
   Human-use-intent posts are hard-flagged DO NOT ENGAGE (RUO compliance).
+  `coach-scaling` is deliberately the inverse of `personal-training`: "I'm a
+  personal trainer" and "my clients" mark someone a peer-not-prospect for
+  coaching, and are precisely what qualifies them as a platform prospect now
+  that the portal hosts multiple coaches. `doNotEngage` is evaluated per
+  audience and `classifyPost` returns every match, so one audience flagging a
+  post never suppresses another.
   Output is a local JSONL log + review dashboard
-  (`npm run listen:bluesky` / `listen:review` / `listen:replay`); any
-  engagement is a manual human action on bsky.app. Auto-reply/auto-outreach
-  was explicitly requested once and declined — it violates the
-  no-customer-outreach hard limit, Bluesky's guidelines, and RUO marketing
-  rules; do not add a posting path to this module. No Render service.
+  (`npm run listen:bluesky` / `listen:review` / `listen:replay`); engagement
+  beyond the opt-in reply path above is a manual human action on bsky.app.
+  Unsolicited auto-outreach was explicitly requested once and declined — it
+  violates the no-customer-outreach hard limit, Bluesky's guidelines, and RUO
+  marketing rules. No Render service of its own: `start.js` runs the listener
+  in-process on the `lion-elite-os` web service when credentials are present,
+  and `BLUESKY_HANDLE`/`BLUESKY_APP_PASSWORD` appear in no `render.yaml`, so
+  whether it runs at all depends on values set by hand in the Render
+  dashboard. The bootstrap logs which branch it took at startup.
   Tests are in the root `npm test`.
 - **`mcp-server/`** — standalone MCP server (TypeScript), its own
   `package.json`/`render.yaml`. Not linked from the main blueprint or any

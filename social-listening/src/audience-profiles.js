@@ -12,6 +12,14 @@
 //    trainer/coach or how to start training.
 //  - business-scaling (LionOS): business owners publicly asking how to grow,
 //    automate, generate leads, improve sales systems, or scale operations.
+//  - coach-scaling (LionOS): personal trainers and fitness coaches who already
+//    have clients and are trying to grow or systemize their own business.
+//    Note this is the deliberate inverse of personal-training's exclusions:
+//    "I'm a personal trainer" and "my clients" disqualify someone from being a
+//    coaching *prospect*, but they are exactly what qualifies them here. Since
+//    the portal supports multiple coaches, trainers are a customer segment,
+//    not a peer to avoid. doNotEngage here targets people selling growth
+//    services TO coaches, who are the actual competitors.
 //
 // This tool NEVER posts, replies, likes, follows, or DMs. It only surfaces
 // posts, with a suggested opener a human may use manually after review.
@@ -155,6 +163,54 @@ const AUDIENCE_PROFILES = Object.freeze({
       'Author appears to be advertising business-growth services rather than seeking help.',
     suggestedOpener:
       'Saw your post about scaling. LionOS is built around practical AI automation, CRM, lead generation, sales systems, marketing automation, and business operations. Happy to compare notes on the bottleneck you are trying to solve.'
+  },
+
+  'coach-scaling': {
+    key: 'coach-scaling',
+    brand: 'lionos',
+    label: 'Personal trainers & coaches scaling their own business (LionOS)',
+    subjectTerms: [
+      'training business', 'coaching business', 'personal training business',
+      'my clients', 'client roster', 'more coaching clients', 'more training clients',
+      'take on more clients', 'fill my roster', 'scale my coaching', 'scale my training',
+      'grow my coaching', 'grow my training', 'grow my roster',
+      'online coaching business', 'go online', 'online coaching',
+      'client management', 'coaching software', 'coaching platform', 'training app',
+      'programming for clients', 'write programs', 'writing programs',
+      'client check-ins', 'client checkins', 'manage my clients', 'managing clients',
+      'onboard clients', 'onboarding clients', 'client retention', 'retention',
+      'spreadsheets', 'google sheets', 'admin work', 'too much admin'
+    ],
+    intentTerms: [
+      'how do i', 'how can i', 'how to', 'looking for', 'searching for',
+      'trying to', 'want to', 'need to', 'need a', 'need help',
+      'recommend', 'recommendation', 'recommendations', 'any suggestions',
+      'anyone know', 'anyone else', 'struggling', 'struggling with', 'stuck',
+      'overwhelmed', 'burnt out', 'burned out', 'drowning in', 'what do you use',
+      'best way to', 'tired of'
+    ],
+    boosterTerms: [
+      'personal trainer', 'fitness coach', 'strength coach', 'nutrition coach',
+      'online coach', 'certified', 'cpt', 'nasm', 'issa', 'gym',
+      'solo', 'one man', 'by myself', 'part time', 'full time',
+      'clients', 'roster', 'income', 'rates', 'pricing', 'scale', 'systemize',
+      'automate', 'waitlist', 'capacity'
+    ],
+    // The inverse of personal-training: being a trainer qualifies rather than
+    // disqualifies. What is excluded here is the competitor selling growth
+    // services to coaches, and anyone already broadcasting an offer.
+    doNotEngagePatterns: [
+      /\bwe\s+help\s+(coaches|trainers|personal\s+trainers|fitness\s+professionals)\b/i,
+      /\bi\s+help\s+(coaches|trainers)\s+(scale|grow|get)\b/i,
+      /\bmy\s+agency\b/i,
+      /\bbook\s+a\s+(free\s+)?call\b/i,
+      /\bdm\s+me\s+(to|if)\b/i,
+      /\blink\s+in\s+bio\b/i
+    ],
+    doNotEngageReason:
+      'Author appears to sell growth services to coaches (competitor), or is broadcasting an offer rather than asking for help.',
+    suggestedOpener:
+      'Saw your post about growing the coaching side. Lion Elite runs a coach portal where each coach gets their own client roster, programming, check-ins and messaging in one place, plus LionOS automation behind it. Happy to compare notes on where the admin is eating your time.'
   }
 });
 

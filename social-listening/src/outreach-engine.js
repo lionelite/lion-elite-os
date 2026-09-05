@@ -70,6 +70,9 @@ function buildMessage(entry) {
   if (entry.match.audience === 'business-scaling') {
     return 'Saw your post about scaling. LionOS helps businesses automate lead generation, CRM, follow-up, sales systems, marketing automation, and operations. Happy to compare notes on the bottleneck you are trying to solve.';
   }
+  if (entry.match.audience === 'coach-scaling') {
+    return 'Saw your post about growing the coaching side. Lion Elite runs a coach portal where each coach gets their own client roster, programming, check-ins and messaging in one place. Happy to compare notes on where the admin is eating your time.';
+  }
   if (entry.match.audience === 'personal-training') {
     return 'Saw your post. Lion Elite Beauty is built around structured coaching, accountability, and a personalized plan. Happy to help you map out the next step.';
   }
@@ -107,20 +110,29 @@ async function deliver(entry, message, dryRun) {
 }
 
 async function runOutreach() {
-  const credentialsPresent = Boolean(process.env.BLUESKY_HANDLE && process.env.BLUESKY_APP_PASSWORD);
-  const enabled = boolEnv('BLUESKY_OUTREACH_ENABLED', credentialsPresent);
-  const dryRun = boolEnv('BLUESKY_OUTREACH_DRY_RUN', !credentialsPresent);
+  // Fail closed, matching every other send path in this repo
+  // (OUTREACH_SEND_ENABLED, SMS_SEND_ENABLED, SOCIAL_PUBLISH_ENABLED): posting
+  // requires a deliberate human opt-in, and the presence of credentials is not
+  // one. Previously both defaults keyed off credentials, so adding
+  // BLUESKY_HANDLE/BLUESKY_APP_PASSWORD in the dashboard silently began posting
+  // live replies with no separate enable step.
+  const enabled = boolEnv('BLUESKY_OUTREACH_ENABLED', false);
+  const dryRun = boolEnv('BLUESKY_OUTREACH_DRY_RUN', true);
   const minScore = numEnv('BLUESKY_OUTREACH_MIN_SCORE', 60);
   const maxPerRun = numEnv('BLUESKY_OUTREACH_MAX_PER_RUN', 5);
   const maxPerDay = numEnv('BLUESKY_OUTREACH_MAX_PER_DAY', 25);
   const allowedAudiences = new Set(
-    String(process.env.BLUESKY_OUTREACH_AUDIENCES || 'business-scaling,personal-training')
+    String(process.env.BLUESKY_OUTREACH_AUDIENCES || 'business-scaling,personal-training,coach-scaling')
       .split(',').map((x) => x.trim()).filter(Boolean)
   );
 
   if (!enabled) {
     console.log('[outreach] Disabled. Set BLUESKY_OUTREACH_ENABLED=true to enable.');
     return { disabled: true, attempted: 0, sent: 0 };
+  }
+
+  if (dryRun) {
+    console.log('[outreach] DRY RUN. Nothing is posted to Bluesky until BLUESKY_OUTREACH_DRY_RUN=false.');
   }
 
   const botDid = await resolveBotDid();
