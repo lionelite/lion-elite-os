@@ -107,9 +107,14 @@ async function deliver(entry, message, dryRun) {
 }
 
 async function runOutreach() {
-  const credentialsPresent = Boolean(process.env.BLUESKY_HANDLE && process.env.BLUESKY_APP_PASSWORD);
-  const enabled = boolEnv('BLUESKY_OUTREACH_ENABLED', credentialsPresent);
-  const dryRun = boolEnv('BLUESKY_OUTREACH_DRY_RUN', !credentialsPresent);
+  // Fail closed, matching every other send path in this repo
+  // (OUTREACH_SEND_ENABLED, SMS_SEND_ENABLED, SOCIAL_PUBLISH_ENABLED): posting
+  // requires a deliberate human opt-in, and the presence of credentials is not
+  // one. Previously both defaults keyed off credentials, so adding
+  // BLUESKY_HANDLE/BLUESKY_APP_PASSWORD in the dashboard silently began posting
+  // live replies with no separate enable step.
+  const enabled = boolEnv('BLUESKY_OUTREACH_ENABLED', false);
+  const dryRun = boolEnv('BLUESKY_OUTREACH_DRY_RUN', true);
   const minScore = numEnv('BLUESKY_OUTREACH_MIN_SCORE', 60);
   const maxPerRun = numEnv('BLUESKY_OUTREACH_MAX_PER_RUN', 5);
   const maxPerDay = numEnv('BLUESKY_OUTREACH_MAX_PER_DAY', 25);
@@ -121,6 +126,10 @@ async function runOutreach() {
   if (!enabled) {
     console.log('[outreach] Disabled. Set BLUESKY_OUTREACH_ENABLED=true to enable.');
     return { disabled: true, attempted: 0, sent: 0 };
+  }
+
+  if (dryRun) {
+    console.log('[outreach] DRY RUN. Nothing is posted to Bluesky until BLUESKY_OUTREACH_DRY_RUN=false.');
   }
 
   const botDid = await resolveBotDid();
