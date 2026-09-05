@@ -359,12 +359,26 @@ async function saveRunToGitHub(run) {
   };
 }
 
+// Render sets RENDER_GIT_COMMIT on every deploy. Reporting it lets CI confirm
+// that the commit it just merged is the one actually serving traffic, which a
+// deploy hook's 200 does not tell anyone.
+const DEPLOYED_COMMIT = String(process.env.RENDER_GIT_COMMIT || process.env.GIT_COMMIT || '').trim();
+
 app.get('/health', (req, res) => {
   res.json({
     status: 'ok',
     service: 'lion-elite-os',
     mode: commandCenter.mode,
+    commit: DEPLOYED_COMMIT,
     leadAutomation: leadAutomationReadiness(),
+    // Booleans only — never the credential values themselves. Answers "is the
+    // listener running and are its leads being kept" without a dashboard.
+    bluesky: {
+      listenerEnabled: String(process.env.BLUESKY_LISTENER_ENABLED || 'true').toLowerCase() !== 'false',
+      durableLeadStorage: Boolean(process.env.DATABASE_URL),
+      replyWorkerEnabled: String(process.env.BLUESKY_OUTREACH_ENABLED || '').toLowerCase() === 'true'
+        && Boolean(process.env.BLUESKY_HANDLE && process.env.BLUESKY_APP_PASSWORD)
+    },
     timestamp: new Date().toISOString()
   });
 });
