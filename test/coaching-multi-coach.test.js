@@ -332,3 +332,60 @@ test('editing a client never moves it to another roster', async t => {
   const roster = await request('/admin/clients', { cookie: alice.cookie });
   assert.equal(roster.payload.clients.length, 1);
 });
+
+// The clinician_confirmed boolean records that a box was ticked. These pin the
+// evidence behind it: a protocol cannot reach a client without a named licence,
+// verified by a real coach, with the client's consent on record.
+test('a protocol cannot be confirmed without the licence it stands on', async t => {
+  const { request, signIn, addCoach, addClient } = await harness(t);
+  const owner = await signIn(ADMIN_TOKEN);
+  const alice = await addCoach(owner.cookie, { name: 'Alice', email: 'alice@example.com' });
+  const client = await addClient(alice.cookie, { firstName: 'Casey', email: 'casey@example.com' });
+
+  const items = [{ name: 'Item', instructions: 'Follow the written clinician instruction.', schedule: '', notes: '' }];
+
+  const withoutLicence = await request(`/admin/clients/${client.clientId}/protocols`, {
+    method: 'POST', cookie: alice.cookie,
+    body: { title: 'P', clinicianName: 'Dr. Example', clinicianConfirmed: true, items, notes: '' }
+  });
+  assert.equal(withoutLicence.status, 400, 'confirming without licence details must be refused');
+
+  // An unconfirmed draft still needs no licence — it cannot reach a client.
+  const draft = await request(`/admin/clients/${client.clientId}/protocols`, {
+    method: 'POST', cookie: alice.cookie,
+    body: { title: 'P', clinicianName: '', clinicianConfirmed: false, items, notes: '' }
+  });
+  assert.equal(draft.status, 201);
+  const blocked = await request(`/admin/care-plans/protocol/${draft.payload.plan.protocolId}/publish`, {
+    method: 'POST', cookie: alice.cookie, body: {}
+  });
+  assert.equal(blocked.status, 422, 'an unconfirmed protocol still cannot be published');
+});
+
+test('a complete protocol publishes and records who verified the licence', async t => {
+  const { request, signIn, addCoach, addClient } = await harness(t);
+  const owner = await signIn(ADMIN_TOKEN);
+  const alice = await addCoach(owner.cookie, { name: 'Alice', email: 'alice@example.com' });
+  const client = await addClient(alice.cookie, { firstName: 'Casey', email: 'casey@example.com' });
+
+  const created = await request(`/admin/clients/${client.clientId}/protocols`, {
+    method: 'POST', cookie: alice.cookie,
+    body: {
+      title: 'P', clinicianName: 'Dr. Example', clinicianConfirmed: true,
+      clinicianLicenseType: 'MD', clinicianLicenseNumber: 'EXAMPLE-0000', clinicianLicenseState: 'OH',
+      consentObtainedAt: '2026-03-01',
+      items: [{ name: 'Item', instructions: 'Follow the written clinician instruction.', schedule: '', notes: '' }],
+      notes: ''
+    }
+  });
+  assert.equal(created.status, 201);
+  // The verifier is server-side truth, not a submitted value.
+  assert.equal(created.payload.plan.clinicianVerifiedBy, 'Alice');
+  assert.ok(created.payload.plan.clinicianVerifiedAt, 'verification time is stamped at confirmation');
+
+  const published = await request(`/admin/care-plans/protocol/${created.payload.plan.protocolId}/publish`, {
+    method: 'POST', cookie: alice.cookie, body: {}
+  });
+  assert.equal(published.status, 200);
+  assert.equal(published.payload.plan.status, 'published');
+});

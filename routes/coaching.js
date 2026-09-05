@@ -134,13 +134,31 @@ function cleanProtocol(value = {}) {
   }));
   const clinicianConfirmed = value.clinicianConfirmed === true;
   const clinicianName = cleanText(value.clinicianName, { field: 'Clinician name', max: 120, required: clinicianConfirmed });
+  // Licence details are required exactly when the coach ticks the confirmation
+  // box, because that tick is what the credential has to stand behind.
   return {
     title: cleanText(value.title, { field: 'Protocol title', max: 120, required: true }),
     clinicianName,
     clinicianConfirmed,
+    clinicianLicenseType: cleanText(value.clinicianLicenseType, { field: 'Clinician licence type', max: 60, required: clinicianConfirmed }),
+    clinicianLicenseNumber: cleanText(value.clinicianLicenseNumber, { field: 'Clinician licence number', max: 60, required: clinicianConfirmed }),
+    clinicianLicenseState: cleanText(value.clinicianLicenseState, { field: 'Clinician licence state', max: 40, required: clinicianConfirmed }),
+    clinicianNpi: cleanText(value.clinicianNpi, { field: 'Clinician NPI', max: 20 }),
+    clinicianLicenseExpiresAt: cleanDate(value.clinicianLicenseExpiresAt, 'Licence expiry'),
+    consentObtainedAt: cleanDate(value.consentObtainedAt, 'Consent date', clinicianConfirmed),
+    consentDocumentId: cleanText(value.consentDocumentId, { field: 'Consent document ID', max: 120 }),
     items,
     notes: cleanText(value.notes, { field: 'Protocol notes', max: 3000 })
   };
+}
+
+/** Parse a date the coach typed, rejecting anything unparseable. */
+function cleanDate(value, field, required = false) {
+  const text = cleanText(value, { field, max: 40, required });
+  if (!text) return null;
+  const date = new Date(text);
+  if (Number.isNaN(date.getTime())) throw badRequest(`${field} is not a valid date.`);
+  return date.toISOString();
 }
 
 function cleanWorkoutLog(value = {}) {
@@ -484,7 +502,16 @@ function createCoachingRouter({
 
   router.post('/admin/clients/:clientId/nutrition-plans', requireCoach, requireClientAccess, asyncRoute(async (req, res) => res.status(201).json({ plan: await store.createNutritionPlan(req.params.clientId, cleanNutritionPlan(req.body)) })));
   router.post('/admin/clients/:clientId/supplement-plans', requireCoach, requireClientAccess, asyncRoute(async (req, res) => res.status(201).json({ plan: await store.createSupplementPlan(req.params.clientId, cleanSupplementPlan(req.body)) })));
-  router.post('/admin/clients/:clientId/protocols', requireCoach, requireClientAccess, asyncRoute(async (req, res) => res.status(201).json({ plan: await store.createProtocol(req.params.clientId, cleanProtocol(req.body)) })));
+  router.post('/admin/clients/:clientId/protocols', requireCoach, requireClientAccess, asyncRoute(async (req, res) => {
+    const input = cleanProtocol(req.body);
+    // Who verified the licence is server-side truth: it is the signed-in coach
+    // at the moment of confirmation, never a value the client can submit.
+    if (input.clinicianConfirmed) {
+      input.clinicianVerifiedAt = new Date().toISOString();
+      input.clinicianVerifiedBy = req.coachingActor.coach?.name || req.coachingActor.coachId;
+    }
+    res.status(201).json({ plan: await store.createProtocol(req.params.clientId, input) });
+  }));
   router.post('/admin/care-plans/:kind/:id/publish', requireCoach, asyncRoute(async (req, res) => {
     if (!['nutrition', 'supplements', 'protocol'].includes(req.params.kind)) throw badRequest('Unknown care plan type.');
     await assertClientAccessById(req, await store.carePlanClientId(req.params.kind, req.params.id));

@@ -163,7 +163,13 @@ test('coach invite → client PWA → workout and messaging flow works end to en
 
   const protocol = await request(`/admin/clients/${clientId}/protocols`, {
     method: 'POST', cookie: login.cookie,
-    body: { title: 'Display record', clinicianName: 'Dr. Example', clinicianConfirmed: true, items: [{ name: 'Clinician-directed item', instructions: 'Follow the written clinician instruction.', schedule: '', notes: '' }], notes: '' }
+    body: {
+      title: 'Display record', clinicianName: 'Dr. Example', clinicianConfirmed: true,
+      // Confirming the protocol now requires the licence it stands on.
+      clinicianLicenseType: 'MD', clinicianLicenseNumber: 'EXAMPLE-0000', clinicianLicenseState: 'OH',
+      consentObtainedAt: '2026-03-01',
+      items: [{ name: 'Clinician-directed item', instructions: 'Follow the written clinician instruction.', schedule: '', notes: '' }], notes: ''
+    }
   });
   assert.equal(protocol.response.status, 201);
   assert.equal((await request(`/admin/care-plans/protocol/${protocol.payload.plan.protocolId}/publish`, { method: 'POST', cookie: login.cookie, body: {} })).response.status, 200);
