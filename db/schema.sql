@@ -254,6 +254,41 @@ CREATE TABLE IF NOT EXISTS coaching_peptide_protocols (
 );
 CREATE INDEX IF NOT EXISTS coaching_peptide_protocols_client_idx ON coaching_peptide_protocols(client_id, status, updated_at DESC);
 
+-- Clinician credential behind a peptide protocol.
+--
+-- clinician_confirmed above is a boolean: it records that someone ticked a box,
+-- not who, under what licence, whether it was current, or that the client
+-- consented. These columns are the evidence that tick stands on. Validated by
+-- lib/credentials/validate.js and enforced at publish time.
+--
+-- All nullable, and the constraint is added NOT VALID on purpose: protocols
+-- published before this existed are not retroactively invalidated, but no new
+-- publish can happen without the credential. Archiving an old row still works,
+-- because archived rows do not have to satisfy it.
+ALTER TABLE coaching_peptide_protocols ADD COLUMN IF NOT EXISTS clinician_license_type TEXT;
+ALTER TABLE coaching_peptide_protocols ADD COLUMN IF NOT EXISTS clinician_license_number TEXT;
+ALTER TABLE coaching_peptide_protocols ADD COLUMN IF NOT EXISTS clinician_license_state TEXT;
+ALTER TABLE coaching_peptide_protocols ADD COLUMN IF NOT EXISTS clinician_npi TEXT;
+ALTER TABLE coaching_peptide_protocols ADD COLUMN IF NOT EXISTS clinician_license_expires_at DATE;
+ALTER TABLE coaching_peptide_protocols ADD COLUMN IF NOT EXISTS clinician_verified_at TIMESTAMPTZ;
+ALTER TABLE coaching_peptide_protocols ADD COLUMN IF NOT EXISTS clinician_verified_by TEXT;
+ALTER TABLE coaching_peptide_protocols ADD COLUMN IF NOT EXISTS consent_obtained_at TIMESTAMPTZ;
+ALTER TABLE coaching_peptide_protocols ADD COLUMN IF NOT EXISTS consent_document_id TEXT;
+
+DO $$ BEGIN
+  ALTER TABLE coaching_peptide_protocols
+    ADD CONSTRAINT coaching_peptide_protocols_credential_chk
+    CHECK (
+      status <> 'published' OR (
+        coalesce(clinician_license_type, '') <> ''
+        AND coalesce(clinician_license_number, '') <> ''
+        AND coalesce(clinician_license_state, '') <> ''
+        AND clinician_verified_at IS NOT NULL
+        AND consent_obtained_at IS NOT NULL
+      )
+    ) NOT VALID;
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+
 CREATE TABLE IF NOT EXISTS coaching_messages (
   message_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   client_id UUID NOT NULL REFERENCES coaching_clients(client_id) ON DELETE CASCADE,

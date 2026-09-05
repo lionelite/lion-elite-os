@@ -153,6 +153,7 @@ const validProtocol = () => ({
     verifiedBy: 'owner'
   },
   informedConsent: { obtainedAt: '2026-03-02', documentId: 'consent-0001' },
+  // documentId and npi are optional; obtainedAt is not.
   scope: 'clinician_directed'
 });
 
@@ -190,4 +191,11 @@ test('a coach-directed protocol is rejected outright', () => {
   const outcome = validateProtocolCredential({ ...validProtocol(), scope: 'coach_directed' });
   assert.equal(outcome.valid, false);
   assert.ok(outcome.errors.some(error => error.includes('a coach does not prescribe')));
+});
+
+test('a consent document id is optional but the consent date is not', () => {
+  const record = validProtocol();
+  delete record.informedConsent.documentId;
+  delete record.clinician.npi;
+  assert.equal(validateProtocolCredential(record).valid, true, 'npi and documentId are optional');
 });

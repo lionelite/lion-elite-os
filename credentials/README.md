@@ -122,15 +122,32 @@ Enforced beyond presence:
 - **`scope` must be `clinician_directed`.** A coach does not prescribe. A record
   claiming otherwise is refused outright rather than stored.
 
-### Known gap
+### Wired in (2026-09-05)
 
-The database stores `clinician_name` and `clinician_confirmed` and nothing else.
-None of the fields above have a column. Until they do, this record has no home
-in Postgres and the validator can only be run against a file.
+`coaching_peptide_protocols` now carries the credential: licence type, number,
+state, NPI, expiry, who verified it and when, plus consent date and document id.
+`publishCarePlan` runs `validateProtocolCredential` before a protocol can reach
+a client, and the database enforces the core fields independently:
 
-Closing that gap means adding the columns and writing the credential at publish
-time. It is a schema change with real liability behind it and is deliberately
-**not** done here — flagged for an owner decision rather than assumed.
+```sql
+CHECK (status <> 'published' OR (
+  clinician_license_type <> '' AND clinician_license_number <> ''
+  AND clinician_license_state <> '' AND clinician_verified_at IS NOT NULL
+  AND consent_obtained_at IS NOT NULL
+)) NOT VALID
+```
+
+`NOT VALID` is deliberate: protocols published before this existed are not
+retroactively invalidated, and archiving one still works, but no new publish can
+happen without the credential. Verified against a real database by migrating one
+that already held a credential-less published protocol.
+
+`clinician_verified_by` and `clinician_verified_at` are set server-side from the
+signed-in coach at the moment of confirmation. They are never accepted from the
+request body — a self-reported verifier is not a verifier.
+
+The coach form collects all of it. Licence details are required exactly when the
+confirmation box is ticked, so an unconfirmed draft still needs none.
 
 ## Not legal advice
 
