@@ -58,24 +58,33 @@ function startManaged(name, script, args = []) {
 
 const stopHandlers = [];
 
-// The listener is read-only and safe to run on credentials alone. Posting is
-// not: it is started only when BLUESKY_OUTREACH_ENABLED is explicitly 'true',
-// so credentials appearing in the dashboard can never by themselves put replies
-// on other people's posts. This bootstrap no longer forces ENABLED/DRY_RUN/
-// DELIVERY_MODE — the engine's own fail-closed defaults apply.
-if (hasBlueskyCredentials()) {
-  console.log('[bootstrap] Bluesky credentials detected; starting read-only listener.');
-  stopHandlers.push(startManaged('bluesky-listener', 'social-listening/src/monitor.js', ['--no-model', '--quiet']));
+// Lead discovery needs no Bluesky account. The listener consumes Bluesky's
+// PUBLIC Jetstream firehose and reads no credential anywhere in monitor.js,
+// jetstream.js, store.js, classifier.js or universal-lead-store.js — only the
+// reply path authenticates (com.atproto.server.createSession). Gating discovery
+// behind hasBlueskyCredentials() therefore blocked it on something it never
+// used, which is why no lead had ever been found. It now runs by default and
+// can be turned off with BLUESKY_LISTENER_ENABLED=false.
+//
+// Posting keeps both explicit switches and additionally needs credentials, so
+// nothing here can put a reply on anyone's post.
+const listenerEnabled = String(process.env.BLUESKY_LISTENER_ENABLED || 'true').toLowerCase() !== 'false';
 
-  if (String(process.env.BLUESKY_OUTREACH_ENABLED || '').toLowerCase() === 'true') {
-    const dryRun = String(process.env.BLUESKY_OUTREACH_DRY_RUN || 'true').toLowerCase() !== 'false';
-    console.log(`[bootstrap] Bluesky outreach explicitly enabled; starting worker (dryRun=${dryRun}).`);
-    stopHandlers.push(startManaged('bluesky-outreach-worker', 'social-listening/src/outreach-worker.js'));
-  } else {
-    console.log('[bootstrap] Bluesky outreach not enabled; reply worker not started. Set BLUESKY_OUTREACH_ENABLED=true to enable.');
-  }
+if (listenerEnabled) {
+  console.log('[bootstrap] Starting read-only Bluesky listener (public firehose; no account required).');
+  stopHandlers.push(startManaged('bluesky-listener', 'social-listening/src/monitor.js', ['--no-model', '--quiet']));
 } else {
-  console.log('[bootstrap] Bluesky credentials not configured; social automation not started.');
+  console.log('[bootstrap] Bluesky listener disabled by BLUESKY_LISTENER_ENABLED=false.');
+}
+
+if (!hasBlueskyCredentials()) {
+  console.log('[bootstrap] No Bluesky credentials; reply worker not started (discovery is unaffected).');
+} else if (String(process.env.BLUESKY_OUTREACH_ENABLED || '').toLowerCase() !== 'true') {
+  console.log('[bootstrap] Bluesky outreach not enabled; reply worker not started. Set BLUESKY_OUTREACH_ENABLED=true to enable.');
+} else {
+  const dryRun = String(process.env.BLUESKY_OUTREACH_DRY_RUN || 'true').toLowerCase() !== 'false';
+  console.log(`[bootstrap] Bluesky outreach explicitly enabled; starting worker (dryRun=${dryRun}).`);
+  stopHandlers.push(startManaged('bluesky-outreach-worker', 'social-listening/src/outreach-worker.js'));
 }
 
 for (const signal of ['SIGTERM', 'SIGINT']) {
