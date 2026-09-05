@@ -13,7 +13,7 @@ const { AUDIENCE_KEYS } = require('./audience-profiles');
 const { resolveOllamaConfig, checkOllama, analyzeIntent, applyModelAssessment } = require('./ollama-intent');
 const { appendMatch, DATA_DIR } = require('./store');
 const { detectUniversalLead } = require('./universal-lead-intelligence');
-const { persistUniversalLead } = require('./universal-lead-store');
+const { persistUniversalLead, persistAudienceMatch } = require('./universal-lead-store');
 
 function parseArgs(argv) {
   const args = { audiences: [], minScore: 40, useModel: true, quiet: false };
@@ -163,6 +163,17 @@ async function main() {
         },
         match
       });
+
+      // Durable storage for the brand lanes as well. Without this, the two
+      // segments the business actually wants — people seeking a coach, and
+      // coaches scaling their own business — existed only in a JSONL file
+      // inside an ephemeral container and vanished on every restart.
+      try {
+        const stored = await persistAudienceMatch(post, match);
+        if (stored.stored) stats.durableLeads += 1;
+      } catch (error) {
+        console.error(`[listen] Brand lead persistence error ${key}: ${error.message}`);
+      }
     }
   });
 
