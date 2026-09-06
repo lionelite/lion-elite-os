@@ -6,6 +6,7 @@
 //
 //   node scripts/harvest-leads.js                  # all audiences
 //   node scripts/harvest-leads.js --audience=coach-scaling
+//   node scripts/harvest-leads.js --business       # also harvest B2B (phone/email)
 //   node scripts/harvest-leads.js --dry-run        # print, write nothing
 //
 // Output (under leads/harvested/):
@@ -19,6 +20,7 @@
 const fs = require('fs');
 const path = require('path');
 const { harvestBluesky, SEARCH_QUERIES } = require('../lib/leads/harvest');
+const { harvestBusinesses } = require('../lib/leads/business-harvest');
 const { AUDIENCE_PROFILES } = require('../social-listening/src/audience-profiles');
 
 const OUT_DIR = path.join(__dirname, '..', 'leads', 'harvested');
@@ -83,11 +85,30 @@ function renderDigest(title, leads, summary) {
 
   if (summary) {
     lines.push(
-      '| Searches | Posts read | Matched | Dropped (do-not-engage) |',
-      '|---:|---:|---:|---:|',
-      `| ${summary.searched} | ${summary.postsSeen} | ${summary.matched} | ${summary.skippedDoNotEngage} |`,
+      '| Searches run | Searches failed | Posts read | Matched | Dropped (do-not-engage) |',
+      '|---:|---:|---:|---:|---:|',
+      `| ${summary.searched} | ${summary.errors.length} | ${summary.postsSeen} | ${summary.matched} | ${summary.skippedDoNotEngage} |`,
       ''
     );
+
+    // A failed source and an empty result look identical in a lead count, and
+    // reporting "nothing matched" when nothing was actually queried is how a
+    // broken pipeline goes unnoticed. Say which one happened.
+    if (summary.errors.length) {
+      lines.push(
+        `> **${summary.errors.length} search${summary.errors.length === 1 ? '' : 'es'} failed.** ` +
+        'The counts below are not "there was nothing to find" — they are what survived the failures.',
+        '',
+        '<details><summary>What failed</summary>',
+        '',
+        '```',
+        ...summary.errors.slice(0, 40),
+        '```',
+        '',
+        '</details>',
+        ''
+      );
+    }
   }
 
   lines.push(
@@ -97,7 +118,12 @@ function renderDigest(title, leads, summary) {
   );
 
   if (leads.length === 0) {
-    lines.push('No leads matched this pass. The searches ran; nothing cleared the classifier.', '');
+    // Distinguish "asked and got nothing" from "never got to ask".
+    if (summary && summary.searched === 0 && summary.errors.length > 0) {
+      lines.push('**No leads, because no source could be reached.** Every query failed — see above.', '');
+    } else {
+      lines.push('No leads matched this pass. The searches ran; nothing cleared the classifier.', '');
+    }
     return lines.join('\n');
   }
 
@@ -125,6 +151,31 @@ async function main() {
   );
   for (const error of summary.errors) console.log(`[harvest] error: ${error}`);
 
+  // The B2B pass is where phone numbers and emails come from: Bluesky gives a
+  // handle, OSM gives a business with published contact details. It reads real
+  // small-business websites, so it is opt-in per run rather than always on.
+  const existingForSkip = readExisting();
+  if (has('business')) {
+    const rotation = Number(arg('rotation', String(new Date().getUTCHours())));
+    try {
+      const known = new Set(existingForSkip.filter((l) => l.source === 'openstreetmap').map((l) => l.id));
+      const business = await harvestBusinesses({
+        rotation,
+        batchSize: Number(arg('batch-size', '25')),
+        knownIds: known
+      });
+      console.log(
+        `[harvest] business pass (${business.summary.area}): found ${business.summary.found}, ` +
+        `new ${business.leads.length}, already known ${business.summary.skipped}, emails ${business.summary.enriched}`
+      );
+      leads.push(...business.leads);
+    } catch (error) {
+      // A blocked Overpass endpoint must not throw away the Bluesky leads
+      // already collected in this run.
+      console.log(`[harvest] business pass failed: ${error.message}`);
+    }
+  }
+
   if (dryRun) {
     console.log(renderDigest('Lead harvest (dry run)', leads, summary));
     return;
@@ -134,7 +185,7 @@ async function main() {
 
   // Merge with history: a person who posts again is a fresh lead, but the
   // same post is never stored twice.
-  const existing = readExisting();
+  const existing = existingForSkip;
   const known = new Set(existing.map((lead) => `${lead.audience}:${lead.id}`));
   const fresh = leads.filter((lead) => !known.has(`${lead.audience}:${lead.id}`));
   const all = existing.concat(fresh).sort((a, b) => String(b.postedAt).localeCompare(String(a.postedAt)));
@@ -145,9 +196,16 @@ async function main() {
 
   console.log(`[harvest] ${fresh.length} new, ${all.length} total -> leads/harvested/`);
 
-  // Surface the count to the workflow so the run summary can show it.
+  // Surface the counts to the workflow so the run summary can show them, and
+  // flag the case where no source was reachable at all. The workflow commits
+  // the digest first and then fails on this flag: a green check on a run that
+  // queried nothing is how a dead pipeline stays invisible.
   if (process.env.GITHUB_OUTPUT) {
-    fs.appendFileSync(process.env.GITHUB_OUTPUT, `new_leads=${fresh.length}\ntotal_leads=${all.length}\n`);
+    const allFailed = summary.searched === 0 && summary.errors.length > 0;
+    fs.appendFileSync(
+      process.env.GITHUB_OUTPUT,
+      `new_leads=${fresh.length}\ntotal_leads=${all.length}\nall_failed=${allFailed}\n`
+    );
   }
 }
 
