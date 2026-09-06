@@ -156,6 +156,32 @@ services:
     autoDeploy: true
     envVars: *executiveEnv
 
+  # Consumes the prospect-discovery queue that scripts/cron-scheduler.js has
+  # been filling every four hours with no reader. Finds businesses from their
+  # own public OpenStreetMap listings and reads the contact address they publish
+  # on their own site — the same posture as the rest of the prospect pipeline.
+  # Concurrency stays at 1: Overpass is a donated shared service and the sites
+  # being read belong to small businesses.
+  - type: worker
+    name: lion-elite-discovery-worker
+    runtime: node
+    buildCommand: npm install --no-audit --no-fund
+    startCommand: node workers/discovery-worker.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: lion-elite-os-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          type: keyvalue
+          name: lion-elite-os-redis
+          property: connectionString
+      - key: DISCOVERY_WORKER_CONCURRENCY
+        value: 1
+
   # Coaching welcome SMS. Runs hourly and does nothing until a human sets
   # SMS_SEND_ENABLED=true and the Twilio credentials — a scheduled run with the
   # switch off reports why it stopped and sends nothing, which is the intended
