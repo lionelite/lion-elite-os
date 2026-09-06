@@ -2,6 +2,7 @@
 
 const { PostgresProspectStore } = require('../../lib/postgres-prospect-store');
 const { enrichPublicContact } = require('./public-contact-enrichment');
+const { scheduleGoogleDriveSync } = require('./google-drive-lead-sync');
 
 const CAMPAIGN_ID = 'bluesky-universal-leads';
 const AUDIENCE_CAMPAIGN_ID = 'bluesky-audience-leads';
@@ -28,7 +29,7 @@ function schedulePublicContactEnrichment(prospect) {
       const publicPhones = Array.isArray(publicContact.publicPhones) ? publicContact.publicPhones : [];
       const hasPublicContact = publicEmails.length > 0 || publicPhones.length > 0;
 
-      await store.update(prospect.prospectId, {
+      const enriched = await store.update(prospect.prospectId, {
         business: {
           ...(prospect.business || {}),
           displayName: publicContact.displayName || prospect.business?.displayName || publicContact.handle || prospect.contact.blueskyDid,
@@ -42,7 +43,6 @@ function schedulePublicContactEnrichment(prospect) {
           publicBusinessEmails: publicEmails,
           publicBusinessPhones: publicPhones,
           publicContactSources: publicContact.sources || [],
-          // Discovery of a public address/phone is not consent.
           outreachConsent: false,
           outreachEligible: false
         },
@@ -60,6 +60,10 @@ function schedulePublicContactEnrichment(prospect) {
           ? 'review_public_contact_and_outreach_eligibility'
           : prospect.nextAction || 'review_high_priority_bluesky_lead'
       }, 'bluesky-public-contact-enrichment');
+
+      // Update the same Drive row after enrichment so the archive gets the
+      // public contact details and evidence without creating a duplicate lead.
+      scheduleGoogleDriveSync(enriched, { event: 'lead_enriched' });
     } catch (error) {
       try {
         await store.update(prospect.prospectId, {
@@ -80,13 +84,6 @@ function schedulePublicContactEnrichment(prospect) {
   });
 }
 
-/**
- * Persist one Bluesky lead as a prospect row.
- *
- * @param {object} post    the source post
- * @param {object} lead    { niche, opportunityScore, intentSignals, valueSignals }
- * @param {string} campaignId which lane found it
- */
 async function persistBlueskyLead(post, lead, campaignId = CAMPAIGN_ID) {
   if (!process.env.DATABASE_URL) return { stored: false, reason: 'DATABASE_URL_NOT_CONFIGURED' };
 
@@ -163,6 +160,9 @@ async function persistBlueskyLead(post, lead, campaignId = CAMPAIGN_ID) {
     nextAction: bestScore >= 70 ? 'review_high_priority_bluesky_lead' : 'monitor_bluesky_lead'
   }, 'bluesky-listener');
 
+  // Every stored lead is mirrored to Google Drive immediately, even when the
+  // lead does not qualify for public-contact enrichment.
+  scheduleGoogleDriveSync(updated, { event: created.duplicate ? 'lead_updated' : 'lead_created' });
   schedulePublicContactEnrichment(updated);
   return { stored: true, duplicate: created.duplicate, prospect: updated };
 }
@@ -171,20 +171,6 @@ function persistUniversalLead(post, lead) {
   return persistBlueskyLead(post, lead, CAMPAIGN_ID);
 }
 
-/**
- * Persist a brand-audience classifier match (personal-training, coach-scaling,
- * business-scaling, research-peptides).
- *
- * Until this existed only the universal lane reached Postgres; classifier
- * matches were appended to a JSONL file inside an ephemeral container and were
- * lost on every restart and deploy. Those are the lanes carrying the two
- * segments the business actually wants.
- *
- * A doNotEngage match is deliberately never written. The prospects table is an
- * outreach surface, and a post flagged do-not-engage — a peer, a competitor, or
- * human-use intent under the RUO rules — must not land somewhere that can feed
- * a send path. It stays in the local JSONL for review only.
- */
 function persistAudienceMatch(post, match) {
   if (!match || match.doNotEngage) {
     return Promise.resolve({ stored: false, reason: 'DO_NOT_ENGAGE' });
