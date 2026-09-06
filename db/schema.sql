@@ -455,3 +455,12 @@ CREATE TABLE IF NOT EXISTS captured_leads (
 CREATE UNIQUE INDEX IF NOT EXISTS captured_leads_email_lane_idx ON captured_leads(lower(email), lane);
 CREATE INDEX IF NOT EXISTS captured_leads_lane_status_idx ON captured_leads(lane, status, created_at DESC);
 CREATE INDEX IF NOT EXISTS captured_leads_sms_reachable_idx ON captured_leads(sms_marketing_consent, unsubscribed_at);
+
+-- Quiet hours are enforced in the recipient's LOCAL time, and an unknown local
+-- time fails closed (skipped as unknown_local_time). Without a timezone every
+-- lead would therefore be permanently unsendable, so the opt-in page captures
+-- the browser's IANA zone at the moment of consent.
+ALTER TABLE captured_leads ADD COLUMN IF NOT EXISTS timezone TEXT;
+-- Per-campaign cooldown needs to know when we last texted them.
+ALTER TABLE captured_leads ADD COLUMN IF NOT EXISTS last_sms_sent_at TIMESTAMPTZ;
+ALTER TABLE captured_leads ADD COLUMN IF NOT EXISTS last_sms_campaign TEXT;

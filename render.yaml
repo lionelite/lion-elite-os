@@ -156,6 +156,41 @@ services:
     autoDeploy: true
     envVars: *executiveEnv
 
+  # Coaching welcome SMS. Runs hourly and does nothing until a human sets
+  # SMS_SEND_ENABLED=true and the Twilio credentials — a scheduled run with the
+  # switch off reports why it stopped and sends nothing, which is the intended
+  # resting state. Quiet hours are per recipient, so an hourly cadence lets a
+  # lead be reached during their own daytime rather than ours.
+  - type: cron
+    name: lion-elite-coaching-welcome-sms
+    runtime: node
+    schedule: "17 * * * *"
+    buildCommand: npm install --no-audit --no-fund
+    startCommand: node scripts/send-coaching-welcome-sms.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: lion-elite-os-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          type: keyvalue
+          name: lion-elite-os-redis
+          property: connectionString
+      - key: DAILY_SMS_LIMIT
+        value: 50
+      # Owner-set. Sending stays off until every one of these exists.
+      - key: SMS_SEND_ENABLED
+        sync: false
+      - key: TWILIO_ACCOUNT_SID
+        sync: false
+      - key: TWILIO_AUTH_TOKEN
+        sync: false
+      - key: TWILIO_MESSAGING_SERVICE_SID
+        sync: false
+
   - type: cron
     name: lion-elite-operations-monitor
     runtime: node

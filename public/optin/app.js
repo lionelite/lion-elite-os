@@ -96,6 +96,12 @@
           name: data.name || '',
           email: data.email,
           phone: data.phone || '',
+          // Quiet hours are enforced in the recipient's local time, and an
+          // unknown zone fails closed — so capture it at the moment of consent.
+          timezone: (() => {
+            try { return Intl.DateTimeFormat().resolvedOptions().timeZone || ''; }
+            catch { return ''; }
+          })(),
           emailMarketingConsent: form.elements.emailMarketingConsent.checked,
           smsMarketingConsent: wantsSms,
           // Verbatim, exactly as rendered above.
