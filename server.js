@@ -56,6 +56,30 @@ app.use('/coaching', (_req, res, next) => {
   });
   next();
 });
+// The public opt-in page. Same posture as /coaching: no framing, no third-party
+// scripts, nothing it does not need. Distinct from /join, which is the
+// coaching purchase page.
+app.use('/optin', (_req, res, next) => {
+  res.set({
+    'Content-Security-Policy': [
+      "default-src 'self'",
+      "base-uri 'none'",
+      "connect-src 'self'",
+      "font-src 'self'",
+      "form-action 'self'",
+      "frame-ancestors 'none'",
+      "img-src 'self' data:",
+      "object-src 'none'",
+      "script-src 'self'",
+      "style-src 'self'"
+    ].join('; '),
+    'Permissions-Policy': 'camera=(), geolocation=(), microphone=()',
+    'Referrer-Policy': 'no-referrer',
+    'X-Content-Type-Options': 'nosniff',
+    'X-Frame-Options': 'DENY'
+  });
+  next();
+});
 app.use(express.static(path.join(__dirname, 'public')));
 
 const customerCommunicationRules = [
