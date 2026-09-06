@@ -22,6 +22,7 @@ const {
   videoDetails
 } = require('../lib/coaching/validation');
 const { generateWorkoutDraft } = require('../lib/coaching/workout-planner');
+const { buildLeadOverview } = require('../lib/leads/lead-overview');
 
 function asyncRoute(handler) {
   return (req, res, next) => Promise.resolve(handler(req, res, next)).catch(next);
@@ -442,6 +443,13 @@ function createCoachingRouter({
   // the hash is stored, so a lost token is rotated rather than recovered.
 
   router.get('/admin/me', requireCoach, (req, res) => res.json({ coach: req.coachingActor.coach }));
+
+  // Lead flow across every engine. Owner-only: this is the whole prospect and
+  // opt-in list, which no individual coach has any reason to see.
+  router.get('/admin/leads', requireCoach, requireOwner, asyncRoute(async (req, res) => {
+    const limit = Math.min(100, Math.max(1, Number(req.query.limit) || 25));
+    res.json(await buildLeadOverview({ limit }));
+  }));
 
   router.get('/admin/coaches', requireCoach, requireOwner, asyncRoute(async (_req, res) => {
     res.json({ coaches: await store.listCoaches() });
