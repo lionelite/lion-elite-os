@@ -225,3 +225,128 @@ test('every request the harvester makes is an unauthenticated GET with no body',
       'the only endpoint reached is public search');
   }
 });
+
+// --- B2B pass: businesses with published phone/email -----------------------
+
+const { harvestBusinesses } = require('../lib/leads/business-harvest');
+
+function overpassResponse(elements) {
+  return { ok: true, status: 200, json: async () => ({ elements }) };
+}
+
+const MEDSPA = {
+  type: 'node',
+  id: 111,
+  lat: 39.96,
+  lon: -83.0,
+  tags: {
+    name: 'Radiance Med Spa',
+    shop: 'beauty',
+    'contact:phone': '+1-614-555-0142',
+    'contact:website': 'https://radiance-example.test',
+    'addr:city': 'Columbus',
+    'addr:state': 'OH'
+  }
+};
+
+test('a business becomes a lead carrying phone and enriched email', async () => {
+  const { leads, summary } = await harvestBusinesses({
+    rotation: 0,
+    batchSize: 5,
+    fetchImpl: async () => overpassResponse([MEDSPA]),
+    enrichImpl: async () => ({ status: 'verified', email: 'hello@radiance-example.test' }),
+    enrichDelayMs: 0,
+    logger: { log() {} }
+  });
+
+  assert.strictEqual(leads.length, 1);
+  const lead = leads[0];
+  assert.strictEqual(lead.source, 'openstreetmap');
+  assert.strictEqual(lead.name, 'Radiance Med Spa');
+  assert.strictEqual(lead.phone, '+1-614-555-0142');
+  assert.strictEqual(lead.email, 'hello@radiance-example.test');
+  assert.strictEqual(lead.contactChannel, 'email');
+  assert.ok(lead.score > 0);
+  assert.strictEqual(summary.enriched, 1);
+});
+
+test('an unverified enrichment yields a phone-only lead rather than a guessed email', async () => {
+  const { leads } = await harvestBusinesses({
+    fetchImpl: async () => overpassResponse([MEDSPA]),
+    // The real module returns a blocked status when it cannot verify one.
+    enrichImpl: async () => ({ status: 'blocked', reason: 'NO_VERIFIED_PUBLIC_BUSINESS_EMAIL', candidates: [] }),
+    enrichDelayMs: 0,
+    logger: { log() {} }
+  });
+
+  assert.strictEqual(leads.length, 1);
+  assert.strictEqual(leads[0].email, null, 'an unverified email is never stored');
+  assert.strictEqual(leads[0].phone, '+1-614-555-0142');
+  assert.strictEqual(leads[0].contactChannel, 'phone');
+});
+
+test('a business already harvested is skipped before its website is scraped again', async () => {
+  let enrichCalls = 0;
+  const { leads, summary } = await harvestBusinesses({
+    knownIds: new Set(['osm:node/111']),
+    fetchImpl: async () => overpassResponse([MEDSPA]),
+    enrichImpl: async () => {
+      enrichCalls += 1;
+      return { status: 'verified', email: 'hello@radiance-example.test' };
+    },
+    enrichDelayMs: 0,
+    logger: { log() {} }
+  });
+
+  assert.strictEqual(leads.length, 0);
+  assert.strictEqual(summary.skipped, 1);
+  assert.strictEqual(enrichCalls, 0, 'a known business must not have its site re-scraped');
+});
+
+test('runDiscovery skips nothing unless a caller asks it to', async () => {
+  const { runDiscovery } = require('../lib/discovery/discovery-run');
+  const stored = [];
+  const summary = await runDiscovery({
+    rotation: 0,
+    batchSize: 5,
+    enrichDelayMs: 0,
+    fetchImpl: async () => overpassResponse([MEDSPA]),
+    enrichEmail: async () => null,
+    saveProspect: async (record) => { stored.push(record); return { duplicate: false }; },
+    logger: { log() {} }
+  });
+
+  assert.strictEqual(stored.length, 1, 'the default predicate skips nothing');
+  assert.strictEqual(summary.skipped, 0);
+});
+
+// --- the digest must not claim a search happened when it did not ------------
+
+test('a run where every search failed says so instead of "nothing matched"', async () => {
+  const { execFileSync } = require('node:child_process');
+  const os = require('node:os');
+  const fs = require('node:fs');
+  const pathMod = require('node:path');
+
+  const dir = fs.mkdtempSync(pathMod.join(os.tmpdir(), 'harvest-'));
+  const outFile = pathMod.join(dir, 'github_output');
+  fs.writeFileSync(outFile, '');
+
+  // Every search 403s, exactly as the public AppView does from a datacenter IP.
+  const runner = pathMod.join(dir, 'run.js');
+  fs.writeFileSync(runner, `
+    global.fetch = async () => ({ ok: false, status: 403, json: async () => ({}) });
+    process.argv.push('--dry-run');
+    require(${JSON.stringify(require.resolve('../scripts/harvest-leads.js'))});
+  `);
+
+  const out = execFileSync(process.execPath, [runner], { encoding: 'utf8', env: { ...process.env } });
+
+  assert.match(out, /no source could be reached/i,
+    'the digest must name the failure rather than imply an empty result');
+  assert.doesNotMatch(out, /The searches ran; nothing cleared the classifier/,
+    'that sentence is false when nothing was queried');
+  assert.match(out, /searches failed/i, 'the failure count belongs in the digest');
+
+  fs.rmSync(dir, { recursive: true, force: true });
+});

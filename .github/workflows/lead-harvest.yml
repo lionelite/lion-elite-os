@@ -24,6 +24,11 @@ on:
         description: 'Results requested per search'
         required: false
         default: '25'
+      business:
+        description: 'Also harvest businesses from OpenStreetMap (phone/email)'
+        required: false
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -62,6 +67,28 @@ jobs:
           node-version: 22
 
       # The harvester uses only Node built-ins and repo files, so no install.
+      # A zero-lead run has two very different causes: nothing matched, or
+      # nothing was reachable. The first run hit the second case — Bluesky's
+      # public AppView returns 403 to datacenter IPs, and Actions runners are
+      # Azure — and the digest could not tell them apart. Probe first so the
+      # run summary always says which one happened.
+      - name: Probe lead sources
+        id: probe
+        continue-on-error: true
+        run: |
+          probe() {
+            code=$(curl -sS -m 15 -o /dev/null -w '%{http_code}' "$1" 2>/dev/null || echo 000)
+            printf '%s  %s\n' "$code" "$1"
+          }
+          {
+            probe 'https://public.api.bsky.app/xrpc/app.bsky.actor.getProfile?actor=bsky.app'
+            probe 'https://api.bsky.app/xrpc/app.bsky.actor.getProfile?actor=bsky.app'
+            probe 'https://bsky.social/xrpc/com.atproto.server.describeServer'
+            probe 'https://overpass-api.de/api/status'
+            probe 'https://overpass.kumi.systems/api/status'
+            probe 'https://nominatim.openstreetmap.org/status'
+          } | tee probe.log
+
       - name: Harvest leads
         id: harvest
         run: |
@@ -70,6 +97,10 @@ jobs:
           args=""
           [ -n "$audience" ] && args="$args --audience=$audience"
           [ -n "$per_query" ] && args="$args --per-query=$per_query"
+          # The scheduled run always includes the business pass; manual runs opt in.
+          if [ "${{ github.event_name }}" = "schedule" ] || [ "${{ github.event.inputs.business }}" = "true" ]; then
+            args="$args --business"
+          fi
           node scripts/harvest-leads.js $args 2>&1 | tee harvest.log
           exit "${PIPESTATUS[0]}"
 
@@ -83,6 +114,12 @@ jobs:
             echo "- **Total leads on record:** ${{ steps.harvest.outputs.total_leads || 'unknown' }}"
             echo
             echo "Read them at [\`leads/harvested/latest.md\`](https://github.com/${{ github.repository }}/blob/automation/leads/leads/harvested/latest.md) on the \`automation/leads\` branch."
+            echo
+            echo '### Source reachability from this runner'
+            echo
+            echo '```'
+            cat probe.log 2>/dev/null || echo 'Probe did not run.'
+            echo '```'
             echo
             echo '<details><summary>Run log</summary>'
             echo
@@ -129,3 +166,13 @@ jobs:
             git push origin HEAD:automation/leads \
               || echo "Push skipped because the remote moved. The next run retries."
           fi
+
+      # Committed first, so the digest explaining the failure is readable on the
+      # branch, then failed loudly. A run that reached no source at all must not
+      # report success — a green check on zero leads is how a dead pipeline
+      # stays invisible.
+      - name: Fail the run if no source could be reached
+        if: steps.harvest.outputs.all_failed == 'true'
+        run: |
+          echo "Every lead source failed. See the probe results and digest in the run summary."
+          exit 1
