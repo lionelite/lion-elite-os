@@ -1,0 +1,131 @@
+name: Lead Harvest
+
+# Find real people publicly asking for what we sell, and write them somewhere
+# a human can read without a database or a deploy.
+#
+# This runs on the GitHub runner because that is where outbound network access
+# exists — the dev sandbox's egress policy blocks Bluesky, Overpass, and
+# Render, so nothing here can be exercised end-to-end from a Claude session.
+#
+# Read-only: it searches public posts and commits notes. It sends nothing,
+# follows nobody, and likes nothing. Reaching out stays a manual human action.
+on:
+  schedule:
+    # Every two hours. Bluesky search reaches posts that already exist, so a
+    # gap between runs loses nothing the way a dropped firehose connection does.
+    - cron: '0 */2 * * *'
+  workflow_dispatch:
+    inputs:
+      audience:
+        description: 'Audience(s) to harvest, comma separated (blank = all)'
+        required: false
+        default: ''
+      per_query:
+        description: 'Results requested per search'
+        required: false
+        default: '25'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: lead-harvest
+  cancel-in-progress: false
+
+jobs:
+  harvest:
+    name: Harvest public posts into leads
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # Lead history lives on the unprotected automation branch, not main —
+      # main requires the "test" status check, which a data-only bot push can
+      # never satisfy. Restore it over main's code so dedupe sees everything
+      # harvested so far.
+      - name: Restore lead history
+        run: |
+          if git fetch origin automation/leads 2>/dev/null; then
+            git checkout FETCH_HEAD -- leads/harvested/ 2>/dev/null \
+              || echo "No leads/harvested/ on the history branch yet."
+          else
+            echo "No automation/leads branch yet. Starting fresh."
+          fi
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      # The harvester uses only Node built-ins and repo files, so no install.
+      - name: Harvest leads
+        id: harvest
+        run: |
+          audience='${{ github.event.inputs.audience }}'
+          per_query='${{ github.event.inputs.per_query }}'
+          args=""
+          [ -n "$audience" ] && args="$args --audience=$audience"
+          [ -n "$per_query" ] && args="$args --per-query=$per_query"
+          node scripts/harvest-leads.js $args 2>&1 | tee harvest.log
+          exit "${PIPESTATUS[0]}"
+
+      - name: Show what was found
+        if: always()
+        run: |
+          {
+            echo "## Lead harvest"
+            echo
+            echo "- **New leads this run:** ${{ steps.harvest.outputs.new_leads || '0' }}"
+            echo "- **Total leads on record:** ${{ steps.harvest.outputs.total_leads || 'unknown' }}"
+            echo
+            echo "Read them at [\`leads/harvested/latest.md\`](https://github.com/${{ github.repository }}/blob/automation/leads/leads/harvested/latest.md) on the \`automation/leads\` branch."
+            echo
+            echo '<details><summary>Run log</summary>'
+            echo
+            echo '```'
+            cat harvest.log 2>/dev/null || echo 'No output captured.'
+            echo '```'
+            echo
+            echo '</details>'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Commit leads to the automation branch
+        run: |
+          git config user.name "Lion Elite Lead Harvest"
+          git config user.email "actions@github.com"
+
+          if [ -z "$(git status --porcelain -- leads/harvested/)" ]; then
+            echo "No new leads to commit."
+            exit 0
+          fi
+
+          # Carry the output across the branch switch, the same way the video
+          # learning and daily social workflows move theirs.
+          output_tmp="$(mktemp -d)"
+          trap 'rm -rf "$output_tmp"' EXIT
+          cp -a leads/harvested/. "$output_tmp/"
+          git reset --hard HEAD
+          git clean -fd -- leads/harvested/
+
+          if git ls-remote --exit-code --heads origin automation/leads >/dev/null 2>&1; then
+            git fetch origin automation/leads
+            git checkout automation/leads
+          else
+            git checkout -B automation/leads
+          fi
+
+          mkdir -p leads/harvested
+          cp -a "$output_tmp/." leads/harvested/
+
+          git add leads/harvested/
+          if git diff --cached --quiet; then
+            echo "No lead changes to commit."
+          else
+            git commit -m "Harvest leads: ${{ steps.harvest.outputs.new_leads || '0' }} new"
+            git push origin HEAD:automation/leads \
+              || echo "Push skipped because the remote moved. The next run retries."
+          fi
