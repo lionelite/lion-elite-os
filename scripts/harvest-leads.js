@@ -155,6 +155,15 @@ async function main() {
   // handle, OSM gives a business with published contact details. It reads real
   // small-business websites, so it is opt-in per run rather than always on.
   const existingForSkip = readExisting();
+
+  // "Did any source answer at all" is what decides whether this run is a
+  // failure, so track it per source. Judging it from the Bluesky counters alone
+  // would fail a run in which the business pass worked perfectly.
+  let anySourceSucceeded = summary.searched > 0;
+  const sourceStatus = [
+    `bluesky: ${summary.searched > 0 ? `${summary.searched} searches ran` : `unreachable (${summary.errors.length} failed)`}`
+  ];
+
   if (has('business')) {
     const rotation = Number(arg('rotation', String(new Date().getUTCHours())));
     try {
@@ -169,12 +178,16 @@ async function main() {
         `new ${business.leads.length}, already known ${business.summary.skipped}, emails ${business.summary.enriched}`
       );
       leads.push(...business.leads);
+      anySourceSucceeded = true;
+      sourceStatus.push(`openstreetmap: ${business.summary.found} businesses in ${business.summary.area}`);
     } catch (error) {
-      // A blocked Overpass endpoint must not throw away the Bluesky leads
-      // already collected in this run.
+      // A busy Overpass must not throw away the Bluesky leads already collected
+      // in this run.
       console.log(`[harvest] business pass failed: ${error.message}`);
+      sourceStatus.push(`openstreetmap: unreachable (${error.message})`);
     }
   }
+  console.log(`[harvest] sources — ${sourceStatus.join(' | ')}`);
 
   if (dryRun) {
     console.log(renderDigest('Lead harvest (dry run)', leads, summary));
@@ -201,10 +214,9 @@ async function main() {
   // the digest first and then fails on this flag: a green check on a run that
   // queried nothing is how a dead pipeline stays invisible.
   if (process.env.GITHUB_OUTPUT) {
-    const allFailed = summary.searched === 0 && summary.errors.length > 0;
     fs.appendFileSync(
       process.env.GITHUB_OUTPUT,
-      `new_leads=${fresh.length}\ntotal_leads=${all.length}\nall_failed=${allFailed}\n`
+      `new_leads=${fresh.length}\ntotal_leads=${all.length}\nall_failed=${!anySourceSucceeded}\n`
     );
   }
 }
