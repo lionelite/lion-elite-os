@@ -34,6 +34,10 @@ services:
       # token issued from the Coaches tab, so this is never shared out.
       - key: COACH_PORTAL_ADMIN_TOKEN
         generateValue: true
+      - key: UNSUBSCRIBE_SECRET
+        generateValue: true
+      - key: PUBLIC_BASE_URL
+        sync: false
       - key: COACH_OWNER_NAME
         sync: false
       - key: COACH_OWNER_EMAIL
