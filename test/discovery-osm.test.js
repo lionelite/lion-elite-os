@@ -68,14 +68,97 @@ test('only a business’s own published contact details are read', () => {
 });
 
 test('rate limiting is surfaced as retryable rather than swallowed', async () => {
+  // Pinning `endpoint` disables failover, so this still tests the single-request
+  // behaviour it was written for rather than silently exercising three mirrors.
   await assert.rejects(
-    () => fetchBusinesses({ area, fetchImpl: async () => ({ ok: false, status: 429 }) }),
+    () => fetchBusinesses({ area, endpoint: 'https://one.test/api', fetchImpl: async () => ({ ok: false, status: 429 }) }),
     error => error.retryable === true && /rate limiting/.test(error.message)
   );
   await assert.rejects(
-    () => fetchBusinesses({ area, fetchImpl: async () => ({ ok: false, status: 500 }) }),
+    () => fetchBusinesses({ area, endpoint: 'https://one.test/api', fetchImpl: async () => ({ ok: false, status: 500 }) }),
     /Overpass responded 500/
   );
+});
+
+test('a busy mirror is retried on the next one', async () => {
+  const tried = [];
+  const businesses = await fetchBusinesses({
+    area,
+    endpoints: ['https://busy.test/api', 'https://spare.test/api'],
+    sleepImpl: async () => {},
+    logger: { warn() {} },
+    fetchImpl: async (url) => {
+      tried.push(url);
+      // The live failure: overpass-api.de answers a large bbox with 504.
+      if (url === 'https://busy.test/api') return { ok: false, status: 504 };
+      return {
+        ok: true,
+        status: 200,
+        json: async () => ({
+          elements: [{
+            type: 'node', id: 7, lat: 1, lon: 2,
+            tags: { name: 'Spare Spa', shop: 'beauty', 'contact:phone': '+1-614-555-0100' }
+          }]
+        })
+      };
+    }
+  });
+
+  assert.deepStrictEqual(tried, ['https://busy.test/api', 'https://spare.test/api']);
+  assert.strictEqual(businesses.length, 1);
+  assert.strictEqual(businesses[0].name, 'Spare Spa');
+});
+
+test('a timeout also moves to the next mirror', async () => {
+  const tried = [];
+  const businesses = await fetchBusinesses({
+    area,
+    endpoints: ['https://slow.test/api', 'https://spare.test/api'],
+    sleepImpl: async () => {},
+    logger: { warn() {} },
+    fetchImpl: async (url) => {
+      tried.push(url);
+      if (url === 'https://slow.test/api') {
+        const error = new Error('The operation was aborted due to timeout');
+        error.name = 'TimeoutError';
+        throw error;
+      }
+      return { ok: true, status: 200, json: async () => ({ elements: [] }) };
+    }
+  });
+
+  assert.strictEqual(tried.length, 2);
+  assert.deepStrictEqual(businesses, []);
+});
+
+test('a bad query fails fast instead of hammering every mirror', async () => {
+  const tried = [];
+  await assert.rejects(
+    () => fetchBusinesses({
+      area,
+      endpoints: ['https://a.test/api', 'https://b.test/api', 'https://c.test/api'],
+      sleepImpl: async () => {},
+      logger: { warn() {} },
+      fetchImpl: async (url) => { tried.push(url); return { ok: false, status: 400 }; }
+    }),
+    /Overpass responded 400/
+  );
+  assert.strictEqual(tried.length, 1, 'every mirror would reject a malformed query identically');
+});
+
+test('when every mirror is busy the last failure is what surfaces', async () => {
+  const tried = [];
+  await assert.rejects(
+    () => fetchBusinesses({
+      area,
+      endpoints: ['https://a.test/api', 'https://b.test/api'],
+      sleepImpl: async () => {},
+      logger: { warn() {} },
+      fetchImpl: async (url) => { tried.push(url); return { ok: false, status: 504 }; }
+    }),
+    error => error.retryable === true
+  );
+  assert.strictEqual(tried.length, 2, 'both mirrors are attempted before giving up');
 });
 
 test('the request identifies itself to a donated shared service', async () => {
