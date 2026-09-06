@@ -9,6 +9,7 @@
 
 const express = require('express');
 const { buildCapture, LANES, SMS_DISCLOSURE } = require('../lib/leads/consent-capture');
+const { verify } = require('../lib/leads/unsubscribe-token');
 
 function createRateLimiter({ windowMs, limit }) {
   const buckets = new Map();
@@ -72,7 +73,14 @@ function createLeadsRouter({ store } = {}) {
       error.statusCode = 400;
       throw error;
     }
+    // The signature is recorded, not enforced. Refusing an unsubscribe because
+    // a token drifted would break the opt-out the law requires; the trust level
+    // just says how much weight the request carries.
+    const trust = verify(email, req.body?.token);
     const updated = await store.unsubscribe(email, req.body?.lane);
+    if (trust === 'invalid') {
+      console.warn('[leads] unsubscribe with an invalid signature; honoured anyway');
+    }
     // Always the same answer: whether an address is on a list is not something
     // an unauthenticated caller gets to probe.
     res.json({ unsubscribed: true, records: updated.length });

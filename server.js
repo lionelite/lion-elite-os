@@ -59,7 +59,7 @@ app.use('/coaching', (_req, res, next) => {
 // The public opt-in page. Same posture as /coaching: no framing, no third-party
 // scripts, nothing it does not need. Distinct from /join, which is the
 // coaching purchase page.
-app.use('/optin', (_req, res, next) => {
+app.use(['/optin', '/unsubscribe'], (_req, res, next) => {
   res.set({
     'Content-Security-Policy': [
       "default-src 'self'",
