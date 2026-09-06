@@ -17,6 +17,7 @@
     eventSource: null,
     lastInvite: null,
     coaches: [],
+    leads: null,
     lastCoachToken: null
   };
 
@@ -51,7 +52,7 @@
   ];
   // Coach administration belongs to the owner only; everyone else never sees
   // the tab, and the API refuses it regardless of what the UI renders.
-  const ownerNav = [...coachNav, ['coach-coaches', 'Coaches', '⚑']];
+  const ownerNav = [...coachNav, ['coach-leads', 'Leads', '◈'], ['coach-coaches', 'Coaches', '⚑']];
   function navForCoach() {
     return state.actor?.coach?.role === 'owner' ? ownerNav : coachNav;
   }
@@ -187,7 +188,9 @@
     state.clients = clients.clients;
     state.exercises = exercises.exercises;
     if (state.actor?.coach?.role === 'owner') {
-      state.coaches = (await api('/admin/coaches')).coaches;
+      const [coaches, leads] = await Promise.all([api('/admin/coaches'), api('/admin/leads')]);
+      state.coaches = coaches.coaches;
+      state.leads = leads;
     }
     if (state.selectedClientId && state.clients.some(client => client.clientId === state.selectedClientId)) {
       await loadSelectedClient();
@@ -437,6 +440,7 @@
       'coach-care': renderCoachCare,
       'coach-messages': () => state.selected ? renderMessages('coach') : selectClientPrompt(),
       'coach-library': renderExerciseLibrary,
+      'coach-leads': renderLeads,
       'coach-coaches': renderCoaches
     };
     elements.main.innerHTML = (renders[state.currentView] || renderCoachClients)();
@@ -492,6 +496,48 @@
       <article class="card card--gold"><h2>Add exercise</h2><form class="stack-form" data-form="create-exercise"><div class="form-grid"><label>Exercise name<input name="name" required></label><label>Muscle group<input name="muscleGroup" placeholder="chest"></label><label>Equipment<input name="equipment" placeholder="barbell"></label><label>Video URL<input name="videoUrl" type="url" required placeholder="https://…"></label><label class="wide">Coaching cues<textarea name="instructions" maxlength="2000"></textarea></label></div><button class="button button--gold" type="submit">Add video exercise</button></form></article>
       <div class="section-head"><h2>Approved library</h2><span class="caption">${state.exercises.length} exercises</span></div>
       ${state.exercises.length ? `<div class="card-grid">${state.exercises.map(exercise => `<article class="card"><p class="eyebrow">${escapeHtml(exercise.muscleGroup)}</p><h3>${escapeHtml(exercise.name)}</h3><p class="muted">${escapeHtml(exercise.equipment)} · ${escapeHtml(exercise.videoKind)}</p><a href="${escapeHtml(exercise.videoUrl)}" target="_blank" rel="noopener noreferrer">Preview video ↗</a></article>`).join('')}</div>` : emptyState('▶', 'No exercise videos yet', 'Add at least three approved videos to unlock assisted workout drafts.')}`;
+  }
+
+  function renderLeads() {
+    const data = state.leads;
+    if (!data) return `<section class="page-head"><p class="eyebrow">LEAD FLOW</p><h1>Loading leads…</h1></section>`;
+
+    const { totals, sources, recent, flowing } = data;
+    const when = value => value ? formatDate(value, { month: 'short', day: 'numeric' }) : '—';
+
+    return `<section class="page-head"><p class="eyebrow">LEAD FLOW</p>
+      <h1>${flowing ? `${totals.last24h} new in the last 24 hours.` : 'Nothing has arrived in 24 hours.'}</h1>
+      <p class="muted">${totals.total} total across every source · ${totals.last7d} this week.
+      ${flowing ? '' : 'If that is unexpected, check that the listener and discovery worker are running.'}</p></section>
+
+      <div class="card-grid">
+        ${sources.length ? sources.map(source => `
+          <article class="card">
+            <p class="eyebrow">${escapeHtml(source.label)}</p>
+            <h2>${source.total}</h2>
+            <p class="muted">${source.last24h} today · ${source.last7d} this week · last ${when(source.newest)}</p>
+            ${source.smsReachable !== undefined
+              ? `<p class="caption">${source.emailReachable} emailable · ${source.smsReachable} textable${source.unsubscribed ? ` · ${source.unsubscribed} unsubscribed` : ''}</p>`
+              : `<p class="caption">${source.averageScore === null ? 'unscored' : `avg score ${source.averageScore}`}</p>`}
+          </article>`).join('')
+          : emptyState('◈', 'No leads yet', 'Nothing has been captured or discovered so far.')}
+      </div>
+
+      <div class="section-head"><h2>Most recent</h2><span class="caption">${recent.length} shown</span></div>
+      ${recent.length ? `<div class="stack">${recent.map(lead => `
+        <article class="card">
+          <div class="spread">
+            <div>
+              <p class="eyebrow">${escapeHtml(lead.source)}${lead.score !== null && lead.score !== undefined ? ` · SCORE ${lead.score}` : ''}</p>
+              <h3>${escapeHtml(lead.name)}</h3>
+              <p class="muted">${[lead.detail, lead.email, lead.phone].filter(Boolean).map(escapeHtml).join(' · ') || 'No contact details'}</p>
+              ${lead.consent?.length ? `<p class="caption">Consented: ${lead.consent.join(', ')}</p>` : ''}
+            </div>
+            <span class="caption">${when(lead.createdAt)}</span>
+          </div>
+          ${lead.link ? `<div class="cluster"><a class="button button--small" href="${escapeHtml(lead.link)}" target="_blank" rel="noopener noreferrer">Open</a></div>` : ''}
+        </article>`).join('')}</div>`
+        : emptyState('◈', 'Nothing yet', 'Leads will appear here as the engines find them.')}`;
   }
 
   function renderCoaches() {
