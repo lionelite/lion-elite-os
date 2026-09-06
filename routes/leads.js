@@ -8,7 +8,7 @@
 // that accepted a list would be a route that manufactured consent.
 
 const express = require('express');
-const { buildCapture, LANES } = require('../lib/leads/consent-capture');
+const { buildCapture, LANES, SMS_DISCLOSURE } = require('../lib/leads/consent-capture');
 
 function createRateLimiter({ windowMs, limit }) {
   const buckets = new Map();
@@ -41,8 +41,10 @@ function createLeadsRouter({ store } = {}) {
   const asyncRoute = handler => (req, res, next) =>
     Promise.resolve(handler(req, res, next)).catch(next);
 
+  // The page renders this disclosure verbatim and posts it back, so the text a
+  // person saw and the text stored against their consent are the same string.
   router.get('/lanes', (_req, res) => {
-    res.json({ lanes: Object.values(LANES) });
+    res.json({ lanes: Object.values(LANES), smsDisclosure: SMS_DISCLOSURE });
   });
 
   router.post('/capture', limiter, asyncRoute(async (req, res) => {

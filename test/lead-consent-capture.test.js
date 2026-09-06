@@ -114,3 +114,44 @@ test('the database refuses consent it has no evidence for', () => {
   assert.ok(table.includes('sms_consent_text IS NOT NULL'), 'consent requires the stored disclosure');
   assert.ok(table.includes('email_marketing_consent = false OR email_consent_at IS NOT NULL'));
 });
+
+// The opt-in page is part of the consent record: what it renders is what gets
+// stored. These pin the two properties that make that true.
+test('the opt-in page never pre-checks a consent box', () => {
+  const html = fs.readFileSync(path.join(__dirname, '..', 'public', 'optin', 'index.html'), 'utf8');
+  const boxes = html.match(/<input[^>]*type="checkbox"[^>]*>/g) || [];
+  assert.ok(boxes.length >= 2, 'expected an email and an SMS consent box');
+  for (const box of boxes) {
+    assert.ok(!/\bchecked\b/.test(box), `a pre-checked box is not an affirmative act: ${box}`);
+  }
+});
+
+test('the page renders the served disclosure rather than its own copy', () => {
+  const script = fs.readFileSync(path.join(__dirname, '..', 'public', 'optin', 'app.js'), 'utf8');
+  assert.ok(script.includes('/api/leads/lanes'), 'the disclosure must come from the API');
+  assert.ok(script.includes('data.smsDisclosure'), 'the page must use the served text');
+  // A second copy in the page could drift from the stored one, at which point
+  // the consent record no longer proves what the person saw.
+  assert.ok(
+    !/Msg\s*&\s*data rates may apply/i.test(script),
+    'the page must not hardcode disclosure wording'
+  );
+  // Failing to load it must disable SMS opt-in, not silently proceed.
+  assert.ok(script.includes('box.disabled = true'), 'SMS opt-in must fail closed');
+});
+
+test('the canonical disclosure carries the required elements', () => {
+  const { SMS_DISCLOSURE, REQUIRED_SMS_DISCLOSURE_TERMS } = require('../lib/leads/consent-capture');
+  const lowered = SMS_DISCLOSURE.toLowerCase();
+  for (const term of REQUIRED_SMS_DISCLOSURE_TERMS) {
+    assert.ok(lowered.includes(term), `disclosure must mention ${term}`);
+  }
+  assert.ok(lowered.includes('not a condition'), 'consent must not be a condition of purchase');
+  assert.ok(lowered.includes('lion elite'), 'the sender must be identified');
+  // It must satisfy its own validator.
+  const capture = buildCapture(
+    { lane: 'beauty-client', email: 'a@b.co', phone: '6145550142', smsMarketingConsent: true, smsConsentText: SMS_DISCLOSURE },
+    {}
+  );
+  assert.equal(capture.smsMarketingConsent, true);
+});
