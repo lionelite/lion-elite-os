@@ -133,3 +133,25 @@ test('does not surface a trainer broadcasting their own offer', () => {
   const engageable = matches.filter(match => !match.doNotEngage);
   assert.deepEqual(engageable, [], 'someone advertising is not asking for help');
 });
+
+// A coach with no platform yet is the clearest fit for the coach portal, but
+// every original subject term assumed an existing roster ("my clients", "scale
+// my coaching"), so someone just starting out matched nothing.
+test('finds a coach starting their online coaching journey', () => {
+  const posts = [
+    'Just got certified as a personal trainer and I want to start online coaching. What platform does everyone use for programming and check-ins?',
+    'I run in person sessions but want to become an online coach. Need software for coaching that handles client check-ins.',
+    'Trying to get my first coaching clients online. How do I actually deliver the programs, just spreadsheets?'
+  ];
+  for (const text of posts) {
+    const best = classifyPost(text).matches[0];
+    assert.ok(best, `no match for: ${text.slice(0, 40)}`);
+    assert.equal(best.audience, 'coach-scaling', `wrong lane for: ${text.slice(0, 40)}`);
+    assert.equal(best.doNotEngage, false);
+  }
+});
+
+test('someone seeking a coach is still not confused with a coach seeking a platform', () => {
+  const best = classifyPost('Looking for a personal trainer who can keep me accountable, no idea where to start.').matches[0];
+  assert.equal(best.audience, 'personal-training');
+});

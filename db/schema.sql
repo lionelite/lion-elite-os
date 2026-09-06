@@ -404,3 +404,54 @@ CREATE TABLE IF NOT EXISTS funnel_events (
 CREATE INDEX IF NOT EXISTS funnel_events_window_idx ON funnel_events(occurred_at);
 CREATE INDEX IF NOT EXISTS funnel_events_brand_source_idx ON funnel_events(brand, source, occurred_at);
 CREATE INDEX IF NOT EXISTS funnel_events_subject_idx ON funnel_events(subject_id, occurred_at);
+
+-- Captured B2C leads -----------------------------------------------------------
+-- Two lanes, one capture surface:
+--   beauty-client   a consumer who wants coaching (Lion Elite Beauty)
+--   coach-platform  a coach who wants somewhere to run their own clients
+--
+-- This exists because nothing in the codebase could write smsConsent. The SMS
+-- pipeline reads it in three places and refuses to send without it, so the whole
+-- channel was built, gated, and permanently inert: no record could ever be
+-- eligible. Consent has to be captured from the person before any of it works.
+--
+-- The CHECK constraints are the point. Under TCPA, consent is not a flag you set
+-- — it is evidence you must be able to produce: what the person was shown, when
+-- they agreed, and from where. A row cannot claim consent without carrying it.
+CREATE TABLE IF NOT EXISTS captured_leads (
+  lead_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  lane TEXT NOT NULL CHECK (lane IN ('beauty-client', 'coach-platform')),
+  name TEXT NOT NULL DEFAULT '',
+  email TEXT NOT NULL,
+  phone TEXT,
+  source TEXT NOT NULL DEFAULT 'unknown',
+  status TEXT NOT NULL DEFAULT 'new' CHECK (status IN ('new', 'contacted', 'converted', 'archived')),
+
+  email_marketing_consent BOOLEAN NOT NULL DEFAULT false,
+  email_consent_at TIMESTAMPTZ,
+
+  sms_marketing_consent BOOLEAN NOT NULL DEFAULT false,
+  sms_consent_at TIMESTAMPTZ,
+  -- The exact disclosure the person agreed to, stored verbatim. If the wording
+  -- on the form changes, older rows still prove what THEY were shown.
+  sms_consent_text TEXT,
+  sms_consent_ip TEXT,
+  sms_consent_user_agent TEXT,
+
+  unsubscribed_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+
+  -- Consent cannot be asserted without the evidence that backs it.
+  CHECK (email_marketing_consent = false OR email_consent_at IS NOT NULL),
+  CHECK (
+    sms_marketing_consent = false OR (
+      phone IS NOT NULL AND phone <> ''
+      AND sms_consent_at IS NOT NULL
+      AND sms_consent_text IS NOT NULL AND sms_consent_text <> ''
+    )
+  )
+);
+CREATE UNIQUE INDEX IF NOT EXISTS captured_leads_email_lane_idx ON captured_leads(lower(email), lane);
+CREATE INDEX IF NOT EXISTS captured_leads_lane_status_idx ON captured_leads(lane, status, created_at DESC);
+CREATE INDEX IF NOT EXISTS captured_leads_sms_reachable_idx ON captured_leads(sms_marketing_consent, unsubscribed_at);

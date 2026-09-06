@@ -175,6 +175,16 @@ const AUDIENCE_PROFILES = Object.freeze({
       'take on more clients', 'fill my roster', 'scale my coaching', 'scale my training',
       'grow my coaching', 'grow my training', 'grow my roster',
       'online coaching business', 'go online', 'online coaching',
+      // Starting out, not only scaling: someone with no platform yet is the
+      // clearest fit for the coach portal, and was previously invisible because
+      // every subject term assumed an existing roster.
+      'start online coaching', 'starting online coaching', 'start coaching online',
+      'become a coach', 'becoming a coach', 'become an online coach',
+      'first coaching client', 'first client', 'my first clients',
+      'getting started as a', 'new coach', 'new personal trainer',
+      'just got certified', 'just certified', 'passed my cpt',
+      'coaching platform', 'platform for coaches', 'app for my clients',
+      'what platform', 'which platform', 'software for coaching',
       'client management', 'coaching software', 'coaching platform', 'training app',
       'programming for clients', 'write programs', 'writing programs',
       'client check-ins', 'client checkins', 'manage my clients', 'managing clients',
