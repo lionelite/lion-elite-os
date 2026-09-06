@@ -4,6 +4,8 @@ const { leadAutomationReadiness } = require('./lib/lead-automation-readiness');
 const { MemoryCoachingStore, PostgresCoachingStore } = require('./lib/coaching/store');
 const { createPushService } = require('./lib/coaching/push');
 const { createCoachingRouter } = require('./routes/coaching');
+const { createLeadsRouter } = require('./routes/leads');
+const leadStore = require('./lib/leads/lead-store');
 const { createCheckoutRouter } = require('./routes/checkout');
 
 const app = express();
@@ -26,6 +28,9 @@ app.use('/api/coaching', createCoachingRouter({ store: coachingStore, pushServic
 // Payment. Paying creates a coaching client, which is what sends the invite
 // email, so a completed checkout ends with the customer able to log in.
 app.use('/api/checkout', createCheckoutRouter({ store: coachingStore }));
+// Public B2C opt-in. The only path by which a consumer or coach enters the
+// marketing pipeline, because it is the only one where they consent.
+app.use('/api/leads', createLeadsRouter({ store: leadStore }));
 app.use('/coaching', (_req, res, next) => {
   res.set({
     'Content-Security-Policy': [
