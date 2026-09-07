@@ -6,6 +6,8 @@ const { QUEUE_NAMES, addJob, moveToDeadLetter } = require('../lib/job-queues');
 const { summarize, classify, recordAffiliateLead, recordStripeSubscription } = require('../lib/integration-normalization');
 const { isOrderEvent, brandFromEvent, buildOrderNotification } = require('../lib/orders/order-notification');
 const { sendOrderNotification } = require('../lib/orders/notify-transport');
+const { emitOrder } = require('../lib/revenue/emitters');
+const funnelStore = require('../lib/revenue/funnel-store');
 
 const concurrency = Number(process.env.INTEGRATION_WORKER_CONCURRENCY || 5);
 let shuttingDown = false;
@@ -57,6 +59,17 @@ const worker = new Worker(QUEUE_NAMES.integrations, async job => {
     } catch (error) {
       record.orderNotification = { status: 'error', message: error.message };
     }
+
+    // Feed the revenue funnel. Idempotent on the provider's own order id, so a
+    // webhook retry cannot count the same sale twice. emitOrder never throws —
+    // an analytics write must not fail an order.
+    record.funnelEvent = await emitOrder({
+      source: event.source,
+      payload: event.payload || {},
+      brandKey: brandFromEvent(event),
+      occurredAt: event.receivedAt,
+      store: funnelStore,
+    });
   }
 
   const encoded = JSON.stringify(record);
