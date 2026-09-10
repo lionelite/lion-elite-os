@@ -1,6 +1,6 @@
 # New leads from the last harvest
 
-_Generated 2026-09-10T14:10:09.513Z — 1 lead._
+_Generated 2026-09-10T18:59:14.617Z — 0 leads._
 
 | Searches run | Searches failed | Posts read | Matched | Dropped (do-not-engage) |
 |---:|---:|---:|---:|---:|
@@ -41,12 +41,4 @@ business-scaling: Bluesky search failed for "trying to scale my business": HTTP 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-## med-spa-b2b — 1
-
-### LA Fitness — score 50
-
-- **Handle:** [@null](https://www.lafitness.com/Pages/clubhome.aspx?clubid=986)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
-
-> gym · 119 Fairfield Avenue Bellevue KY 41073
+**No leads, because no source could be reached.** Every query failed — see above.
