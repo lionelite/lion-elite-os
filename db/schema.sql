@@ -45,6 +45,21 @@ CREATE TABLE IF NOT EXISTS outreach_queue (
 );
 
 -- Keep existing deployments compatible when this idempotent schema is rerun.
+-- Legal entity separation (2026-09-15). Every prospect records the entity that
+-- acquired it and every queued message the entity sending it, so a contact
+-- acquired under one company's posture cannot be mailed by another's.
+--
+-- The default backfills existing rows, and it is correct today: every prospect
+-- that predates this column was acquired by Lion Elite Wellness, and the
+-- clinic-supply entity is still forming and cannot send at all. DROP THE
+-- DEFAULT when a second entity goes active — see docs/entity-separation.md —
+-- so that an insert which forgets the column fails instead of being silently
+-- attributed to Wellness.
+ALTER TABLE prospects ADD COLUMN IF NOT EXISTS entity_id TEXT NOT NULL DEFAULT 'lion_elite_wellness';
+ALTER TABLE outreach_queue ADD COLUMN IF NOT EXISTS entity_id TEXT NOT NULL DEFAULT 'lion_elite_wellness';
+CREATE INDEX IF NOT EXISTS prospects_entity_idx ON prospects(entity_id);
+CREATE INDEX IF NOT EXISTS outreach_queue_entity_idx ON outreach_queue(entity_id, status);
+
 ALTER TABLE outreach_queue ADD COLUMN IF NOT EXISTS provider_message_id TEXT;
 ALTER TABLE outreach_queue ADD COLUMN IF NOT EXISTS last_error TEXT;
 

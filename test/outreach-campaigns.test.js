@@ -27,7 +27,7 @@ test('a consumer campaign that omits unsubscribe/postal address is rejected', ()
 
 test('a campaign not in research-only mode is rejected (RUO posture enforced)', () => {
   assert.throws(() => assertSafeguards({
-    id: 'bad2', audienceType: 'business', complianceMode: 'coaching',
+    id: 'bad2', entityId: 'lion_elite_wellness', audienceType: 'business', complianceMode: 'coaching',
     safeguards: { complianceValidation: true, suppressionCheck: true, dailyQuota: true, killSwitch: true }
   }), /must use research-only compliance mode/);
 });

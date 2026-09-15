@@ -23,6 +23,17 @@ const {
 const TEMPLATE = path.join(__dirname, '..', 'credentials', 'templates', 'clinic-supply-record.json');
 const readTemplate = () => JSON.parse(fs.readFileSync(TEMPLATE, 'utf8'));
 
+// The only api_for_compounding entity in the registry is still forming, so the
+// full bulk-drug-substance path is exercised against a stand-in that is active.
+// Everything else runs against the real registry.
+const activeApiEntity = {
+  assertPostureMatch(entityId, posture) {
+    if (entityId !== 'test_active_api_entity') throw new Error(`Unknown entity: ${entityId}`);
+    if (posture !== 'api_for_compounding') throw new Error('posture mismatch');
+    return true;
+  }
+};
+
 const futureDate = (days = 365) => new Date(Date.now() + days * 86400000).toISOString().slice(0, 10);
 
 /**
@@ -33,6 +44,7 @@ const futureDate = (days = 365) => new Date(Date.now() + days * 86400000).toISOS
  */
 const ruoRecord = () => ({
   posture: 'ruo_research_supply',
+  entityId: 'lion_elite_wellness',
   productId: 'lew-example-30mg',
   productName: 'Example Peptide 30mg',
   lot: 'LOT-EXAMPLE-0001',
@@ -58,6 +70,7 @@ const ruoRecord = () => ({
 const apiRecord = () => ({
   ...ruoRecord(),
   posture: 'api_for_compounding',
+  entityId: 'test_active_api_entity',
   researchUseOnly: false,
   humanUseDisclaimed: false,
   expiryDate: futureDate(700),
@@ -122,14 +135,14 @@ test('research supply requires the human-use disclaimer the certificate itself c
 });
 
 test('a complete bulk drug substance record validates', () => {
-  const outcome = validateClinicSupplyRecord(apiRecord());
+  const outcome = validateClinicSupplyRecord(apiRecord(), { entities: activeApiEntity });
   assert.deepEqual(outcome.missing, []);
   assert.deepEqual(outcome.errors, []);
   assert.equal(outcome.valid, true);
 });
 
 test('the RUO panel alone is not enough to release as a bulk drug substance', () => {
-  const outcome = validateClinicSupplyRecord({ ...ruoRecord(), posture: 'api_for_compounding', researchUseOnly: false });
+  const outcome = validateClinicSupplyRecord({ ...ruoRecord(), posture: 'api_for_compounding', entityId: 'test_active_api_entity', researchUseOnly: false }, { entities: activeApiEntity });
   assert.equal(outcome.valid, false);
   for (const id of ['peptide_content', 'related_substances', 'water_content', 'residual_solvents', 'counterion', 'bioburden']) {
     assert.ok(outcome.missing.some(entry => entry.includes(id)), `expected ${id} to be reported missing`);
@@ -140,7 +153,7 @@ test('an ineligible bulk substance is refused however clean the certificate is',
   const record = apiRecord();
   record.purityPercent = 99.99;
   record.regulatoryBasis = { ...record.regulatoryBasis, uspMonograph: false, componentOfApprovedDrug: false, onBulksList: false };
-  const outcome = validateClinicSupplyRecord(record);
+  const outcome = validateClinicSupplyRecord(record, { entities: activeApiEntity });
   assert.equal(outcome.valid, false);
   assert.ok(outcome.errors.some(error => error.includes('not established as eligible for compounding')));
 });
@@ -148,7 +161,7 @@ test('an ineligible bulk substance is refused however clean the certificate is',
 test('an unrecognised compounding pathway is refused', () => {
   const record = apiRecord();
   record.regulatoryBasis = { ...record.regulatoryBasis, pathway: '503C' };
-  const outcome = validateClinicSupplyRecord(record);
+  const outcome = validateClinicSupplyRecord(record, { entities: activeApiEntity });
   assert.equal(outcome.valid, false);
   assert.ok(outcome.errors.some(error => error.includes(COMPOUNDING_PATHWAYS.join(', '))));
 });
@@ -156,7 +169,7 @@ test('an unrecognised compounding pathway is refused', () => {
 test('sourcing is restricted to US-based manufacturers', () => {
   const record = apiRecord();
   record.source = { ...record.source, country: 'CN' };
-  const outcome = validateClinicSupplyRecord(record);
+  const outcome = validateClinicSupplyRecord(record, { entities: activeApiEntity });
   assert.equal(outcome.valid, false);
   assert.ok(outcome.errors.some(error => error.includes(REQUIRED_SOURCE_COUNTRY)));
 });
@@ -164,7 +177,7 @@ test('sourcing is restricted to US-based manufacturers', () => {
 test('a non-cGMP source cannot supply a bulk drug substance', () => {
   const record = apiRecord();
   record.source = { ...record.source, cgmp: false };
-  const outcome = validateClinicSupplyRecord(record);
+  const outcome = validateClinicSupplyRecord(record, { entities: activeApiEntity });
   assert.equal(outcome.valid, false);
   assert.ok(outcome.errors.some(error => error.includes('cgmp')));
 });
@@ -179,7 +192,7 @@ test('a failed panel result blocks release', () => {
 });
 
 test('peptide content above chromatographic purity is flagged as a conflation', () => {
-  const outcome = validateClinicSupplyRecord({ ...apiRecord(), peptideContentPercent: 100 });
+  const outcome = validateClinicSupplyRecord({ ...apiRecord(), peptideContentPercent: 100 }, { entities: activeApiEntity });
   assert.equal(outcome.valid, false);
   assert.ok(outcome.errors.some(error => error.includes('conflated')));
 });
@@ -197,4 +210,23 @@ test('every release test declares at least one posture that requires it', () => 
     assert.ok(spec.postures.length > 0, `${spec.id} is required by no posture`);
     assert.ok(spec.method, `${spec.id} has no method`);
   }
+});
+
+test('a release record cannot sit under an entity that does not legally exist yet', () => {
+  const outcome = validateClinicSupplyRecord({ ...apiRecord(), entityId: 'clinic_supply_llc' });
+  assert.equal(outcome.valid, false);
+  assert.ok(outcome.errors.some(error => error.includes('is forming; it cannot hold a release record')));
+});
+
+test('an api_for_compounding record cannot be filed under the RUO entity', () => {
+  const outcome = validateClinicSupplyRecord({ ...apiRecord(), entityId: 'lion_elite_wellness' });
+  assert.equal(outcome.valid, false);
+  assert.ok(outcome.errors.some(error => error.includes('holds the ruo_research_supply posture')));
+});
+
+test('a record with no entity is refused', () => {
+  const { entityId, ...rest } = ruoRecord();
+  const outcome = validateClinicSupplyRecord(rest);
+  assert.equal(outcome.valid, false);
+  assert.ok(outcome.missing.includes('entityId'));
 });
