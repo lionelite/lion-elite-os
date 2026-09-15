@@ -18,6 +18,14 @@ way this goes wrong.
 Templates are in `credentials/templates/`. Validation is
 `lib/credentials/validate.js`, covered by `test/credentials.test.js`.
 
+Selling into clinics and med spas is a fourth situation layered on top of the
+first line, not a fourth line: see `docs/clinic-testing-requirements.md`, with
+`lib/credentials/clinic-channel.js` and
+`test/clinic-channel-credentials.test.js`. The short version — an RUO
+certificate is sufficient to supply a clinic *as a research customer*, and
+cannot support supply *as a drug*, which needs bulk drug substance eligibility
+that no certificate provides at any purity.
+
 ## The one rule that matters most
 
 **Nothing in this directory invents a credential.** No lab name, lot number,
