@@ -9,6 +9,8 @@ const { validateProspect, authorizeOutreach } = require('../lib/outreach-validat
 const { sendEmail } = require('../lib/email-delivery');
 const { isHalted } = require('../lib/kill-switch');
 const { PostgresProspectStore } = require('../lib/postgres-prospect-store');
+const { CAMPAIGNS } = require('../lib/outreach/campaigns');
+const { assertProspectEntity, assertSendable } = require('../lib/entities/registry');
 const { log, runtimeMetrics } = require('../lib/observability');
 
 const workers = [];
@@ -18,6 +20,19 @@ const heartbeatSeconds = Number(process.env.WORKER_HEARTBEAT_SECONDS || 15);
 const queueLagWarning = Number(process.env.QUEUE_LAG_WARNING || 100);
 let shuttingDown = false;
 let heartbeatTimer;
+
+// The entity that acquired this prospect. Job payloads are built by several
+// callers and an older one may carry a prospect object without the column, so
+// fall back to the stored row rather than failing a legitimate send — prospects
+// .entity_id is NOT NULL, so a stored prospect always has one.
+async function resolveEntityId(prospect) {
+  if (prospect?.entityId) return prospect.entityId;
+  if (prospect?.prospectId) {
+    const stored = await store.get(prospect.prospectId).catch(() => null);
+    if (stored?.entityId) return stored.entityId;
+  }
+  return null;
+}
 
 function startWorker(queueName, processor) {
   const worker = new Worker(queueName, async job => {
@@ -106,6 +121,16 @@ startWorker(QUEUE_NAMES.validation, async job => {
     error.code = 'PROSPECT_ID_REQUIRED';
     throw error;
   }
+  // Entity boundary. A prospect may only be mailed by the entity that acquired
+  // it, checked against the REGISTERED campaign driving this send. Lead-store
+  // campaign ids that are not governed campaigns (the Bluesky lead campaigns,
+  // for instance) are not in CAMPAIGNS and are read as "no campaign asserting an
+  // entity" rather than as an unknown-campaign error.
+  const campaign = CAMPAIGNS[context.campaignId || context.prospect.campaignId];
+  if (campaign) {
+    assertProspectEntity({ entityId: await resolveEntityId(context.prospect) }, campaign);
+  }
+
   const queued = await store.enqueue(context.prospect.prospectId, authorization, {
     channel: context.draft?.channel || 'email',
     recipient: context.draft?.recipient || context.prospect?.contact?.email,
@@ -142,9 +167,22 @@ startWorker(QUEUE_NAMES.dispatch, async job => {
     log('warn', 'dispatch.skipped_halted', { queueId: context.queueId || null });
     return { skipped: 'outreach_halted', queueId: context.queueId || null };
   }
+  // Last gate before the one real send path. The follow-ups scheduler injects
+  // dispatch jobs directly, bypassing the validation stage, so the entity is
+  // resolved here too rather than trusted from the payload. assertSendable
+  // returns the addresses this entity sends under, so the message cannot go out
+  // wearing another entity's from-address.
+  const entityId = await resolveEntityId(context.prospect);
+  if (!entityId) {
+    const error = new Error('Dispatch requires a prospect with a resolved entityId.');
+    error.code = 'ENTITY_UNRESOLVED';
+    throw error;
+  }
+  const identity = { entityId, ...assertSendable(entityId) };
+
   if (context.queueId) await store.markQueue(context.queueId, 'processing', {}, 'outreach-worker');
   try {
-    const delivery = await sendEmail({ prospect: context.prospect, draft: context.draft, authorization: context.authorization });
+    const delivery = await sendEmail({ prospect: context.prospect, draft: context.draft, authorization: context.authorization, identity });
     if (context.queueId) await store.markQueue(context.queueId, 'sent', { providerMessageId: delivery.providerId }, 'outreach-worker');
     return { ...delivery, authorization: context.authorization, quality: context.quality };
   } catch (error) {

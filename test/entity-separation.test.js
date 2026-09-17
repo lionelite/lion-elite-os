@@ -28,6 +28,7 @@ const {
 
 const { CAMPAIGNS, assertSafeguards, campaignsForEntity } = require('../lib/outreach/campaigns');
 const { SUPPORTED_COMPLIANCE_MODES } = require('../lib/social/social-compliance');
+const { resolveSenderAddresses } = require('../lib/email-delivery');
 
 const validEntity = () => ({
   id: 'test_entity',
@@ -193,4 +194,71 @@ test('entity_id exists in the schema and is written by both insert paths', () =>
   assert.ok(queueInsert.includes('entity_id'), 'the queue insert must write entity_id');
   assert.ok(store.includes('prospect.entity_id'),
     'the queue insert must take the entity from the stored prospect, not the caller');
+});
+
+// --- send path -------------------------------------------------------------
+
+test('with no identity the sender addresses are read from the environment, unchanged', () => {
+  const env = process.env;
+  const saved = { ...env };
+  try {
+    env.OUTREACH_FROM_EMAIL = 'from@wellness.test';
+    env.OUTREACH_REPLY_TO = 'reply@wellness.test';
+    env.OUTREACH_UNSUBSCRIBE_EMAIL = 'unsub@wellness.test';
+    env.OUTREACH_POSTAL_ADDRESS = '1 Wellness Way';
+    assert.deepEqual(resolveSenderAddresses(), {
+      from: 'from@wellness.test',
+      replyTo: 'reply@wellness.test',
+      unsubscribe: 'unsub@wellness.test',
+      postalAddress: '1 Wellness Way'
+    });
+  } finally {
+    for (const key of ['OUTREACH_FROM_EMAIL', 'OUTREACH_REPLY_TO', 'OUTREACH_UNSUBSCRIBE_EMAIL', 'OUTREACH_POSTAL_ADDRESS']) {
+      if (saved[key] === undefined) delete env[key]; else env[key] = saved[key];
+    }
+  }
+});
+
+test('a second entity never falls back to the first entity\'s addresses', () => {
+  const saved = process.env.OUTREACH_FROM_EMAIL;
+  try {
+    process.env.OUTREACH_FROM_EMAIL = 'from@wellness.test';
+    process.env.OUTREACH_REPLY_TO = 'reply@wellness.test';
+    // Only `from` is configured for the second entity: reply-to and unsubscribe
+    // must fall back to ITS from-address, never to the environment's.
+    const sender = resolveSenderAddresses({ from: 'from@clinic.test' });
+    assert.equal(sender.from, 'from@clinic.test');
+    assert.equal(sender.replyTo, 'from@clinic.test');
+    assert.equal(sender.unsubscribe, 'from@clinic.test');
+    assert.equal(sender.postalAddress, undefined);
+    for (const value of Object.values(sender)) {
+      assert.ok(!String(value).includes('wellness.test'), `leaked a wellness address: ${value}`);
+    }
+  } finally {
+    if (saved === undefined) delete process.env.OUTREACH_FROM_EMAIL; else process.env.OUTREACH_FROM_EMAIL = saved;
+    delete process.env.OUTREACH_REPLY_TO;
+  }
+});
+
+// The worker starts BullMQ consumers on require, so its wiring is pinned by
+// reading the source — the same approach test/outreach-automation.test.js uses
+// for the queue, quota and kill-switch invariants.
+test('the outreach worker enforces the entity boundary on both send paths', () => {
+  const source = fs.readFileSync(path.join(__dirname, '..', 'workers', 'outreach-worker.js'), 'utf8');
+
+  assert.match(source, /assertProspectEntity\(/, 'validation must check the prospect against its campaign');
+  assert.match(source, /assertSendable\(entityId\)/, 'dispatch must resolve a sendable entity');
+  assert.match(source, /sendEmail\(\{[^}]*identity \}\)/,
+    'the send must carry the resolved identity, not the ambient environment');
+
+  const dispatch = source.slice(source.indexOf('QUEUE_NAMES.dispatch'));
+  const halt = dispatch.indexOf('isHalted');
+  const entity = dispatch.indexOf('assertSendable');
+  const processing = dispatch.indexOf("'processing'");
+  const send = dispatch.indexOf('sendEmail(');
+
+  assert.ok(halt < entity, 'the kill switch must win over the entity check');
+  assert.ok(entity < processing,
+    'an unsendable entity must fail before the row is marked processing, so the item stays resumable');
+  assert.ok(processing < send);
 });

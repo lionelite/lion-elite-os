@@ -123,9 +123,44 @@ Nothing below is autonomous; each line is an owner or counsel action.
   and the TCPA consequences of getting entity scope wrong are worse than for
   e-mail. Not attempted here rather than half-done — it needs the same treatment
   before any second-entity SMS is contemplated.
-- **The send path does not yet call `assertProspectEntity`.** The guard, the
-  columns, and the tests exist; wiring it into `workers/outreach-worker.js`
-  changes live dispatch behaviour for a pipeline that is authorized to send
-  unattended, so it is a deliberate separate step rather than a rider on this
-  one. Nothing can currently trip it — there is only one sending entity — but it
-  must be wired before there are two.
+(The send path guard listed here previously is now wired — see below.)
+
+## The send path (wired 2026-09-17)
+
+`workers/outreach-worker.js` enforces the boundary at both points a message can
+reach `lib/email-delivery.js`:
+
+**Validation stage**, before the queue row is created: the prospect's entity is
+checked against the registered campaign driving the send. Campaign ids that are
+not governed campaigns — the Bluesky lead campaigns, for instance — are read as
+"no campaign asserting an entity" rather than as an unknown-campaign error, so
+lead-store prospects are unaffected.
+
+**Dispatch stage**, the last gate before the one real send path: the entity is
+re-resolved rather than trusted from the job payload, because the follow-ups
+scheduler injects dispatch jobs directly and bypasses validation entirely.
+`assertSendable` then returns the addresses that entity sends under, and
+`sendEmail` uses them.
+
+Ordering in dispatch is deliberate and pinned by a test:
+
+1. kill switch — a halted queue parks without error and stays resumable;
+2. entity check — an unsendable entity fails **before** the row is marked
+   `processing`, so the item also stays resumable;
+3. `markQueue('processing')`, then the send.
+
+`sendEmail` now takes an optional `identity`. Without one it reads the
+environment exactly as before — single-entity behaviour is byte-identical. With
+one, every address comes from that entity and **none falls back to the
+environment**: a second entity with no reply-to configured falls back to its own
+from-address, never to Wellness's. That non-fallback is the entire reason the
+parameter exists, and it has its own test.
+
+### One operational consequence
+
+If an entity is registered but not yet configured to send, its queued items fail
+at dispatch with `ENTITY_NOT_SENDABLE` and stay `pending`, so the follow-ups
+scheduler retries them on each run until the entity is configured. That is the
+intended fail-closed shape — the same as the kill switch parking items — but it
+does mean a half-configured entity produces a repeating failure in the job log
+rather than a single one. The message names exactly what is missing.
