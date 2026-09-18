@@ -7,6 +7,7 @@ const { createCoachingRouter } = require('./routes/coaching');
 const { createLeadsRouter } = require('./routes/leads');
 const leadStore = require('./lib/leads/lead-store');
 const { createCheckoutRouter } = require('./routes/checkout');
+const agentRegistry = require('./lib/agents/roles');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -143,6 +144,15 @@ const agents = [
     systemPrompt: 'You are the Lion Elite Research Compliance Agent. For Lion Elite Wellness, keep content research-use-only. Do not provide dosing, human-use instructions, disease claims, treatment claims, or transformation promises. Rewrite risky copy into research-safe educational language. Include risk level, problem phrase, safer replacement, and final version. Also check that customer-facing content does not reveal internal inventory, exact product counts, unit quantities, batch details, source-sheet details, or internal notes. Availability language must only say limited stock or current availability is limited.'
   },
   {
+    id: 'client-success',
+    name: 'Client Success Agent',
+    mission: 'Retain and reactivate existing customers, and route coaching interest into Lion Elite Beauty.',
+    activation: 'Run when existing customers are due contact, after a reply arrives, or when reactivation is the fastest available revenue.',
+    dailyOutputs: ['reactivation list', 'check-in message', 'coaching routing decision', 'retention risk flag'],
+    tools: ['Customer records', 'coaching funnel', 'consent and suppression state', 'brand rules'],
+    systemPrompt: 'You are the Lion Elite Client Success Agent. Your job is retention and reactivation of EXISTING customers, and routing coaching interest to Lion Elite Beauty. Write warm, human, service-first messages that earn the next conversation rather than pushing a sale. For Lion Elite Wellness customers, everything stays Research-Use-Only: never give dosing, reconstitution, administration, human-use instructions, treatment claims, or transformation promises, and never imply a research product is for personal use. Coaching and transformation language belongs to Lion Elite Beauty only. Never reveal internal inventory, exact product counts, unit quantities, batch details, or internal notes; availability language may only say limited stock or current availability is limited. Respect consent and opt-out state absolutely: if a contact has opted out or lacks consent, say so and stop rather than drafting a message to them.'
+  },
+  {
     id: 'finance-kpi',
     name: 'Finance & KPI Agent',
     mission: 'Track the numbers that matter and turn them into daily revenue priorities.',
@@ -152,6 +162,40 @@ const agents = [
     systemPrompt: 'You are the Lion Elite Finance & KPI Agent. Translate numbers into daily action. Focus on revenue, orders, DMs, consultations, content performance, average order value, and the $100k/month target. Always end with one CEO priority question. Treat inventory quantities as internal business data, not customer-facing copy.'
   }
 ];
+
+// Reconcile this dashboard roster against the authoritative registry in
+// `lib/agents/roles.js`. CLAUDE.md records the problem this solves: the roles
+// were described here AND in `ai-agents/*.md`, with nothing reconciling them, so
+// the two drifted with no enforcement. The registry now owns each role's
+// mandate, KPIs, knowledge domains and dispatchable actions; the prompts stay
+// here. A roster that disagrees with the registry is a startup failure rather
+// than a silent divergence.
+(function reconcileAgentRoster() {
+  const registryIds = agentRegistry.roleIds();
+  const dashboardIds = agents.map(a => a.id);
+  const missingHere = registryIds.filter(id => !dashboardIds.includes(id));
+  const unknownHere = dashboardIds.filter(id => !registryIds.includes(id));
+  if (missingHere.length || unknownHere.length) {
+    throw new Error(
+      `Agent roster is out of step with lib/agents/roles.js — ` +
+      `missing from server.js: [${missingHere.join(', ')}]; ` +
+      `not in the registry: [${unknownHere.join(', ')}]. Update the registry, not just this file.`
+    );
+  }
+  const validation = agentRegistry.validateRegistry();
+  if (!validation.valid) {
+    throw new Error(`Agent registry is invalid: ${validation.problems.join(' ')}`);
+  }
+  for (const agent of agents) {
+    const definition = agentRegistry.role(agent.id);
+    agent.mandate = definition.mandate;
+    agent.ownsDecision = definition.ownsDecision;
+    agent.kpis = definition.kpis;
+    agent.dispatchableActions = definition.actions;
+    agent.gatedBy = definition.gates;
+    agent.knowledgeDomains = definition.knowledgeDomains;
+  }
+})();
 
 const commandCenter = {
   priority: 'AI agents first. Build Lion Elite OS around automation, not just a website.',

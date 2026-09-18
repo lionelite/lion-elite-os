@@ -281,8 +281,13 @@ blueprint entry — worth a human decision). `scripts/operations-monitor.js`
 runs as its own cron, polling DB/Redis/queue health and worker heartbeat
 freshness.
 
-Shared `lib/`: `database.js`/`db.js` (Postgres pool; `db.js` is a one-line
-re-export, not dead code), `redis.js` (ioredis + distributed locks),
+Shared `lib/`: `agents/` (the AI agent roster — see below),
+`action-catalog.js` (the dispatcher's allowlist/blocklist, extracted as a
+dependency-free module so the agent registry and its tests can read the action
+vocabulary without pulling in bullmq/Redis — same extraction and reason as
+`integration-normalization.js`; the dispatcher re-exports both constants so
+existing consumers are unaffected), `database.js`/`db.js` (Postgres pool;
+`db.js` is a one-line re-export, not dead code), `redis.js` (ioredis + distributed locks),
 `job-queues.js` (BullMQ queue registry + dead-letter), `observability.js`
 (structured logging/metrics), `outreach-validation.js` (16-check
 fail-closed policy engine), `email-enrichment.js` (scrapes a business's own
@@ -404,6 +409,47 @@ Standalone modules that share the repo but not the architecture above:
   attorney, **not** legal advice and not agreements. Example client files are
   named after their own `ref` because `loadClient(ref)` derives the filename
   from it — keep that invariant (pinned by `agency/test/ledger-store.test.js`).
+- **`lib/agents/`** — the AI agent roster (Issue #73), seven roles that coordinate
+  against the $3,500/day target ($5,000 stretch, both env-overridable).
+  `roles.js` is the **authoritative registry** and the fix for the
+  `ai-agents/*.md` ↔ `server.js` drift described under "Docs landscape": every
+  role must own a decision, carry a KPI and declare a knowledge domain or
+  `validateRegistry()` fails, and every declared action is checked against
+  `action-catalog.js` so no role can name something the dispatcher would refuse —
+  or anything on `BLOCKED_ACTIONS` (enforced per role per blocked action by test).
+  Two deliberate asymmetries: research-compliance has a **veto and no revenue
+  KPI** (a revenue target would put it in conflict with what it enforces), and
+  `client-success` was missing from the dashboard roster entirely despite being one
+  of #73's named agents — now added.
+  `knowledge.js` builds each role a corpus from *the repo's own data* (1,131 facts
+  across 7 roles today). Every fact carries `file`+`line` — the same discipline
+  video-learning applies with timestamps, since an agent assertion nobody can
+  trace is one nobody should act on. Deterministic and offline: no model call, no
+  network, no secrets, so a behaviour change is attributable to a data change.
+  Missing domains are **reported, never skipped** (a role pointing at absent data
+  is a broken agent) — which immediately caught that **Issue #41 directs everything
+  to be built on `docs/core-sales-framework.md`, a path that has never existed in
+  this repo; the real file is `sales/master-sales-framework.md`**. Sources quoting
+  dosing/human-use language are marked `internalOnly`, because several compliance
+  docs quote the phrasing they prohibit and an agent parroting it into customer
+  copy is an incident: adopt the rule, never the wording.
+  `coordinator.js` is the loop #73 asks for — it emits **assignments, not prose**.
+  Gap is measured against *pace* over an 8am–8pm day, not just total ($500 at 7pm
+  is not $500 at 9am). Behind pace ⇒ sales/client-success outrank
+  marketing/operations/finance. **Target met ⇒ it stops assigning outreach** and
+  switches to verification, because pushing volume after the number is hit is how
+  a good day becomes a compliance incident. Compliance is pulled into any plan
+  containing customer-facing copy, before drafts go anywhere.
+  **The honesty posture is the point: it holds no send capability, never flips a
+  control, and never reports work that did not happen.** Sales/client-success
+  follow-through is gated on `OUTREACH_SEND_ENABLED`/`SMS_SEND_ENABLED`, marketing
+  on `SOCIAL_PUBLISH_ENABLED`/the ad cap; a closed gate returns `blocked` naming
+  the env var and stating that a human sets it. `dayReport()` on a fully gated day
+  says "The agents produced no outward effect today; a human has to open a gate"
+  rather than implying progress. `HUMAN_APPROVAL` is satisfiable by no env var, and
+  the ad cap needs a positive number (not `true`).
+  `npm run agents:roster|knowledge|recall|plan`; docs `docs/ai-agent-roster.md`;
+  53 tests in the root `npm test`.
 - **`social-listening/`** — Bluesky firehose (Jetstream) monitor. The
   *listening* half is read-only. A *reply* path does exist and this file
   previously denied it: `social-listening/src/bluesky-delivery.js` has
@@ -496,6 +542,10 @@ npm run agency:portfolio                             # pipeline, cash, estimate 
 npm run agency:bench                                 # contractor roster, capacity, record
 npm run agency:ledger -- <ref> --suggest <ticketId>  # who should take it, and why
 npm run agency:ledger -- <ref> --assign <ticketId> --to <contractorId>
+npm run agents:roster                        # authoritative agent registry
+npm run agents:knowledge [-- <roleId>]       # what each agent learned, and from where
+npm run agents:recall -- <roleId> "<query>"  # cited facts from that agent's corpus
+npm run agents:plan -- --collected N --hour H --checkpoint <id>
 ```
 
 This machine has no standalone Node.js install, only `bun`. `bun install`
@@ -561,7 +611,8 @@ Current and accurate: `docs/postgres-live-store.md`,
 `docs/outreach-validation-api.md`, `docs/prospect-pipeline.md`,
 `docs/render-redis-workers.md`, `docs/render-cron-automation.md`,
 `docs/render-observability.md`, `docs/customer-communication-rules.md`,
-`docs/video-learning.md`, `docs/ai-development-agency.md`.
+`docs/video-learning.md`, `docs/ai-development-agency.md`,
+`docs/ai-agent-roster.md`.
 
 Doc sprawl to clean up: `docs/daily-email-quota.md`,
 `-v2.md`, `-v3.md` all say the same thing (100/day default via
@@ -579,10 +630,17 @@ roadmap through "Phase 4 — Portfolio intelligence"; only Phase 1 scoring
 exists.
 
 `ai-agents/*.md` (finance-kpi/marketing/operations/research-compliance/
-sales) are standalone design docs. `server.js` has its own inline agent
-definitions with independently-written prompts covering the same roles —
-nothing in code reads the `ai-agents/*.md` files, so the two can and do
-drift apart with no enforcement.
+sales) are standalone design docs. They used to drift freely from `server.js`'s
+independently-written inline prompts because nothing reconciled them. **Fixed:**
+`lib/agents/roles.js` is now the authoritative registry for every role's mandate,
+decision, KPIs, knowledge domains and dispatchable actions; `server.js` imports
+it, validates it at startup and **throws if its roster disagrees**, and
+`test/agent-roles.test.js` compares the two by source text (server.js can't be
+required without express/pg). The `ai-agents/*.md` files are now *indexed as
+knowledge sources* by the roles that own them, so they are read by code rather
+than decorative — but the registry, not the markdown, is the source of truth for
+role structure. The prose prompts stay in `server.js`; they encode real brand
+rules. See `docs/ai-agent-roster.md`.
 
 `agent-outputs/` and `automation-triggers/` are one-off run artifacts (a
 single overwritten "latest daily automation" file, throwaway commit-trigger
@@ -623,6 +681,13 @@ notes), not live infrastructure — don't treat them as configuration.
   contractor bench with capability clearance, concurrent-ticket ceilings,
   concentration/utilisation warnings, and an assignment recommendation ranked on
   first-pass quality rather than price. Test-covered in the root `npm test`.
+- AI agent roster (`lib/agents/`, Issue #73): seven roles with owned decisions,
+  KPIs and per-role knowledge bases built from the repo's own data with
+  file+line citations; an executive loop that measures the revenue gap against
+  pace across four daily checkpoints, orders assignments by expected impact,
+  prioritises revenue work when behind, stops pushing volume once the target is
+  met, and reports gated follow-through honestly rather than implying progress.
+  Holds no send capability. Test-covered in the root `npm test`.
 
 ## Recent fixes (this pass)
 
