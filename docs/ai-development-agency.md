@@ -221,6 +221,8 @@ npm run agency:internal -- --client <file>    # internal plan: margin, cash flow
 npm run agency:tickets  -- --client <file>    # every contractor ticket body
 npm run agency:plan     -- --client <file> --json
 npm run agency:scope    -- "<what the prospect asked for>"
+npm run agency:ledger   -- <ref>              # engagement state and next action
+npm run agency:portfolio                      # pipeline, cash, estimate accuracy
 ```
 
 Worked examples in `agency/examples/`, each chosen to exercise a different path:
@@ -228,9 +230,106 @@ Worked examples in `agency/examples/`, each chosen to exercise a different path:
 | Example | What it demonstrates |
 |---|---|
 | `cedar-roofing.json` | The reference deal: $21,000 build, $7,700 delivery, $1,600 operating, $11,700 profit at 55.7%, $2,000/mo retainer, 2.2-month payback |
-| `summit-energy-services.json` | Value beyond the productized ceiling → clamped and escalated to the owner |
+| `summit-energy.json` | Value beyond the productized ceiling → clamped and escalated to the owner |
 | `lakeside-dental.json` | PHI: every ticket forced to synthetic fixtures, BAA required, retainer restructured to quarterly |
-| `corner-cafe-disqualified.json` | Correctly refused — no price, no scope, no proposal generated |
+| `corner-cafe.json` | Correctly refused — no price, no scope, no proposal generated |
+
+## Step 6 — Operating the book
+
+Steps 1–5 decide and execute one deal. `agency/src/ledger.js` and
+`agency/src/portfolio.js` are what make it a business rather than a series of
+one-off calculations: the engine recomputes a plan from scratch every run and
+remembers nothing, so without a ledger there is no record of whether the deposit
+landed, which milestones passed, or what delivery actually cost.
+
+### The engagement ledger
+
+A state machine with fail-closed transitions. An illegal move throws rather than
+being recorded, because a ledger you cannot trust is worse than no ledger.
+
+```
+qualified → proposed → won → in_delivery → delivered → closed
+     ↘ lost / disqualified        ↘ lost
+```
+
+The preconditions are the rules that stop the ledger recording a fiction:
+
+- **`won` requires the full deposit on record.** Half a deposit is not a signed
+  project.
+- **A milestone cannot be accepted outside `in_delivery`**, and acceptance must
+  come from a real `qc.evaluateMilestone()` result — the evaluation carries a
+  provenance stamp, so a hand-written `{accepted: true}` cannot make the ten
+  blocking QC items decorative. A passing checklist with no named reviewer is
+  also refused: somebody owns every sign-off.
+- **Payment is refused until the milestone is accepted.** Paying "just to keep
+  them moving" is the habit that makes the QC gate ornamental.
+- **`delivered` requires every milestone accepted and the full price collected.**
+
+`closed` is terminal for the *build*, not the relationship: retainer receipts and
+ongoing hosting costs are still recorded against a closed engagement, because
+that is when retainer money actually arrives. Only `lost` and `disqualified` are
+fully dead.
+
+Two honesty guards worth knowing, because the naive version of each lies to you:
+
+- **Profit is not reported as final mid-build.** The deposit arrives before any
+  contractor is paid, so `grossMarginPct` reads 100% on a ledger where nothing has
+  been delivered. `profitIsFinal` is false until the build is collected and paid
+  out, and the CLI prints a cash position instead.
+- **Our own zero-payout milestone is never "accepted but unpaid."** Discovery and
+  architecture is our work with no contractor payment, and flagging it would put a
+  permanent false alarm on every ledger.
+
+### The portfolio roll-up
+
+Three questions no single engagement can answer:
+
+1. **Is the pipeline real?** Weighted at 10% qualified / 30% proposed, and counting
+   unsigned work only — signed work is `contractedValue`, so nothing is
+   double-counted. A stack of unsigned proposals is not revenue, and planning
+   spend against the gross figure is how agencies die with a full pipeline.
+   Win rate is measured over *decided* deals and excludes prospects we
+   disqualified, which were never winnable.
+2. **Where is the cash?** Deposits held against contractor payouts still owed,
+   including on delivered builds whose final payment has not cleared. A
+   profitable agency can still fail this test.
+3. **Are our estimates any good?** Actual delivery cost against planned, across
+   finished engagements. A consistent overrun means the planning numbers in
+   `engagement.js` are too low and **every open quote is underpriced** — the report
+   says so in those words. This is the feedback loop the `estimate-variance` QC
+   item exists to feed, and it is invisible without a ledger.
+
+The report also separates **contracted** retainer from **collected** retainer, and
+says so when a delivered engagement has a retainer nobody has billed.
+
+### Storage, and why it is not committed
+
+Client files (`agency/clients/`) and ledgers (`agency/ledgers/`) are local JSON and
+are **gitignored**. The reason is specific rather than general caution: `access.js`
+grants contractors `repo-branch` access by design, so committing a client's
+revenue, lead volume and customer value — or our own delivery costs and margins —
+would route exactly that data through the access tier built to keep contractors
+away from it.
+
+Filenames are the client `ref`, validated to reject path separators and traversal,
+and written write-then-rename so an interrupted write cannot leave a truncated
+ledger. This is deliberately **not** Postgres and does not touch
+`lib/database.js`: the agency engine has no service, pool or migration, and
+claiming otherwise is the aspirational-docs trap this file warns about elsewhere.
+Concurrent multi-user access would be a real migration, not a config change.
+
+```bash
+npm run agency:plan -- --client agency/clients/<ref>.json --open   # open a ledger
+npm run agency:ledger -- <ref>                                     # show one engagement
+npm run agency:ledger -- <ref> --sent                              # proposal issued
+npm run agency:ledger -- <ref> --receipt 12600 --kind deposit
+npm run agency:ledger -- <ref> --state in_delivery
+npm run agency:portfolio                                           # roll-up
+```
+
+Milestone acceptance and contractor payment go through `qc.evaluateMilestone()`
+and `ledger.releasePayment()` rather than a CLI flag — deliberately, since both
+need a real checklist and a named reviewer, not a one-liner.
 
 ## Templates
 

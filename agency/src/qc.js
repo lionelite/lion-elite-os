@@ -102,6 +102,12 @@ function evaluateMilestone(milestone, checklist, testResults = {}) {
   const accepted = openItems.length === 0;
 
   return {
+    // Provenance stamp. ledger.acceptMilestone() requires it, so a hand-built
+    // `{accepted: true}` object cannot be used to record an acceptance that no
+    // checklist ever produced. This guards against mistakes and sloppy
+    // automation, not against someone determined to forge the field — nothing
+    // in-process can do that — but it makes the bypass loud instead of silent.
+    gate: 'qc.evaluateMilestone',
     milestoneId: milestone.id,
     accepted,
     // Payment is a consequence of acceptance. There is no way to release payment

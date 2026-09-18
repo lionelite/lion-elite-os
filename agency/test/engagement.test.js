@@ -34,7 +34,7 @@ test('every example plans without throwing and reports a coherent stage', () => 
 });
 
 test('a disqualified prospect gets no price and no delivery plan', () => {
-  const e = planEngagement(example('corner-cafe-disqualified.json'));
+  const e = planEngagement(example('corner-cafe.json'));
   assert.equal(e.proceed, false);
   assert.equal(e.stage, 'disqualified');
   assert.equal(e.economics, undefined);
@@ -62,7 +62,7 @@ test('the developer budget always equals what the milestones allocate', () => {
 });
 
 test('a high-value client is quoted at the ceiling and escalated to the owner', () => {
-  const e = planEngagement(example('summit-energy-services.json'));
+  const e = planEngagement(example('summit-energy.json'));
   assert.equal(e.proceed, true);
   assert.equal(e.economics.projectPrice, 45000);
   assert.ok(e.escalations.some((x) => /productized ceiling/.test(x)));

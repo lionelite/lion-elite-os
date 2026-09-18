@@ -9,3 +9,11 @@ social-listening/data/
 
 # Generated Claude Code lead context (contains third-party public post content)
 claude-context/
+
+# Agency client discovery files and engagement ledgers.
+# These hold client financials (revenue, lead volume, customer value) and our
+# own delivery costs and margins. Contractors are granted `repo-branch` access
+# by design (agency/src/access.js), so committing this data would route it
+# straight through the access tier built to keep them away from it.
+agency/clients/
+agency/ledgers/

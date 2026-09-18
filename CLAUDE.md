@@ -346,13 +346,43 @@ Standalone modules that share the repo but not the architecture above:
   whole-relationship floor; and a value-based price on a high-volume client
   returns ~$130k for the same fixed scope, so anything above a $45k productized
   ceiling is clamped and escalated to the owner rather than auto-quoted.
+  `ledger.js` + `portfolio.js` hold the state the planning engine deliberately
+  forgets. The ledger is a fail-closed state machine
+  (`qualified→proposed→won→in_delivery→delivered→closed`, plus `lost`/
+  `disqualified`) whose preconditions stop it recording a fiction: `won` needs the
+  full deposit, `delivered` needs every milestone accepted *and* the full price
+  collected, payment is refused until a milestone is accepted, and acceptance must
+  carry a `gate: 'qc.evaluateMilestone'` provenance stamp plus a named reviewer —
+  otherwise a hand-written `{accepted: true}` would make the ten blocking QC items
+  decorative. `closed` is terminal for the **build only**: retainer receipts and
+  hosting costs still record against a closed engagement, because that is when
+  retainer money actually arrives; only `lost`/`disqualified` are fully dead.
+  Two honesty guards, each fixing a number that otherwise lies — profit is not
+  reported as final mid-build (the deposit lands before any contractor is paid, so
+  margin reads 100%; `profitIsFinal` gates it and the CLI shows a cash position
+  instead), and the agency-owned zero-payout discovery milestone is never flagged
+  "accepted but unpaid". `portfolio.js` rolls up weighted pipeline (10% qualified /
+  30% proposed, unsigned only, so signed work is never double-counted; win rate
+  excludes disqualified prospects, which were never winnable), cash held against
+  contractor commitments including delivered-but-unpaid builds, contracted vs
+  *collected* retainer, and delivery-cost variance across finished engagements —
+  a consistent overrun means every open quote is underpriced and the report says
+  so. **`agency/clients/` and `agency/ledgers/` are gitignored and must stay that
+  way**: they hold client financials and our margins, and `access.js` grants
+  contractors `repo-branch` access by design, so committing them would route that
+  data straight through the tier built to prevent it. Local JSON via
+  `ledger-store.js` (ref-validated filenames, write-then-rename), deliberately
+  **not** Postgres and not touching `lib/database.js` — no service, pool or
+  migration exists.
   **Generation only — it holds no send capability at all** (no email, SMS,
   social, invoicing, or issue creation), and is deliberately disconnected from
   the outreach pipeline. Tests in the root `npm test`;
-  `npm run agency:plan|proposal|internal|tickets|scope`; docs
+  `npm run agency:plan|proposal|internal|tickets|scope|ledger|portfolio`; docs
   `docs/ai-development-agency.md`, module `agency/README.md`. The agreement
   templates in `agency/templates/` are required-terms checklists for an
-  attorney, **not** legal advice and not agreements.
+  attorney, **not** legal advice and not agreements. Example client files are
+  named after their own `ref` because `loadClient(ref)` derives the filename
+  from it — keep that invariant (pinned by `agency/test/ledger-store.test.js`).
 - **`social-listening/`** — Bluesky firehose (Jetstream) monitor. The
   *listening* half is read-only. A *reply* path does exist and this file
   previously denied it: `social-listening/src/bluesky-delivery.js` has
@@ -439,6 +469,9 @@ npm run agency:proposal -- --client <file>   # client proposal (never leaks cost
 npm run agency:internal -- --client <file>   # internal margin, cash flow, access plan
 npm run agency:tickets -- --client <file>    # contractor ticket bodies
 npm run agency:scope -- "<prospect request>" # in-offer / add-on / decline
+npm run agency:plan -- --client <file> --open        # open an engagement ledger
+npm run agency:ledger -- <ref>                       # state, cash, next action
+npm run agency:portfolio                             # pipeline, cash, estimate accuracy
 ```
 
 This machine has no standalone Node.js install, only `bun`. `bun install`
@@ -559,7 +592,11 @@ notes), not live infrastructure — don't treat them as configuration.
   per-ticket least-privilege contractor access, contractor agreement and
   channel gates, a blocking QC checklist that releases payment, and
   proposal/internal/ticket document generation with an enforced
-  client-facing-leakage guard. Test-covered in the root `npm test`.
+  client-facing-leakage guard. Plus a fail-closed engagement ledger (local,
+  gitignored JSON) recording deposits, milestone acceptances and real delivery
+  cost, and a portfolio roll-up reporting weighted pipeline, cash against
+  contractor commitments, and estimate accuracy that feeds future quotes.
+  Test-covered in the root `npm test`.
 
 ## Recent fixes (this pass)
 

@@ -79,7 +79,7 @@ test('every milestone appears with its acceptance criteria', () => {
 });
 
 test('a proposal cannot be built for an engagement that is not ready', () => {
-  const blocked = planEngagement(example('corner-cafe-disqualified.json'));
+  const blocked = planEngagement(example('corner-cafe.json'));
   assert.throws(() => buildProposal(blocked), /not ready to propose/);
 });
 
@@ -94,13 +94,13 @@ test('the internal plan carries exactly what the proposal omits', () => {
 });
 
 test('the internal plan works for a disqualified prospect too', () => {
-  const md = buildInternalPlan(planEngagement(example('corner-cafe-disqualified.json')));
+  const md = buildInternalPlan(planEngagement(example('corner-cafe.json')));
   assert.match(md, /## Blockers/);
   assert.match(md, /disqualified at qualification/);
 });
 
 test('the internal plan surfaces owner decisions', () => {
-  const md = buildInternalPlan(planEngagement(example('summit-energy-services.json')));
+  const md = buildInternalPlan(planEngagement(example('summit-energy.json')));
   assert.match(md, /## Owner decisions required/);
 });
 

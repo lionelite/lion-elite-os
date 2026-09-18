@@ -10,7 +10,16 @@
 //   node agency/cli.js --client <file> --json          # the raw engagement
 //   node agency/cli.js --scope "they also want a mobile app"
 //
-// Read-only: it prints. It does not send, publish, invoice, or open issues.
+// Ledger (state that survives the process exiting):
+//   node agency/cli.js --client <file> --open          # open an engagement ledger
+//   node agency/cli.js --ledger <ref>                  # show one engagement
+//   node agency/cli.js --ledger <ref> --sent           # record the proposal going out
+//   node agency/cli.js --ledger <ref> --receipt 12600 --kind deposit
+//   node agency/cli.js --ledger <ref> --state in_delivery
+//   node agency/cli.js --portfolio                     # roll-up across all ledgers
+//
+// It prints and it writes local ledger files. It does not send, publish,
+// invoice, or open issues.
 
 const fs = require('node:fs');
 const path = require('node:path');
@@ -18,6 +27,9 @@ const path = require('node:path');
 const { planEngagement } = require('./src/engagement');
 const { buildProposal, buildInternalPlan, buildTicketIssue } = require('./src/proposal');
 const { scopeGuard, OFFER_STATEMENT, TARGET_VERTICALS } = require('./src/offer');
+const ledgerOps = require('./src/ledger');
+const store = require('./src/ledger-store');
+const portfolio = require('./src/portfolio');
 
 function parseArgs(argv) {
   const args = { flags: new Set() };
@@ -25,13 +37,20 @@ function parseArgs(argv) {
     const arg = argv[i];
     if (arg === '--client' || arg === '-c') { args.client = argv[++i]; continue; }
     if (arg === '--scope') { args.scope = argv[++i]; continue; }
+    if (arg === '--ledger') { args.ledger = argv[++i]; continue; }
+    if (arg === '--receipt') { args.receipt = argv[++i]; continue; }
+    if (arg === '--kind') { args.kind = argv[++i]; continue; }
+    if (arg === '--state') { args.state = argv[++i]; continue; }
+    if (arg === '--note') { args.note = argv[++i]; continue; }
     if (arg.startsWith('--')) args.flags.add(arg.slice(2));
   }
   return args;
 }
 
 function money(n) {
-  return `$${Math.round(Number(n) || 0).toLocaleString('en-US')}`;
+  const v = Math.round(Number(n) || 0);
+  // Sign outside the symbol: "-$7,700", not "$-7,700".
+  return `${v < 0 ? '-' : ''}$${Math.abs(v).toLocaleString('en-US')}`;
 }
 
 function summary(e) {
@@ -81,8 +100,69 @@ function summary(e) {
   return out.join('\n');
 }
 
+function renderLedger(ledger) {
+  const e = ledgerOps.economics(ledger);
+  const out = [];
+  out.push(`${ledger.clientName} (${ledger.clientRef}) — ${ledger.state}`);
+  out.push('');
+  if (ledger.planned) {
+    out.push(`Contract:         ${money(ledger.planned.projectPrice)}  (deposit ${money(ledger.planned.depositAmount)}, balance ${money(ledger.planned.balanceAmount)})`);
+  }
+  out.push(`Collected:        ${money(e.received)}   Paid out: ${money(e.developerPaid)}   Operating: ${money(e.opsSpent)}`);
+  out.push(`Cash position:    ${money(e.cashPosition)}`);
+  if (e.outstandingFromClient > 0) out.push(`Outstanding:      ${money(e.outstandingFromClient)} still owed by the client`);
+  out.push(`Milestones:       ${e.milestonesAccepted}/${e.milestonesTotal} accepted`);
+  if (e.unpaidAcceptedMilestones.length) out.push(`Unpaid (accepted): ${e.unpaidAcceptedMilestones.join(', ')}`);
+  // Only call it profit when it is profit. Before the build is collected and
+  // paid out, the honest line is the cash position above.
+  if (e.profitIsFinal) {
+    out.push(`Gross profit:     ${money(e.grossProfit)}  (${e.grossMarginPct}% of build revenue)`);
+  } else if (e.developerPaid > 0 || e.opsSpent > 0) {
+    out.push(`Spent to date:    ${money(e.developerPaid + e.opsSpent)} of a planned ${money(ledger.planned.developerCost + ledger.planned.opsCost)}`);
+  }
+  // Variance is only meaningful once money has actually moved. Printing
+  // "delivery -$7,700" on a ledger where nothing has been spent reads as a
+  // problem rather than as "we have not started".
+  if (e.variance && (e.developerPaid > 0 || e.variance.final)) {
+    out.push(`Variance vs plan: delivery ${e.variance.developerCost >= 0 ? '+' : ''}${money(e.variance.developerCost)}, profit ${e.variance.grossProfit >= 0 ? '+' : ''}${money(e.variance.grossProfit)}${e.variance.final ? '' : ' (in progress)'}`);
+  }
+  out.push('');
+  out.push(`NEXT: ${ledgerOps.nextAction(ledger)}`);
+  return out.join('\n');
+}
+
+function requireLedger(ref) {
+  const ledger = store.loadLedger(ref);
+  if (!ledger) throw new Error(`No ledger for "${ref}". Open one with: --client <file> --open`);
+  return ledger;
+}
+
 function main() {
   const args = parseArgs(process.argv.slice(2));
+
+  if (args.flags.has('portfolio')) {
+    console.log(portfolio.renderReport(store.listLedgers()));
+    return;
+  }
+
+  if (args.ledger) {
+    let ledger = requireLedger(args.ledger);
+    let mutated = false;
+
+    if (args.flags.has('sent')) { ledgerOps.recordProposalSent(ledger, { note: args.note }); mutated = true; }
+    if (args.receipt !== undefined) {
+      ledgerOps.recordReceipt(ledger, { amount: Number(args.receipt), kind: args.kind || 'deposit' });
+      mutated = true;
+    }
+    if (args.state) { ledgerOps.transition(ledger, args.state, { note: args.note }); mutated = true; }
+
+    if (mutated) {
+      store.saveLedger(ledger);
+      ledger = requireLedger(args.ledger);
+    }
+    console.log(renderLedger(ledger));
+    return;
+  }
 
   if (args.scope) {
     const result = scopeGuard(args.scope);
@@ -93,8 +173,10 @@ function main() {
   }
 
   if (!args.client) {
-    console.log('Usage: node agency/cli.js --client <file.json> [--proposal|--internal|--tickets|--json]');
+    console.log('Usage: node agency/cli.js --client <file.json> [--proposal|--internal|--tickets|--json|--open]');
     console.log('       node agency/cli.js --scope "<what the prospect asked for>"');
+    console.log('       node agency/cli.js --ledger <ref> [--sent|--receipt <n> --kind <k>|--state <s>]');
+    console.log('       node agency/cli.js --portfolio');
     console.log('');
     console.log('Target verticals:');
     for (const v of TARGET_VERTICALS) console.log(`  ${v.id.padEnd(24)} ${v.name}`);
@@ -136,9 +218,33 @@ function main() {
     }
     return;
   }
+  if (args.flags.has('open')) {
+    const existing = store.loadLedger(engagement.clientRef);
+    if (existing) {
+      console.error(`A ledger already exists for ${engagement.clientRef} (state: ${existing.state}). Refusing to overwrite it.`);
+      console.error('Inspect it with: --ledger ' + engagement.clientRef);
+      process.exitCode = 1;
+      return;
+    }
+    const ledger = ledgerOps.openLedger(engagement);
+    const file = store.saveLedger(ledger);
+    console.log(`Opened ledger at ${file}`);
+    console.log('');
+    console.log(renderLedger(ledger));
+    return;
+  }
   console.log(summary(engagement));
 }
 
-if (require.main === module) main();
+if (require.main === module) {
+  try {
+    main();
+  } catch (error) {
+    // The engine refuses illegal moves by throwing. At the CLI boundary that
+    // should read as a refusal with a reason, not as a crash.
+    console.error(`Refused: ${error.message}`);
+    process.exitCode = 1;
+  }
+}
 
 module.exports = { summary };
