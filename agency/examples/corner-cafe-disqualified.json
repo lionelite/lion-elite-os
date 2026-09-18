@@ -1,0 +1,9 @@
+{
+  "ref": "corner-cafe",
+  "name": "Corner Cafe",
+  "monthlyInboundLeads": 400,
+  "missedLeadRate": 0.5,
+  "currentCloseRate": 0.3,
+  "averageCustomerValue": 45,
+  "decisionMakerEngaged": true
+}

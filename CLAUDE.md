@@ -312,6 +312,47 @@ Standalone modules that share the repo but not the architecture above:
   `test/scoring.test.js`), but was completely orphaned until this pass —
   not in `npm test`, no CI, no Render service. Now wired into `npm test`
   (see Recent fixes).
+- **`agency/`** — the managed AI-development agency engine: we sell the
+  business outcome, vetted contractors do most of the technical delivery under
+  our direction. One productized offer (missed-lead recovery → follow-up →
+  qualification → scheduling → revenue reporting) sold into verticals where one
+  recovered customer is worth thousands. Pure, deterministic, offline — no DB,
+  queue, network, or Render service, like the two modules above. The business
+  rules are enforced in code because a margin rule that lives only in a document
+  gets negotiated away in a sales call:
+  `qualification.js` sizes the revenue leak from discovery facts and
+  **disqualifies** most prospects (customer value < $1k, inbound < 25/mo,
+  recoverable value < $30k, no decision-maker, wants hourly, wants a revenue
+  guarantee); `pricing.js` prices at 18% of year-one client value — never from
+  our cost — and blocks on a 50% margin floor, a 40%-of-price delivery-cost cap,
+  a 50% deposit floor, and a cash-flow check that the deposit covers contractor
+  payouts falling due before the client's balance lands; `delivery-plan.js`
+  **throws** unless every ticket has acceptance criteria, a fixed price and an
+  access tier, and payouts sum exactly to the budget; `access.js` scopes
+  contractor access per-ticket with an absolute `NEVER_GRANT` list (production
+  data/credentials/deploy, merge rights, and — equally important — the client's
+  inbox and billing portal, since a contractor who can reach those can quote the
+  next phase); `contractor.js` throws on assignment until NDA + IP assignment +
+  non-solicit are signed, and screens any contractor message bound for the
+  client for commercial content; `qc.js` derives payment release from a
+  ten-item blocking checklist where unrecorded counts as not passed.
+  `proposal.js` renders the client proposal, the internal plan and the
+  contractor ticket bodies, and `assertNoInternalLeakage()` makes
+  `buildProposal()` **throw** if a client-facing document would carry delivery
+  cost, margin, or the word contractor — so a later template edit can't quietly
+  start leaking it. Two calibrations worth knowing because the naive version is
+  wrong: a single "ROI ≥ 3x" gate rejects deals whose build pays back in two
+  months, so it is split into a hard 6-month build-payback gate plus a softer 2x
+  whole-relationship floor; and a value-based price on a high-volume client
+  returns ~$130k for the same fixed scope, so anything above a $45k productized
+  ceiling is clamped and escalated to the owner rather than auto-quoted.
+  **Generation only — it holds no send capability at all** (no email, SMS,
+  social, invoicing, or issue creation), and is deliberately disconnected from
+  the outreach pipeline. Tests in the root `npm test`;
+  `npm run agency:plan|proposal|internal|tickets|scope`; docs
+  `docs/ai-development-agency.md`, module `agency/README.md`. The agreement
+  templates in `agency/templates/` are required-terms checklists for an
+  attorney, **not** legal advice and not agreements.
 - **`social-listening/`** — Bluesky firehose (Jetstream) monitor. The
   *listening* half is read-only. A *reply* path does exist and this file
   previously denied it: `social-listening/src/bluesky-delivery.js` has
@@ -393,6 +434,11 @@ npm run real-estate                # real-estate/intelligence/src/dashboard-serv
 npm run real-estate:demo           # real-estate/intelligence/src/demo.js
 npm run learn:video -- <url>       # scripts/learn-from-video.js (one video)
 npm run learn:inbox                # process knowledge/video-lessons/inbox.md
+npm run agency:plan -- --client agency/examples/cedar-roofing.json   # agency engagement plan
+npm run agency:proposal -- --client <file>   # client proposal (never leaks cost/margin)
+npm run agency:internal -- --client <file>   # internal margin, cash flow, access plan
+npm run agency:tickets -- --client <file>    # contractor ticket bodies
+npm run agency:scope -- "<prospect request>" # in-offer / add-on / decline
 ```
 
 This machine has no standalone Node.js install, only `bun`. `bun install`
@@ -458,7 +504,7 @@ Current and accurate: `docs/postgres-live-store.md`,
 `docs/outreach-validation-api.md`, `docs/prospect-pipeline.md`,
 `docs/render-redis-workers.md`, `docs/render-cron-automation.md`,
 `docs/render-observability.md`, `docs/customer-communication-rules.md`,
-`docs/video-learning.md`.
+`docs/video-learning.md`, `docs/ai-development-agency.md`.
 
 Doc sprawl to clean up: `docs/daily-email-quota.md`,
 `-v2.md`, `-v3.md` all say the same thing (100/day default via
@@ -507,6 +553,13 @@ notes), not live infrastructure — don't treat them as configuration.
   in the root `npm test`.
 - Video learning connection: YouTube/Instagram links in, timestamp-cited
   lessons and gated task proposals out, in the root `npm test`.
+- Managed AI-development agency engine (`agency/`): client qualification and
+  value sizing, value-based pricing with enforced margin/deposit/cash-flow
+  gates, milestone + acceptance-test + fixed-price ticket generation,
+  per-ticket least-privilege contractor access, contractor agreement and
+  channel gates, a blocking QC checklist that releases payment, and
+  proposal/internal/ticket document generation with an enforced
+  client-facing-leakage guard. Test-covered in the root `npm test`.
 
 ## Recent fixes (this pass)
 

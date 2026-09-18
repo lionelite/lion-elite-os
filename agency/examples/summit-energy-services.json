@@ -1,0 +1,14 @@
+{
+  "ref": "summit-energy",
+  "name": "Summit Energy Services",
+  "verticalId": "oil-gas-services",
+  "monthlyInboundLeads": 120,
+  "missedLeadRate": 0.4,
+  "currentCloseRate": 0.2,
+  "averageCustomerValue": 22000,
+  "manualFollowUpHoursWeekly": 25,
+  "loadedHourlyCost": 45,
+  "decisionMakerEngaged": true,
+  "channelCount": 4,
+  "legacySystemWithoutApi": true
+}
