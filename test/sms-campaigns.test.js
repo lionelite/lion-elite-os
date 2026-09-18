@@ -99,3 +99,55 @@ test('selectSmsRecipients can derive local hour via localHourFor', () => {
   assert.equal(eligible.length, 0);
   assert.equal(skipped[0].reason, 'outside_quiet_hours');
 });
+
+// --- entity scoping --------------------------------------------------------
+//
+// Consent is given to a company, not to an operator running several. Under
+// TCPA that is not a matter of preference, which is why it is checked before
+// opt-out, suppression and every other per-recipient gate.
+
+const { selectSmsRecipients: selectScoped } = require('../lib/sms/sms-selectors');
+
+const consenting = (id, extra = {}) => ({
+  id,
+  smsConsent: true,
+  phone: '+15555550123',
+  lastPurchaseAt: '2020-01-01',
+  localHour: 10,
+  ...extra
+});
+
+test('without a sending entity, SMS selection behaves exactly as before', () => {
+  const recipients = [
+    consenting('a'),
+    consenting('b', { smsConsentEntityId: 'lion_elite_wellness' }),
+    consenting('c', { smsConsentEntityId: 'clinic_supply_llc' })
+  ];
+  assert.deepEqual(selectScoped(recipients).eligible.map(r => r.id), ['a', 'b', 'c']);
+});
+
+test('consent given to another entity is not consent for this one', () => {
+  const recipients = [
+    consenting('b', { smsConsentEntityId: 'lion_elite_wellness' }),
+    consenting('c', { smsConsentEntityId: 'clinic_supply_llc' })
+  ];
+  const { eligible, skipped } = selectScoped(recipients, { entityId: 'lion_elite_wellness' });
+  assert.deepEqual(eligible.map(r => r.id), ['b']);
+  assert.deepEqual(skipped, [{ id: 'c', reason: 'consent_other_entity' }]);
+});
+
+test('a consent record predating entity separation is not treated as a mismatch', () => {
+  // No entity recorded means it belongs to whoever was sending then, which is
+  // the only entity that could have been sending. Skipping these would make
+  // every existing consent permanently unusable.
+  const { eligible } = selectScoped([consenting('a')], { entityId: 'lion_elite_wellness' });
+  assert.deepEqual(eligible.map(r => r.id), ['a']);
+});
+
+test('entity scope is checked before the other per-recipient gates', () => {
+  // A recipient who is both wrong-entity and opted out reports the entity
+  // reason: the send was never this entity's to make in the first place.
+  const recipient = consenting('c', { smsConsentEntityId: 'clinic_supply_llc', optedOut: true });
+  const { skipped } = selectScoped([recipient], { entityId: 'lion_elite_wellness' });
+  assert.deepEqual(skipped, [{ id: 'c', reason: 'consent_other_entity' }]);
+});

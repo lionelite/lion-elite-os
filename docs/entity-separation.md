@@ -112,10 +112,17 @@ Nothing below is autonomous; each line is an owner or counsel action.
 
 - **No clinic-supply campaign exists.** `campaignsForEntity('clinic_supply_llc')`
   returns `[]`, and a campaign cannot be registered for it until step 3 above.
-- **SMS** (`lib/sms/*`) is not yet entity-scoped. It has its own consent model
-  and the TCPA consequences of getting entity scope wrong are worse than for
-  e-mail. Not attempted here rather than half-done — it needs the same treatment
-  before any second-entity SMS is contemplated.
+- **SMS is partly scoped.** `selectSmsRecipients` now takes an optional
+  `entityId` and skips a recipient whose consent was given to a different entity
+  as `consent_other_entity`, checked before opt-out and every other
+  per-recipient gate — the send was never this entity's to make. Omitted, its
+  behaviour is unchanged. A consent record with no entity recorded predates
+  separation and is not treated as a mismatch; skipping those would make every
+  existing consent permanently unusable.
+
+  What is NOT done: SMS campaigns do not yet declare an `entityId`, so nothing
+  passes that parameter in production yet. That step is blocked on the open
+  question below, not on effort.
 (The send path guard listed here previously is now wired — see below.)
 
 ## The send path (wired 2026-09-17)
@@ -195,3 +202,26 @@ currently "licensed pharmacies and outsourcing facilities"), the structural
 analogue of the RUO disclaimer in research mode. **The exact wording is a
 placeholder for counsel to confirm.** The requirement that *some* audience
 restriction be present is the part that should not move.
+
+## Open question: is Lion Elite Beauty a separate legal entity?
+
+Blocking SMS campaign scoping, and worth resolving before the model hardens.
+
+The registry currently assumes **one compliance mode per entity**, which holds
+for Wellness (`research-only`) and the clinic-supply LLC (`clinical-supply`).
+But `coaching_welcome_sms` is a Lion Elite **Beauty** campaign in `coaching`
+mode, and Beauty is not in the registry at all. Two structures are possible and
+they are not interchangeable:
+
+**If Beauty is its own legal entity** — register it as a third entity. That also
+means `POSTURES` needs a third value: cosmetics under MoCRA is neither
+`ruo_research_supply` nor `api_for_compounding` (see `credentials/README.md`,
+which describes three product lines under three regimes).
+
+**If Beauty is a brand inside the same company as Wellness** — then entity and
+brand are different things, and compliance mode belongs to the **brand**, not
+the entity. `assertEntityShape` would hold a *set* of permitted modes per
+entity, and campaigns would carry both a brand and an entity.
+
+Guessing either way would bake a legal structure into the data model on an
+assumption. This is an owner decision.
