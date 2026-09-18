@@ -137,6 +137,69 @@ assignment was blocked (OUTREACH_SEND_ENABLED, …). The agents produced no outw
 effect today; a human has to open a gate."* That sentence is the whole honesty
 posture of this module.
 
+## Closing the loop — dispatch and outcomes
+
+`coordinator.js` plans; `lib/agents/runner.js` dispatches and records. Until the
+runner existed the roster was a planner, and #73's definition of done ("it
+triggers agent jobs, records their actions and outcomes") was unmet.
+
+**A queued job is not a finished job.** A successful dispatch records
+`dispatched`, never `completed`. The runner knows it enqueued something; it does
+not know the work succeeded. CLAUDE.md's working agreement names this exact
+failure — "a merged commit, a green build, or a fired deploy hook is not evidence
+the thing works" — and a roster that logged `completed` on enqueue would
+manufacture a clean daily report out of nothing but successful queue writes.
+
+**It weakens no control.** The dispatcher requires human approval unless told the
+mode is `automatic`. The runner sets neither `requiresApproval: false` nor an
+approval mode of its own — it passes through what its caller was configured with
+and reports honestly when the answer is "a person has to approve this". Marking
+its own assignments pre-approved would be bypassing a control.
+
+### Finding: four allowlisted actions enqueue into the void
+
+Dispatching to a queue nobody consumes returns `status: 'queued'` and produces
+nothing. Checking each allowlisted action against the workers that exist:
+
+| Action | Queue | Consumer |
+|---|---|---|
+| `morning-brief`, `midday-revenue-check`, `evening-review`, `business-health-snapshot` | analytics | `executive-worker.js` |
+| `discover-prospects` | discovery | `discovery-worker.js` |
+| `draft-outreach` | email | `outreach-worker.js` |
+| `validate-outreach` | validation | `outreach-worker.js` |
+| `create-github-issue` | integrations | `integration-worker.js` |
+| **`generate-social-content`** | executive | **none** |
+| **`research-prospect`** | research | **none** |
+| **`enrich-prospect`** | enrichment | **none** |
+| **`qualify-prospect`** | qualification | **none** |
+
+This is a **pre-existing architecture gap**, not a configuration error, and it
+predates the agent roster — but the roster makes it consequential, because
+`qualify-prospect` is the sales agent's joint-highest-impact action. On a
+behind-pace afternoon plan, 5 of 11 assignments land in unconsumed queues.
+
+`hasConsumer()` and `orphanedActions()` in `lib/action-catalog.js` expose it, and
+the runner flags each affected assignment (`orphanedQueue`) and reports
+`effectivelyDispatched` separately from `dispatched`. **Resolving it is an owner
+decision:** either write the four missing workers, or remove those actions from
+the dispatcher allowlist so nothing can queue into nowhere. `CONSUMED_QUEUES` is
+hand-maintained and pinned by `test/action-catalog.test.js`, which greps
+`workers/*.js` and fails if the two drift.
+
+### Running a checkpoint
+
+```bash
+npm run agents:run -- afternoon --collected 900 --dry-run   # show what would dispatch
+npm run agents:run -- afternoon --collected 900             # dispatch (manual approval)
+npm run agents:run -- afternoon --collected 900 --auto      # operator-authorized auto-dispatch
+```
+
+`--auto` (or `AGENT_APPROVAL_MODE=automatic`) is an explicit operator decision and
+the run states which mode it used. Runs are recorded in Redis for 30 days, or to a
+local file under `agent-outputs/` when Redis is unavailable — and the run says
+which, rather than silently discarding the record. A checkpoint that dispatched
+nothing exits non-zero, because it is not a success.
+
 ## Commands
 
 ```bash
@@ -146,6 +209,7 @@ npm run agents:knowledge -- sales                  # one role's sources and cita
 npm run agents:recall -- sales "build value before price"
 npm run agents:plan -- --collected 900 --hour 16 --checkpoint afternoon
 npm run agents:plan -- --collected 900             # all four checkpoints
+npm run agents:run  -- afternoon --collected 900 --dry-run
 ```
 
 ## What is deliberately not built

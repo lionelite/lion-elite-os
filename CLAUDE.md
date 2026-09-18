@@ -477,8 +477,34 @@ Standalone modules that share the repo but not the architecture above:
   `HUMAN_APPROVAL` are human decisions no variable can satisfy, and a regression
   test greps every named control's env var outside `lib/agents/` to stop another
   being invented.
-  `npm run agents:roster|knowledge|recall|plan`; docs `docs/ai-agent-roster.md`;
-  53 tests in the root `npm test`.
+  `runner.js` closes the loop #73 actually asks for: `coordinator.js` only
+  planned, so "triggers agent jobs, records their actions and outcomes" was unmet.
+  It dispatches through the existing allowlisted dispatcher (injected, so it is
+  testable without bullmq) and **records `dispatched`, never `completed`** — the
+  runner knows it enqueued something, not that the work succeeded, and the working
+  agreement's "a fired deploy hook is not evidence the thing works" applies
+  exactly. It weakens nothing: the dispatcher requires human approval unless told
+  `automatic`, and the runner sets neither that nor `requiresApproval: false` on
+  its own — `scripts/run-agent-checkpoint.js` takes `--auto` /
+  `AGENT_APPROVAL_MODE` as an explicit operator decision and states which mode it
+  used. Runs persist to Redis (30-day TTL) or a local `agent-outputs/` file, and
+  say which rather than silently discarding the record; a checkpoint that
+  dispatched nothing exits non-zero.
+  **Pre-existing gap this surfaced, needing an owner decision:** four allowlisted
+  actions target queues **no worker consumes** — `generate-social-content`
+  (executive), `research-prospect` (research), `enrich-prospect` (enrichment) and
+  `qualify-prospect` (qualification). `dispatchAction()` returns `queued` either
+  way, so those are silent no-ops; on a behind-pace afternoon plan 5 of 11
+  assignments land there, and `qualify-prospect` is the sales agent's
+  joint-highest-impact action. `lib/action-catalog.js` now exposes
+  `CONSUMED_QUEUES`/`hasConsumer()`/`orphanedActions()`, the runner reports
+  `effectivelyDispatched` apart from `dispatched` and flags each affected
+  assignment, and `test/action-catalog.test.js` greps `workers/*.js` so the
+  hand-maintained consumed-queue list cannot drift. Fix is either writing the four
+  workers or removing those actions from the allowlist — not something to decide
+  autonomously.
+  `npm run agents:roster|knowledge|recall|plan|run`; docs
+  `docs/ai-agent-roster.md`; 77 tests in the root `npm test`.
 - **`social-listening/`** — Bluesky firehose (Jetstream) monitor. The
   *listening* half is read-only. A *reply* path does exist and this file
   previously denied it: `social-listening/src/bluesky-delivery.js` has
@@ -719,7 +745,10 @@ notes), not live infrastructure — don't treat them as configuration.
   pace across four daily checkpoints, orders assignments by expected impact,
   prioritises revenue work when behind, stops pushing volume once the target is
   met, and reports gated follow-through honestly rather than implying progress.
-  Holds no send capability. Test-covered in the root `npm test`.
+  Dispatches through the existing allowlisted dispatcher and records outcomes,
+  distinguishing `dispatched` from `completed` and flagging work queued to a
+  consumer-less queue. Holds no send capability. Test-covered in the root
+  `npm test`.
 
 ## Recent fixes (this pass)
 
