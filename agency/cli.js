@@ -123,6 +123,8 @@ function renderLedger(ledger) {
   if (e.outstandingFromClient > 0) out.push(`Outstanding:      ${money(e.outstandingFromClient)} still owed by the client`);
   out.push(`Milestones:       ${e.milestonesAccepted}/${e.milestonesTotal} accepted`);
   if (e.unpaidAcceptedMilestones.length) out.push(`Unpaid (accepted): ${e.unpaidAcceptedMilestones.join(', ')}`);
+  const disputed = ledgerOps.disputedTickets(ledger);
+  if (disputed.length) out.push(`DISPUTED:         ${disputed.join(', ')} — payment held until decided`);
   // Only call it profit when it is profit. Before the build is collected and
   // paid out, the honest line is the cash position above.
   if (e.profitIsFinal) {

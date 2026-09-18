@@ -60,6 +60,51 @@ The load-bearing one. Without it we cannot sell the code to the client.
 - No subcontracting without written approval.
 - We may terminate a ticket; work accepted to that point is paid.
 
+## `independent-contractor` — dispute resolution (required section)
+
+The operating process is implemented in `agency/src/arbitration.js`; these are the
+terms that must back it. Without them a contractor whose work we reject has no
+contractual path, which is both unfair and the shape of a claim.
+
+**Internal process first, and it is time-boxed.** The contractor may contest a
+quality-control rejection. We decide within **5 business days**; an undecided
+dispute escalates rather than sitting open, because an indefinite "under review"
+is functionally a refusal to pay. State the window in the agreement so it binds
+us, not just the contractor.
+
+**Decisions turn on the written acceptance criteria.** This is why every ticket
+carries objective criteria: a dispute over objective criteria is resolvable by
+reading them. The agreement should say the criteria in the ticket are the standard
+for acceptance — not our general satisfaction. A "sole discretion" acceptance
+clause makes the criteria decorative and is worth refusing even though it favours
+us on paper; it is the clause that makes good contractors decline the work.
+
+**The reviewer is not the person who failed it.** Named in the agreement so it is
+an obligation rather than a courtesy.
+
+**Ambiguity is resolved against the drafter — us.** If the criterion turns out to
+be ambiguous, the contractor is paid in full for the work as submitted. We wrote
+the ticket. Putting this in writing is what stops "ambiguous" becoming a free
+rejection, and it is the term that makes the whole fixed-price model trustworthy
+from the contractor's side.
+
+**Payment during a dispute.** Undisputed accepted milestones are paid on schedule
+— a dispute over one ticket does not freeze the contractor's other work. Payment
+on the disputed ticket is held until the ruling.
+
+**External forum, after the internal process is exhausted.** An attorney decides
+these, per jurisdiction:
+- Binding arbitration or courts; if arbitration, which rules and which seat.
+- Venue and governing law.
+- Who bears fees — a fee-shifting clause that makes a $700 ticket dispute cost
+  $3,000 to raise is a denial of the process in practice.
+- Small-claims carve-out, which for ticket-sized amounts is often the honest
+  route.
+- Whether a class-action waiver is enforceable where the contractor is.
+
+**Do not draft these from this file.** It records what the process needs; the
+enforceability of every clause above is jurisdiction-specific.
+
 ## Conditional agreements
 
 ### `baa` — Business Associate Agreement

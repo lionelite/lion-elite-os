@@ -50,6 +50,13 @@ the client's, on the client's accounts. Never front these.
 covers, what it does not, notice period to cancel. Define a response-time
 commitment or it becomes unbounded.
 
+**Dispute resolution.** Mirror the structure used with contractors: acceptance is
+judged against the written criteria in the statement of work, not general
+satisfaction; a defined review window with deemed acceptance if the client does
+not respond; and a named escalation path before any external forum. Ambiguity in
+a criterion is resolved against whoever drafted it — which is us, so write them
+carefully.
+
 **Liability.** Cap it, conventionally at fees paid. Exclude consequential and
 indirect loss. This is the clause that decides whether a bad engagement is a
 refund or a business-ending event — have an attorney write it.

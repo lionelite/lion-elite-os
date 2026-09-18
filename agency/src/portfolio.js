@@ -17,6 +17,7 @@
 // ledger-store.js's job.
 
 const { economics, PIPELINE_WEIGHTS, TERMINAL } = require('./ledger');
+const { disputeStats } = require('./arbitration');
 
 function round(n, places = 2) {
   const f = 10 ** places;
@@ -151,6 +152,9 @@ function summarize(ledgers = []) {
       winRatePct: decided > 0 ? round((wonCount / decided) * 100, 1) : null,
     },
     estimateAccuracy: estimateAccuracy(closedVariances),
+    // Disputes belong in the portfolio view because an overdue one is an unpaid
+    // contractor, and a pattern of overturns is a defect in our own gate.
+    disputes: disputeStats(ledgers),
     attention: attention.sort((a, b) => ({ high: 0, medium: 1, low: 2 }[a.severity] - { high: 0, medium: 1, low: 2 }[b.severity])),
   };
 }
@@ -251,6 +255,25 @@ function renderReport(ledgers = []) {
     lines.push('|---|---|---|---|');
     for (const v of s.estimateAccuracy.detail) {
       lines.push(`| ${v.clientRef} | ${money(v.plannedDeveloperCost)} | ${money(v.actualDeveloperCost)} | ${v.developerCost >= 0 ? '+' : ''}${money(v.developerCost)} |`);
+    }
+    lines.push('');
+  }
+
+  if (s.disputes.total > 0) {
+    lines.push('## Disputes');
+    lines.push('');
+    lines.push(`${s.disputes.total} total — ${s.disputes.open} open${s.disputes.overdue ? ` (${s.disputes.overdue} OVERDUE)` : ''}, ${s.disputes.decided} decided${s.disputes.escalated ? `, ${s.disputes.escalated} escalated` : ''}.`);
+    if (Object.keys(s.disputes.outcomes).length) {
+      lines.push('');
+      lines.push(Object.entries(s.disputes.outcomes).map(([k, v]) => `${v} ${k}`).join(', ') + '.');
+    }
+    if (s.disputes.overturnRate !== null) {
+      lines.push('');
+      lines.push(`Overturn rate ${Math.round(s.disputes.overturnRate * 100)}%, spec-defect rate ${Math.round(s.disputes.specDefectRate * 100)}%. Read both as findings about us, not about contractors.`);
+    }
+    for (const f of s.disputes.findings) {
+      lines.push('');
+      lines.push(`⚠️ ${f}`);
     }
     lines.push('');
   }

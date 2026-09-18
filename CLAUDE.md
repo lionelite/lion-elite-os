@@ -400,6 +400,28 @@ Standalone modules that share the repo but not the architecture above:
   other two. Schema evolution: ledgers outlive the code that wrote them, so
   `ledger.normalize()` fills fields added later and `loadLedger()` applies it on
   the way in — add new ledger fields there, not as a scattered `|| []`.
+  `arbitration.js` closes the one-directional hole in the QC gate: before it, a
+  contractor whose work was rejected had no appeal, no timebox and no named
+  decider, which is unfair, a claim waiting to happen, and an operational block
+  (a stuck ticket blocks its milestone, which blocks the client's balance). Four
+  rules carry it: **a ruling must cite the contested acceptance item** (that is
+  why `delivery-plan.js` insists on objective criteria — a dispute over them is
+  resolvable by reading them; an uncited ruling is refused, and one citing
+  something QC never raised is too); **ambiguity is ours** — the `split` outcome
+  pays the contractor in full and records a spec defect against us, because we
+  wrote the ticket; **the reviewer cannot be whoever failed it**; and it is
+  **time-boxed to 5 business days**, after which it escalates, since an indefinite
+  "under review" is a refusal to pay. Read the stats the right way round: a high
+  overturn rate is a finding about *our* QC and a high split rate about *our*
+  specs — only `upheld` says anything about the contractor, and
+  `contractorDisputeRecord()` separates "contested and was right" from "contested
+  and was wrong" so a naive count can't penalise the contractor who successfully
+  challenges bad rejections. Rates stay `null` under three substantive rulings.
+  A disputed milestone cannot be accepted and its payment is held, while
+  undisputed milestones still pay on schedule; disputes survive `closed`, because
+  a late dispute is still an obligation. `recordDispute()` takes only an
+  `arbitration.openDispute()` result (same provenance rule as acceptance and
+  assignment). Agreement language in `agency/templates/*-agreement-terms.md`.
   **Generation only — it holds no send capability at all** (no email, SMS,
   social, invoicing, or issue creation), and is deliberately disconnected from
   the outreach pipeline. Tests in the root `npm test`;
@@ -680,7 +702,10 @@ notes), not live infrastructure — don't treat them as configuration.
   contractor commitments, and estimate accuracy that feeds future quotes. Plus a
   contractor bench with capability clearance, concurrent-ticket ceilings,
   concentration/utilisation warnings, and an assignment recommendation ranked on
-  first-pass quality rather than price. Test-covered in the root `npm test`.
+  first-pass quality rather than price, and a contractor dispute process with
+  cited rulings, an independent reviewer, a 5-business-day timebox, and statistics
+  that attribute overturns to our own gate rather than to contractors.
+  Test-covered in the root `npm test`.
 - AI agent roster (`lib/agents/`, Issue #73): seven roles with owned decisions,
   KPIs and per-role knowledge bases built from the repo's own data with
   file+line citations; an executive loop that measures the revenue gap against

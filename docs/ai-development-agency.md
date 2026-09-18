@@ -296,6 +296,65 @@ later and `ledger-store.loadLedger()` applies it on the way in. Schema additions
 get a default there rather than a scattered `|| []` at each call site, since the
 scattered version only covers the paths someone remembered.
 
+## Arbitration — the appeal the QC gate never had
+
+`qc.js` refuses acceptance and `ledger.js` refuses payment. Both were
+one-directional and final: a contractor who genuinely believed their ticket met
+the acceptance criteria had nowhere to go. That is three problems at once — unfair
+(we hold the money, the review, and the definition of done), legally exposed (an
+unpaid contractor with no process is a claim), and operationally bad (a stuck
+ticket blocks its milestone, which blocks the client's balance).
+
+`agency/src/arbitration.js` is the process. Four rules do the real work:
+
+**A ruling must cite the specific acceptance criterion it turns on.** This is why
+`delivery-plan.js` refuses to emit a ticket without objective criteria — a dispute
+over objective criteria is *resolvable by reading them*. A ruling citing nothing
+is refused, because "we looked at it and we're right" is how arbitration becomes
+theatre in which the agency always wins. A ruling also cannot cite an item quality
+control never raised.
+
+**Ambiguity is our fault.** If the criterion turns out ambiguous, we wrote the
+ticket. The `split` outcome pays the contractor in full and records a spec defect
+against us. The incentive that creates is the right one, and `specDefectRate()`
+turns repeated findings into a signal to fix the ticket templates.
+
+**The reviewer cannot be the person who failed it.** Enforced, not encouraged —
+otherwise the appeal is to the same judgement being appealed.
+
+**It is time-boxed to 5 business days.** An undecided dispute escalates rather
+than sitting open, because an indefinite "under review" is functionally a refusal
+to pay. `isOverdue()` surfaces it and the portfolio report flags it.
+
+| Outcome | Contractor paid | Recorded against |
+|---|---|---|
+| `upheld` | No — reworks at no extra cost | The contractor's delivery |
+| `overturned` | Yes | **Our quality control** called it wrong |
+| `split` | Yes, in full | **Our specification** was ambiguous |
+| `withdrawn` | No | Nobody |
+
+**Read the statistics the right way round.** A high overturn rate is a finding
+about *our* gate; a high split rate is a finding about *our* specs. Only `upheld`
+says anything about the contractor, and `contractorDisputeRecord()` separates
+"contested and was right" from "contested and was wrong" — a naive dispute count
+would penalise the contractor who successfully challenges bad rejections, which is
+exactly the wrong person. Rates stay `null` below three substantive rulings, since
+before that they are noise.
+
+Ledger integration: a milestone with an open dispute **cannot be accepted**
+(whether it meets the criteria is precisely what is contested), and payment on a
+disputed milestone is held. Undisputed accepted milestones still pay on schedule —
+one contested ticket does not freeze a contractor's other work. Disputes can be
+raised and resolved after the build closes, because a late dispute is still a real
+obligation. `recordDispute()` accepts only an `arbitration.openDispute()` result,
+the same provenance rule as milestone acceptance and assignment.
+
+The matching agreement language is in
+`agency/templates/contractor-agreement-terms.md` (and mirrored for clients),
+including the clause worth refusing even though it favours us on paper: a "sole
+discretion" acceptance term makes the written criteria decorative and is what makes
+good contractors decline the work.
+
 ## Step 6 — Operating the book
 
 Steps 1–5 decide and execute one deal. `agency/src/ledger.js` and

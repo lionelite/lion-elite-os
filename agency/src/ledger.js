@@ -124,6 +124,8 @@ function openLedger(engagement, { at } = {}) {
     // capacity and a contractor's track record are both derived from real work
     // rather than a parallel list that drifts out of step with it.
     assignments: [],
+    // Contractor disputes against QC rejections (agency/src/arbitration.js).
+    disputes: [],
     opsSpend: [],   // our own software/operating spend
     milestones: disqualified ? [] : engagement.deliveryPlan.milestones.map((m) => ({
       id: m.id,
@@ -154,6 +156,7 @@ function normalize(ledger) {
   if (!Array.isArray(ledger.payments)) ledger.payments = [];
   if (!Array.isArray(ledger.opsSpend)) ledger.opsSpend = [];
   if (!Array.isArray(ledger.assignments)) ledger.assignments = [];
+  if (!Array.isArray(ledger.disputes)) ledger.disputes = [];
   if (!Array.isArray(ledger.milestones)) ledger.milestones = [];
   if (!Array.isArray(ledger.history)) ledger.history = [];
   return ledger;
@@ -264,6 +267,12 @@ function acceptMilestone(ledger, evaluation, { at } = {}) {
   const milestone = ledger.milestones.find((m) => m.id === evaluation.milestoneId);
   if (!milestone) throw new Error(`Milestone ${evaluation.milestoneId} is not part of ${ledger.clientRef}.`);
   if (milestone.accepted) throw new Error(`Milestone ${evaluation.milestoneId} is already accepted.`);
+  // A milestone with a live dispute against it cannot be declared done: whether
+  // it meets the criteria is exactly what is contested. Decide the dispute first.
+  const contested = (ledger.disputes || []).filter((d) => d.milestoneId === evaluation.milestoneId && d.status === 'open');
+  if (contested.length) {
+    throw new Error(`Cannot accept ${evaluation.milestoneId}: ${contested.length} open dispute(s) on ${contested.map((d) => d.ticketId).join(', ')}. Decide them first.`);
+  }
 
   milestone.accepted = true;
   milestone.acceptedAt = nowIso(at);
@@ -288,6 +297,14 @@ function releasePayment(ledger, { milestoneId, contractorId, amount, at, referen
     throw new Error(`Cannot release payment for ${milestoneId}: it is not accepted. Quality control gates payment.`);
   }
   if (milestone.paid) throw new Error(`Milestone ${milestoneId} is already paid.`);
+
+  // Payment is held on a milestone whose work is under dispute — paying while
+  // contesting it would concede the dispute, and paying nothing forever is the
+  // abuse the arbitration process exists to prevent. Decide it.
+  const openDisputes = (ledger.disputes || []).filter((d) => d.milestoneId === milestoneId && d.status === 'open');
+  if (openDisputes.length) {
+    throw new Error(`Payment for ${milestoneId} is held: open dispute(s) on ${openDisputes.map((d) => d.ticketId).join(', ')}. Decide them first.`);
+  }
 
   const planned = (ledger.planned.milestones.find((m) => m.id === milestoneId) || {}).developerPayout || 0;
   const value = amount === undefined ? planned : Number(amount);
@@ -369,6 +386,50 @@ function releaseAssignment(ledger, { ticketId, outcome = 'completed', at } = {})
 /** Assignments currently held, optionally filtered to one contractor. */
 function openAssignments(ledger, contractorId) {
   return (ledger.assignments || []).filter((a) => !a.releasedAt && (!contractorId || a.contractorId === contractorId));
+}
+
+/**
+ * Record a dispute produced by arbitration.openDispute().
+ *
+ * Provenance rule again: a dispute that did not come from the arbitration module
+ * has not been checked for the things that make it adjudicable — that it targets
+ * a real rejection, names contested items, and states a position.
+ */
+function recordDispute(ledger, dispute) {
+  assertActive(ledger, { allowClosed: true });
+  normalize(ledger);
+  if (!dispute || !dispute.ticketId || !dispute.milestoneId || !dispute.status) {
+    throw new TypeError('An arbitration.openDispute() result is required.');
+  }
+  if (!Array.isArray(dispute.contestedItems)) {
+    throw new Error(`Dispute on ${dispute.ticketId} did not come from arbitration.openDispute().`);
+  }
+  if (!ledger.milestones.some((m) => m.id === dispute.milestoneId)) {
+    throw new Error(`Milestone ${dispute.milestoneId} is not part of ${ledger.clientRef}.`);
+  }
+  const existing = ledger.disputes.find((d) => d.ticketId === dispute.ticketId && d.status === 'open');
+  if (existing) throw new Error(`Ticket ${dispute.ticketId} already has an open dispute.`);
+  ledger.disputes.push(dispute);
+  ledger.history.push({ at: nowIso(), to: ledger.state, note: `Dispute opened on ${dispute.ticketId} by ${dispute.contractorId}` });
+  return ledger;
+}
+
+/** Replace an open dispute with its decided or escalated form. */
+function resolveDispute(ledger, resolved) {
+  assertActive(ledger, { allowClosed: true });
+  normalize(ledger);
+  if (!resolved || !resolved.ticketId) throw new TypeError('A resolved dispute is required.');
+  const index = ledger.disputes.findIndex((d) => d.ticketId === resolved.ticketId && d.status === 'open');
+  if (index < 0) throw new Error(`No open dispute on ${resolved.ticketId} for ${ledger.clientRef}.`);
+  ledger.disputes[index] = resolved;
+  const outcome = resolved.decision ? resolved.decision.outcome : resolved.status;
+  ledger.history.push({ at: nowIso(), to: ledger.state, note: `Dispute on ${resolved.ticketId}: ${outcome}` });
+  return ledger;
+}
+
+/** Tickets whose payment is held pending a dispute. */
+function disputedTickets(ledger) {
+  return (ledger.disputes || []).filter((d) => d.status === 'open').map((d) => d.ticketId);
 }
 
 function totalReceipts(ledger, kind) {
@@ -497,6 +558,9 @@ module.exports = {
   recordAssignment,
   releaseAssignment,
   openAssignments,
+  recordDispute,
+  resolveDispute,
+  disputedTickets,
   plannedPayout,
   totalReceipts,
   totalPayments,

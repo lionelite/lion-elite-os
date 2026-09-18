@@ -42,6 +42,7 @@ npm run agency:ledger   -- cedar-roofing --assign <ticketId> --to <contractorId>
 | `src/ledger-store.js` | Local JSON persistence for clients and ledgers (gitignored) |
 | `src/portfolio.js` | Weighted pipeline, cash vs contractor commitments, estimate accuracy |
 | `src/bench.js` | Contractor roster, capacity ceilings, track record derived from the ledgers |
+| `src/arbitration.js` | Dispute process when QC rejects work: cited rulings, independent reviewer, 5-day timebox |
 | `cli.js` | Read-only CLI over the above |
 | `templates/` | Discovery call script; required-terms checklists for both agreements |
 | `examples/` | Four worked clients, each exercising a different decision path |
