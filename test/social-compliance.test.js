@@ -127,3 +127,74 @@ test('validatePiece reports per-platform results and overall approval', () => {
   assert.equal(result.platforms.instagram.approved, true);
   assert.equal(result.platforms.x.approved, false);
 });
+
+// --- clinical-supply mode --------------------------------------------------
+//
+// A bulk drug substance sold to a 503A pharmacy or 503B outsourcing facility.
+// This mode is an inversion of research-only, not a relaxation of it, so the
+// tests that matter are the ones proving the two cannot be swapped.
+
+const { CLINICAL_SUPPLY_AUDIENCE_PHRASE } = require('../lib/social/social-compliance');
+
+const supply = text => validateContent({ text, complianceMode: 'clinical-supply' });
+const codes = outcome => outcome.blockers.map(blocker => blocker.code);
+const withAudience = text => `${text} Supplied to ${CLINICAL_SUPPLY_AUDIENCE_PHRASE} only.`;
+
+test('clinical-supply copy must state its audience restriction', () => {
+  assert.deepEqual(codes(supply('Bulk substance available now.')), ['missing_audience_restriction']);
+  assert.equal(supply(withAudience('Bulk substance available now.')).approved, true);
+});
+
+test('research-use-only language is BLOCKED in clinical supply, not required', () => {
+  // The exact inversion of research-only mode: material sold to be compounded
+  // into a human medicine cannot also be labelled not-for-human-use.
+  assert.ok(codes(supply(withAudience('Research use only material.'))).includes('research_use_language'));
+  assert.ok(codes(supply(withAudience('This is research-grade product.'))).includes('research_use_language'));
+
+  // ...and the same sentence is exactly what research-only mode requires.
+  const researchText = 'Supplied for laboratory research purposes only.';
+  assert.equal(validateContent({ text: researchText, complianceMode: 'research-only' }).approved, true);
+  assert.ok(codes(supply(researchText)).includes('research_use_language'));
+});
+
+test('a bare specification quantity is legitimate here, unlike in research mode', () => {
+  const spec = withAudience('Retatrutide, 30 mg vial. Net content 31.30 mg, purity 99.99% by HPLC-UV.');
+  assert.equal(supply(spec).approved, true, codes(supply(spec)).join(', '));
+  // The same quantity is a blocker under research-only rules.
+  assert.ok(validateContent({ text: spec, complianceMode: 'research-only' }).blockers.length > 0);
+});
+
+test('directing clinical use is refused — that is the prescriber\'s role, not the supplier\'s', () => {
+  for (const text of [
+    'Starting dose is 2 mg per week.',
+    'Reconstitute with bacteriostatic water before use.',
+    'Administer subcutaneously.',
+    'How to administer this product.'
+  ]) {
+    assert.ok(codes(supply(withAudience(text))).includes('dosing_or_administration_guidance'), text);
+  }
+});
+
+test('compounding eligibility is a counsel determination, never a marketing sentence', () => {
+  for (const text of ['Approved for compounding.', 'On the 503B bulks list.', 'Fully 503A-compliant.']) {
+    assert.ok(codes(supply(withAudience(text))).includes('unsubstantiated_eligibility_claim'), text);
+  }
+});
+
+test('an FDA registration is not an approval, but a registered facility is a fact', () => {
+  assert.ok(codes(supply(withAudience('An FDA-registered product.'))).includes('fda_endorsement_implication'));
+  assert.ok(codes(supply(withAudience('Approved by the FDA.'))).includes('fda_endorsement_implication'));
+  // Factual and allowed: the registration belongs to the facility.
+  assert.equal(supply(withAudience('Sourced from an FDA-registered facility in the US.')).approved, true);
+});
+
+test('patient-directed copy is refused in a channel that sells to licensed buyers', () => {
+  for (const text of ['Transform your body.', "You'll feel amazing.", 'Lose weight fast.']) {
+    assert.ok(codes(supply(withAudience(text))).length > 0, text);
+  }
+});
+
+test('shared rules still apply in clinical supply', () => {
+  assert.ok(codes(supply(withAudience('Clinically proven and FDA-approved.'))).includes('medical_claim'));
+  assert.ok(codes(supply(withAudience('Results guaranteed.'))).includes('guarantee_claim'));
+});

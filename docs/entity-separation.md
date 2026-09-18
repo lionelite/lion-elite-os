@@ -65,20 +65,14 @@ complianceMode "clinical-supply" is not implemented in lib/social/social-complia
 Flipping `status` to `active` is an owner action, the same shape of decision as
 `OUTREACH_SEND_ENABLED`. Claude does not flip it.
 
-### The compliance-mode gap is real work, not a checkbox
+### The compliance-mode gap (closed 2026-09-18)
 
-`lib/social/social-compliance.js` implements `research-only` and `coaching`. It
-fails closed on anything else, so `clinical-supply` currently blocks **all** of
-the LLC's copy as `unknown_compliance_mode` — safe, but it would look like a bug
-at the point of use. So `assertEntityShape` refuses to register an *active*
-entity whose mode has no rules, while allowing a *forming* one to declare it.
-The gap is recorded and enforced rather than left as a comment.
-
-Writing that mode is a genuine open question, not a copy-paste: RUO language is
-wrong for a bulk drug substance sold to a licensed pharmacy, and consumer
-human-use language is wrong in the other direction. It is B2B regulatory and
-technical copy with its own rules, and it needs drafting before the entity can
-speak.
+`assertEntityShape` refuses to register an *active* entity whose compliance mode
+has no rules behind it, while allowing a *forming* one to declare it — so the
+gap was recorded and enforced rather than left as a comment. `clinical-supply`
+is now written (see below), and `describeSendability` no longer reports it. What
+remains outstanding for this entity is not code: it is a company that does not
+exist yet.
 
 ## Activation checklist
 
@@ -90,9 +84,8 @@ Nothing below is autonomous; each line is an owner or counsel action.
    `docs/clinic-testing-requirements.md`. An entity holding
    `api_for_compounding` whose products are not eligible for compounding has
    nothing it can lawfully sell.
-3. **Write the `clinical-supply` compliance mode** in
-   `lib/social/social-compliance.js` and add it to
-   `SUPPORTED_COMPLIANCE_MODES`.
+3. ~~Write the `clinical-supply` compliance mode.~~ **Done** — see below.
+   Confirm `CLINICAL_SUPPLY_AUDIENCE_PHRASE` with counsel before first send.
 4. **Set the sending vars** in the Render dashboard:
    `CLINIC_SUPPLY_FROM_EMAIL`, `CLINIC_SUPPLY_REPLY_TO`,
    `CLINIC_SUPPLY_POSTAL_ADDRESS`, `CLINIC_SUPPLY_UNSUBSCRIBE_EMAIL`. A separate
@@ -164,3 +157,41 @@ scheduler retries them on each run until the entity is configured. That is the
 intended fail-closed shape — the same as the kill switch parking items — but it
 does mean a half-configured entity produces a repeating failure in the job log
 rather than a single one. The message names exactly what is missing.
+
+## The clinical-supply compliance mode (written 2026-09-18)
+
+`lib/social/social-compliance.js`, tests in `test/social-compliance.test.js`.
+
+This mode is an **inversion** of `research-only`, not a relaxation of it. The
+audience is a licensed professional buyer — not a consumer, and not a
+researcher — and the two modes must never be swapped:
+
+- **Research-Use-Only language is blocked here, not required.** Material sold to
+  be compounded into a human medicine cannot also be labelled "not for human
+  use". That contradiction is exactly what gets cited. A test asserts the same
+  sentence passes `research-only` and fails `clinical-supply`.
+- **A bare specification quantity is legitimate.** "30 mg vial", "net content
+  31.30 mg" is spec text for a bulk substance, so the `research-only` rule that
+  blocks every `\d+ mg` is deliberately not reused. Dosing is caught by
+  dosing-*shaped* language instead.
+
+| Rule | Blocks |
+|---|---|
+| `research_use_language` | RUO / research-grade / not-for-human-use phrasing |
+| `patient_directed_language` | Consumer second-person and outcome copy |
+| `dosing_or_administration_guidance` | Doses, titration, routes, reconstitution — directing clinical use is the prescriber's and compounder's role, never the supplier's |
+| `unsubstantiated_eligibility_claim` | "approved for compounding", "on the bulks list", "503B-compliant" — that determination lives in a release record's `regulatoryBasis`, set by counsel, not in a marketing sentence |
+| `fda_endorsement_implication` | "FDA-endorsed", "approved by the FDA", "FDA-registered *product*" |
+
+`SHARED_RULES` still run first, so efficacy claims, "FDA-approved", "clinically
+proven", guarantees and cure language are already blocked before these apply.
+
+**"FDA-registered facility" stays allowed** — the registration belongs to the
+facility and that is a fact. The same words attached to a product are not, and
+are blocked. There is a test for each side of that line.
+
+Copy must also carry an audience restriction (`CLINICAL_SUPPLY_AUDIENCE_PHRASE`,
+currently "licensed pharmacies and outsourcing facilities"), the structural
+analogue of the RUO disclaimer in research mode. **The exact wording is a
+placeholder for counsel to confirm.** The requirement that *some* audience
+restriction be present is the part that should not move.

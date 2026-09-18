@@ -62,10 +62,15 @@ test('the clinic-supply entity is inert until it actually exists', () => {
   assert.throws(() => assertSendable('clinic_supply_llc', {}), /may not send/);
 });
 
-test('an unimplemented compliance mode is reported rather than silently blocking every send', () => {
-  const outcome = describeSendability('clinic_supply_llc', {});
-  assert.ok(!SUPPORTED_COMPLIANCE_MODES.includes(getEntity('clinic_supply_llc').complianceMode));
-  assert.ok(outcome.reasons.some(reason => reason.includes('unknown_compliance_mode')));
+test('the clinic-supply mode now has rules, so only company facts remain outstanding', () => {
+  // This blocker was real until the clinical-supply ruleset was written. What
+  // is left is not code: it is a company that does not exist yet.
+  assert.ok(SUPPORTED_COMPLIANCE_MODES.includes(getEntity('clinic_supply_llc').complianceMode));
+  const outcome = describeSendability('clinic_supply_llc', { CLINIC_SUPPLY_FROM_EMAIL: 'x@example.com' });
+  assert.ok(!outcome.reasons.some(reason => reason.includes('unknown_compliance_mode')));
+  assert.deepEqual(outcome.reasons.filter(reason => !reason.includes('is not recorded')), [
+    'entity status is "forming" — only an active entity may send'
+  ]);
 });
 
 test('the wellness entity sends exactly when its from-address is configured', () => {
@@ -94,12 +99,16 @@ test('an RUO entity cannot leave research-only compliance', () => {
 
 test('an active entity cannot declare a compliance mode with no rules behind it', () => {
   assert.throws(
-    () => assertEntityShape({ ...validEntity(), posture: 'api_for_compounding', complianceMode: 'clinical-supply' }),
+    () => assertEntityShape({ ...validEntity(), posture: 'api_for_compounding', complianceMode: 'not-a-written-mode' }),
     /has no rules in lib\/social\/social-compliance\.js/
   );
   // The same declaration is allowed while forming — that is how the gap is recorded.
   assert.doesNotThrow(
-    () => assertEntityShape({ ...validEntity(), status: 'forming', posture: 'api_for_compounding', complianceMode: 'clinical-supply' })
+    () => assertEntityShape({ ...validEntity(), status: 'forming', posture: 'api_for_compounding', complianceMode: 'not-a-written-mode' })
+  );
+  // And a mode that HAS been written is fine on an active entity.
+  assert.doesNotThrow(
+    () => assertEntityShape({ ...validEntity(), posture: 'api_for_compounding', complianceMode: 'clinical-supply' })
   );
 });
 
