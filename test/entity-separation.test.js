@@ -21,6 +21,7 @@ const {
   assertProspectEntity,
   assertSendable,
   describeSendability,
+  describeSmsSendability,
   getEntity,
   listEntities,
   suppressionKey
@@ -43,15 +44,44 @@ const validEntity = () => ({
   sending: {
     fromEnvVar: 'TEST_FROM_EMAIL',
     postalAddressEnvVar: 'TEST_POSTAL_ADDRESS',
-    unsubscribeEnvVar: 'TEST_UNSUBSCRIBE_EMAIL'
+    unsubscribeEnvVar: 'TEST_UNSUBSCRIBE_EMAIL',
+    smsFromEnvVar: 'TEST_TWILIO_FROM_NUMBER'
   }
 });
 
-test('the registry holds the two entities and no third by accident', () => {
-  assert.deepEqual(listEntities().map(entity => entity.id).sort(), ['clinic_supply_llc', 'lion_elite_wellness']);
+test('the registry holds exactly the three entities, and no fourth by accident', () => {
+  assert.deepEqual(listEntities().map(entity => entity.id).sort(),
+    ['clinic_supply_llc', 'lion_elite_beauty', 'lion_elite_wellness']);
   assert.equal(getEntity('lion_elite_wellness').posture, 'ruo_research_supply');
+  assert.equal(getEntity('lion_elite_beauty').posture, 'cosmetics_and_coaching');
   assert.equal(getEntity('clinic_supply_llc').posture, 'api_for_compounding');
   assert.throws(() => getEntity('nope'), /Unknown entity/);
+});
+
+test('each posture pins its compliance mode, in both directions', () => {
+  assert.throws(
+    () => assertEntityShape({ ...validEntity(), posture: 'cosmetics_and_coaching', complianceMode: 'research-only' }),
+    /requires complianceMode 'coaching'/
+  );
+  assert.doesNotThrow(
+    () => assertEntityShape({ ...validEntity(), posture: 'cosmetics_and_coaching', complianceMode: 'coaching' })
+  );
+});
+
+test('entities may not share an SMS origination either', () => {
+  // A2P 10DLC brand registration is per legal entity, so a shared number means
+  // texting under another entity's carrier registration.
+  const numbers = listEntities().map(entity => entity.sending.smsFromEnvVar);
+  assert.equal(new Set(numbers).size, numbers.length);
+  assert.equal(describeSmsSendability('lion_elite_beauty', {}).sendable, false);
+  assert.equal(describeSmsSendability('lion_elite_wellness', { TWILIO_FROM_NUMBER: '+15550000000' }).sendable, true);
+});
+
+test('e-mail and SMS sendability are independent', () => {
+  // Beauty has no e-mail campaign; that must not block its texts, and a
+  // configured number must not imply a configured address.
+  assert.equal(describeSendability('lion_elite_beauty', { BEAUTY_TWILIO_FROM_NUMBER: '+1555' }).sendable, false);
+  assert.equal(describeSmsSendability('lion_elite_beauty', { BEAUTY_TWILIO_FROM_NUMBER: '+1555' }).sendable, true);
 });
 
 test('the clinic-supply entity is inert until it actually exists', () => {

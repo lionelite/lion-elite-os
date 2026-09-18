@@ -203,25 +203,52 @@ analogue of the RUO disclaimer in research mode. **The exact wording is a
 placeholder for counsel to confirm.** The requirement that *some* audience
 restriction be present is the part that should not move.
 
-## Open question: is Lion Elite Beauty a separate legal entity?
+## Lion Elite Beauty (resolved 2026-09-18: separate legal entity)
 
-Blocking SMS campaign scoping, and worth resolving before the model hardens.
+Owner decision: Beauty is its own legal entity, not a brand inside Wellness. It
+is registered as `lion_elite_beauty`, `active`, with a third posture —
+`cosmetics_and_coaching`, covering MoCRA cosmetics plus clinician-delegated
+coaching services (the two record types in `credentials/README.md`).
 
-The registry currently assumes **one compliance mode per entity**, which holds
-for Wellness (`research-only`) and the clinic-supply LLC (`clinical-supply`).
-But `coaching_welcome_sms` is a Lion Elite **Beauty** campaign in `coaching`
-mode, and Beauty is not in the registry at all. Two structures are possible and
-they are not interchangeable:
+Each posture pins its compliance mode in both directions, so a brand cannot pick
+another's ruleset by editing one line:
 
-**If Beauty is its own legal entity** — register it as a third entity. That also
-means `POSTURES` needs a third value: cosmetics under MoCRA is neither
-`ruo_research_supply` nor `api_for_compounding` (see `credentials/README.md`,
-which describes three product lines under three regimes).
+| Posture | Required mode |
+|---|---|
+| `ruo_research_supply` | `research-only` |
+| `cosmetics_and_coaching` | `coaching` |
+| `api_for_compounding` | `clinical-supply` |
 
-**If Beauty is a brand inside the same company as Wellness** — then entity and
-brand are different things, and compliance mode belongs to the **brand**, not
-the entity. `assertEntityShape` would hold a *set* of permitted modes per
-entity, and campaigns would carry both a brand and an entity.
+Beauty has no e-mail campaign yet, so `BEAUTY_FROM_EMAIL` and friends are unset
+and `describeSendability` says so. That is accurate, not a gap.
 
-Guessing either way would bake a legal structure into the data model on an
-assumption. This is an owner decision.
+## SMS is entity-scoped (2026-09-18)
+
+**Consent.** `selectSmsRecipients` takes an `entityId` and skips a recipient
+whose consent was given to a different entity as `consent_other_entity`,
+checked *before* opt-out, suppression and every other per-recipient gate — a
+text to someone who never consented to this company was never this entity's to
+send. A record with no entity recorded predates separation and is not treated as
+a mismatch; skipping those would make every existing consent permanently
+unusable.
+
+**Campaigns.** Every SMS campaign declares an `entityId` and inherits that
+entity's compliance mode. `client_research_reorder_sms` sends as Wellness
+(`research-only`); `coaching_welcome_sms` sends as Beauty (`coaching`). The old
+`ALLOWED_COMPLIANCE_MODES` allow-list is gone — a campaign no longer picks its
+mode from a list, it inherits it from the company sending it.
+
+**Origination.** Each entity declares its own `smsFromEnvVar`, and two entities
+sharing one is a startup failure, exactly like a shared from-address. This is
+not a preference: **A2P 10DLC brand registration is tied to a legal entity's
+EIN**, so an entity texting from another entity's registered number is sending
+under someone else's carrier registration. Wellness keeps the existing shared
+`TWILIO_FROM_NUMBER` so its behaviour is unchanged; Beauty needs
+`BEAUTY_TWILIO_FROM_NUMBER` before `coaching_welcome_sms` can send, and
+`runWelcomeCampaign` blocks with that exact message until it exists. A dry run
+skips the check, like it skips credentials, so selection and copy stay
+inspectable.
+
+E-mail and SMS sendability are independent: Beauty having no e-mail address
+configured does not block its texts, and a configured number does not imply a
+configured address.

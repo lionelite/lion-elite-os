@@ -31,7 +31,12 @@ function harness({ candidates, env = {}, halted = false } = {}) {
   const sent = [];
   const marked = [];
   const previous = {};
-  for (const [key, value] of Object.entries(env)) {
+  // A live send needs the SENDING ENTITY's own 10DLC origination number.
+  // coaching_welcome_sms sends as Lion Elite Beauty, so its number stands in
+  // here exactly as it will have to in production — Beauty cannot text from
+  // Wellness's registered number.
+  const effectiveEnv = { BEAUTY_TWILIO_FROM_NUMBER: '+15550000001', ...env };
+  for (const [key, value] of Object.entries(effectiveEnv)) {
     previous[key] = process.env[key];
     if (value == null) delete process.env[key];
     else process.env[key] = value;
@@ -175,4 +180,28 @@ test('a send failure does not mark the lead as contacted', async t => {
   assert.equal(summary.sent, 0);
   assert.equal(summary.skipped.find(s => s.reason === 'send_failed').detail, 'twilio 500');
   assert.deepEqual(h.marked, [], 'an unsent lead must stay eligible');
+});
+
+test('the campaign cannot send without its own entity origination number', async t => {
+  // Beauty is a separate legal entity from Wellness. A2P 10DLC registration is
+  // tied to a legal entity, so there is no borrowing the other's number.
+  const h = harness({
+    candidates: [lead()],
+    env: { SMS_SEND_ENABLED: 'true', BEAUTY_TWILIO_FROM_NUMBER: null }
+  });
+  t.after(h.restore);
+  const summary = await runWelcomeCampaign(h.deps);
+  assert.match(summary.blocked, /BEAUTY_TWILIO_FROM_NUMBER is not set/);
+  assert.equal(h.sent.length, 0);
+});
+
+test('consent given to another entity is not consent for this campaign', async t => {
+  const h = harness({
+    candidates: [lead({ smsConsentEntityId: 'lion_elite_wellness' })],
+    env: { SMS_SEND_ENABLED: 'true' }
+  });
+  t.after(h.restore);
+  const summary = await runWelcomeCampaign(h.deps);
+  assert.equal(h.sent.length, 0);
+  assert.ok(summary.skipped.some(s => s.reason === 'consent_other_entity'), JSON.stringify(summary.skipped));
 });
