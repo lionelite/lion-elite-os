@@ -1,11 +1,11 @@
 # Every harvested lead
 
-_Generated 2026-09-17T23:57:19.769Z — 76 leads._
+_Generated 2026-09-18T04:19:46.385Z — 77 leads._
 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-## med-spa-b2b — 76
+## med-spa-b2b — 77
 
 ### Sports Performance & Wellness Center — score 50
 
@@ -614,3 +614,11 @@ any of them — reach out by hand from the post link if a lead is worth it.
 - **Why they matched:** gym
 
 > gym · 119 Fairfield Avenue Bellevue KY 41073
+
+### Orangetheory Fitness — score 50
+
+- **Handle:** [@null](null)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 740 Prospect Avenue East Cleveland OH 44115
