@@ -468,8 +468,15 @@ Standalone modules that share the repo but not the architecture above:
   on `SOCIAL_PUBLISH_ENABLED`/the ad cap; a closed gate returns `blocked` naming
   the env var and stating that a human sets it. `dayReport()` on a fully gated day
   says "The agents produced no outward effect today; a human has to open a gate"
-  rather than implying progress. `HUMAN_APPROVAL` is satisfiable by no env var, and
-  the ad cap needs a positive number (not `true`).
+  rather than implying progress. **No phantom gates:** this module's first version
+  named `AD_DAILY_SPEND_CAP` as the ad-cap control, a variable nothing else in the
+  repo reads — a gate that opens on a variable governing nothing looks like
+  authorization while providing none, which is worse than no check. There is no env
+  var for the ad cap (`lib/ads/` only generates plans; the cap is established out
+  of band by the owner per the pre-authorized-advertising section), so it and
+  `HUMAN_APPROVAL` are human decisions no variable can satisfy, and a regression
+  test greps every named control's env var outside `lib/agents/` to stop another
+  being invented.
   `npm run agents:roster|knowledge|recall|plan`; docs `docs/ai-agent-roster.md`;
   53 tests in the root `npm test`.
 - **`social-listening/`** — Bluesky firehose (Jetstream) monitor. The
@@ -780,7 +787,12 @@ notes), not live infrastructure — don't treat them as configuration.
 6. **If real-estate/founder-intelligence persistence is wanted**, connect
    `real-estate/intelligence/db/schema.sql` and `src/import-csv.js` to an
    actual Postgres pool instead of stdout — currently demo-data only.
-7. **Document the outreach-send env vars** (`RESEND_API_KEY`,
-   `OUTREACH_FROM_EMAIL`, `OUTREACH_SEND_ENABLED`, etc.) even though they
-   should stay unset in production for now — an undocumented kill switch
-   is a foot-gun for whoever eventually flips it.
+7. ~~Document the outreach-send env vars.~~ **Done** — `.env.example` now
+   carries a SEND CONTROLS section covering `OUTREACH_SEND_ENABLED` +
+   `RESEND_API_KEY` + `OUTREACH_FROM_EMAIL` (all three required or
+   `email-delivery.js` throws — the fail-closed default), the CAN-SPAM
+   unsubscribe/postal vars, `DAILY_EMAIL_LIMIT`, `SOCIAL_PUBLISH_ENABLED`, both
+   Bluesky reply switches, and an explicit note that **there is no ad-spend-cap
+   env var** and adding one would look like authorization while governing
+   nothing. Every switch is `false`, every secret blank, and it points at
+   `docs/automated-outreach.md` for the enablement order.

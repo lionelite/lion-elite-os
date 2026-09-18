@@ -9,7 +9,6 @@ const ALL_OPEN = {
   SMS_SEND_ENABLED: 'true',
   SOCIAL_PUBLISH_ENABLED: 'true',
   BLUESKY_OUTREACH_ENABLED: 'true',
-  AD_DAILY_SPEND_CAP: '150',
 };
 const ALL_CLOSED = {};
 
@@ -64,17 +63,27 @@ test('a closed gate blocks follow-through and names the exact remedy', () => {
   assert.match(gate.remedy, /Claude does not flip it/);
 });
 
-test('an open gate clears the block', () => {
+test('open send gates clear the send blocks', () => {
   const plan = c.planCheckpoint('morning', { collectedToday: 0, hour: 9, env: ALL_OPEN });
-  assert.equal(plan.blockedFollowThrough, 0);
-  assert.deepEqual(plan.gatesClosed, []);
+  // Sales and client-success are fully unblocked once sending is on.
+  for (const id of ['sales', 'client-success']) {
+    for (const a of plan.assignments.filter((x) => x.roleId === id)) {
+      assert.deepEqual(a.blockedFollowThrough, [], `${id} should be clear`);
+    }
+  }
+  // Marketing keeps the ad cap, which no env var can open.
+  assert.deepEqual(plan.gatesClosed, ['AD_SPEND_CAP']);
 });
 
-test('the ad spend cap requires a real positive number, not a boolean', () => {
-  assert.equal(c.controlEnabled('AD_SPEND_CAP', { AD_DAILY_SPEND_CAP: 'true' }), false);
-  assert.equal(c.controlEnabled('AD_SPEND_CAP', { AD_DAILY_SPEND_CAP: '0' }), false);
-  assert.equal(c.controlEnabled('AD_SPEND_CAP', { AD_DAILY_SPEND_CAP: '-5' }), false);
-  assert.equal(c.controlEnabled('AD_SPEND_CAP', { AD_DAILY_SPEND_CAP: '150' }), true);
+test('the ad spend cap is never satisfiable by configuration', () => {
+  // No env var establishes the cap. A gate that opened on a variable nothing
+  // else reads would look like authorization while governing nothing — worse
+  // than no check. Per CLAUDE.md the cap is an owner decision made out of band,
+  // and lib/ads/ is plan-generation only.
+  assert.equal(c.CONTROL_ENV.AD_SPEND_CAP, null);
+  for (const env of [{}, { AD_SPEND_CAP: 'true' }, { AD_DAILY_SPEND_CAP: '150' }, { AD_SPEND_CAP: '150' }]) {
+    assert.equal(c.controlEnabled('AD_SPEND_CAP', env), false);
+  }
 });
 
 test('human approval is never satisfied by an env var', () => {
@@ -178,5 +187,54 @@ test('the executive checkpoint job always runs, even when behind', () => {
     const exec = plan.assignments.find((a) => a.roleId === 'executive');
     assert.ok(exec, `${checkpoint.id} must still refresh the numbers`);
     assert.equal(exec.action, checkpoint.action);
+  }
+});
+
+// Regression guard for a bug found in this module's own first version: it named
+// `AD_DAILY_SPEND_CAP` as the ad-cap control, a variable nothing else in the repo
+// reads. A gate that opens on a variable governing nothing looks like
+// authorization while providing none — strictly worse than having no check. Any
+// control that names an env var must be a variable the real system actually
+// consults, so this test greps for it outside lib/agents/.
+test('every named control env var is actually read by real code, not invented here', () => {
+  const fs = require('node:fs');
+  const path = require('node:path');
+  const root = path.join(__dirname, '..');
+
+  const searchRoots = ['lib', 'scripts', 'workers', 'social-listening', 'start.js', '.github/workflows'];
+  const haystack = [];
+  const walk = (abs) => {
+    if (!fs.existsSync(abs)) return;
+    const stat = fs.statSync(abs);
+    if (stat.isFile()) {
+      if (/\.(js|yml|yaml)$/.test(abs) && !abs.includes(`${path.sep}agents${path.sep}`)) {
+        try { haystack.push(fs.readFileSync(abs, 'utf8')); } catch { /* binary or unreadable */ }
+      }
+      return;
+    }
+    for (const entry of fs.readdirSync(abs)) {
+      if (entry === 'node_modules' || entry.startsWith('.')) {
+        if (entry !== '.github') continue;
+      }
+      walk(path.join(abs, entry));
+    }
+  };
+  for (const r of searchRoots) walk(path.join(root, r));
+  const corpus = haystack.join('\n');
+
+  for (const [control, envVar] of Object.entries(c.CONTROL_ENV)) {
+    if (envVar === null) continue; // a human decision, by design
+    assert.ok(corpus.includes(envVar),
+      `Control ${control} names env var ${envVar}, which no code outside lib/agents/ reads. ` +
+      'Either wire it to the real control or set it to null so it reads as a human decision.');
+  }
+});
+
+test('controls with no env var are documented as human decisions', () => {
+  const humanDecisions = Object.entries(c.CONTROL_ENV).filter(([, v]) => v === null).map(([k]) => k);
+  assert.ok(humanDecisions.includes('HUMAN_APPROVAL'));
+  assert.ok(humanDecisions.includes('AD_SPEND_CAP'), 'the ad cap is established out of band by the owner');
+  for (const control of humanDecisions) {
+    assert.equal(c.controlEnabled(control, { [control]: 'true' }), false);
   }
 });

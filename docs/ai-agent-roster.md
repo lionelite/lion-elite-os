@@ -32,7 +32,7 @@ they encode real brand rules worth keeping.
 |---|---|---|
 | **Executive** | Which agent works on what, in what order, today | — |
 | **Sales** | Which specific leads get worked next, and in what order | `OUTREACH_SEND_ENABLED`, `SMS_SEND_ENABLED` |
-| **Marketing** | What creative gets made, and which pieces are good enough to go out | `SOCIAL_PUBLISH_ENABLED`, `AD_SPEND_CAP` |
+| **Marketing** | What creative gets made, and which pieces are good enough to go out | `SOCIAL_PUBLISH_ENABLED`, ad spend cap (owner decision, no env var) |
 | **Client Success** | Which existing customers are due contact, and through which brand | `OUTREACH_SEND_ENABLED`, `SMS_SEND_ENABLED` |
 | **Operations** | Which operational exception is escalated now | — |
 | **Finance & KPI** | What the revenue number actually is, and how much is attributable | — |
@@ -153,9 +153,18 @@ npm run agents:plan -- --collected 900             # all four checkpoints
 - **No new send path.** The agents request allowlisted queue jobs through the
   existing dispatcher. Everything outward-facing stays behind the controls in
   CLAUDE.md's hard limits.
-- **No switch flipping.** `OUTREACH_SEND_ENABLED`, `SMS_SEND_ENABLED`,
-  `SOCIAL_PUBLISH_ENABLED` and the ad cap are owner actions in the Render
-  dashboard.
+- **No switch flipping.** `OUTREACH_SEND_ENABLED`, `SMS_SEND_ENABLED` and
+  `SOCIAL_PUBLISH_ENABLED` are owner actions in the Render dashboard; all three
+  are documented in `.env.example`, defaulted off.
+- **No phantom gates.** The first version of `coordinator.js` named
+  `AD_DAILY_SPEND_CAP` as the ad-cap control — a variable **nothing else in the
+  repo reads**. A gate that opens on a variable governing nothing looks like
+  authorization while providing none, which is strictly worse than having no
+  check. There is no env var for the ad cap: `lib/ads/` generates plans and spends
+  nothing, and per CLAUDE.md the cap is established out of band by the owner, so
+  the control is now a human decision no variable can satisfy. A regression test
+  greps every named control's env var outside `lib/agents/` and fails if one is
+  invented again.
 - **No LLM dependency in the core.** The registry, knowledge base and coordinator
   are pure and deterministic. `server.js` keeps its optional OpenAI path for prose
   generation, exactly as before.
