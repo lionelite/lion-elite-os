@@ -271,6 +271,11 @@ Workers (`workers/*.js`), each its own Render worker/consumer:
   `prospects` table (stage `affiliate_applied`) instead of cascading to the
   executive queue; a result already flagged `status: 'suppressed'` (an
   existing suppressed fingerprint match) is not cascaded further.
+  **Fixed (this pass):** the cascade called `addJob('executive', ...)`, but
+  `executive-worker.js` listens on `QUEUE_NAMES.analytics` and its allowlist
+  contains exactly the two job names the cascade emits — so every cascaded
+  revenue and lead/retention event was enqueued where nothing consumes and
+  silently dropped. Now `addJob('analytics', ...)`.
 
 Cron (`scripts/cron-scheduler.js <task>`, one Render cron service per task,
 8 schedules in `render.yaml`): `discovery`, `staleData`, `followups`,
@@ -282,6 +287,14 @@ runs as its own cron, polling DB/Redis/queue health and worker heartbeat
 freshness.
 
 Shared `lib/`: `agents/` (the AI agent roster — see below),
+`queue-manifest.js` (**declarative** map of which worker consumes which queue and
+which job names it accepts, dependency-free so tests can read it without
+bullmq/Redis; `executive-worker.js` sources its allowlist from it so the two
+cannot drift, and `test/queue-producer-consumer.test.js` verifies the manifest
+against the real worker files in both directions. Declared rather than inferred
+because a regex over `workers/*.js` missed `outreach-worker.js` entirely — it
+subscribes via a `startWorker(QUEUE_NAMES.email, ...)` helper, and a guard that
+silently under-reports is worse than no guard),
 `action-catalog.js` (the dispatcher's allowlist/blocklist, extracted as a
 dependency-free module so the agent registry and its tests can read the action
 vocabulary without pulling in bullmq/Redis — same extraction and reason as
@@ -785,6 +798,34 @@ notes), not live infrastructure — don't treat them as configuration.
   (`test/postgres-prospect-store-schema.test.js`) that fails if the two
   ever drift apart again, since a live DB isn't available in CI to catch it
   the normal way.
+- **Fixed a third and fourth production bug of the same class** as the two
+  above — a producer naming something the consumer does not answer to, unguarded
+  because no test crossed the boundary:
+  (3) `workers/integration-worker.js` cascaded `midday-revenue-check` /
+  `business-health-snapshot` to the **`executive`** queue, but
+  `executive-worker.js` listens on **`analytics`** and its allowlist contains
+  exactly those two names. Every cascaded revenue and lead/retention-risk webhook
+  event was enqueued where nothing consumes it and dropped. One-word fix; intent
+  was unambiguous because the handler already existed and matched.
+  (4) `lib/action-catalog.js` mapped the `discover-prospects` action to the job
+  name `discover-prospects`, but `discovery-worker.js` accepts only
+  `scheduled-business-discovery` and throws `UNSUPPORTED_DISCOVERY_JOB` on
+  anything else — so dispatching it reached the right queue and then failed at the
+  worker into the dead-letter queue. A queue-only audit had passed this as "fine";
+  the job-name check caught it. The action verb is unchanged (the catalog's
+  `{queue, job}` split is exactly for this).
+  Both are now guarded by **`test/queue-producer-consumer.test.js`**, which reads
+  `lib/queue-manifest.js` and asserts every statically-known produced (queue, job)
+  pair would actually be handled, distinguishing *no consumer* from *name
+  rejected*. It also pins the produced-but-unconsumed queues so a new one fails
+  loudly instead of joining them quietly.
+- **Known dropped job, needs an owner decision:** the daily `staleData` cron
+  enqueues `refresh-stale-prospect-data` to the `enrichment` queue, which no
+  worker consumes — it has been piling up unprocessed every day. Either write the
+  enrichment worker (the pieces exist: `lib/email-enrichment.js` +
+  `lib/postgres-prospect-store.js`) or drop the cron task. Writing it also means a
+  new Render worker service, which is recurring spend and therefore not an
+  autonomous call.
 - **Added an `affiliate` webhook intake path** to the integration gateway
   (`/webhooks/affiliate`, `AFFILIATE_WEBHOOK_SECRET`) so partner/affiliate
   applications land in the `prospects` table (stage `affiliate_applied`,

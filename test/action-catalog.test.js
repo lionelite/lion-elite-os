@@ -2,7 +2,8 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
-const { ALLOWED_QUEUE_ACTIONS, BLOCKED_ACTIONS, CONSUMED_QUEUES, hasConsumer, orphanedActions } = require('../lib/action-catalog');
+const { ALLOWED_QUEUE_ACTIONS, BLOCKED_ACTIONS, hasConsumer, deliveryGap, orphanedActions } = require('../lib/action-catalog');
+const { consumedQueues } = require('../lib/queue-manifest');
 
 test('the catalog is dependency-free — importable without bullmq or Redis', () => {
   // The whole reason this module was extracted. If this test can run, it worked.
@@ -34,24 +35,13 @@ test('every queue an action targets is a real key in the queue registry', () => 
   }
 });
 
-// Drift detection. CONSUMED_QUEUES is hand-maintained because detecting it would
-// mean booting the workers; this keeps it honest against the workers that exist.
-test('CONSUMED_QUEUES matches the queues workers actually subscribe to', () => {
-  const workerDir = path.join(__dirname, '..', 'workers');
-  const found = new Set();
-  for (const file of fs.readdirSync(workerDir).filter((f) => f.endsWith('.js'))) {
-    const source = fs.readFileSync(path.join(workerDir, file), 'utf8');
-    for (const m of source.matchAll(/QUEUE_NAMES\.([a-zA-Z]+)/g)) found.add(m[1]);
-  }
-  assert.ok(found.size > 0, 'failed to detect any worker queue subscriptions');
-  // Every queue we claim is consumed must appear in a worker.
-  for (const queue of CONSUMED_QUEUES) {
-    assert.ok(found.has(queue), `CONSUMED_QUEUES claims "${queue}" is consumed, but no worker references QUEUE_NAMES.${queue}`);
-  }
-  // And every queue a worker consumes must be claimed, or the list is stale.
-  for (const queue of found) {
-    assert.ok(CONSUMED_QUEUES.has(queue), `workers/ consume "${queue}" but CONSUMED_QUEUES omits it — add it`);
-  }
+// Consumption now lives in lib/queue-manifest.js and is verified against the
+// real worker files by test/queue-producer-consumer.test.js, in both directions.
+test('the catalog reads consumption from the manifest rather than duplicating it', () => {
+  const source = fs.readFileSync(path.join(__dirname, '..', 'lib', 'action-catalog.js'), 'utf8');
+  assert.match(source, /require\('\.\/queue-manifest'\)/);
+  assert.ok(!/const CONSUMED_QUEUES = Object\.freeze\(new Set/.test(source), 'the duplicate queue list is back — it can drift from the workers');
+  assert.ok(consumedQueues().length >= 4);
 });
 
 test('hasConsumer distinguishes processed actions from no-ops', () => {
@@ -59,6 +49,20 @@ test('hasConsumer distinguishes processed actions from no-ops', () => {
   assert.equal(hasConsumer('draft-outreach'), true, 'email is consumed by outreach-worker');
   assert.equal(hasConsumer('qualify-prospect'), false, 'qualification has no worker');
   assert.equal(hasConsumer('not-an-action'), false);
+});
+
+test('discover-prospects reaches the worker — its job name was rejected before', () => {
+  // The action verb stays discover-prospects; the job name must be the one
+  // discovery-worker answers to, or it throws UNSUPPORTED_DISCOVERY_JOB.
+  assert.equal(ALLOWED_QUEUE_ACTIONS['discover-prospects'].job, 'scheduled-business-discovery');
+  assert.equal(hasConsumer('discover-prospects'), true);
+  assert.equal(deliveryGap('discover-prospects'), null);
+});
+
+test('deliveryGap distinguishes no-consumer from a rejected job name', () => {
+  assert.equal(deliveryGap('morning-brief'), null);
+  assert.equal(deliveryGap('qualify-prospect').reason, 'no-consumer');
+  assert.match(deliveryGap('not-an-action').reason, /unknown-action/);
 });
 
 // This documents a real pre-existing gap rather than asserting it is fine. If

@@ -164,7 +164,7 @@ nothing. Checking each allowlisted action against the workers that exist:
 | Action | Queue | Consumer |
 |---|---|---|
 | `morning-brief`, `midday-revenue-check`, `evening-review`, `business-health-snapshot` | analytics | `executive-worker.js` |
-| `discover-prospects` | discovery | `discovery-worker.js` |
+| `discover-prospects` | discovery | `discovery-worker.js` — *its job name was being rejected; fixed* |
 | `draft-outreach` | email | `outreach-worker.js` |
 | `validate-outreach` | validation | `outreach-worker.js` |
 | `create-github-issue` | integrations | `integration-worker.js` |
@@ -178,13 +178,21 @@ predates the agent roster — but the roster makes it consequential, because
 `qualify-prospect` is the sales agent's joint-highest-impact action. On a
 behind-pace afternoon plan, 5 of 11 assignments land in unconsumed queues.
 
-`hasConsumer()` and `orphanedActions()` in `lib/action-catalog.js` expose it, and
+A queue-only audit is not enough: `discover-prospects` reached the right queue
+and then **failed at the worker**, because `discovery-worker.js` accepts only the
+job name `scheduled-business-discovery`. The job-name check caught what the queue
+check passed. That action is fixed; the four above remain.
+
+`hasConsumer()`, `deliveryGap()` and `orphanedActions()` in `lib/action-catalog.js`
+(over `lib/queue-manifest.js`) expose it, and
 the runner flags each affected assignment (`orphanedQueue`) and reports
 `effectivelyDispatched` separately from `dispatched`. **Resolving it is an owner
 decision:** either write the four missing workers, or remove those actions from
-the dispatcher allowlist so nothing can queue into nowhere. `CONSUMED_QUEUES` is
-hand-maintained and pinned by `test/action-catalog.test.js`, which greps
-`workers/*.js` and fails if the two drift.
+the dispatcher allowlist so nothing can queue into nowhere. Consumption is declared in
+`lib/queue-manifest.js` and verified against the real worker files in both
+directions by `test/queue-producer-consumer.test.js`, which also asserts every
+statically-known produced job would be handled — distinguishing *no consumer* from
+*job name rejected*.
 
 ### Running a checkpoint
 
