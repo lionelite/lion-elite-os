@@ -299,3 +299,120 @@ test('nextAction names a concrete next step in every state', () => {
 test('an invalid timestamp is rejected rather than silently becoming now', () => {
   assert.throws(() => L.openLedger(CEDAR, { at: 'not-a-date' }), TypeError);
 });
+
+// ---- assignments ----
+
+const { assignTicket } = require('../src/contractor');
+
+const PAPERED = {
+  id: 'dev-001',
+  agreements: Object.fromEntries(
+    ['nda', 'ip-assignment', 'non-solicit', 'independent-contractor'].map((i) => [i, { signedAt: '2026-01-10T00:00:00Z' }]),
+  ),
+  paymentDetailsOnFile: true,
+};
+
+function realAssignment(ticket = CEDAR.deliveryPlan.tickets[0], contractor = PAPERED) {
+  const a = assignTicket(ticket, contractor);
+  a.milestoneId = ticket.milestoneId;
+  return a;
+}
+
+test('an assignment from the real gate is recorded', () => {
+  const l = deliveringLedger();
+  const ticket = CEDAR.deliveryPlan.tickets[0];
+  L.recordAssignment(l, realAssignment(ticket));
+  assert.equal(l.assignments.length, 1);
+  assert.equal(l.assignments[0].ticketId, ticket.id);
+  assert.equal(l.assignments[0].contractorId, 'dev-001');
+  assert.equal(l.assignments[0].releasedAt, null);
+});
+
+test('a hand-built assignment that skipped the paperwork gate is refused', () => {
+  const l = deliveringLedger();
+  assert.throws(
+    () => L.recordAssignment(l, { ticketId: 't1', contractorId: 'dev-001', fixedPrice: 500 }),
+    /did not come from contractor.assignTicket/,
+  );
+  assert.throws(() => L.recordAssignment(l, { ticketId: 't1' }), TypeError);
+  assert.equal(l.assignments.length, 0);
+});
+
+test('an unpapered contractor cannot produce an assignment at all', () => {
+  const ticket = CEDAR.deliveryPlan.tickets[0];
+  assert.throws(() => assignTicket(ticket, { id: 'dev-nope' }), /Cannot assign/);
+});
+
+test('a ticket cannot be held by two contractors at once', () => {
+  const l = deliveringLedger();
+  const ticket = CEDAR.deliveryPlan.tickets[0];
+  L.recordAssignment(l, realAssignment(ticket));
+  assert.throws(() => L.recordAssignment(l, realAssignment(ticket, { ...PAPERED, id: 'dev-002' })), /already assigned to dev-001/);
+});
+
+test('a released ticket can be reassigned', () => {
+  const l = deliveringLedger();
+  const ticket = CEDAR.deliveryPlan.tickets[0];
+  L.recordAssignment(l, realAssignment(ticket));
+  L.releaseAssignment(l, { ticketId: ticket.id, outcome: 'reassigned' });
+  assert.doesNotThrow(() => L.recordAssignment(l, realAssignment(ticket, { ...PAPERED, id: 'dev-002' })));
+  assert.equal(L.openAssignments(l).length, 1);
+  assert.equal(L.openAssignments(l)[0].contractorId, 'dev-002');
+});
+
+test('releasing an unknown or already-released ticket is refused', () => {
+  const l = deliveringLedger();
+  const ticket = CEDAR.deliveryPlan.tickets[0];
+  assert.throws(() => L.releaseAssignment(l, { ticketId: ticket.id }), /No open assignment/);
+  L.recordAssignment(l, realAssignment(ticket));
+  L.releaseAssignment(l, { ticketId: ticket.id });
+  assert.throws(() => L.releaseAssignment(l, { ticketId: ticket.id }), /No open assignment/);
+});
+
+test('an unknown outcome is refused rather than recorded as a mystery', () => {
+  const l = deliveringLedger();
+  const ticket = CEDAR.deliveryPlan.tickets[0];
+  L.recordAssignment(l, realAssignment(ticket));
+  assert.throws(() => L.releaseAssignment(l, { ticketId: ticket.id, outcome: 'fine-i-guess' }), /Unknown assignment outcome/);
+});
+
+test('openAssignments filters to one contractor', () => {
+  const l = deliveringLedger();
+  L.recordAssignment(l, realAssignment(CEDAR.deliveryPlan.tickets[0]));
+  L.recordAssignment(l, realAssignment(CEDAR.deliveryPlan.tickets[1], { ...PAPERED, id: 'dev-002' }));
+  assert.equal(L.openAssignments(l).length, 2);
+  assert.equal(L.openAssignments(l, 'dev-001').length, 1);
+  assert.equal(L.openAssignments(l, 'nobody').length, 0);
+});
+
+test('a final assignment can be released after the build closes', () => {
+  const l = deliveringLedger();
+  const ticket = CEDAR.deliveryPlan.tickets[0];
+  L.recordAssignment(l, realAssignment(ticket));
+  for (const m of CEDAR.deliveryPlan.milestones) {
+    L.acceptMilestone(l, passAll(m));
+    if (m.developerPayout > 0) L.releasePayment(l, { milestoneId: m.id });
+    if (m.triggersClientBalance) L.recordReceipt(l, { amount: CEDAR.economics.balanceAmount, kind: 'balance' });
+  }
+  L.transition(l, 'delivered');
+  L.transition(l, 'closed');
+  assert.doesNotThrow(() => L.releaseAssignment(l, { ticketId: ticket.id, outcome: 'completed' }));
+});
+
+test('a ledger written before assignments existed still works', () => {
+  // Exactly what a ledger from an earlier version looks like on disk.
+  const legacy = { clientRef: 'old', clientName: 'Old', state: 'in_delivery', planned: null };
+  const normalized = L.normalize(legacy);
+  assert.deepEqual(normalized.assignments, []);
+  assert.deepEqual(normalized.receipts, []);
+  assert.deepEqual(normalized.payments, []);
+  assert.deepEqual(normalized.opsSpend, []);
+  assert.doesNotThrow(() => L.openAssignments(normalized));
+});
+
+test('normalize leaves a current ledger untouched', () => {
+  const l = deliveringLedger();
+  L.recordAssignment(l, realAssignment(CEDAR.deliveryPlan.tickets[0]));
+  const before = JSON.stringify(l);
+  assert.equal(JSON.stringify(L.normalize(l)), before);
+});

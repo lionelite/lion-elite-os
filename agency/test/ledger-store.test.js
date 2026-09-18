@@ -27,11 +27,15 @@ test('paths stay inside the store directory', () => {
   assert.equal(path.basename(p), 'cedar-roofing.json');
 });
 
-test('a ledger round-trips through disk unchanged', () => {
+test('a ledger round-trips through disk with its data intact', () => {
   const dir = tmpDir();
   const ledger = { clientRef: 'acme', clientName: 'Acme', state: 'qualified', receipts: [{ amount: 100 }] };
   store.saveLedger(ledger, { dir });
-  assert.deepEqual(store.loadLedger('acme', { dir }), ledger);
+  const loaded = store.loadLedger('acme', { dir });
+  // Everything written comes back identical...
+  for (const [key, value] of Object.entries(ledger)) assert.deepEqual(loaded[key], value, key);
+  // ...and fields the schema has since gained are filled in, not missing.
+  assert.deepEqual(loaded.assignments, []);
 });
 
 test('a missing ledger loads as null rather than throwing', () => {
@@ -95,4 +99,44 @@ test('every example client file is named after its own ref', () => {
     const client = JSON.parse(fs.readFileSync(path.join(dir, file), 'utf8'));
     assert.equal(file, `${client.ref}.json`, `${file} must be named ${client.ref}.json so loadClient(ref) finds it`);
   }
+});
+
+test('an empty bench loads as an empty roster, not an error', () => {
+  const file = path.join(tmpDir(), 'roster.json');
+  assert.deepEqual(store.loadBench({ file }), { contractors: [] });
+});
+
+test('a bench round-trips through disk', () => {
+  const file = path.join(tmpDir(), 'roster.json');
+  const bench = { contractors: [{ id: 'dev-001', name: 'Mira K.', capabilities: ['follow-up'], maxConcurrent: 3 }] };
+  store.saveBench(bench, { file });
+  assert.deepEqual(store.loadBench({ file }), bench);
+});
+
+test('saving a malformed bench is refused', () => {
+  const file = path.join(tmpDir(), 'roster.json');
+  assert.throws(() => store.saveBench({}, { file }), TypeError);
+  assert.throws(() => store.saveBench(null, { file }), TypeError);
+});
+
+test('the bench is gitignored — it holds names, capacity and agreement status', () => {
+  const gitignore = fs.readFileSync(path.join(__dirname, '..', '..', '.gitignore'), 'utf8');
+  assert.match(gitignore, /^agency\/bench\/$/m);
+});
+
+test('a ledger loaded from disk is normalized to the current shape', () => {
+  const dir = tmpDir();
+  // Write a ledger the way an older version of the code would have.
+  fs.writeFileSync(path.join(dir, 'legacy.json'), JSON.stringify({ clientRef: 'legacy', state: 'won' }), 'utf8');
+  const loaded = store.loadLedger('legacy', { dir });
+  assert.deepEqual(loaded.assignments, []);
+  assert.deepEqual(loaded.receipts, []);
+  assert.deepEqual(loaded.milestones, []);
+});
+
+test('listed ledgers are normalized too', () => {
+  const dir = tmpDir();
+  fs.writeFileSync(path.join(dir, 'legacy.json'), JSON.stringify({ clientRef: 'legacy', state: 'won' }), 'utf8');
+  const [loaded] = store.listLedgers({ dir });
+  assert.deepEqual(loaded.assignments, []);
 });

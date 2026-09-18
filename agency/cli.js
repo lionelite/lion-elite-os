@@ -18,6 +18,11 @@
 //   node agency/cli.js --ledger <ref> --state in_delivery
 //   node agency/cli.js --portfolio                     # roll-up across all ledgers
 //
+// Bench:
+//   node agency/cli.js --bench                         # roster, capacity, track record
+//   node agency/cli.js --ledger <ref> --suggest <ticketId>
+//   node agency/cli.js --ledger <ref> --assign <ticketId> --to <contractorId>
+//
 // It prints and it writes local ledger files. It does not send, publish,
 // invoice, or open issues.
 
@@ -30,6 +35,8 @@ const { scopeGuard, OFFER_STATEMENT, TARGET_VERTICALS } = require('./src/offer')
 const ledgerOps = require('./src/ledger');
 const store = require('./src/ledger-store');
 const portfolio = require('./src/portfolio');
+const bench = require('./src/bench');
+const { assignTicket } = require('./src/contractor');
 
 function parseArgs(argv) {
   const args = { flags: new Set() };
@@ -42,6 +49,9 @@ function parseArgs(argv) {
     if (arg === '--kind') { args.kind = argv[++i]; continue; }
     if (arg === '--state') { args.state = argv[++i]; continue; }
     if (arg === '--note') { args.note = argv[++i]; continue; }
+    if (arg === '--assign') { args.assign = argv[++i]; continue; }
+    if (arg === '--suggest') { args.suggest = argv[++i]; continue; }
+    if (arg === '--to') { args.to = argv[++i]; continue; }
     if (arg.startsWith('--')) args.flags.add(arg.slice(2));
   }
   return args;
@@ -145,9 +155,64 @@ function main() {
     return;
   }
 
+  if (args.flags.has('bench')) {
+    console.log(bench.renderBench(store.loadBench(), store.listLedgers()));
+    return;
+  }
+
   if (args.ledger) {
     let ledger = requireLedger(args.ledger);
     let mutated = false;
+
+    // Both of these need the ticket object, which carries the access plan — so
+    // they replan the engagement rather than trusting a ticket id alone.
+    if (args.suggest || args.assign) {
+      const ticketId = args.suggest || args.assign;
+      const engagement = planEngagement(store.loadClient(ledger.clientRef));
+      const ticket = engagement.deliveryPlan.tickets.find((t) => t.id === ticketId);
+      if (!ticket) {
+        throw new Error(`No ticket "${ticketId}" on ${ledger.clientRef}. Run --tickets to list them.`);
+      }
+      const roster = store.loadBench();
+      const ledgers = store.listLedgers();
+
+      if (args.suggest) {
+        const result = bench.recommendAssignee(roster, ticket, ledgers);
+        console.log(`Ticket ${ticket.id} (${ticket.milestoneId}) — $${ticket.fixedPrice.toLocaleString('en-US')}, ${ticket.accessPlan.effectiveTier} tier`);
+        console.log('');
+        console.log(result.reason);
+        if (result.ranked.length) {
+          console.log('');
+          console.log('Ranked:');
+          for (const c of result.ranked) {
+            const perf = c.performance.firstPassRate === null ? 'no record' : `${Math.round(c.performance.firstPassRate * 100)}% first-pass`;
+            console.log(`  ${c.name.padEnd(20)} ${perf}, ${c.headroom} free`);
+          }
+        }
+        if (result.excluded.length) {
+          console.log('');
+          console.log('Not available:');
+          for (const c of result.excluded) console.log(`  ${(c.name || c.contractorId).padEnd(20)} ${c.blockers.join(' ')}`);
+        }
+        return;
+      }
+
+      // Assignment goes through contractor.assignTicket(), which throws on
+      // unpapered contractors — the bench check is additional, never a substitute.
+      const contractor = bench.getContractor(roster, args.to);
+      if (!contractor) throw new Error(`${args.to || 'No contractor'} is not on the bench. Add them first.`);
+      const check = bench.eligibilityFor(roster, contractor.id, ticket, ledgers);
+      if (!check.assignable) {
+        throw new Error(`Cannot assign ${ticket.id} to ${contractor.name}: ${check.blockers.join(' ')}`);
+      }
+      const assignment = assignTicket(ticket, contractor);
+      assignment.milestoneId = ticket.milestoneId;
+      ledgerOps.recordAssignment(ledger, assignment);
+      store.saveLedger(ledger);
+      console.log(`Assigned ${ticket.id} to ${contractor.name} at $${ticket.fixedPrice.toLocaleString('en-US')} (${assignment.accessTier} tier).`);
+      console.log(`They now hold ${check.load + 1} of ${check.capacity} concurrent tickets.`);
+      return;
+    }
 
     if (args.flags.has('sent')) { ledgerOps.recordProposalSent(ledger, { note: args.note }); mutated = true; }
     if (args.receipt !== undefined) {
@@ -177,6 +242,9 @@ function main() {
     console.log('       node agency/cli.js --scope "<what the prospect asked for>"');
     console.log('       node agency/cli.js --ledger <ref> [--sent|--receipt <n> --kind <k>|--state <s>]');
     console.log('       node agency/cli.js --portfolio');
+    console.log('       node agency/cli.js --bench');
+    console.log('       node agency/cli.js --ledger <ref> --suggest <ticketId>');
+    console.log('       node agency/cli.js --ledger <ref> --assign <ticketId> --to <contractorId>');
     console.log('');
     console.log('Target verticals:');
     for (const v of TARGET_VERTICALS) console.log(`  ${v.id.padEnd(24)} ${v.name}`);

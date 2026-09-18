@@ -117,8 +117,13 @@ function openLedger(engagement, { at } = {}) {
         triggersClientBalance: m.triggersClientBalance === true,
       })),
     },
-    receipts: [],   // money in from the client
-    payments: [],   // money out to contractors
+    receipts: [],    // money in from the client
+    payments: [],    // money out to contractors
+    // Ticket assignments. Kept here rather than on a contractor record so the
+    // ledgers stay the single source of truth for who is holding what: bench
+    // capacity and a contractor's track record are both derived from real work
+    // rather than a parallel list that drifts out of step with it.
+    assignments: [],
     opsSpend: [],   // our own software/operating spend
     milestones: disqualified ? [] : engagement.deliveryPlan.milestones.map((m) => ({
       id: m.id,
@@ -134,6 +139,26 @@ function openLedger(engagement, { at } = {}) {
 
 // Blocks anything on a dead engagement, and anything build-related on a closed
 // one. Use `allowClosed` for activity that legitimately outlives the build.
+/**
+ * Bring a ledger loaded from disk up to the current shape.
+ *
+ * Ledgers outlive the code that wrote them — a ledger opened before
+ * `assignments` existed is still a live engagement, and must not throw the first
+ * time something touches a field added later. Every schema addition gets a
+ * default here rather than a defensive `|| []` scattered across call sites,
+ * because the scattered version only covers the paths someone remembered.
+ */
+function normalize(ledger) {
+  if (!ledger || typeof ledger !== 'object') return ledger;
+  if (!Array.isArray(ledger.receipts)) ledger.receipts = [];
+  if (!Array.isArray(ledger.payments)) ledger.payments = [];
+  if (!Array.isArray(ledger.opsSpend)) ledger.opsSpend = [];
+  if (!Array.isArray(ledger.assignments)) ledger.assignments = [];
+  if (!Array.isArray(ledger.milestones)) ledger.milestones = [];
+  if (!Array.isArray(ledger.history)) ledger.history = [];
+  return ledger;
+}
+
 function assertActive(ledger, { allowClosed = false } = {}) {
   if (DEAD.includes(ledger.state)) {
     throw new Error(`Engagement ${ledger.clientRef} is ${ledger.state}. Open a new engagement instead of reviving this one.`);
@@ -287,6 +312,65 @@ function plannedPayout(ledger, milestoneId) {
   return m ? m.developerPayout : 0;
 }
 
+/**
+ * Record a ticket assignment produced by contractor.assignTicket().
+ *
+ * assignTicket() is the gate — it throws on unpapered contractors and stamps the
+ * access tier. This only stores the result, and refuses a payload that did not
+ * come from that gate, for the same reason milestone acceptance refuses anything
+ * without a QC stamp: a hand-built assignment would have skipped the paperwork
+ * check that makes the work ours.
+ */
+function recordAssignment(ledger, assignment) {
+  assertActive(ledger);
+  normalize(ledger);
+  if (!assignment || !assignment.ticketId || !assignment.contractorId) {
+    throw new TypeError('A contractor.assignTicket() result is required.');
+  }
+  if (assignment.billing !== 'fixed-price-on-acceptance' || !assignment.accessTier) {
+    throw new Error(`Assignment for ${assignment.ticketId} did not come from contractor.assignTicket(). Assign through the gate.`);
+  }
+  const open = ledger.assignments.find((a) => a.ticketId === assignment.ticketId && !a.releasedAt);
+  if (open) {
+    throw new Error(`Ticket ${assignment.ticketId} is already assigned to ${open.contractorId}. Release it before reassigning.`);
+  }
+  ledger.assignments.push({
+    ticketId: assignment.ticketId,
+    milestoneId: assignment.milestoneId || null,
+    contractorId: assignment.contractorId,
+    fixedPrice: round(assignment.fixedPrice),
+    accessTier: assignment.accessTier,
+    assignedAt: assignment.assignedAt,
+    releasedAt: null,
+    outcome: null,
+  });
+  return ledger;
+}
+
+/**
+ * Close out an assignment. `outcome` is what the bench's track record is built
+ * from, so it distinguishes work that passed quality control first time from
+ * work that had to go back — the second kind costs more than the fixed price
+ * saved by picking a cheaper contractor.
+ */
+function releaseAssignment(ledger, { ticketId, outcome = 'completed', at } = {}) {
+  assertActive(ledger, { allowClosed: true });
+  normalize(ledger);
+  if (!['completed', 'completed-after-rework', 'reassigned', 'abandoned'].includes(outcome)) {
+    throw new Error(`Unknown assignment outcome "${outcome}".`);
+  }
+  const assignment = ledger.assignments.find((a) => a.ticketId === ticketId && !a.releasedAt);
+  if (!assignment) throw new Error(`No open assignment for ticket ${ticketId} on ${ledger.clientRef}.`);
+  assignment.releasedAt = nowIso(at);
+  assignment.outcome = outcome;
+  return ledger;
+}
+
+/** Assignments currently held, optionally filtered to one contractor. */
+function openAssignments(ledger, contractorId) {
+  return (ledger.assignments || []).filter((a) => !a.releasedAt && (!contractorId || a.contractorId === contractorId));
+}
+
 function totalReceipts(ledger, kind) {
   return round(ledger.receipts
     .filter((r) => !kind || r.kind === kind)
@@ -395,6 +479,7 @@ function nextAction(ledger) {
 }
 
 module.exports = {
+  normalize,
   STATES,
   TRANSITIONS,
   TERMINAL,
@@ -409,6 +494,9 @@ module.exports = {
   recordOpsSpend,
   acceptMilestone,
   releasePayment,
+  recordAssignment,
+  releaseAssignment,
+  openAssignments,
   plannedPayout,
   totalReceipts,
   totalPayments,

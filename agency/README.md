@@ -20,6 +20,9 @@ npm run agency:plan     -- --client agency/clients/cedar-roofing.json --open
 npm run agency:ledger   -- cedar-roofing
 npm run agency:ledger   -- cedar-roofing --receipt 12600 --kind deposit --state won
 npm run agency:portfolio
+npm run agency:bench
+npm run agency:ledger   -- cedar-roofing --suggest <ticketId>
+npm run agency:ledger   -- cedar-roofing --assign <ticketId> --to <contractorId>
 ```
 
 ## Layout
@@ -38,6 +41,7 @@ npm run agency:portfolio
 | `src/ledger.js` | Engagement state machine with fail-closed transitions; records actuals |
 | `src/ledger-store.js` | Local JSON persistence for clients and ledgers (gitignored) |
 | `src/portfolio.js` | Weighted pipeline, cash vs contractor commitments, estimate accuracy |
+| `src/bench.js` | Contractor roster, capacity ceilings, track record derived from the ledgers |
 | `cli.js` | Read-only CLI over the above |
 | `templates/` | Discovery call script; required-terms checklists for both agreements |
 | `examples/` | Four worked clients, each exercising a different decision path |
@@ -56,7 +60,8 @@ npm run agency:portfolio
   rather than emit something unsafe; `buildProposal()` throws if the document
   would leak internal cost; the ledger throws on an illegal state move, on
   accepting a milestone whose quality control is open, and on paying for work
-  that was never accepted.
+  that was never accepted. The bench refuses an assignment to anyone unpapered,
+  over capacity, or not cleared for that capability.
 - **Generation only.** Nothing here sends, posts, invoices, or opens issues.
 
 Tests: `agency/test/`, in the root `npm test`.

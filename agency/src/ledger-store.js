@@ -20,9 +20,14 @@
 const fs = require('node:fs');
 const path = require('node:path');
 
+const { normalize } = require('./ledger');
+
 const ROOT = path.join(__dirname, '..');
 const CLIENTS_DIR = path.join(ROOT, 'clients');
 const LEDGERS_DIR = path.join(ROOT, 'ledgers');
+// The bench holds contractor names, capacity and agreement status — personal and
+// commercial data, gitignored for the same reason as the rest.
+const BENCH_FILE = path.join(ROOT, 'bench', 'roster.json');
 
 function ensureDir(dir) {
   fs.mkdirSync(dir, { recursive: true });
@@ -79,7 +84,10 @@ function saveClient(client, options = {}) {
 function loadLedger(ref, options = {}) {
   const file = ledgerPath(ref, options);
   if (!fs.existsSync(file)) return null;
-  return readJson(file);
+  // Normalised on the way in so a ledger written by an older version of the
+  // schema is usable immediately, rather than throwing on the first field it
+  // predates.
+  return normalize(readJson(file));
 }
 
 function saveLedger(ledger, options = {}) {
@@ -91,8 +99,18 @@ function listLedgers({ dir = LEDGERS_DIR } = {}) {
   if (!fs.existsSync(dir)) return [];
   return fs.readdirSync(dir)
     .filter((f) => f.endsWith('.json'))
-    .map((f) => readJson(path.join(dir, f)))
+    .map((f) => normalize(readJson(path.join(dir, f))))
     .sort((a, b) => String(a.openedAt).localeCompare(String(b.openedAt)));
+}
+
+function loadBench({ file = BENCH_FILE } = {}) {
+  if (!fs.existsSync(file)) return { contractors: [] };
+  return readJson(file);
+}
+
+function saveBench(bench, { file = BENCH_FILE } = {}) {
+  if (!bench || !Array.isArray(bench.contractors)) throw new TypeError('A bench with a contractors array is required.');
+  return writeJson(file, bench);
 }
 
 function listClients({ dir = CLIENTS_DIR } = {}) {
@@ -103,6 +121,7 @@ function listClients({ dir = CLIENTS_DIR } = {}) {
 module.exports = {
   CLIENTS_DIR,
   LEDGERS_DIR,
+  BENCH_FILE,
   safeRef,
   clientPath,
   ledgerPath,
@@ -112,4 +131,6 @@ module.exports = {
   saveLedger,
   listLedgers,
   listClients,
+  loadBench,
+  saveBench,
 };

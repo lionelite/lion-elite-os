@@ -374,10 +374,31 @@ Standalone modules that share the repo but not the architecture above:
   `ledger-store.js` (ref-validated filenames, write-then-rename), deliberately
   **not** Postgres and not touching `lib/database.js` — no service, pool or
   migration exists.
+  `bench.js` is the contractor roster: who is cleared for which capability ids
+  (validated against the offer's vocabulary), a `maxConcurrent` ceiling (default
+  3) so nobody is quietly handed a sixth ticket, and a track record **derived
+  from the ledgers** rather than stored — a hand-maintained "tickets completed"
+  field drifts within a month. `ledger.recordAssignment()` only accepts a
+  `contractor.assignTicket()` result (same provenance rule as milestone
+  acceptance), so an assignment that skipped the paperwork gate cannot be
+  written; assignments close out as `completed` / `completed-after-rework` /
+  `reassigned` / `abandoned`, and that distinction is the whole record.
+  `recommendAssignee()` ranks on first-pass QC rate, then headroom, then cost
+  variance — cost is last deliberately, since a ticket that comes back twice
+  consumes our review time three times over, and a 0% first-pass record ranks
+  *below* no record at all. Capacity flags concentration (>50% of live tickets in
+  one pair of hands), a bench over 85% committed ("recruit before selling"), and
+  work held by someone suspended or off the bench. Same honesty guard as
+  elsewhere: an unpapered contractor renders as `blocked` and contributes **zero**
+  usable capacity, because "2 free" next to an unsigned IP assignment invites the
+  exact assignment the gate exists to stop. `agency/bench/` is gitignored with the
+  other two. Schema evolution: ledgers outlive the code that wrote them, so
+  `ledger.normalize()` fills fields added later and `loadLedger()` applies it on
+  the way in — add new ledger fields there, not as a scattered `|| []`.
   **Generation only — it holds no send capability at all** (no email, SMS,
   social, invoicing, or issue creation), and is deliberately disconnected from
   the outreach pipeline. Tests in the root `npm test`;
-  `npm run agency:plan|proposal|internal|tickets|scope|ledger|portfolio`; docs
+  `npm run agency:plan|proposal|internal|tickets|scope|ledger|portfolio|bench`; docs
   `docs/ai-development-agency.md`, module `agency/README.md`. The agreement
   templates in `agency/templates/` are required-terms checklists for an
   attorney, **not** legal advice and not agreements. Example client files are
@@ -472,6 +493,9 @@ npm run agency:scope -- "<prospect request>" # in-offer / add-on / decline
 npm run agency:plan -- --client <file> --open        # open an engagement ledger
 npm run agency:ledger -- <ref>                       # state, cash, next action
 npm run agency:portfolio                             # pipeline, cash, estimate accuracy
+npm run agency:bench                                 # contractor roster, capacity, record
+npm run agency:ledger -- <ref> --suggest <ticketId>  # who should take it, and why
+npm run agency:ledger -- <ref> --assign <ticketId> --to <contractorId>
 ```
 
 This machine has no standalone Node.js install, only `bun`. `bun install`
@@ -595,8 +619,10 @@ notes), not live infrastructure — don't treat them as configuration.
   client-facing-leakage guard. Plus a fail-closed engagement ledger (local,
   gitignored JSON) recording deposits, milestone acceptances and real delivery
   cost, and a portfolio roll-up reporting weighted pipeline, cash against
-  contractor commitments, and estimate accuracy that feeds future quotes.
-  Test-covered in the root `npm test`.
+  contractor commitments, and estimate accuracy that feeds future quotes. Plus a
+  contractor bench with capability clearance, concurrent-ticket ceilings,
+  concentration/utilisation warnings, and an assignment recommendation ranked on
+  first-pass quality rather than price. Test-covered in the root `npm test`.
 
 ## Recent fixes (this pass)
 

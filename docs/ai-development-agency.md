@@ -223,6 +223,7 @@ npm run agency:plan     -- --client <file> --json
 npm run agency:scope    -- "<what the prospect asked for>"
 npm run agency:ledger   -- <ref>              # engagement state and next action
 npm run agency:portfolio                      # pipeline, cash, estimate accuracy
+npm run agency:bench                          # contractor roster, capacity, track record
 ```
 
 Worked examples in `agency/examples/`, each chosen to exercise a different path:
@@ -233,6 +234,67 @@ Worked examples in `agency/examples/`, each chosen to exercise a different path:
 | `summit-energy.json` | Value beyond the productized ceiling → clamped and escalated to the owner |
 | `lakeside-dental.json` | PHI: every ticket forced to synthetic fixtures, BAA required, retainer restructured to quarterly |
 | `corner-cafe.json` | Correctly refused — no price, no scope, no proposal generated |
+
+## The bench — contractors as a roster, not a contact list
+
+`contractor.js` gates ONE assignment: is this person papered, and may they hold
+this ticket's access tier. `agency/src/bench.js` answers the questions about the
+bench as a whole, which is where the operational failures actually live:
+
+- **Overloading whoever says yes.** Nothing rejects a sixth concurrent ticket, so
+  the deadline slips silently and it surfaces at the milestone review. A
+  contractor at their `maxConcurrent` (default 3 — these are few-day tickets, and
+  they have other clients) is not assignable.
+- **Assigning outside someone's competence.** A contractor is *cleared for*
+  specific capability ids, validated against the offer's vocabulary so a typo
+  fails at the bench instead of silently making them ineligible for the work they
+  were hired for. An empty capability list means "not cleared for anything yet",
+  not "anything".
+- **Picking the cheapest.** The recommendation ranks on **first-pass quality
+  control rate** first, headroom second, cost variance last. A ticket that comes
+  back twice has consumed our review time three times over — that is our margin,
+  not theirs, and it is the mistake this ranking exists to prevent. A contractor
+  with a 0% first-pass record ranks *below* someone with no record at all.
+- **Concentration risk.** One contractor holding more than half the live tickets
+  is flagged: their absence stalls the whole book. A bench above 85% committed
+  warns to recruit before selling another build.
+
+**Track record and current load are derived from the ledgers**, never stored on
+the contractor record. A hand-maintained "tickets completed: 12" field drifts
+from reality within a month; a count over assignments people actually recorded
+cannot. `ledger.recordAssignment()` only accepts a `contractor.assignTicket()`
+result — the same provenance rule milestone acceptance uses — so an assignment
+that skipped the paperwork gate cannot be written.
+
+Two honesty guards, matching the ones elsewhere:
+
+- **Free capacity is only shown for contractors who can actually be assigned.**
+  Printing "2 free" beside someone whose IP assignment is unsigned invites exactly
+  the assignment the paperwork gate exists to stop, so they render as `blocked`
+  and contribute zero usable capacity to the bench total.
+- **Work held by someone suspended or off the bench is surfaced for
+  reassignment**, rather than quietly counting as covered.
+
+```bash
+npm run agency:bench                                            # roster, capacity, record
+npm run agency:ledger -- <ref> --suggest <ticketId>             # who should take it, and why
+npm run agency:ledger -- <ref> --assign <ticketId> --to <id>    # assign through the real gate
+```
+
+`--assign` runs the bench check *and* `contractor.assignTicket()`; the bench check
+is additional, never a substitute for the paperwork gate.
+
+Assignments close out with an outcome — `completed`, `completed-after-rework`,
+`reassigned` or `abandoned` — and that distinction is the whole track record.
+Unknown outcomes are refused rather than recorded as a mystery.
+
+### Schema evolution
+
+Ledgers outlive the code that wrote them. A ledger opened before `assignments`
+existed is still a live engagement, so `ledger.normalize()` fills fields added
+later and `ledger-store.loadLedger()` applies it on the way in. Schema additions
+get a default there rather than a scattered `|| []` at each call site, since the
+scattered version only covers the paths someone remembered.
 
 ## Step 6 — Operating the book
 
