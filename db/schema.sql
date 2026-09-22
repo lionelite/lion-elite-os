@@ -967,3 +967,19 @@ CREATE TABLE IF NOT EXISTS gtm_signal_events (
   UNIQUE (workspace_id, provider, external_event_id)
 );
 CREATE INDEX IF NOT EXISTS gtm_signal_events_prospect_idx ON gtm_signal_events(prospect_id, observed_at DESC);
+
+
+-- OAuth consent state ----------------------------------------------------------
+CREATE TABLE IF NOT EXISTS gtm_oauth_states (
+  oauth_state_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  workspace_id UUID NOT NULL REFERENCES gtm_workspaces(workspace_id) ON DELETE CASCADE,
+  user_id UUID NOT NULL REFERENCES gtm_users(user_id) ON DELETE CASCADE,
+  provider TEXT NOT NULL,
+  state_hash TEXT NOT NULL UNIQUE,
+  redirect_uri TEXT NOT NULL,
+  code_verifier_ciphertext TEXT,
+  expires_at TIMESTAMPTZ NOT NULL,
+  consumed_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS gtm_oauth_states_workspace_idx ON gtm_oauth_states(workspace_id, provider, expires_at DESC);
