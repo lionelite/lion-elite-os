@@ -54,7 +54,7 @@ async function tick(){
       else throw new Error('unsupported signal subscription '+sub.provider+':'+sub.signalType);
       await db.query(`UPDATE gtm_signal_subscriptions SET last_polled_at=now(),next_poll_at=now()+make_interval(secs=>$2),last_error=NULL,updated_at=now() WHERE signal_subscription_id=$1`,[sub.subscriptionId,Math.max(60,sub.pollIntervalSeconds||60)]);
     }catch(error){
-      await db.query(`UPDATE gtm_signal_subscriptions SET last_polled_at=now(),next_poll_at=now()+interval '5 minutes',last_error=$2,status='error',updated_at=now() WHERE signal_subscription_id=$1`,[sub.subscriptionId,String(error.message||error)]);
+      await db.query(`UPDATE gtm_signal_subscriptions SET last_polled_at=now(),next_poll_at=now()+interval '5 minutes',last_error=$2,status='active',updated_at=now() WHERE signal_subscription_id=$1`,[sub.subscriptionId,String(error.message||error)]);
     }
   }
   return due.rows.length;
