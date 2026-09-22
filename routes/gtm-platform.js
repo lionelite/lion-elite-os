@@ -15,6 +15,9 @@ const { ResendProvisioner } = require('../lib/platform/senders/resend');
 const db = require('../lib/database');
 const { beginGoogleOAuth, exchangeGoogleOAuth } = require('../lib/platform/oauth/google');
 const { productionReadiness } = require('../lib/platform/readiness');
+const { runtimeJobCatalog } = require('../lib/platform/runtime-jobs');
+const { allowedTools, assertNoSendTools } = require('../lib/platform/mcp-tools');
+const { assessSenderHealth } = require('../lib/platform/sender-health');
 const { evaluateBudget } = require('../lib/platform/budget-policy');
 const { encrypt } = require('../lib/platform/security/crypto-vault');
 
