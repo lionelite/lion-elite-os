@@ -1131,3 +1131,22 @@ CREATE TABLE IF NOT EXISTS gtm_channel_action_requests (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 CREATE INDEX IF NOT EXISTS gtm_channel_actions_ready_idx ON gtm_channel_action_requests(channel,status,created_at);
+
+
+CREATE UNIQUE INDEX IF NOT EXISTS gtm_runtime_jobs_global_key_unique
+  ON gtm_runtime_jobs(job_key) WHERE workspace_id IS NULL;
+
+CREATE TABLE IF NOT EXISTS gtm_linkedin_connections (
+  linkedin_connection_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  workspace_id UUID NOT NULL REFERENCES gtm_workspaces(workspace_id) ON DELETE CASCADE,
+  provider TEXT NOT NULL DEFAULT 'configured_provider',
+  status TEXT NOT NULL DEFAULT 'connected' CHECK (status IN ('connected','degraded','disconnected','error')),
+  cursor TEXT,
+  last_polled_at TIMESTAMPTZ,
+  last_success_at TIMESTAMPTZ,
+  last_error TEXT,
+  metadata JSONB NOT NULL DEFAULT '{}'::jsonb,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  UNIQUE (workspace_id, provider)
+);
