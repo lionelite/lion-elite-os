@@ -10,9 +10,13 @@ const { ApolloProvider } = require('../lib/platform/sources/apollo');
 const { evaluateSend } = require('../lib/platform/sender-policy');
 const { importRows } = require('../lib/platform/csv-import');
 const { createAuthMiddleware } = require('../lib/platform/security/auth-middleware');
+const { OAuthStore } = require('../lib/platform/oauth-store');
+const { ResendProvisioner } = require('../lib/platform/senders/resend');
+const db = require('../lib/database');
 
 function createGtmPlatformRouter({ store, authStore }) {
   const router = express.Router();
+  const oauthStore = new OAuthStore();
   const auth = authStore ? createAuthMiddleware(authStore) : null;
   const requireSession = auth ? auth.requireSession : (_req,_res,next)=>next();
   const requireViewer = auth ? auth.requireWorkspaceRole('viewer') : (_req,_res,next)=>next();
@@ -45,6 +49,26 @@ function createGtmPlatformRouter({ store, authStore }) {
   router.post('/auth/logout', requireSession, async (req, res) => {
     if (authStore) await authStore.revokeSession(req.gtmSession.sessionId, req.gtmSession.userId);
     res.json({ ok: true });
+  });
+
+
+
+  router.post('/internal/oauth/store', async (req, res) => {
+    try {
+      const expected = String(process.env.GTM_OAUTH_CALLBACK_SECRET || '');
+      const provided = String(req.headers['x-gtm-oauth-callback-secret'] || '');
+      if (!expected || provided !== expected) return res.status(401).json({ error: 'oauth callback denied' });
+      const { workspaceId, provider, externalAccountId, accessToken, refreshToken, tokenExpiresAt, scopes, metadata } = req.body || {};
+      if (!workspaceId || !provider || !accessToken) return res.status(400).json({ error: 'workspaceId, provider, and accessToken are required' });
+      const credential = await oauthStore.save(workspaceId, {
+        provider, externalAccountId: externalAccountId || null, accessToken,
+        refreshToken: refreshToken || null, tokenExpiresAt: tokenExpiresAt || null,
+        scopes: Array.isArray(scopes) ? scopes : [], metadata: metadata || {}
+      });
+      res.status(201).json({ credential });
+    } catch (error) {
+      res.status(400).json({ error: error.message });
+    }
   });
 
   router.post('/workspaces', requireSession, async (req, res) => {
@@ -299,6 +323,79 @@ function createGtmPlatformRouter({ store, authStore }) {
       res.json({ result });
     } catch (error) {
       res.status(400).json({ error: error.message });
+    }
+  });
+
+
+  router.get('/workspaces/:workspaceId/oauth', async (req, res) => {
+    try {
+      const credentials = await oauthStore.listMetadata(req.params.workspaceId);
+      res.json({ credentials });
+    } catch (error) {
+      res.status(500).json({ error: 'oauth metadata unavailable' });
+    }
+  });
+
+  router.get('/workspaces/:workspaceId/senders', async (req, res) => {
+    try {
+      const [domains, requests] = await Promise.all([
+        db.query(`SELECT sending_domain_id AS "sendingDomainId",domain,status,provider,verified_at AS "verifiedAt",created_at AS "createdAt"
+          FROM gtm_sending_domains WHERE workspace_id=$1 ORDER BY created_at DESC`,[req.params.workspaceId]),
+        db.query(`SELECT provisioning_request_id AS "provisioningRequestId",provider,domain,sender_local_part AS "senderLocalPart",status,
+          dns_requirements AS "dnsRequirements",external_domain_id AS "externalDomainId",external_sender_id AS "externalSenderId",
+          last_error AS "lastError",created_at AS "createdAt"
+          FROM gtm_sender_provisioning_requests WHERE workspace_id=$1 ORDER BY created_at DESC`,[req.params.workspaceId])
+      ]);
+      res.json({ domains: domains.rows, provisioningRequests: requests.rows });
+    } catch (error) {
+      res.status(500).json({ error: 'sender provisioning state unavailable' });
+    }
+  });
+
+  router.post('/workspaces/:workspaceId/senders/resend/provision', requireAdmin, async (req, res) => {
+    try {
+      const domain = String(req.body?.domain || '').trim().toLowerCase();
+      const senderLocalPart = String(req.body?.senderLocalPart || 'hello').trim().toLowerCase();
+      if (!domain) return res.status(400).json({ error: 'domain is required' });
+      const provider = new ResendProvisioner({ apiKey: process.env.RESEND_API_KEY });
+      const created = await provider.createDomain(domain);
+      const dnsRequirements = created.records || [];
+      const request = await db.query(`INSERT INTO gtm_sender_provisioning_requests
+        (workspace_id,provider,domain,sender_local_part,status,dns_requirements,external_domain_id)
+        VALUES ($1,'resend',$2,$3,'dns_pending',$4,$5)
+        RETURNING provisioning_request_id AS "provisioningRequestId",provider,domain,sender_local_part AS "senderLocalPart",status,dns_requirements AS "dnsRequirements",external_domain_id AS "externalDomainId"`,
+        [req.params.workspaceId,domain,senderLocalPart,dnsRequirements,created.id || null]);
+      await db.query(`INSERT INTO gtm_sending_domains (workspace_id,domain,status,provider)
+        VALUES ($1,$2,'pending','resend')
+        ON CONFLICT (workspace_id,domain) DO UPDATE SET provider='resend',updated_at=now()`,
+        [req.params.workspaceId,domain]);
+      res.status(201).json({ provider: 'resend', domain: created, provisioning: request.rows[0] });
+    } catch (error) {
+      res.status(error.code === 'RESEND_NOT_CONFIGURED' ? 503 : 400).json({ error: error.message });
+    }
+  });
+
+  router.post('/workspaces/:workspaceId/senders/resend/:requestId/verify', requireAdmin, async (req, res) => {
+    try {
+      const found = await db.query(`SELECT provisioning_request_id AS "provisioningRequestId",domain,external_domain_id AS "externalDomainId"
+        FROM gtm_sender_provisioning_requests WHERE workspace_id=$1 AND provisioning_request_id=$2 AND provider='resend'`,
+        [req.params.workspaceId,req.params.requestId]);
+      const row = found.rows[0];
+      if (!row) return res.status(404).json({ error: 'provisioning request not found' });
+      if (!row.externalDomainId) return res.status(409).json({ error: 'external domain id missing' });
+      const provider = new ResendProvisioner({ apiKey: process.env.RESEND_API_KEY });
+      await provider.verifyDomain(row.externalDomainId);
+      const state = await provider.getDomain(row.externalDomainId);
+      const verified = String(state.status || '').toLowerCase() === 'verified';
+      await db.query(`UPDATE gtm_sender_provisioning_requests SET status=$3,updated_at=now(),last_error=NULL WHERE workspace_id=$1 AND provisioning_request_id=$2`,
+        [req.params.workspaceId,req.params.requestId,verified ? 'provisioned' : 'verifying']);
+      if (verified) {
+        await db.query(`UPDATE gtm_sending_domains SET status='verified',verified_at=now(),updated_at=now() WHERE workspace_id=$1 AND domain=$2`,
+          [req.params.workspaceId,row.domain]);
+      }
+      res.json({ provider: 'resend', verified, domain: state });
+    } catch (error) {
+      res.status(error.code === 'RESEND_NOT_CONFIGURED' ? 503 : 400).json({ error: error.message });
     }
   });
 
