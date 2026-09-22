@@ -91,15 +91,24 @@ async function ensureJobs(){
   for(const def of RUNTIME_JOBS){
     await db.query(`INSERT INTO gtm_runtime_jobs (workspace_id,job_key,cadence_seconds,daily_time,next_run_at)
       VALUES (NULL,$1,$2,$3,$4)
-      ON CONFLICT (workspace_id,job_key) DO NOTHING`,
+      ON CONFLICT DO NOTHING`,
       [def.key,def.cadenceSeconds||null,def.dailyTime||null,new Date()]);
   }
 }
 
 async function tick(){
   await ensureJobs();
-  const due=await db.query(`SELECT runtime_job_id AS "runtimeJobId",job_key AS "jobKey",cadence_seconds AS "cadenceSeconds",daily_time AS "dailyTime"
-    FROM gtm_runtime_jobs WHERE status='active' AND next_run_at<=now() ORDER BY next_run_at LIMIT 20 FOR UPDATE SKIP LOCKED`);
+  const due=await db.query(`WITH claim AS (
+      SELECT runtime_job_id FROM gtm_runtime_jobs
+      WHERE status='active' AND next_run_at<=now()
+      ORDER BY next_run_at LIMIT 20
+      FOR UPDATE SKIP LOCKED
+    )
+    UPDATE gtm_runtime_jobs j
+    SET next_run_at=now()+interval '5 minutes',updated_at=now()
+    FROM claim
+    WHERE j.runtime_job_id=claim.runtime_job_id
+    RETURNING j.runtime_job_id AS "runtimeJobId",j.job_key AS "jobKey",j.cadence_seconds AS "cadenceSeconds",j.daily_time AS "dailyTime"`);
   let count=0;
   for(const job of due.rows){
     const def=RUNTIME_JOBS.find(x=>x.key===job.jobKey);
