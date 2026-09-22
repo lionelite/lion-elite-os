@@ -80,6 +80,29 @@ function createGtmPlatformRouter({ store }) {
     }
   });
 
+
+  router.get('/workspaces/:workspaceId/campaigns/:campaignId/control-room', async (req, res) => {
+    const room = await store.getCampaignControlRoom(req.params.workspaceId, req.params.campaignId);
+    if (!room) return res.status(404).json({ error: 'campaign not found' });
+    res.json(room);
+  });
+
+  router.post('/workspaces/:workspaceId/campaigns/:campaignId/prospects', async (req, res) => {
+    try {
+      const prospect = await store.addProspect(req.params.workspaceId, req.params.campaignId, req.body || {});
+      if (!prospect) return res.status(404).json({ error: 'campaign not found' });
+      res.status(201).json({ prospect });
+    } catch (error) {
+      res.status(400).json({ error: error.message });
+    }
+  });
+
+  router.post('/workspaces/:workspaceId/prospects/:prospectId/reply', async (req, res) => {
+    const result = await store.recordReply(req.params.workspaceId, req.params.prospectId, req.body?.classification || 'interested');
+    if (!result) return res.status(404).json({ error: 'prospect not found' });
+    res.json(result);
+  });
+
   return router;
 }
 
