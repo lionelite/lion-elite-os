@@ -6,6 +6,7 @@ const { classifyReply, draftReply } = require('../lib/platform/reply-assistant')
 const { integrationReadiness } = require('../lib/platform/integrations');
 const { priceAction } = require('../lib/platform/usage-meter');
 const { CsvSourceProvider, runSourcing } = require('../lib/platform/sourcing');
+const { ApolloProvider } = require('../lib/platform/sources/apollo');
 
 function createGtmPlatformRouter({ store }) {
   const router = express.Router();
@@ -201,6 +202,37 @@ function createGtmPlatformRouter({ store }) {
       });
     } catch (error) {
       res.status(400).json({ error: error.message });
+    }
+  });
+
+
+  router.get('/workspaces/:workspaceId/sources/readiness', async (req, res) => {
+    const workspace = await store.getWorkspace(req.params.workspaceId);
+    if (!workspace) return res.status(404).json({ error: 'workspace not found' });
+    res.json({ providers: { apollo: Boolean(process.env.APOLLO_API_KEY) } });
+  });
+
+  router.post('/workspaces/:workspaceId/campaigns/:campaignId/source/apollo-preview', async (req, res) => {
+    try {
+      const campaign = await store.getCampaign(req.params.workspaceId, req.params.campaignId);
+      if (!campaign) return res.status(404).json({ error: 'campaign not found' });
+      const provider = new ApolloProvider({ apiKey: process.env.APOLLO_API_KEY });
+      const candidates = await provider.search({
+        icp: {
+          ...(campaign.icp || {}),
+          titles: req.body?.titles || campaign.icp?.titles || [],
+          seniorities: req.body?.seniorities || campaign.icp?.seniorities || [],
+          domains: req.body?.domains || [],
+          excludeDomains: req.body?.excludeDomains || [],
+          keywords: req.body?.keywords || '',
+          emailStatus: req.body?.emailStatus || 'verified'
+        },
+        page: Number(req.body?.page || 1),
+        perPage: Math.min(100, Math.max(1, Number(req.body?.perPage || 25)))
+      });
+      res.json({ provider: 'apollo', count: candidates.length, candidates });
+    } catch (error) {
+      res.status(error.code === 'APOLLO_NOT_CONFIGURED' ? 503 : 400).json({ error: error.message });
     }
   });
 
