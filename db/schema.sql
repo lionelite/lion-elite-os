@@ -648,3 +648,34 @@ CREATE TABLE IF NOT EXISTS gtm_opportunities (
 );
 CREATE UNIQUE INDEX IF NOT EXISTS gtm_opportunities_prospect_unique_idx ON gtm_opportunities(workspace_id, prospect_id);
 CREATE INDEX IF NOT EXISTS gtm_opportunities_workspace_stage_idx ON gtm_opportunities(workspace_id, stage, updated_at DESC);
+
+
+CREATE TABLE IF NOT EXISTS gtm_integrations (
+  integration_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  workspace_id UUID NOT NULL REFERENCES gtm_workspaces(workspace_id) ON DELETE CASCADE,
+  provider TEXT NOT NULL CHECK (provider IN ('gmail','google_calendar','calendly','crm','webhook')),
+  status TEXT NOT NULL DEFAULT 'disconnected' CHECK (status IN ('disconnected','connected','error','reauth_required')),
+  account_label TEXT,
+  external_account_id TEXT,
+  scopes JSONB NOT NULL DEFAULT '[]'::jsonb,
+  settings JSONB NOT NULL DEFAULT '{}'::jsonb,
+  last_synced_at TIMESTAMPTZ,
+  last_error TEXT,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  UNIQUE (workspace_id, provider, external_account_id)
+);
+CREATE INDEX IF NOT EXISTS gtm_integrations_workspace_idx ON gtm_integrations(workspace_id, provider, status);
+
+CREATE TABLE IF NOT EXISTS gtm_integration_events (
+  integration_event_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  workspace_id UUID NOT NULL REFERENCES gtm_workspaces(workspace_id) ON DELETE CASCADE,
+  provider TEXT NOT NULL,
+  external_event_id TEXT NOT NULL,
+  event_type TEXT NOT NULL,
+  payload JSONB NOT NULL DEFAULT '{}'::jsonb,
+  processed_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  UNIQUE (workspace_id, provider, external_event_id)
+);
+CREATE INDEX IF NOT EXISTS gtm_integration_events_unprocessed_idx ON gtm_integration_events(workspace_id, provider, processed_at);
