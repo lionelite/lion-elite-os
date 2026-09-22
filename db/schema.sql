@@ -464,3 +464,86 @@ ALTER TABLE captured_leads ADD COLUMN IF NOT EXISTS timezone TEXT;
 -- Per-campaign cooldown needs to know when we last texted them.
 ALTER TABLE captured_leads ADD COLUMN IF NOT EXISTS last_sms_sent_at TIMESTAMPTZ;
 ALTER TABLE captured_leads ADD COLUMN IF NOT EXISTS last_sms_campaign TEXT;
+
+
+-- LionOS GTM SaaS ------------------------------------------------------------
+-- Multi-tenant platform foundation. Every customer-owned record is scoped by
+-- workspace_id. Authentication/membership enforcement is layered above this
+-- schema; database foreign keys ensure records cannot point at nonexistent
+-- workspaces.
+
+CREATE TABLE IF NOT EXISTS gtm_workspaces (
+  workspace_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  name TEXT NOT NULL,
+  slug TEXT NOT NULL UNIQUE,
+  plan TEXT NOT NULL DEFAULT 'solo' CHECK (plan IN ('solo','agency','enterprise')),
+  status TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active','paused','cancelled')),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS gtm_workspace_profiles (
+  workspace_id UUID PRIMARY KEY REFERENCES gtm_workspaces(workspace_id) ON DELETE CASCADE,
+  website_url TEXT,
+  company_description TEXT NOT NULL DEFAULT '',
+  offer_name TEXT NOT NULL DEFAULT '',
+  offer_description TEXT NOT NULL DEFAULT '',
+  primary_goal TEXT NOT NULL DEFAULT 'book_meetings',
+  target_geography TEXT NOT NULL DEFAULT '',
+  icp JSONB NOT NULL DEFAULT '{}'::jsonb,
+  exclusions JSONB NOT NULL DEFAULT '[]'::jsonb,
+  messaging_angles JSONB NOT NULL DEFAULT '[]'::jsonb,
+  onboarding_status TEXT NOT NULL DEFAULT 'draft' CHECK (onboarding_status IN ('draft','ready','approved')),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS gtm_campaigns (
+  campaign_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  workspace_id UUID NOT NULL REFERENCES gtm_workspaces(workspace_id) ON DELETE CASCADE,
+  name TEXT NOT NULL,
+  objective TEXT NOT NULL DEFAULT 'book_meetings',
+  status TEXT NOT NULL DEFAULT 'draft' CHECK (status IN ('draft','active','paused','completed','archived')),
+  offer JSONB NOT NULL DEFAULT '{}'::jsonb,
+  icp JSONB NOT NULL DEFAULT '{}'::jsonb,
+  filters JSONB NOT NULL DEFAULT '{}'::jsonb,
+  exclusions JSONB NOT NULL DEFAULT '[]'::jsonb,
+  channels JSONB NOT NULL DEFAULT '["email"]'::jsonb,
+  sequence JSONB NOT NULL DEFAULT '[]'::jsonb,
+  success_event TEXT NOT NULL DEFAULT 'meeting_booked',
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS gtm_campaigns_workspace_idx ON gtm_campaigns(workspace_id, status, updated_at DESC);
+
+CREATE TABLE IF NOT EXISTS gtm_agent_tasks (
+  task_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  workspace_id UUID NOT NULL REFERENCES gtm_workspaces(workspace_id) ON DELETE CASCADE,
+  campaign_id UUID REFERENCES gtm_campaigns(campaign_id) ON DELETE SET NULL,
+  agent_key TEXT NOT NULL,
+  objective TEXT NOT NULL,
+  status TEXT NOT NULL DEFAULT 'queued' CHECK (status IN ('queued','running','blocked','completed','failed','cancelled')),
+  delegated_by TEXT,
+  required_evidence JSONB NOT NULL DEFAULT '[]'::jsonb,
+  output JSONB NOT NULL DEFAULT '{}'::jsonb,
+  validation JSONB NOT NULL DEFAULT '{}'::jsonb,
+  kpi TEXT,
+  run_after TIMESTAMPTZ,
+  completed_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS gtm_agent_tasks_workspace_idx ON gtm_agent_tasks(workspace_id, status, created_at DESC);
+
+CREATE TABLE IF NOT EXISTS gtm_audit_events (
+  audit_event_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  workspace_id UUID NOT NULL REFERENCES gtm_workspaces(workspace_id) ON DELETE CASCADE,
+  actor_type TEXT NOT NULL CHECK (actor_type IN ('user','agent','system','integration')),
+  actor_id TEXT,
+  event_type TEXT NOT NULL,
+  entity_type TEXT,
+  entity_id TEXT,
+  data JSONB NOT NULL DEFAULT '{}'::jsonb,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS gtm_audit_events_workspace_idx ON gtm_audit_events(workspace_id, created_at DESC);
