@@ -679,3 +679,77 @@ CREATE TABLE IF NOT EXISTS gtm_integration_events (
   UNIQUE (workspace_id, provider, external_event_id)
 );
 CREATE INDEX IF NOT EXISTS gtm_integration_events_unprocessed_idx ON gtm_integration_events(workspace_id, provider, processed_at);
+
+
+-- GTM demand engine parity ----------------------------------------------------
+CREATE TABLE IF NOT EXISTS gtm_agents (
+  agent_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  workspace_id UUID NOT NULL REFERENCES gtm_workspaces(workspace_id) ON DELETE CASCADE,
+  agent_key TEXT NOT NULL,
+  name TEXT NOT NULL,
+  role TEXT NOT NULL,
+  status TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active','paused','disabled')),
+  config JSONB NOT NULL DEFAULT '{}'::jsonb,
+  last_run_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  UNIQUE (workspace_id, agent_key)
+);
+CREATE INDEX IF NOT EXISTS gtm_agents_workspace_idx ON gtm_agents(workspace_id, status);
+
+CREATE TABLE IF NOT EXISTS gtm_source_runs (
+  source_run_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  workspace_id UUID NOT NULL REFERENCES gtm_workspaces(workspace_id) ON DELETE CASCADE,
+  campaign_id UUID REFERENCES gtm_campaigns(campaign_id) ON DELETE CASCADE,
+  provider TEXT NOT NULL,
+  query JSONB NOT NULL DEFAULT '{}'::jsonb,
+  status TEXT NOT NULL DEFAULT 'queued' CHECK (status IN ('queued','running','completed','failed','cancelled')),
+  candidates_found INTEGER NOT NULL DEFAULT 0,
+  candidates_accepted INTEGER NOT NULL DEFAULT 0,
+  error TEXT,
+  started_at TIMESTAMPTZ,
+  completed_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS gtm_source_runs_workspace_idx ON gtm_source_runs(workspace_id, campaign_id, created_at DESC);
+
+CREATE TABLE IF NOT EXISTS gtm_usage_ledger (
+  usage_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  workspace_id UUID NOT NULL REFERENCES gtm_workspaces(workspace_id) ON DELETE CASCADE,
+  purse TEXT NOT NULL CHECK (purse IN ('data','action')),
+  action_key TEXT NOT NULL,
+  credits INTEGER NOT NULL CHECK (credits >= 0),
+  quantity INTEGER NOT NULL DEFAULT 1 CHECK (quantity >= 0),
+  provider_cost_cents INTEGER CHECK (provider_cost_cents IS NULL OR provider_cost_cents >= 0),
+  idempotency_key TEXT NOT NULL,
+  entity_type TEXT,
+  entity_id TEXT,
+  metadata JSONB NOT NULL DEFAULT '{}'::jsonb,
+  occurred_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  UNIQUE (workspace_id, idempotency_key)
+);
+CREATE INDEX IF NOT EXISTS gtm_usage_ledger_workspace_idx ON gtm_usage_ledger(workspace_id, occurred_at DESC);
+CREATE INDEX IF NOT EXISTS gtm_usage_ledger_action_idx ON gtm_usage_ledger(workspace_id, action_key, occurred_at DESC);
+
+CREATE TABLE IF NOT EXISTS gtm_delivery_jobs (
+  delivery_job_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  workspace_id UUID NOT NULL REFERENCES gtm_workspaces(workspace_id) ON DELETE CASCADE,
+  destination TEXT NOT NULL,
+  event_type TEXT NOT NULL,
+  payload JSONB NOT NULL DEFAULT '{}'::jsonb,
+  status TEXT NOT NULL DEFAULT 'queued' CHECK (status IN ('queued','processing','delivered','failed','dead')),
+  attempt_count INTEGER NOT NULL DEFAULT 0,
+  max_attempts INTEGER NOT NULL DEFAULT 8,
+  next_attempt_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  idempotency_key TEXT NOT NULL,
+  last_error TEXT,
+  delivered_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  UNIQUE (workspace_id, destination, idempotency_key)
+);
+CREATE INDEX IF NOT EXISTS gtm_delivery_jobs_ready_idx ON gtm_delivery_jobs(status, next_attempt_at);
+
+ALTER TABLE gtm_workspaces ADD COLUMN IF NOT EXISTS data_credit_allowance INTEGER NOT NULL DEFAULT 3000;
+ALTER TABLE gtm_workspaces ADD COLUMN IF NOT EXISTS action_credit_allowance INTEGER NOT NULL DEFAULT 5000;
+ALTER TABLE gtm_workspaces ADD COLUMN IF NOT EXISTS overage_enabled BOOLEAN NOT NULL DEFAULT false;
