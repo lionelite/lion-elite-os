@@ -753,3 +753,54 @@ CREATE INDEX IF NOT EXISTS gtm_delivery_jobs_ready_idx ON gtm_delivery_jobs(stat
 ALTER TABLE gtm_workspaces ADD COLUMN IF NOT EXISTS data_credit_allowance INTEGER NOT NULL DEFAULT 3000;
 ALTER TABLE gtm_workspaces ADD COLUMN IF NOT EXISTS action_credit_allowance INTEGER NOT NULL DEFAULT 5000;
 ALTER TABLE gtm_workspaces ADD COLUMN IF NOT EXISTS overage_enabled BOOLEAN NOT NULL DEFAULT false;
+
+
+-- Agency tenancy, membership and white-label ---------------------------------
+CREATE TABLE IF NOT EXISTS gtm_users (
+  user_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  email TEXT NOT NULL,
+  display_name TEXT NOT NULL DEFAULT '',
+  status TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active','suspended')),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE UNIQUE INDEX IF NOT EXISTS gtm_users_email_unique_idx ON gtm_users(lower(email));
+
+CREATE TABLE IF NOT EXISTS gtm_workspace_memberships (
+  membership_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  workspace_id UUID NOT NULL REFERENCES gtm_workspaces(workspace_id) ON DELETE CASCADE,
+  user_id UUID NOT NULL REFERENCES gtm_users(user_id) ON DELETE CASCADE,
+  role TEXT NOT NULL DEFAULT 'member' CHECK (role IN ('owner','admin','operator','member','viewer')),
+  status TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('invited','active','suspended')),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  UNIQUE (workspace_id, user_id)
+);
+CREATE INDEX IF NOT EXISTS gtm_workspace_memberships_user_idx ON gtm_workspace_memberships(user_id, status);
+CREATE INDEX IF NOT EXISTS gtm_workspace_memberships_workspace_idx ON gtm_workspace_memberships(workspace_id, status);
+
+CREATE TABLE IF NOT EXISTS gtm_workspace_branding (
+  workspace_id UUID PRIMARY KEY REFERENCES gtm_workspaces(workspace_id) ON DELETE CASCADE,
+  brand_name TEXT NOT NULL DEFAULT '',
+  logo_url TEXT,
+  accent_color TEXT,
+  support_email TEXT,
+  postal_address TEXT,
+  custom_domain TEXT,
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS gtm_workspace_limits (
+  workspace_id UUID PRIMARY KEY REFERENCES gtm_workspaces(workspace_id) ON DELETE CASCADE,
+  data_credit_cap INTEGER,
+  action_credit_cap INTEGER,
+  daily_send_cap INTEGER,
+  daily_source_cap INTEGER,
+  overage_enabled BOOLEAN NOT NULL DEFAULT false,
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+ALTER TABLE gtm_prospects ADD COLUMN IF NOT EXISTS source_provider TEXT;
+ALTER TABLE gtm_prospects ADD COLUMN IF NOT EXISTS source_external_id TEXT;
+ALTER TABLE gtm_prospects ADD COLUMN IF NOT EXISTS source_metadata JSONB NOT NULL DEFAULT '{}'::jsonb;
+CREATE INDEX IF NOT EXISTS gtm_prospects_source_idx ON gtm_prospects(workspace_id, source_provider, source_external_id);
