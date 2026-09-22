@@ -887,3 +887,83 @@ DO $$ BEGIN
     ADD CONSTRAINT gtm_send_attempts_compliance_sent_chk
     CHECK (status <> 'sent' OR compliance_passed = true);
 EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+
+
+-- Production identity, OAuth secrets, sender provisioning and signal polling ---
+CREATE TABLE IF NOT EXISTS gtm_sessions (
+  session_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES gtm_users(user_id) ON DELETE CASCADE,
+  token_hash TEXT NOT NULL UNIQUE,
+  user_agent TEXT,
+  ip_hash TEXT,
+  expires_at TIMESTAMPTZ NOT NULL,
+  revoked_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  last_seen_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS gtm_sessions_user_idx ON gtm_sessions(user_id, expires_at DESC);
+
+CREATE TABLE IF NOT EXISTS gtm_oauth_credentials (
+  oauth_credential_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  workspace_id UUID NOT NULL REFERENCES gtm_workspaces(workspace_id) ON DELETE CASCADE,
+  provider TEXT NOT NULL,
+  external_account_id TEXT,
+  access_token_ciphertext TEXT NOT NULL,
+  refresh_token_ciphertext TEXT,
+  token_expires_at TIMESTAMPTZ,
+  scopes JSONB NOT NULL DEFAULT '[]'::jsonb,
+  metadata JSONB NOT NULL DEFAULT '{}'::jsonb,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  UNIQUE (workspace_id, provider, external_account_id)
+);
+CREATE INDEX IF NOT EXISTS gtm_oauth_credentials_workspace_idx ON gtm_oauth_credentials(workspace_id, provider);
+
+CREATE TABLE IF NOT EXISTS gtm_sender_provisioning_requests (
+  provisioning_request_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  workspace_id UUID NOT NULL REFERENCES gtm_workspaces(workspace_id) ON DELETE CASCADE,
+  provider TEXT NOT NULL,
+  domain TEXT NOT NULL,
+  sender_local_part TEXT NOT NULL DEFAULT 'hello',
+  status TEXT NOT NULL DEFAULT 'requested' CHECK (status IN ('requested','dns_pending','verifying','provisioned','failed','cancelled')),
+  dns_requirements JSONB NOT NULL DEFAULT '[]'::jsonb,
+  external_domain_id TEXT,
+  external_sender_id TEXT,
+  last_error TEXT,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS gtm_sender_provisioning_workspace_idx ON gtm_sender_provisioning_requests(workspace_id, status);
+
+CREATE TABLE IF NOT EXISTS gtm_signal_subscriptions (
+  signal_subscription_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  workspace_id UUID NOT NULL REFERENCES gtm_workspaces(workspace_id) ON DELETE CASCADE,
+  campaign_id UUID REFERENCES gtm_campaigns(campaign_id) ON DELETE CASCADE,
+  provider TEXT NOT NULL,
+  signal_type TEXT NOT NULL,
+  config JSONB NOT NULL DEFAULT '{}'::jsonb,
+  poll_interval_seconds INTEGER NOT NULL DEFAULT 60 CHECK (poll_interval_seconds >= 60),
+  status TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active','paused','error')),
+  next_poll_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  last_polled_at TIMESTAMPTZ,
+  last_error TEXT,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS gtm_signal_subscriptions_due_idx ON gtm_signal_subscriptions(status, next_poll_at);
+
+CREATE TABLE IF NOT EXISTS gtm_signal_events (
+  signal_event_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  workspace_id UUID NOT NULL REFERENCES gtm_workspaces(workspace_id) ON DELETE CASCADE,
+  campaign_id UUID REFERENCES gtm_campaigns(campaign_id) ON DELETE CASCADE,
+  prospect_id UUID REFERENCES gtm_prospects(prospect_id) ON DELETE CASCADE,
+  provider TEXT NOT NULL,
+  signal_type TEXT NOT NULL,
+  external_event_id TEXT NOT NULL,
+  weight INTEGER NOT NULL DEFAULT 1,
+  evidence JSONB NOT NULL DEFAULT '{}'::jsonb,
+  observed_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  UNIQUE (workspace_id, provider, external_event_id)
+);
+CREATE INDEX IF NOT EXISTS gtm_signal_events_prospect_idx ON gtm_signal_events(prospect_id, observed_at DESC);

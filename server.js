@@ -9,6 +9,7 @@ const leadStore = require('./lib/leads/lead-store');
 const { createCheckoutRouter } = require('./routes/checkout');
 const { createGtmPlatformRouter } = require('./routes/gtm-platform');
 const { createWorkspaceStore } = require('./lib/platform/workspace-store');
+const { AuthStore } = require('./lib/platform/security/auth-store');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -34,7 +35,8 @@ app.use('/api/checkout', createCheckoutRouter({ store: coachingStore }));
 // marketing pipeline, because it is the only one where they consent.
 app.use('/api/leads', createLeadsRouter({ store: leadStore }));
 const gtmWorkspaceStore = createWorkspaceStore();
-app.use('/api/gtm', createGtmPlatformRouter({ store: gtmWorkspaceStore }));
+const gtmAuthStore = process.env.DATABASE_URL ? new AuthStore() : null;
+app.use('/api/gtm', createGtmPlatformRouter({ store: gtmWorkspaceStore, authStore: gtmAuthStore }));
 app.use('/coaching', (_req, res, next) => {
   res.set({
     'Content-Security-Policy': [
