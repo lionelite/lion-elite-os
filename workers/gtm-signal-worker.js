@@ -27,8 +27,10 @@ async function processGmail(subscription){
     if(!inserted.rows[0]) continue;
     const classification=classifyReply(message.body||message.subject||'');
     await db.withTransaction(async client=>{
-      await client.query(`UPDATE gtm_prospects SET status='replied',replied_at=COALESCE($3::timestamptz,now()),intent_heat=5,next_action=$4,updated_at=now() WHERE workspace_id=$1 AND prospect_id=$2`,
-        [subscription.workspaceId,prospect.prospectId,message.receivedAt,classification==='interested'?'book_meeting':'review_reply']);
+      const nextStatus=classification==='opt_out'?'suppressed':'replied';
+      const nextAction=classification==='opt_out'?null:(classification==='interested'?'book_meeting':'review_reply');
+      await client.query(`UPDATE gtm_prospects SET status=$3,replied_at=COALESCE($4::timestamptz,now()),intent_heat=5,next_action=$5,updated_at=now() WHERE workspace_id=$1 AND prospect_id=$2`,
+        [subscription.workspaceId,prospect.prospectId,nextStatus,message.receivedAt,nextAction]);
       const existing=await client.query(`SELECT thread_id FROM gtm_inbox_threads WHERE workspace_id=$1 AND prospect_id=$2 AND status IN ('open','waiting') ORDER BY created_at DESC LIMIT 1`,[subscription.workspaceId,prospect.prospectId]);
       let threadId=existing.rows[0]?.thread_id;
       if(!threadId){
