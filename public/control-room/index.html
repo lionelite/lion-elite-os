@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>LionOS — Campaign Control Room</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#080a0f;color:#f4f5f7;font:14px/1.5 Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.wrap{max-width:1180px;margin:auto;padding:34px 20px}.top{display:flex;justify-content:space-between;align-items:center}.brand{font-weight:900;font-size:24px}.brand span{color:#d5b05b}.meta{color:#7b8493}.hero{margin-top:34px;border:1px solid #222a36;border-radius:18px;padding:26px;background:linear-gradient(135deg,#111722,#0c1017)}h1{font-size:34px;margin:5px 0}.pill{display:inline-block;padding:6px 9px;border:1px solid #2b3441;border-radius:999px;color:#a9b1be}.metrics{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-top:16px}.metric{padding:16px;border:1px solid #202735;background:#0d1118;border-radius:12px}.metric span{display:block;color:#6f7989;font-size:11px;text-transform:uppercase}.metric strong{font-size:27px}.layout{display:grid;grid-template-columns:1.3fr .7fr;gap:14px;margin-top:14px}.panel{border:1px solid #202735;background:#0d1118;border-radius:14px;padding:20px}.panel h2{font-size:18px;margin:0 0 14px}.prospect{display:grid;grid-template-columns:1.3fr .8fr .5fr .6fr;gap:10px;padding:12px 0;border-top:1px solid #1b222d;align-items:center}.prospect small{color:#6e7887}.heat{font-weight:800;color:#d7b15b}.status{font-size:12px}.activity{display:grid;gap:10px}.event{padding:12px;border:1px solid #242c39;border-radius:10px;background:#0a0e14}.event b{display:block}.event small{color:#727c8d}.composer{margin-top:14px;display:flex;gap:8px}.composer input{flex:1;background:#090d13;border:1px solid #2a3240;border-radius:9px;padding:11px;color:#fff}.composer button,.ghost{border-radius:9px;padding:10px 13px;font-weight:800;cursor:pointer}.composer button{border:1px solid #dfbf72;background:#d6b15e;color:#111}.ghost{border:1px solid #2a3240;background:#111620;color:#ddd}.empty{color:#758091;padding:20px 0}.actions{display:flex;gap:8px;margin-top:14px}.note{color:#7e8898;font-size:12px;margin-top:8px}@media(max-width:850px){.metrics{grid-template-columns:repeat(3,1fr)}.layout{grid-template-columns:1fr}.prospect{grid-template-columns:1fr 1fr}}@media(max-width:520px){.metrics{grid-template-columns:1fr 1fr}.prospect{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="top"><div class="brand">Lion<span>OS</span></div><div class="meta">Campaign Control Room</div></div>
+<section class="hero">
+<span class="pill" id="mode">Loading…</span>
+<h1 id="name">Campaign</h1>
+<p id="target" class="meta"></p>
+<div class="metrics">
+<div class="metric"><span>Found</span><strong id="found">0</strong></div>
+<div class="metric"><span>Fit</span><strong id="fit">0</strong></div>
+<div class="metric"><span>Warm</span><strong id="warm">0</strong></div>
+<div class="metric"><span>Queued</span><strong id="queued">0</strong></div>
+<div class="metric"><span>Replies</span><strong id="replied">0</strong></div>
+<div class="metric"><span>Meetings</span><strong id="meetings">0</strong></div>
+</div>
+</section>
+<div class="layout">
+<section class="panel"><h2>Prospect queue</h2><div id="prospects" class="empty">No prospects yet.</div>
+<div class="actions"><button class="ghost" id="demo">Add demo prospect</button></div></section>
+<section class="panel"><h2>Live activity</h2><div id="activity" class="activity"><div class="event"><b>Campaign ready</b><small>Waiting for qualified prospects to enter the queue.</small></div></div>
+<div class="composer"><input id="message" placeholder="Message this campaign…"><button id="send">Send</button></div><div class="note">Campaign messages are control instructions; they do not bypass send policy or validation gates.</div></section>
+</div>
+</div>
+<script>
+const qs=new URLSearchParams(location.search);const workspaceId=qs.get('workspaceId'),campaignId=qs.get('campaignId');
+const $=id=>document.getElementById(id);
+async function load(){if(!workspaceId||!campaignId){$('name').textContent='Missing workspaceId or campaignId';return}const r=await fetch('/api/gtm/workspaces/'+workspaceId+'/campaigns/'+campaignId+'/control-room');const j=await r.json();if(!r.ok){$('name').textContent=j.error||'Campaign unavailable';return}render(j)}
+function render(j){const c=j.campaign,m=j.counts;$('name').textContent=c.name;$('mode').textContent=c.sendPolicy+' · heat '+c.intentThreshold+'+';$('target').textContent=((c.icp?.industries||[]).join(', ')||'Target market')+(c.icp?.geography?' · '+c.icp.geography:'');['found','fit','warm','queued','replied','meetings'].forEach(k=>$(k).textContent=m[k]);const box=$('prospects');if(!j.prospects.length){box.className='empty';box.textContent='No prospects yet.';return}box.className='';box.innerHTML=j.prospects.map(p=>'<div class="prospect"><div><b>'+esc(p.contactName||p.companyName||'Prospect')+'</b><small>'+esc(p.companyName||'')+(p.title?' · '+esc(p.title):'')+'</small></div><div class="heat">Heat '+p.intentHeat+'</div><div>'+p.fitScore+' fit</div><div class="status">'+esc(p.status)+'</div></div>').join('')}
+function esc(v){return String(v||'').replace(/[&<>"]/g,x=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[x]))}
+$('demo').onclick=async()=>{const body={companyName:'Northbeam',contactName:'Maya Chen',title:'VP Operations',email:'maya@example.com',fitScore:88,intentHeat:4,status:'queued',confidence:91,nextAction:'draft_first_touch'};await fetch('/api/gtm/workspaces/'+workspaceId+'/campaigns/'+campaignId+'/prospects',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});load()};
+$('send').onclick=()=>{const v=$('message').value.trim();if(!v)return;const e=document.createElement('div');e.className='event';e.innerHTML='<b>You</b><small>'+esc(v)+'</small>';$('activity').prepend(e);$('message').value=''};
+load();
+</script>
+</body></html>
