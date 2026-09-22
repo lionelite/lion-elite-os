@@ -1069,3 +1069,84 @@ CREATE TABLE IF NOT EXISTS gtm_mcp_clients (
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
+
+
+-- MCP OAuth grants and LinkedIn provider events --------------------------------
+CREATE TABLE IF NOT EXISTS gtm_mcp_auth_codes (
+  mcp_auth_code_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  client_id TEXT NOT NULL REFERENCES gtm_mcp_clients(client_id) ON DELETE CASCADE,
+  user_id UUID NOT NULL REFERENCES gtm_users(user_id) ON DELETE CASCADE,
+  workspace_id UUID NOT NULL REFERENCES gtm_workspaces(workspace_id) ON DELETE CASCADE,
+  code_hash TEXT NOT NULL UNIQUE,
+  redirect_uri TEXT NOT NULL,
+  code_challenge TEXT NOT NULL,
+  scopes JSONB NOT NULL DEFAULT '[]'::jsonb,
+  expires_at TIMESTAMPTZ NOT NULL,
+  consumed_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS gtm_mcp_access_tokens (
+  mcp_access_token_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  client_id TEXT NOT NULL REFERENCES gtm_mcp_clients(client_id) ON DELETE CASCADE,
+  user_id UUID NOT NULL REFERENCES gtm_users(user_id) ON DELETE CASCADE,
+  workspace_id UUID NOT NULL REFERENCES gtm_workspaces(workspace_id) ON DELETE CASCADE,
+  token_hash TEXT NOT NULL UNIQUE,
+  scopes JSONB NOT NULL DEFAULT '[]'::jsonb,
+  expires_at TIMESTAMPTZ NOT NULL,
+  revoked_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  last_used_at TIMESTAMPTZ
+);
+
+CREATE TABLE IF NOT EXISTS gtm_linkedin_events (
+  linkedin_event_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  workspace_id UUID NOT NULL REFERENCES gtm_workspaces(workspace_id) ON DELETE CASCADE,
+  campaign_id UUID REFERENCES gtm_campaigns(campaign_id) ON DELETE CASCADE,
+  prospect_id UUID REFERENCES gtm_prospects(prospect_id) ON DELETE CASCADE,
+  provider TEXT NOT NULL,
+  external_event_id TEXT NOT NULL,
+  event_type TEXT NOT NULL,
+  payload JSONB NOT NULL DEFAULT '{}'::jsonb,
+  processed_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  UNIQUE (workspace_id, provider, external_event_id)
+);
+CREATE INDEX IF NOT EXISTS gtm_linkedin_events_unprocessed_idx ON gtm_linkedin_events(workspace_id, processed_at, created_at);
+
+CREATE TABLE IF NOT EXISTS gtm_channel_action_requests (
+  channel_action_request_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  workspace_id UUID NOT NULL REFERENCES gtm_workspaces(workspace_id) ON DELETE CASCADE,
+  campaign_id UUID REFERENCES gtm_campaigns(campaign_id) ON DELETE CASCADE,
+  prospect_id UUID REFERENCES gtm_prospects(prospect_id) ON DELETE CASCADE,
+  channel TEXT NOT NULL CHECK (channel IN ('linkedin','email','sms')),
+  action_type TEXT NOT NULL,
+  payload JSONB NOT NULL DEFAULT '{}'::jsonb,
+  compliance_snapshot JSONB NOT NULL DEFAULT '{}'::jsonb,
+  status TEXT NOT NULL DEFAULT 'queued' CHECK (status IN ('queued','blocked','processing','completed','failed')),
+  provider TEXT,
+  external_action_id TEXT,
+  last_error TEXT,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS gtm_channel_actions_ready_idx ON gtm_channel_action_requests(channel,status,created_at);
+
+
+CREATE UNIQUE INDEX IF NOT EXISTS gtm_runtime_jobs_global_key_unique
+  ON gtm_runtime_jobs(job_key) WHERE workspace_id IS NULL;
+
+CREATE TABLE IF NOT EXISTS gtm_linkedin_connections (
+  linkedin_connection_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  workspace_id UUID NOT NULL REFERENCES gtm_workspaces(workspace_id) ON DELETE CASCADE,
+  provider TEXT NOT NULL DEFAULT 'configured_provider',
+  status TEXT NOT NULL DEFAULT 'connected' CHECK (status IN ('connected','degraded','disconnected','error')),
+  cursor TEXT,
+  last_polled_at TIMESTAMPTZ,
+  last_success_at TIMESTAMPTZ,
+  last_error TEXT,
+  metadata JSONB NOT NULL DEFAULT '{}'::jsonb,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  UNIQUE (workspace_id, provider)
+);
