@@ -1,6 +1,6 @@
 # New leads from the last harvest
 
-_Generated 2026-09-22T07:25:33.019Z — 0 leads._
+_Generated 2026-09-22T13:13:44.065Z — 2 leads._
 
 | Searches run | Searches failed | Posts read | Matched | Dropped (do-not-engage) |
 |---:|---:|---:|---:|---:|
@@ -41,4 +41,20 @@ business-scaling: Bluesky search failed for "trying to scale my business": HTTP 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-**No leads, because no source could be reached.** Every query failed — see above.
+## med-spa-b2b — 2
+
+### Orangetheory Fitness — score 50
+
+- **Handle:** [@null](null)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 14202 Detroit Road Lakewood OH 44107
+
+### Bloom Salon & Esthetics — score 50
+
+- **Handle:** [@null](null)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 11012 Detroit Ave
