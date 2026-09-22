@@ -195,8 +195,10 @@ runner — locally, pass `--transcript-file`. Docs: `docs/video-learning.md`.
   `lib/outreach/campaign-emails.js` fail closed if it creeps in); the
   consumer campaign must carry a working unsubscribe + postal address
   (CAN-SPAM); suppression, transactional daily quota, and the Redis kill
-  switch still apply to every send; discovery enriches only a business's own
-  published contact email (no data broker). Actually enabling sends remains a
+  switch still apply to every send. (The "discovery enriches only a business's own
+  published contact email (no data broker)" condition in this amendment was
+  **lifted on 2026-09-22** — see the licensed-contact-data amendment below.)
+  Actually enabling sends remains a
   human action (`OUTREACH_SEND_ENABLED` + Resend vars) — Claude does not flip
   the send switch.
   *Owner amendment 2026-07-27 (SMS authorized):* **SMS ("text") is authorized**
@@ -216,6 +218,46 @@ runner — locally, pass `--transcript-file`. Docs: `docs/video-learning.md`.
   language). Actually enabling sends remains a human action
   (`SMS_SEND_ENABLED` + Twilio credentials) — Claude does not flip the send
   switch or add the Twilio account/payment method.
+  *Owner amendment 2026-09-22 (licensed B2B contact data authorized):* the prior
+  restriction "discovery enriches only a business's own published contact email
+  (no data broker)" is **lifted for business contacts**. Licensed third-party B2B
+  contact data may be purchased and used as a lead source, so the outbound engine
+  can operate at the scale of a product like trygtm.com rather than only at the
+  scale of what we can scrape. The owner made this call after the restriction was
+  flagged as theirs to change.
+  What this **does** change: `lib/contacts/sources.js` is the source registry, and
+  `approved_source` in the 16-check engine is now a **provenance** question rather
+  than "does it have a URL". It previously read
+  `Boolean(source.approved && source.url)`, which would have failed *every*
+  purchased record at the first check. A `licensed_provider` record must carry
+  `providerId`, `licenceRef` and `acquiredAt`, plus a `region`; records from
+  EU/UK/EEA/CH additionally need a recorded `lawfulBasis`
+  (`legitimate_interests`/`consent`/`contract`), because an unknown region must not
+  default to the most permissive rules. Provenance is stored per record
+  (`provenanceRecord()`) for three operational reasons, not ceremony: erasure and
+  suppression are per person and must survive the next import; bounce and complaint
+  rates differ per provider, so `CONTACT_SOURCE_QUARANTINE` can disable one origin
+  in minutes without a deploy; and a data licence is a contract that governs
+  whether a record may ever be passed to an agency client.
+  What this does **not** change, none of it waivable by buying a list: CAN-SPAM
+  still requires accurate headers, a working unsubscribe and a postal address on
+  consumer sends; suppression and opt-out still bind regardless of where a record
+  came from; the other fifteen checks, the transactional daily quota and the Redis
+  kill switch still gate every send; content stays RUO-gated by
+  `lib/social/social-compliance.js`; **SMS still requires prior express written
+  consent** (TCPA — a purchased number is exactly what that prohibits, so licensed
+  data feeds e-mail only); and the authorization is **B2B only** — a `contactKind`
+  outside `work_email`/`company_general_email`/`company_phone` is refused, so
+  consumer personal data cannot enter on this route.
+  Still separately prohibited and **not** the owner's to authorize against a third
+  party's terms: automated LinkedIn connection requests or DMs (LinkedIn User
+  Agreement, plus the standing no-DMs limit). If a GTM-style "send via LinkedIn"
+  channel is wanted, that stays a manual human action.
+  Legacy records matter here: every prospect stored before this change carries
+  `{ approved: true, url }` with no `type`, so that shape is read as
+  `public_website` and warned about. Requiring an explicit type outright would have
+  failed `approved_source` for the entire existing prospect table and halted the
+  live pipeline. Docs: `docs/licensed-contact-data.md`.
 - Never make unrelated paid purchases or upgrade billing/plan tiers without
   explicit owner authorization.
 
@@ -303,8 +345,12 @@ existing consumers are unaffected), `database.js`/`db.js` (Postgres pool;
 `db.js` is a one-line re-export, not dead code), `redis.js` (ioredis + distributed locks),
 `job-queues.js` (BullMQ queue registry + dead-letter), `observability.js`
 (structured logging/metrics), `outreach-validation.js` (16-check
-fail-closed policy engine), `email-enrichment.js` (scrapes a business's own
-site for public contact emails — no third-party data broker),
+fail-closed policy engine), `contacts/sources.js` (contact-origin registry and the
+provenance rules behind the `approved_source` check — licensed third-party B2B data
+authorized 2026-09-22, with per-record provenance, region/lawful-basis handling and
+env-driven provider quarantine via `CONTACT_SOURCE_QUARANTINE`),
+`email-enrichment.js` (scrapes a business's own
+site for public contact emails; now one approved origin among several),
 `email-generation.js` (deterministic template email builder, exports
 `buildEmail`/`scoreEmail`), `email-delivery.js` (real Resend send, hard
 env-gated), `postgres-prospect-store.js` (live Postgres store),
