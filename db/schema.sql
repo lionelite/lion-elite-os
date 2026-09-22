@@ -804,3 +804,86 @@ ALTER TABLE gtm_prospects ADD COLUMN IF NOT EXISTS source_provider TEXT;
 ALTER TABLE gtm_prospects ADD COLUMN IF NOT EXISTS source_external_id TEXT;
 ALTER TABLE gtm_prospects ADD COLUMN IF NOT EXISTS source_metadata JSONB NOT NULL DEFAULT '{}'::jsonb;
 CREATE INDEX IF NOT EXISTS gtm_prospects_source_idx ON gtm_prospects(workspace_id, source_provider, source_external_id);
+
+
+-- Sender infrastructure, ramp and immutable compliance gate -------------------
+CREATE TABLE IF NOT EXISTS gtm_sending_domains (
+  sending_domain_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  workspace_id UUID NOT NULL REFERENCES gtm_workspaces(workspace_id) ON DELETE CASCADE,
+  domain TEXT NOT NULL,
+  status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending','verified','error','disabled')),
+  provider TEXT,
+  verified_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  UNIQUE (workspace_id, domain)
+);
+
+CREATE TABLE IF NOT EXISTS gtm_senders (
+  sender_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  workspace_id UUID NOT NULL REFERENCES gtm_workspaces(workspace_id) ON DELETE CASCADE,
+  sending_domain_id UUID REFERENCES gtm_sending_domains(sending_domain_id) ON DELETE SET NULL,
+  channel TEXT NOT NULL CHECK (channel IN ('email','linkedin','sms')),
+  address TEXT NOT NULL,
+  status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending','warming','active','paused','error','disabled')),
+  connected_at TIMESTAMPTZ,
+  ramp_started_at TIMESTAMPTZ,
+  daily_cap INTEGER NOT NULL DEFAULT 10 CHECK (daily_cap >= 0),
+  timezone TEXT NOT NULL DEFAULT 'UTC',
+  send_window_start TIME NOT NULL DEFAULT '09:00',
+  send_window_end TIME NOT NULL DEFAULT '17:00',
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  UNIQUE (workspace_id, channel, address)
+);
+CREATE INDEX IF NOT EXISTS gtm_senders_workspace_idx ON gtm_senders(workspace_id, channel, status);
+
+CREATE TABLE IF NOT EXISTS gtm_send_attempts (
+  send_attempt_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  workspace_id UUID NOT NULL REFERENCES gtm_workspaces(workspace_id) ON DELETE CASCADE,
+  campaign_id UUID REFERENCES gtm_campaigns(campaign_id) ON DELETE SET NULL,
+  prospect_id UUID REFERENCES gtm_prospects(prospect_id) ON DELETE SET NULL,
+  sender_id UUID REFERENCES gtm_senders(sender_id) ON DELETE SET NULL,
+  channel TEXT NOT NULL CHECK (channel IN ('email','linkedin','sms')),
+  status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending','blocked','approved','sent','failed','skipped')),
+  scheduled_for TIMESTAMPTZ,
+  sent_at TIMESTAMPTZ,
+  compliance_passed BOOLEAN NOT NULL DEFAULT false,
+  compliance_snapshot JSONB NOT NULL DEFAULT '{}'::jsonb,
+  block_reason TEXT,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS gtm_send_attempts_sender_day_idx ON gtm_send_attempts(sender_id, created_at DESC);
+
+CREATE TABLE IF NOT EXISTS gtm_compliance_policies (
+  compliance_policy_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  workspace_id UUID NOT NULL REFERENCES gtm_workspaces(workspace_id) ON DELETE CASCADE,
+  policy_key TEXT NOT NULL,
+  enabled BOOLEAN NOT NULL DEFAULT true,
+  severity TEXT NOT NULL DEFAULT 'block' CHECK (severity IN ('block','warn')),
+  config JSONB NOT NULL DEFAULT '{}'::jsonb,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  UNIQUE (workspace_id, policy_key)
+);
+
+CREATE TABLE IF NOT EXISTS gtm_csv_imports (
+  csv_import_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  workspace_id UUID NOT NULL REFERENCES gtm_workspaces(workspace_id) ON DELETE CASCADE,
+  campaign_id UUID REFERENCES gtm_campaigns(campaign_id) ON DELETE SET NULL,
+  filename TEXT NOT NULL DEFAULT '',
+  mapping JSONB NOT NULL DEFAULT '{}'::jsonb,
+  row_count INTEGER NOT NULL DEFAULT 0,
+  accepted_count INTEGER NOT NULL DEFAULT 0,
+  rejected_count INTEGER NOT NULL DEFAULT 0,
+  skip_fit_gate BOOLEAN NOT NULL DEFAULT true,
+  status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending','mapped','imported','failed')),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+-- A send cannot be marked sent without a passing compliance snapshot.
+DO $$ BEGIN
+  ALTER TABLE gtm_send_attempts
+    ADD CONSTRAINT gtm_send_attempts_compliance_sent_chk
+    CHECK (status <> 'sent' OR compliance_passed = true);
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
