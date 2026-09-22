@@ -7,6 +7,9 @@ const { createCoachingRouter } = require('./routes/coaching');
 const { createLeadsRouter } = require('./routes/leads');
 const leadStore = require('./lib/leads/lead-store');
 const { createCheckoutRouter } = require('./routes/checkout');
+const { createGtmPlatformRouter } = require('./routes/gtm-platform');
+const { createWorkspaceStore } = require('./lib/platform/workspace-store');
+const { AuthStore } = require('./lib/platform/security/auth-store');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -31,6 +34,9 @@ app.use('/api/checkout', createCheckoutRouter({ store: coachingStore }));
 // Public B2C opt-in. The only path by which a consumer or coach enters the
 // marketing pipeline, because it is the only one where they consent.
 app.use('/api/leads', createLeadsRouter({ store: leadStore }));
+const gtmWorkspaceStore = createWorkspaceStore();
+const gtmAuthStore = process.env.DATABASE_URL ? new AuthStore() : null;
+app.use('/api/gtm', createGtmPlatformRouter({ store: gtmWorkspaceStore, authStore: gtmAuthStore }));
 app.use('/coaching', (_req, res, next) => {
   res.set({
     'Content-Security-Policy': [
