@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>LionOS — Ops</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#080a0f;color:#f5f6f8;font:14px/1.5 Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.wrap{max-width:1120px;margin:auto;padding:38px 20px}.brand{font-size:24px;font-weight:900}.brand span{color:#d6b15e}.eyebrow{margin-top:44px;color:#aa8942;font-size:11px;font-weight:800;letter-spacing:.13em;text-transform:uppercase}h1{font-size:40px;margin:7px 0}.sub{color:#808a99}.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:22px}.panel{border:1px solid #202735;background:#0d1118;border-radius:14px;padding:20px}.panel h2{font-size:18px;margin:0 0 12px}.row{display:flex;justify-content:space-between;gap:14px;padding:10px 0;border-top:1px solid #1d2430}.row span{color:#7e8897}.good{color:#8dce76}.warn{color:#d6b15e}.bad{color:#d98477}.empty{color:#748090}.note{margin-top:14px;padding:14px;border:1px solid #242c39;border-radius:11px;background:#0b0f15;color:#7f8997}@media(max-width:760px){.grid{grid-template-columns:1fr}}
+</style></head>
+<body><div class="wrap">
+<div class="brand">Lion<span>OS</span></div>
+<div class="eyebrow">OPS TELEMETRY</div><h1>Budgets, connectors, delivery.</h1>
+<p class="sub">One operational surface for credit incidents and verified connector health.</p>
+<div class="grid">
+<section class="panel"><h2>Usage incidents</h2><div id="incidents" class="empty">Loading…</div></section>
+<section class="panel"><h2>Connector health</h2><div id="connectors" class="empty">Loading…</div></section>
+</div>
+<div class="note">LionOS warns at 80% and hard-stops at the allowance unless overage is explicitly enabled. Connector cards only show connected after a real provider verification succeeds.</div>
+</div>
+<script>
+const q=new URLSearchParams(location.search),workspaceId=q.get('workspaceId'),token=localStorage.getItem('lionosSessionToken')||'';const $=id=>document.getElementById(id);
+async function get(path){const r=await fetch(path,{headers:token?{Authorization:'Bearer '+token}:{}});const j=await r.json();if(!r.ok)throw new Error(j.error||'Request failed');return j}
+async function load(){if(!workspaceId){$('incidents').textContent='Missing workspaceId';$('connectors').textContent='Missing workspaceId';return}
+try{const j=await get('/api/gtm/workspaces/'+workspaceId+'/usage/incidents');$('incidents').className='';$('incidents').innerHTML=(j.incidents||[]).length?(j.incidents||[]).map(x=>'<div class="row"><span>'+x.purse+' · '+x.periodKey+'</span><strong class="'+(x.level==='hard_stop'?'bad':'warn')+'">'+x.level.replace('_',' ')+' · '+x.percentUsed+'%</strong></div>').join(''):'<div class="empty">No incidents.</div>'}catch(e){$('incidents').textContent=e.message}
+try{const j=await get('/api/gtm/workspaces/'+workspaceId+'/connectors/health');$('connectors').className='';$('connectors').innerHTML=(j.connectors||[]).length?(j.connectors||[]).map(x=>'<div class="row"><span>'+x.provider+(x.connectionKey!=='default'?' · '+x.connectionKey:'')+'</span><strong class="'+(x.status==='connected'?'good':'bad')+'">'+x.status+(x.lastError?' · '+x.lastError:'')+'</strong></div>').join(''):'<div class="empty">No verified connectors yet.</div>'}catch(e){$('connectors').textContent=e.message}}
+load();
+</script></body></html>
