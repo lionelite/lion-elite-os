@@ -9,21 +9,58 @@ const { CsvSourceProvider, runSourcing } = require('../lib/platform/sourcing');
 const { ApolloProvider } = require('../lib/platform/sources/apollo');
 const { evaluateSend } = require('../lib/platform/sender-policy');
 const { importRows } = require('../lib/platform/csv-import');
+const { createAuthMiddleware } = require('../lib/platform/security/auth-middleware');
 
-function createGtmPlatformRouter({ store }) {
+function createGtmPlatformRouter({ store, authStore }) {
   const router = express.Router();
+  const auth = authStore ? createAuthMiddleware(authStore) : null;
+  const requireSession = auth ? auth.requireSession : (_req,_res,next)=>next();
+  const requireViewer = auth ? auth.requireWorkspaceRole('viewer') : (_req,_res,next)=>next();
+  const requireOperator = auth ? auth.requireWorkspaceRole('operator') : (_req,_res,next)=>next();
+  const requireAdmin = auth ? auth.requireWorkspaceRole('admin') : (_req,_res,next)=>next();
 
-  router.post('/workspaces', async (req, res) => {
+  router.post('/auth/exchange', async (req, res) => {
+    try {
+      if (!authStore) return res.status(503).json({ error: 'auth store unavailable' });
+      const expected = String(process.env.GTM_AUTH_EXCHANGE_SECRET || '');
+      const provided = String(req.headers['x-gtm-auth-exchange-secret'] || '');
+      if (!expected || provided !== expected) return res.status(401).json({ error: 'trusted identity exchange denied' });
+      const user = await authStore.upsertUser({ email: req.body?.email, displayName: req.body?.displayName || '' });
+      const session = await authStore.issueSession(user.userId, {
+        ttlHours: Number(req.body?.ttlHours || 168),
+        userAgent: req.headers['user-agent'] || '',
+        ip: req.ip || ''
+      });
+      res.status(201).json({ user, session });
+    } catch (error) {
+      res.status(400).json({ error: error.message });
+    }
+  });
+
+  router.get('/auth/me', requireSession, async (req, res) => {
+    const memberships = authStore ? await authStore.listMemberships(req.gtmSession.userId) : [];
+    res.json({ user: req.gtmSession, memberships });
+  });
+
+  router.post('/auth/logout', requireSession, async (req, res) => {
+    if (authStore) await authStore.revokeSession(req.gtmSession.sessionId, req.gtmSession.userId);
+    res.json({ ok: true });
+  });
+
+  router.post('/workspaces', requireSession, async (req, res) => {
     try {
       const workspace = await store.createWorkspace({
         name: req.body?.name,
         plan: req.body?.plan || 'solo'
       });
+      if (authStore && req.gtmSession?.userId) await authStore.ensureMembership(req.gtmSession.userId, workspace.workspaceId, 'owner');
       res.status(201).json({ workspace });
     } catch (error) {
       res.status(400).json({ error: error.message });
     }
   });
+
+  router.use('/workspaces/:workspaceId', requireViewer);
 
   router.get('/workspaces/:workspaceId', async (req, res) => {
     const workspace = await store.getWorkspace(req.params.workspaceId);
@@ -32,7 +69,7 @@ function createGtmPlatformRouter({ store }) {
     res.json({ workspace, profile });
   });
 
-  router.put('/workspaces/:workspaceId/profile', async (req, res) => {
+  router.put('/workspaces/:workspaceId/profile', requireOperator, async (req, res) => {
     try {
       const workspace = await store.getWorkspace(req.params.workspaceId);
       if (!workspace) return res.status(404).json({ error: 'workspace not found' });
@@ -50,7 +87,7 @@ function createGtmPlatformRouter({ store }) {
     res.json({ campaigns });
   });
 
-  router.post('/workspaces/:workspaceId/campaigns', async (req, res) => {
+  router.post('/workspaces/:workspaceId/campaigns', requireOperator, async (req, res) => {
     try {
       const workspace = await store.getWorkspace(req.params.workspaceId);
       if (!workspace) return res.status(404).json({ error: 'workspace not found' });
@@ -74,7 +111,7 @@ function createGtmPlatformRouter({ store }) {
     }
   });
 
-  router.post('/workspaces/:workspaceId/campaigns/from-prompt', async (req, res) => {
+  router.post('/workspaces/:workspaceId/campaigns/from-prompt', requireOperator, async (req, res) => {
     try {
       const workspace = await store.getWorkspace(req.params.workspaceId);
       if (!workspace) return res.status(404).json({ error: 'workspace not found' });
@@ -94,7 +131,7 @@ function createGtmPlatformRouter({ store }) {
     res.json(room);
   });
 
-  router.post('/workspaces/:workspaceId/campaigns/:campaignId/prospects', async (req, res) => {
+  router.post('/workspaces/:workspaceId/campaigns/:campaignId/prospects', requireOperator, async (req, res) => {
     try {
       const prospect = await store.addProspect(req.params.workspaceId, req.params.campaignId, req.body || {});
       if (!prospect) return res.status(404).json({ error: 'campaign not found' });
@@ -104,7 +141,7 @@ function createGtmPlatformRouter({ store }) {
     }
   });
 
-  router.post('/workspaces/:workspaceId/prospects/:prospectId/reply', async (req, res) => {
+  router.post('/workspaces/:workspaceId/prospects/:prospectId/reply', requireOperator, async (req, res) => {
     const result = await store.recordReply(req.params.workspaceId, req.params.prospectId, req.body?.classification || 'interested');
     if (!result) return res.status(404).json({ error: 'prospect not found' });
     res.json(result);
@@ -116,7 +153,7 @@ function createGtmPlatformRouter({ store }) {
     res.json({ threads });
   });
 
-  router.post('/workspaces/:workspaceId/threads/:threadId/draft-reply', async (req, res) => {
+  router.post('/workspaces/:workspaceId/threads/:threadId/draft-reply', requireOperator, async (req, res) => {
     try {
       const classification = req.body?.classification || classifyReply(req.body?.inboundText || '');
       const body = draftReply({
@@ -135,7 +172,7 @@ function createGtmPlatformRouter({ store }) {
     }
   });
 
-  router.post('/workspaces/:workspaceId/threads/:threadId/book-meeting', async (req, res) => {
+  router.post('/workspaces/:workspaceId/threads/:threadId/book-meeting', requireOperator, async (req, res) => {
     const meeting = await store.bookMeeting(req.params.workspaceId, req.params.threadId, req.body || {});
     if (!meeting) return res.status(404).json({ error: 'thread not found' });
     res.status(201).json({ meeting });
@@ -160,7 +197,7 @@ function createGtmPlatformRouter({ store }) {
     res.json({ usage });
   });
 
-  router.post('/workspaces/:workspaceId/usage/charge', async (req, res) => {
+  router.post('/workspaces/:workspaceId/usage/charge', requireAdmin, async (req, res) => {
     try {
       const priced = priceAction(req.body?.actionKey, Number(req.body?.quantity || 1));
       if (!priced.purse) return res.status(400).json({ error: 'unknown metered action' });
@@ -214,7 +251,7 @@ function createGtmPlatformRouter({ store }) {
     res.json({ providers: { apollo: Boolean(process.env.APOLLO_API_KEY) } });
   });
 
-  router.post('/workspaces/:workspaceId/campaigns/:campaignId/source/apollo-preview', async (req, res) => {
+  router.post('/workspaces/:workspaceId/campaigns/:campaignId/source/apollo-preview', requireOperator, async (req, res) => {
     try {
       const campaign = await store.getCampaign(req.params.workspaceId, req.params.campaignId);
       if (!campaign) return res.status(404).json({ error: 'campaign not found' });
@@ -239,7 +276,7 @@ function createGtmPlatformRouter({ store }) {
   });
 
 
-  router.post('/workspaces/:workspaceId/send/evaluate', async (req, res) => {
+  router.post('/workspaces/:workspaceId/send/evaluate', requireOperator, async (req, res) => {
     try {
       const workspace = await store.getWorkspace(req.params.workspaceId);
       if (!workspace) return res.status(404).json({ error: 'workspace not found' });
@@ -250,7 +287,7 @@ function createGtmPlatformRouter({ store }) {
     }
   });
 
-  router.post('/workspaces/:workspaceId/csv-import/preview', async (req, res) => {
+  router.post('/workspaces/:workspaceId/csv-import/preview', requireOperator, async (req, res) => {
     try {
       const workspace = await store.getWorkspace(req.params.workspaceId);
       if (!workspace) return res.status(404).json({ error: 'workspace not found' });
