@@ -1,6 +1,7 @@
 'use strict';
 
 const express = require('express');
+const { planCampaign } = require('../lib/platform/campaign-planner');
 
 function createGtmPlatformRouter({ store }) {
   const router = express.Router();
@@ -48,6 +49,32 @@ function createGtmPlatformRouter({ store }) {
       if (!workspace) return res.status(404).json({ error: 'workspace not found' });
       const campaign = await store.createCampaign(req.params.workspaceId, req.body || {});
       res.status(201).json({ campaign });
+    } catch (error) {
+      res.status(400).json({ error: error.message });
+    }
+  });
+
+
+  router.post('/workspaces/:workspaceId/campaigns/plan', async (req, res) => {
+    try {
+      const workspace = await store.getWorkspace(req.params.workspaceId);
+      if (!workspace) return res.status(404).json({ error: 'workspace not found' });
+      const profile = await store.getProfile(req.params.workspaceId) || {};
+      const plan = planCampaign(req.body?.prompt, profile);
+      res.json({ plan });
+    } catch (error) {
+      res.status(400).json({ error: error.message });
+    }
+  });
+
+  router.post('/workspaces/:workspaceId/campaigns/from-prompt', async (req, res) => {
+    try {
+      const workspace = await store.getWorkspace(req.params.workspaceId);
+      if (!workspace) return res.status(404).json({ error: 'workspace not found' });
+      const profile = await store.getProfile(req.params.workspaceId) || {};
+      const plan = planCampaign(req.body?.prompt, profile);
+      const campaign = await store.createCampaign(req.params.workspaceId, plan);
+      res.status(201).json({ plan, campaign });
     } catch (error) {
       res.status(400).json({ error: error.message });
     }
