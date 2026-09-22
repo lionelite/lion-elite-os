@@ -3,6 +3,7 @@
 const express = require('express');
 const { planCampaign } = require('../lib/platform/campaign-planner');
 const { classifyReply, draftReply } = require('../lib/platform/reply-assistant');
+const { integrationReadiness } = require('../lib/platform/integrations');
 
 function createGtmPlatformRouter({ store }) {
   const router = express.Router();
@@ -133,6 +134,13 @@ function createGtmPlatformRouter({ store }) {
     const meeting = await store.bookMeeting(req.params.workspaceId, req.params.threadId, req.body || {});
     if (!meeting) return res.status(404).json({ error: 'thread not found' });
     res.status(201).json({ meeting });
+  });
+
+
+  router.get('/workspaces/:workspaceId/integrations/readiness', async (req, res) => {
+    const workspace = await store.getWorkspace(req.params.workspaceId);
+    if (!workspace) return res.status(404).json({ error: 'workspace not found' });
+    res.json({ providers: integrationReadiness() });
   });
 
   return router;
