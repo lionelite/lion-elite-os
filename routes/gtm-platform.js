@@ -15,6 +15,8 @@ const { ResendProvisioner } = require('../lib/platform/senders/resend');
 const db = require('../lib/database');
 const { beginGoogleOAuth, exchangeGoogleOAuth } = require('../lib/platform/oauth/google');
 const { productionReadiness } = require('../lib/platform/readiness');
+const { evaluateBudget } = require('../lib/platform/budget-policy');
+const { encrypt } = require('../lib/platform/security/crypto-vault');
 
 function createGtmPlatformRouter({ store, authStore }) {
   const router = express.Router();
@@ -227,18 +229,49 @@ function createGtmPlatformRouter({ store, authStore }) {
     try {
       const priced = priceAction(req.body?.actionKey, Number(req.body?.quantity || 1));
       if (!priced.purse) return res.status(400).json({ error: 'unknown metered action' });
+      if (!req.body?.idempotencyKey) return res.status(400).json({ error: 'idempotencyKey is required' });
+
+      const before = await store.getUsageSummary(req.params.workspaceId);
+      if (!before) return res.status(404).json({ error: 'workspace not found' });
+      const policy = await db.query(
+        `SELECT overage_enabled AS "overageEnabled" FROM gtm_workspaces WHERE workspace_id=$1`,
+        [req.params.workspaceId]
+      );
+      const overageEnabled = Boolean(policy.rows[0]?.overageEnabled);
+      const purse = before[priced.purse];
+      const projectedUsed = Number(purse.used || 0) + Number(priced.credits || 0);
+      if (!overageEnabled && Number(purse.allowance || 0) > 0 && projectedUsed > Number(purse.allowance)) {
+        const periodKey = new Date().toISOString().slice(0,7);
+        await db.query(
+          `INSERT INTO gtm_usage_incidents (workspace_id,purse,level,percent_used,balance_remaining,period_key)
+           VALUES ($1,$2,'hard_stop',100,0,$3)
+           ON CONFLICT (workspace_id,purse,level,period_key) DO NOTHING`,
+          [req.params.workspaceId,priced.purse,periodKey]
+        );
+        return res.status(402).json({ error: 'credit allowance exhausted', purse: priced.purse, usage: before });
+      }
+
       const row = await store.recordUsage(req.params.workspaceId, {
         ...priced,
         actionKey: req.body.actionKey,
-        idempotencyKey: req.body?.idempotencyKey,
+        idempotencyKey: req.body.idempotencyKey,
         providerCostCents: req.body?.providerCostCents,
         entityType: req.body?.entityType,
         entityId: req.body?.entityId,
         metadata: req.body?.metadata || {}
       });
-      if (!row) return res.status(404).json({ error: 'workspace not found' });
       const usage = await store.getUsageSummary(req.params.workspaceId);
-      res.status(201).json({ charge: row, usage });
+      const budget = evaluateBudget(usage,80);
+      const periodKey = new Date().toISOString().slice(0,7);
+      for (const incident of budget.incidents) {
+        await db.query(
+          `INSERT INTO gtm_usage_incidents (workspace_id,purse,level,percent_used,balance_remaining,period_key)
+           VALUES ($1,$2,$3,$4,$5,$6)
+           ON CONFLICT (workspace_id,purse,level,period_key) DO NOTHING`,
+          [req.params.workspaceId,incident.purse,incident.level,incident.percentUsed,incident.balanceRemaining,periodKey]
+        );
+      }
+      res.status(201).json({ charge: row, usage, budget, overageEnabled });
     } catch (error) {
       res.status(400).json({ error: error.message });
     }
@@ -394,6 +427,12 @@ function createGtmPlatformRouter({ store, authStore }) {
       if (verified) {
         await db.query(`UPDATE gtm_sending_domains SET status='verified',verified_at=now(),updated_at=now() WHERE workspace_id=$1 AND domain=$2`,
           [req.params.workspaceId,row.domain]);
+        await db.query(
+          `INSERT INTO gtm_connector_health (workspace_id,provider,connection_key,status,verified_at,last_success_at,metadata)
+           VALUES ($1,'resend',$2,'connected',now(),now(),$3)
+           ON CONFLICT (workspace_id,provider,connection_key) DO UPDATE SET status='connected',verified_at=now(),last_success_at=now(),last_error=NULL,metadata=EXCLUDED.metadata,updated_at=now()`,
+          [req.params.workspaceId,row.domain,{ domain: row.domain }]
+        );
       }
       res.json({ provider: 'resend', verified, domain: state });
     } catch (error) {
@@ -431,9 +470,77 @@ function createGtmPlatformRouter({ store, authStore }) {
         scopes: String(result.tokens.scope || '').split(/\s+/).filter(Boolean),
         metadata: { tokenType: result.tokens.token_type || 'Bearer', connectedByUserId: result.userId }
       });
+      await db.query(
+        `INSERT INTO gtm_connector_health (workspace_id,provider,connection_key,status,verified_at,last_success_at,metadata)
+         VALUES ($1,'google','default','connected',now(),now(),$2)
+         ON CONFLICT (workspace_id,provider,connection_key) DO UPDATE SET status='connected',verified_at=now(),last_success_at=now(),last_error=NULL,metadata=EXCLUDED.metadata,updated_at=now()`,
+        [result.workspaceId,{ scopes: String(result.tokens.scope || '').split(/\s+/).filter(Boolean) }]
+      );
       res.redirect('/production-setup/?workspaceId=' + encodeURIComponent(result.workspaceId) + '&google=connected');
     } catch (error) {
       res.status(400).send('Google OAuth failed: ' + String(error.message || error));
+    }
+  });
+
+
+  router.get('/workspaces/:workspaceId/usage/incidents', async (req, res) => {
+    const r = await db.query(
+      `SELECT usage_incident_id AS "usageIncidentId",purse,level,percent_used AS "percentUsed",
+        balance_remaining AS "balanceRemaining",period_key AS "periodKey",acknowledged_at AS "acknowledgedAt",
+        created_at AS "createdAt"
+       FROM gtm_usage_incidents WHERE workspace_id=$1 ORDER BY created_at DESC LIMIT 100`,
+      [req.params.workspaceId]
+    );
+    res.json({ incidents: r.rows });
+  });
+
+  router.get('/workspaces/:workspaceId/connectors/health', async (req, res) => {
+    const r = await db.query(
+      `SELECT provider,connection_key AS "connectionKey",status,verified_at AS "verifiedAt",
+        last_success_at AS "lastSuccessAt",last_failure_at AS "lastFailureAt",last_error AS "lastError",metadata
+       FROM gtm_connector_health WHERE workspace_id=$1 ORDER BY provider,connection_key`,
+      [req.params.workspaceId]
+    );
+    res.json({ connectors: r.rows });
+  });
+
+  router.post('/workspaces/:workspaceId/webhooks', requireAdmin, async (req, res) => {
+    try {
+      const url = String(req.body?.url || '').trim();
+      if (!/^https:\/\//i.test(url)) return res.status(400).json({ error: 'HTTPS webhook URL required' });
+      const secret = String(req.body?.signingSecret || '').trim();
+      if (!secret) return res.status(400).json({ error: 'signingSecret is required' });
+      const eventTypes = Array.isArray(req.body?.eventTypes) ? req.body.eventTypes : [];
+      const r = await db.query(
+        `INSERT INTO gtm_webhook_endpoints (workspace_id,url,signing_secret_ciphertext,event_types)
+         VALUES ($1,$2,$3,$4)
+         RETURNING webhook_endpoint_id AS "webhookEndpointId",url,enabled,event_types AS "eventTypes",created_at AS "createdAt"`,
+        [req.params.workspaceId,url,encrypt(secret),eventTypes]
+      );
+      res.status(201).json({ webhook: r.rows[0] });
+    } catch (error) {
+      res.status(400).json({ error: error.message });
+    }
+  });
+
+  router.post('/workspaces/:workspaceId/webhooks/:webhookEndpointId/test', requireAdmin, async (req, res) => {
+    try {
+      const exists = await db.query(
+        `SELECT webhook_endpoint_id FROM gtm_webhook_endpoints WHERE workspace_id=$1 AND webhook_endpoint_id=$2 AND enabled=true`,
+        [req.params.workspaceId,req.params.webhookEndpointId]
+      );
+      if (!exists.rows[0]) return res.status(404).json({ error: 'webhook endpoint not found' });
+      const payload = { type: 'webhook.test', workspaceId: req.params.workspaceId, at: new Date().toISOString() };
+      const idempotencyKey = 'webhook-test:' + req.params.webhookEndpointId + ':' + Date.now();
+      const job = await db.query(
+        `INSERT INTO gtm_delivery_jobs (workspace_id,destination,event_type,payload,idempotency_key)
+         VALUES ($1,$2,'webhook.test',$3,$4)
+         RETURNING delivery_job_id AS "deliveryJobId",status,next_attempt_at AS "nextAttemptAt"`,
+        [req.params.workspaceId,'webhook:'+req.params.webhookEndpointId,payload,idempotencyKey]
+      );
+      res.status(202).json({ delivery: job.rows[0] });
+    } catch (error) {
+      res.status(400).json({ error: error.message });
     }
   });
 
