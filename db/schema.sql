@@ -603,3 +603,48 @@ CREATE INDEX IF NOT EXISTS gtm_inbox_workspace_idx ON gtm_inbox_threads(workspac
 
 ALTER TABLE gtm_campaigns ADD COLUMN IF NOT EXISTS send_policy TEXT NOT NULL DEFAULT 'supervised' CHECK (send_policy IN ('supervised','autopilot'));
 ALTER TABLE gtm_campaigns ADD COLUMN IF NOT EXISTS intent_threshold INTEGER NOT NULL DEFAULT 4 CHECK (intent_threshold BETWEEN 1 AND 5);
+
+
+CREATE TABLE IF NOT EXISTS gtm_inbox_messages (
+  message_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  workspace_id UUID NOT NULL REFERENCES gtm_workspaces(workspace_id) ON DELETE CASCADE,
+  thread_id UUID NOT NULL REFERENCES gtm_inbox_threads(thread_id) ON DELETE CASCADE,
+  direction TEXT NOT NULL CHECK (direction IN ('inbound','outbound','draft')),
+  sender TEXT NOT NULL DEFAULT '',
+  body TEXT NOT NULL,
+  status TEXT NOT NULL DEFAULT 'received' CHECK (status IN ('received','draft','approved','sent','failed')),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS gtm_inbox_messages_thread_idx ON gtm_inbox_messages(thread_id, created_at);
+
+CREATE TABLE IF NOT EXISTS gtm_meetings (
+  meeting_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  workspace_id UUID NOT NULL REFERENCES gtm_workspaces(workspace_id) ON DELETE CASCADE,
+  prospect_id UUID NOT NULL REFERENCES gtm_prospects(prospect_id) ON DELETE CASCADE,
+  campaign_id UUID REFERENCES gtm_campaigns(campaign_id) ON DELETE SET NULL,
+  thread_id UUID REFERENCES gtm_inbox_threads(thread_id) ON DELETE SET NULL,
+  starts_at TIMESTAMPTZ,
+  status TEXT NOT NULL DEFAULT 'proposed' CHECK (status IN ('proposed','booked','completed','cancelled','no_show')),
+  booking_url TEXT,
+  external_calendar_id TEXT,
+  notes TEXT NOT NULL DEFAULT '',
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS gtm_meetings_workspace_idx ON gtm_meetings(workspace_id, status, starts_at);
+
+CREATE TABLE IF NOT EXISTS gtm_opportunities (
+  opportunity_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  workspace_id UUID NOT NULL REFERENCES gtm_workspaces(workspace_id) ON DELETE CASCADE,
+  prospect_id UUID NOT NULL REFERENCES gtm_prospects(prospect_id) ON DELETE CASCADE,
+  campaign_id UUID REFERENCES gtm_campaigns(campaign_id) ON DELETE SET NULL,
+  stage TEXT NOT NULL DEFAULT 'replied' CHECK (stage IN ('replied','meeting','qualified','proposal','negotiation','won','lost')),
+  value_cents INTEGER CHECK (value_cents IS NULL OR value_cents >= 0),
+  currency TEXT NOT NULL DEFAULT 'USD',
+  owner TEXT,
+  next_action TEXT,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE UNIQUE INDEX IF NOT EXISTS gtm_opportunities_prospect_unique_idx ON gtm_opportunities(workspace_id, prospect_id);
+CREATE INDEX IF NOT EXISTS gtm_opportunities_workspace_stage_idx ON gtm_opportunities(workspace_id, stage, updated_at DESC);
