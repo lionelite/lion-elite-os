@@ -7,6 +7,8 @@ const { integrationReadiness } = require('../lib/platform/integrations');
 const { priceAction } = require('../lib/platform/usage-meter');
 const { CsvSourceProvider, runSourcing } = require('../lib/platform/sourcing');
 const { ApolloProvider } = require('../lib/platform/sources/apollo');
+const { evaluateSend } = require('../lib/platform/sender-policy');
+const { importRows } = require('../lib/platform/csv-import');
 
 function createGtmPlatformRouter({ store }) {
   const router = express.Router();
@@ -233,6 +235,33 @@ function createGtmPlatformRouter({ store }) {
       res.json({ provider: 'apollo', count: candidates.length, candidates });
     } catch (error) {
       res.status(error.code === 'APOLLO_NOT_CONFIGURED' ? 503 : 400).json({ error: error.message });
+    }
+  });
+
+
+  router.post('/workspaces/:workspaceId/send/evaluate', async (req, res) => {
+    try {
+      const workspace = await store.getWorkspace(req.params.workspaceId);
+      if (!workspace) return res.status(404).json({ error: 'workspace not found' });
+      const result = evaluateSend(req.body || {});
+      res.json({ result });
+    } catch (error) {
+      res.status(400).json({ error: error.message });
+    }
+  });
+
+  router.post('/workspaces/:workspaceId/csv-import/preview', async (req, res) => {
+    try {
+      const workspace = await store.getWorkspace(req.params.workspaceId);
+      if (!workspace) return res.status(404).json({ error: 'workspace not found' });
+      const result = importRows(
+        Array.isArray(req.body?.rows) ? req.body.rows : [],
+        req.body?.mapping || {},
+        { skipFitGate: req.body?.skipFitGate !== false }
+      );
+      res.json({ result });
+    } catch (error) {
+      res.status(400).json({ error: error.message });
     }
   });
 
