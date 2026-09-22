@@ -51,7 +51,11 @@
     "worker:gtm-signals": "node workers/gtm-signal-worker.js",
     "gtm:signals:once": "node workers/gtm-signal-worker.js --once",
     "worker:gtm-delivery": "node workers/gtm-delivery-worker.js",
-    "gtm:delivery:once": "node workers/gtm-delivery-worker.js --once"
+    "gtm:delivery:once": "node workers/gtm-delivery-worker.js --once",
+    "worker:gtm-runtime": "node workers/gtm-runtime-worker.js",
+    "gtm:runtime:once": "node workers/gtm-runtime-worker.js --once",
+    "worker:gtm-linkedin": "node workers/gtm-linkedin-worker.js",
+    "gtm:linkedin:once": "node workers/gtm-linkedin-worker.js --once"
   },
   "dependencies": {
     "@openai/agents": "^0.3.0",
