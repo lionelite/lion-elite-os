@@ -4,6 +4,8 @@ const express = require('express');
 const { planCampaign } = require('../lib/platform/campaign-planner');
 const { classifyReply, draftReply } = require('../lib/platform/reply-assistant');
 const { integrationReadiness } = require('../lib/platform/integrations');
+const { priceAction } = require('../lib/platform/usage-meter');
+const { CsvSourceProvider, runSourcing } = require('../lib/platform/sourcing');
 
 function createGtmPlatformRouter({ store }) {
   const router = express.Router();
@@ -141,6 +143,65 @@ function createGtmPlatformRouter({ store }) {
     const workspace = await store.getWorkspace(req.params.workspaceId);
     if (!workspace) return res.status(404).json({ error: 'workspace not found' });
     res.json({ providers: integrationReadiness() });
+  });
+
+
+  router.get('/workspaces/:workspaceId/agents', async (req, res) => {
+    const agents = await store.listAgents(req.params.workspaceId);
+    res.json({ agents });
+  });
+
+  router.get('/workspaces/:workspaceId/usage', async (req, res) => {
+    const usage = await store.getUsageSummary(req.params.workspaceId);
+    if (!usage) return res.status(404).json({ error: 'workspace not found' });
+    res.json({ usage });
+  });
+
+  router.post('/workspaces/:workspaceId/usage/charge', async (req, res) => {
+    try {
+      const priced = priceAction(req.body?.actionKey, Number(req.body?.quantity || 1));
+      if (!priced.purse) return res.status(400).json({ error: 'unknown metered action' });
+      const row = await store.recordUsage(req.params.workspaceId, {
+        ...priced,
+        actionKey: req.body.actionKey,
+        idempotencyKey: req.body?.idempotencyKey,
+        providerCostCents: req.body?.providerCostCents,
+        entityType: req.body?.entityType,
+        entityId: req.body?.entityId,
+        metadata: req.body?.metadata || {}
+      });
+      if (!row) return res.status(404).json({ error: 'workspace not found' });
+      const usage = await store.getUsageSummary(req.params.workspaceId);
+      res.status(201).json({ charge: row, usage });
+    } catch (error) {
+      res.status(400).json({ error: error.message });
+    }
+  });
+
+  router.get('/workspaces/:workspaceId/insights', async (req, res) => {
+    const insights = await store.getWorkspaceInsights(req.params.workspaceId);
+    if (!insights) return res.status(404).json({ error: 'workspace not found' });
+    res.json({ insights });
+  });
+
+  router.post('/workspaces/:workspaceId/campaigns/:campaignId/source/preview', async (req, res) => {
+    try {
+      const campaign = await store.getCampaign(req.params.workspaceId, req.params.campaignId);
+      if (!campaign) return res.status(404).json({ error: 'campaign not found' });
+      const provider = new CsvSourceProvider(Array.isArray(req.body?.candidates) ? req.body.candidates : []);
+      const accepted = await runSourcing({
+        provider,
+        icp: campaign.icp || {},
+        highPrecision: Boolean(req.body?.highPrecision)
+      });
+      res.json({
+        found: Array.isArray(req.body?.candidates) ? req.body.candidates.length : 0,
+        accepted: accepted.length,
+        candidates: accepted
+      });
+    } catch (error) {
+      res.status(400).json({ error: error.message });
+    }
   });
 
   return router;
