@@ -77,6 +77,16 @@ async function tick(){
   const [signals,actions]=await Promise.all([pollSignals(provider),processActions(provider)]);
   return {signals,actions};
 }
-async function main(){const once=process.argv.includes('--once');do{await tick();if(!once)await new Promise(r=>setTimeout(r,60000))}while(!once)}
+async function main(){
+  const once=process.argv.includes('--once');
+  do{
+    if(String(process.env.GTM_LINKEDIN_WORKER_ENABLED||'').toLowerCase()==='true'){
+      try{await tick()}catch(error){console.error('LinkedIn worker tick failed:',error.message||error)}
+    }else{
+      console.log('LinkedIn worker disabled; set GTM_LINKEDIN_WORKER_ENABLED=true after provider credentials are configured.');
+    }
+    if(!once)await new Promise(r=>setTimeout(r,60000));
+  }while(!once)
+}
 if(require.main===module)main().catch(e=>{console.error(e);process.exit(1)});
 module.exports={tick,pollSignals,processActions};
