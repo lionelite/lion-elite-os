@@ -13,6 +13,8 @@ const { createAuthMiddleware } = require('../lib/platform/security/auth-middlewa
 const { OAuthStore } = require('../lib/platform/oauth-store');
 const { ResendProvisioner } = require('../lib/platform/senders/resend');
 const db = require('../lib/database');
+const { beginGoogleOAuth, exchangeGoogleOAuth } = require('../lib/platform/oauth/google');
+const { productionReadiness } = require('../lib/platform/readiness');
 
 function createGtmPlatformRouter({ store, authStore }) {
   const router = express.Router();
@@ -396,6 +398,42 @@ function createGtmPlatformRouter({ store, authStore }) {
       res.json({ provider: 'resend', verified, domain: state });
     } catch (error) {
       res.status(error.code === 'RESEND_NOT_CONFIGURED' ? 503 : 400).json({ error: error.message });
+    }
+  });
+
+
+  router.get('/production/readiness', async (_req, res) => {
+    res.json({ production: productionReadiness() });
+  });
+
+  router.get('/workspaces/:workspaceId/oauth/google/connect', requireAdmin, async (req, res) => {
+    try {
+      const result = await beginGoogleOAuth({
+        workspaceId: req.params.workspaceId,
+        userId: req.gtmSession.userId
+      });
+      res.json(result);
+    } catch (error) {
+      res.status(503).json({ error: error.message });
+    }
+  });
+
+  router.get('/oauth/google/callback', async (req, res) => {
+    try {
+      const result = await exchangeGoogleOAuth({ state: req.query.state, code: req.query.code });
+      const expiresAt = result.tokens.expires_in ? new Date(Date.now() + Number(result.tokens.expires_in) * 1000).toISOString() : null;
+      await oauthStore.save(result.workspaceId, {
+        provider: 'gmail',
+        externalAccountId: null,
+        accessToken: result.tokens.access_token,
+        refreshToken: result.tokens.refresh_token || null,
+        tokenExpiresAt: expiresAt,
+        scopes: String(result.tokens.scope || '').split(/\s+/).filter(Boolean),
+        metadata: { tokenType: result.tokens.token_type || 'Bearer', connectedByUserId: result.userId }
+      });
+      res.redirect('/production-setup/?workspaceId=' + encodeURIComponent(result.workspaceId) + '&google=connected');
+    } catch (error) {
+      res.status(400).send('Google OAuth failed: ' + String(error.message || error));
     }
   });
 
