@@ -547,3 +547,59 @@ CREATE TABLE IF NOT EXISTS gtm_audit_events (
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 CREATE INDEX IF NOT EXISTS gtm_audit_events_workspace_idx ON gtm_audit_events(workspace_id, created_at DESC);
+
+
+-- Prospects, evidence, intent and inbox ---------------------------------------
+CREATE TABLE IF NOT EXISTS gtm_prospects (
+  prospect_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  workspace_id UUID NOT NULL REFERENCES gtm_workspaces(workspace_id) ON DELETE CASCADE,
+  campaign_id UUID REFERENCES gtm_campaigns(campaign_id) ON DELETE SET NULL,
+  company_name TEXT NOT NULL DEFAULT '',
+  contact_name TEXT NOT NULL DEFAULT '',
+  title TEXT NOT NULL DEFAULT '',
+  email TEXT,
+  phone TEXT,
+  linkedin_url TEXT,
+  status TEXT NOT NULL DEFAULT 'discovered' CHECK (status IN ('discovered','qualified','queued','contacted','replied','meeting','opportunity','won','lost','suppressed')),
+  fit_score INTEGER NOT NULL DEFAULT 0 CHECK (fit_score BETWEEN 0 AND 100),
+  intent_heat INTEGER NOT NULL DEFAULT 1 CHECK (intent_heat BETWEEN 1 AND 5),
+  confidence INTEGER NOT NULL DEFAULT 0 CHECK (confidence BETWEEN 0 AND 100),
+  next_action TEXT,
+  replied_at TIMESTAMPTZ,
+  last_signal_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS gtm_prospects_workspace_campaign_idx ON gtm_prospects(workspace_id, campaign_id, status);
+CREATE INDEX IF NOT EXISTS gtm_prospects_queue_idx ON gtm_prospects(workspace_id, intent_heat, status);
+
+CREATE TABLE IF NOT EXISTS gtm_evidence (
+  evidence_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  workspace_id UUID NOT NULL REFERENCES gtm_workspaces(workspace_id) ON DELETE CASCADE,
+  prospect_id UUID NOT NULL REFERENCES gtm_prospects(prospect_id) ON DELETE CASCADE,
+  type TEXT NOT NULL,
+  label TEXT NOT NULL DEFAULT '',
+  value TEXT NOT NULL DEFAULT '',
+  source_url TEXT,
+  observed_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  confidence INTEGER NOT NULL DEFAULT 100 CHECK (confidence BETWEEN 0 AND 100),
+  metadata JSONB NOT NULL DEFAULT '{}'::jsonb
+);
+CREATE INDEX IF NOT EXISTS gtm_evidence_prospect_idx ON gtm_evidence(prospect_id, observed_at DESC);
+
+CREATE TABLE IF NOT EXISTS gtm_inbox_threads (
+  thread_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  workspace_id UUID NOT NULL REFERENCES gtm_workspaces(workspace_id) ON DELETE CASCADE,
+  prospect_id UUID NOT NULL REFERENCES gtm_prospects(prospect_id) ON DELETE CASCADE,
+  campaign_id UUID REFERENCES gtm_campaigns(campaign_id) ON DELETE SET NULL,
+  channel TEXT NOT NULL CHECK (channel IN ('email','sms','linkedin','other')),
+  status TEXT NOT NULL DEFAULT 'open' CHECK (status IN ('open','waiting','booked','closed')),
+  classification TEXT,
+  latest_message_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS gtm_inbox_workspace_idx ON gtm_inbox_threads(workspace_id, status, latest_message_at DESC);
+
+ALTER TABLE gtm_campaigns ADD COLUMN IF NOT EXISTS send_policy TEXT NOT NULL DEFAULT 'supervised' CHECK (send_policy IN ('supervised','autopilot'));
+ALTER TABLE gtm_campaigns ADD COLUMN IF NOT EXISTS intent_threshold INTEGER NOT NULL DEFAULT 4 CHECK (intent_threshold BETWEEN 1 AND 5);
