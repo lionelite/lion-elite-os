@@ -819,6 +819,20 @@ notes), not live infrastructure — don't treat them as configuration.
   pair would actually be handled, distinguishing *no consumer* from *name
   rejected*. It also pins the produced-but-unconsumed queues so a new one fails
   loudly instead of joining them quietly.
+- **A booked call was invisible to revenue reporting.** `lib/postgres-prospect-store.js`
+  and `lib/outreach-enqueue.js` have had a `meeting_booked` prospect **stage** since
+  they were written, but `lib/revenue/funnel-events.js` had no matching **event** —
+  so `buildEvent()` rejected it as `UNKNOWN_EVENT_TYPE` and the conversion walk
+  jumped straight from `qualified` to `offer_sent`. A prospect could reach "meeting
+  booked" and the funnel could not see it. Same two-vocabularies-nothing-reconciles
+  class as the producer/consumer bugs above. Added `meeting_booked` **and**
+  `meeting_held` as separate ordered stages, weighted 0.35 / 0.45 in
+  `STAGE_PROBABILITY` — booked sits barely above `qualified` because cold-booked
+  calendars no-show heavily, and a funnel recording only bookings reports the
+  number most flattering to whoever booked them. Neither is a `REVENUE_EVENT`: a
+  calendar entry is not money. `test/funnel-meeting-stages.test.js` pins the order,
+  the weighting gap, and reconciles prospect stages against funnel events so the
+  drift cannot recur.
 - **Known dropped job, needs an owner decision:** the daily `staleData` cron
   enqueues `refresh-stale-prospect-data` to the `enrichment` queue, which no
   worker consumes — it has been piling up unprocessed every day. Either write the
