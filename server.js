@@ -7,6 +7,7 @@ const { createCoachingRouter } = require('./routes/coaching');
 const { createLeadsRouter } = require('./routes/leads');
 const leadStore = require('./lib/leads/lead-store');
 const { createCheckoutRouter } = require('./routes/checkout');
+const { createPlatformRouter } = require('./routes/platform');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -31,6 +32,8 @@ app.use('/api/checkout', createCheckoutRouter({ store: coachingStore }));
 // Public B2C opt-in. The only path by which a consumer or coach enters the
 // marketing pipeline, because it is the only one where they consent.
 app.use('/api/leads', createLeadsRouter({ store: leadStore }));
+// Public SaaS metadata used by the LionOS customer app shell.
+app.use('/api/platform', createPlatformRouter());
 app.use('/coaching', (_req, res, next) => {
   res.set({
     'Content-Security-Policy': [
