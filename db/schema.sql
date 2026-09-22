@@ -983,3 +983,49 @@ CREATE TABLE IF NOT EXISTS gtm_oauth_states (
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 CREATE INDEX IF NOT EXISTS gtm_oauth_states_workspace_idx ON gtm_oauth_states(workspace_id, provider, expires_at DESC);
+
+
+-- Runtime operations parity ---------------------------------------------------
+CREATE TABLE IF NOT EXISTS gtm_usage_incidents (
+  usage_incident_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  workspace_id UUID NOT NULL REFERENCES gtm_workspaces(workspace_id) ON DELETE CASCADE,
+  purse TEXT NOT NULL CHECK (purse IN ('data','action')),
+  level TEXT NOT NULL CHECK (level IN ('warning','hard_stop','recovered')),
+  percent_used INTEGER NOT NULL,
+  balance_remaining INTEGER NOT NULL,
+  period_key TEXT NOT NULL,
+  acknowledged_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  UNIQUE (workspace_id, purse, level, period_key)
+);
+CREATE INDEX IF NOT EXISTS gtm_usage_incidents_workspace_idx ON gtm_usage_incidents(workspace_id, created_at DESC);
+
+CREATE TABLE IF NOT EXISTS gtm_connector_health (
+  connector_health_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  workspace_id UUID NOT NULL REFERENCES gtm_workspaces(workspace_id) ON DELETE CASCADE,
+  provider TEXT NOT NULL,
+  connection_key TEXT NOT NULL DEFAULT 'default',
+  status TEXT NOT NULL DEFAULT 'unknown' CHECK (status IN ('unknown','connected','degraded','disconnected','error')),
+  verified_at TIMESTAMPTZ,
+  last_success_at TIMESTAMPTZ,
+  last_failure_at TIMESTAMPTZ,
+  last_error TEXT,
+  metadata JSONB NOT NULL DEFAULT '{}'::jsonb,
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  UNIQUE (workspace_id, provider, connection_key)
+);
+CREATE INDEX IF NOT EXISTS gtm_connector_health_workspace_idx ON gtm_connector_health(workspace_id, status);
+
+CREATE TABLE IF NOT EXISTS gtm_webhook_endpoints (
+  webhook_endpoint_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  workspace_id UUID NOT NULL REFERENCES gtm_workspaces(workspace_id) ON DELETE CASCADE,
+  url TEXT NOT NULL,
+  signing_secret_ciphertext TEXT NOT NULL,
+  enabled BOOLEAN NOT NULL DEFAULT true,
+  event_types JSONB NOT NULL DEFAULT '[]'::jsonb,
+  last_delivery_at TIMESTAMPTZ,
+  last_error TEXT,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS gtm_webhook_endpoints_workspace_idx ON gtm_webhook_endpoints(workspace_id, enabled);
