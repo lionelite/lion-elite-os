@@ -1029,3 +1029,43 @@ CREATE TABLE IF NOT EXISTS gtm_webhook_endpoints (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 CREATE INDEX IF NOT EXISTS gtm_webhook_endpoints_workspace_idx ON gtm_webhook_endpoints(workspace_id, enabled);
+
+
+-- Scheduler, sender health, MCP boundary --------------------------------------
+CREATE TABLE IF NOT EXISTS gtm_runtime_jobs (
+  runtime_job_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  workspace_id UUID REFERENCES gtm_workspaces(workspace_id) ON DELETE CASCADE,
+  job_key TEXT NOT NULL,
+  cadence_seconds INTEGER,
+  daily_time TIME,
+  status TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active','paused','error')),
+  last_run_at TIMESTAMPTZ,
+  next_run_at TIMESTAMPTZ,
+  last_error TEXT,
+  metadata JSONB NOT NULL DEFAULT '{}'::jsonb,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  UNIQUE (workspace_id, job_key)
+);
+CREATE INDEX IF NOT EXISTS gtm_runtime_jobs_due_idx ON gtm_runtime_jobs(status, next_run_at);
+
+CREATE TABLE IF NOT EXISTS gtm_sender_health_checks (
+  sender_health_check_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  workspace_id UUID NOT NULL REFERENCES gtm_workspaces(workspace_id) ON DELETE CASCADE,
+  sender_id UUID NOT NULL REFERENCES gtm_senders(sender_id) ON DELETE CASCADE,
+  status TEXT NOT NULL CHECK (status IN ('healthy','degraded','blocked','error')),
+  details JSONB NOT NULL DEFAULT '{}'::jsonb,
+  checked_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS gtm_sender_health_checks_idx ON gtm_sender_health_checks(sender_id, checked_at DESC);
+
+CREATE TABLE IF NOT EXISTS gtm_mcp_clients (
+  mcp_client_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES gtm_users(user_id) ON DELETE CASCADE,
+  client_name TEXT NOT NULL,
+  client_id TEXT NOT NULL UNIQUE,
+  scopes JSONB NOT NULL DEFAULT '[]'::jsonb,
+  status TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active','revoked')),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
