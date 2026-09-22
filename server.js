@@ -10,6 +10,7 @@ const { createCheckoutRouter } = require('./routes/checkout');
 const { createGtmPlatformRouter } = require('./routes/gtm-platform');
 const { createWorkspaceStore } = require('./lib/platform/workspace-store');
 const { AuthStore } = require('./lib/platform/security/auth-store');
+const { createMcpRouter } = require('./routes/mcp');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -37,6 +38,23 @@ app.use('/api/leads', createLeadsRouter({ store: leadStore }));
 const gtmWorkspaceStore = createWorkspaceStore();
 const gtmAuthStore = process.env.DATABASE_URL ? new AuthStore() : null;
 app.use('/api/gtm', createGtmPlatformRouter({ store: gtmWorkspaceStore, authStore: gtmAuthStore }));
+if (gtmAuthStore) app.use('/api/mcp', createMcpRouter({ authStore: gtmAuthStore }));
+app.get('/.well-known/oauth-authorization-server', (_req, res) => {
+  const origin = String(process.env.PUBLIC_BASE_URL || '').replace(/\/$/,'');
+  res.json({
+    issuer: origin,
+    registration_endpoint: origin + '/api/mcp/register',
+    authorization_endpoint: origin + '/api/mcp/authorize',
+    token_endpoint: origin + '/api/mcp/token',
+    code_challenge_methods_supported: ['S256'],
+    token_endpoint_auth_methods_supported: ['none'],
+    scopes_supported: [
+      'workspace:read','campaign:read','campaign:write','prospect:read','prospect:write',
+      'conversation:read','meeting:write','agent:read','agent:write','signal:read',
+      'integration:read','usage:read','audit:read'
+    ]
+  });
+});
 app.use('/coaching', (_req, res, next) => {
   res.set({
     'Content-Security-Policy': [
