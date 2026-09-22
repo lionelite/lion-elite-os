@@ -2,6 +2,7 @@
 
 const express = require('express');
 const { planCampaign } = require('../lib/platform/campaign-planner');
+const { classifyReply, draftReply } = require('../lib/platform/reply-assistant');
 
 function createGtmPlatformRouter({ store }) {
   const router = express.Router();
@@ -101,6 +102,37 @@ function createGtmPlatformRouter({ store }) {
     const result = await store.recordReply(req.params.workspaceId, req.params.prospectId, req.body?.classification || 'interested');
     if (!result) return res.status(404).json({ error: 'prospect not found' });
     res.json(result);
+  });
+
+
+  router.get('/workspaces/:workspaceId/inbox', async (req, res) => {
+    const threads = await store.listInbox(req.params.workspaceId);
+    res.json({ threads });
+  });
+
+  router.post('/workspaces/:workspaceId/threads/:threadId/draft-reply', async (req, res) => {
+    try {
+      const classification = req.body?.classification || classifyReply(req.body?.inboundText || '');
+      const body = draftReply({
+        classification,
+        contactName: req.body?.contactName || '',
+        offerName: req.body?.offerName || '',
+        bookingUrl: req.body?.bookingUrl || ''
+      });
+      const message = await store.addInboxMessage(req.params.workspaceId, req.params.threadId, {
+        direction: 'draft', sender: 'LionOS', body, status: 'draft'
+      });
+      if (!message) return res.status(404).json({ error: 'thread not found' });
+      res.json({ classification, message });
+    } catch (error) {
+      res.status(400).json({ error: error.message });
+    }
+  });
+
+  router.post('/workspaces/:workspaceId/threads/:threadId/book-meeting', async (req, res) => {
+    const meeting = await store.bookMeeting(req.params.workspaceId, req.params.threadId, req.body || {});
+    if (!meeting) return res.status(404).json({ error: 'thread not found' });
+    res.status(201).json({ meeting });
   });
 
   return router;
