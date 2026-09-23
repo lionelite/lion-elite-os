@@ -1,6 +1,6 @@
 # New leads from the last harvest
 
-_Generated 2026-09-23T07:31:16.622Z — 0 leads._
+_Generated 2026-09-23T13:25:24.989Z — 2 leads._
 
 | Searches run | Searches failed | Posts read | Matched | Dropped (do-not-engage) |
 |---:|---:|---:|---:|---:|
@@ -41,4 +41,20 @@ business-scaling: Bluesky search failed for "trying to scale my business": HTTP 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-**No leads, because no source could be reached.** Every query failed — see above.
+## med-spa-b2b — 2
+
+### Cultivate Yoga — score 70
+
+- **Handle:** [@null](https://www.cultivateyoga.org/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 16400 Detroit Avenue 44107
+
+### Feels Good Yoga — score 70
+
+- **Handle:** [@null](http://www.fgyoga.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 13535 Detroit Avenue 44107

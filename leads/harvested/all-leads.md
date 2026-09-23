@@ -1,11 +1,11 @@
 # Every harvested lead
 
-_Generated 2026-09-23T07:31:16.622Z — 79 leads._
+_Generated 2026-09-23T13:25:24.989Z — 81 leads._
 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-## med-spa-b2b — 79
+## med-spa-b2b — 81
 
 ### Sports Performance & Wellness Center — score 50
 
@@ -638,3 +638,19 @@ any of them — reach out by hand from the post link if a lead is worth it.
 - **Why they matched:** med-spa
 
 > med-spa · 11012 Detroit Ave
+
+### Cultivate Yoga — score 70
+
+- **Handle:** [@null](https://www.cultivateyoga.org/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 16400 Detroit Avenue 44107
+
+### Feels Good Yoga — score 70
+
+- **Handle:** [@null](http://www.fgyoga.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 13535 Detroit Avenue 44107
