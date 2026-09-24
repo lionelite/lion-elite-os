@@ -55,7 +55,8 @@
     "worker:gtm-runtime": "node workers/gtm-runtime-worker.js",
     "gtm:runtime:once": "node workers/gtm-runtime-worker.js --once",
     "worker:gtm-linkedin": "node workers/gtm-linkedin-worker.js",
-    "gtm:linkedin:once": "node workers/gtm-linkedin-worker.js --once"
+    "gtm:linkedin:once": "node workers/gtm-linkedin-worker.js --once",
+    "buildpipeline:smoke": "node scripts/buildpipeline-launch-smoke.js"
   },
   "dependencies": {
     "@openai/agents": "^0.3.0",

@@ -1310,3 +1310,15 @@ CREATE TABLE IF NOT EXISTS gtm_sales_leads (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 CREATE INDEX IF NOT EXISTS gtm_sales_leads_email_idx ON gtm_sales_leads(lower(email), created_at DESC);
+
+
+CREATE TABLE IF NOT EXISTS gtm_login_links (
+  gtm_login_link_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES gtm_users(user_id) ON DELETE CASCADE,
+  token_hash TEXT NOT NULL UNIQUE,
+  purpose TEXT NOT NULL DEFAULT 'login' CHECK (purpose IN ('login','activation')),
+  expires_at TIMESTAMPTZ NOT NULL,
+  consumed_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS gtm_login_links_user_idx ON gtm_login_links(user_id, expires_at DESC);

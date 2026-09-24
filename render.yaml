@@ -58,6 +58,10 @@ services:
         sync: false
       - key: GTM_STRIPE_WEBHOOK_SECRET
         sync: false
+      - key: GTM_EMAIL_FROM
+        sync: false
+      - key: GTM_SUPPORT_EMAIL
+        sync: false
       # Public origin used for Stripe return URLs and coaching invite links.
       - key: COACHING_PUBLIC_URL
         sync: false
