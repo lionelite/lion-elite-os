@@ -16,7 +16,27 @@ function createGtmSalesRouter(){
   router.get('/catalog',(_req,res)=>res.json({plans:PLANS,addOns:ADDONS,creditPacks:CREDIT_PACKS}));
   router.get('/readiness',(_req,res)=>{
     const solo=configForPlan('solo'),agency=configForPlan('agency');
-    res.json({checkout:{solo:solo.enabled,agency:agency.enabled},missing:{solo:solo.missing,agency:agency.missing},database:Boolean(process.env.DATABASE_URL),webhook:Boolean(process.env.GTM_STRIPE_WEBHOOK_SECRET)});
+    const publicBaseUrl=String(process.env.PUBLIC_BASE_URL||'').trim();
+    const emailFrom=String(process.env.GTM_EMAIL_FROM||process.env.COACHING_EMAIL_FROM||'').trim();
+    const checks={
+      database:Boolean(process.env.DATABASE_URL),
+      stripeSecret:Boolean(process.env.STRIPE_SECRET_KEY),
+      soloPrice:solo.enabled,
+      agencyPrice:agency.enabled,
+      stripeWebhook:Boolean(process.env.GTM_STRIPE_WEBHOOK_SECRET),
+      resend:Boolean(process.env.RESEND_API_KEY),
+      emailFrom:Boolean(emailFrom),
+      publicBaseUrl:publicBaseUrl==='https://buildpipeline.online'||publicBaseUrl==='https://www.buildpipeline.online'
+    };
+    const missing=Object.entries(checks).filter(([,ok])=>!ok).map(([key])=>key);
+    res.json({
+      product:'BuildPipeline',
+      launchReady:missing.length===0,
+      checks,
+      checkout:{solo:solo.enabled,agency:agency.enabled},
+      missing,
+      requiredBaseUrl:'https://buildpipeline.online'
+    });
   });
   router.post('/lead',async(req,res)=>{
     const email=cleanEmail(req.body?.email);
