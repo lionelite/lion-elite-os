@@ -547,6 +547,86 @@ function createGtmPlatformRouter({ store, authStore }) {
     }
   });
 
+
+  router.get('/workspaces/:workspaceId/library', async (req, res) => {
+    const [templates,audiences,sequences] = await Promise.all([
+      db.query(`SELECT template_id AS "templateId",name,channel,subject,body,variables,updated_at AS "updatedAt" FROM gtm_templates WHERE workspace_id=$1 ORDER BY updated_at DESC`,[req.params.workspaceId]),
+      db.query(`SELECT audience_id AS "audienceId",name,source,definition,estimated_size AS "estimatedSize",updated_at AS "updatedAt" FROM gtm_audiences WHERE workspace_id=$1 ORDER BY updated_at DESC`,[req.params.workspaceId]),
+      db.query(`SELECT sequence_id AS "sequenceId",name,steps,stop_on_reply AS "stopOnReply",updated_at AS "updatedAt" FROM gtm_sequences WHERE workspace_id=$1 ORDER BY updated_at DESC`,[req.params.workspaceId])
+    ]);
+    res.json({templates:templates.rows,audiences:audiences.rows,sequences:sequences.rows});
+  });
+
+  router.post('/workspaces/:workspaceId/templates', requireOperator, async (req, res) => {
+    try{
+      const r=await db.query(`INSERT INTO gtm_templates (workspace_id,name,channel,subject,body,variables)
+        VALUES ($1,$2,$3,$4,$5,$6)
+        RETURNING template_id AS "templateId",name,channel,subject,body,variables`,
+        [req.params.workspaceId,String(req.body?.name||'Untitled template'),String(req.body?.channel||'email'),String(req.body?.subject||''),String(req.body?.body||''),Array.isArray(req.body?.variables)?req.body.variables:[]]);
+      res.status(201).json({template:r.rows[0]});
+    }catch(error){res.status(400).json({error:error.message})}
+  });
+
+  router.post('/workspaces/:workspaceId/audiences', requireOperator, async (req, res) => {
+    try{
+      const r=await db.query(`INSERT INTO gtm_audiences (workspace_id,name,source,definition,estimated_size)
+        VALUES ($1,$2,$3,$4,$5)
+        RETURNING audience_id AS "audienceId",name,source,definition,estimated_size AS "estimatedSize"`,
+        [req.params.workspaceId,String(req.body?.name||'Untitled audience'),String(req.body?.source||'dynamic'),req.body?.definition||{},req.body?.estimatedSize==null?null:Number(req.body.estimatedSize)]);
+      res.status(201).json({audience:r.rows[0]});
+    }catch(error){res.status(400).json({error:error.message})}
+  });
+
+  router.post('/workspaces/:workspaceId/sequences', requireOperator, async (req, res) => {
+    try{
+      const r=await db.query(`INSERT INTO gtm_sequences (workspace_id,name,steps,stop_on_reply)
+        VALUES ($1,$2,$3,$4)
+        RETURNING sequence_id AS "sequenceId",name,steps,stop_on_reply AS "stopOnReply"`,
+        [req.params.workspaceId,String(req.body?.name||'Untitled sequence'),Array.isArray(req.body?.steps)?req.body.steps:[],req.body?.stopOnReply!==false]);
+      res.status(201).json({sequence:r.rows[0]});
+    }catch(error){res.status(400).json({error:error.message})}
+  });
+
+  router.get('/workspaces/:workspaceId/agent-settings', async (req, res) => {
+    const r=await db.query(`SELECT agent_key AS "agentKey",display_label AS "displayLabel",prompt_override AS "promptOverride",model_tier AS "modelTier",cadence_seconds AS "cadenceSeconds",send_policy AS "sendPolicy",updated_at AS "updatedAt" FROM gtm_agent_settings WHERE workspace_id=$1 ORDER BY agent_key`,[req.params.workspaceId]);
+    res.json({settings:r.rows});
+  });
+
+  router.put('/workspaces/:workspaceId/agent-settings/:agentKey', requireAdmin, async (req, res) => {
+    const cadence=req.body?.cadenceSeconds==null?null:Math.max(60,Number(req.body.cadenceSeconds));
+    const model=['economy','standard','premium'].includes(req.body?.modelTier)?req.body.modelTier:'standard';
+    const sendPolicy=['supervised','autopilot'].includes(req.body?.sendPolicy)?req.body.sendPolicy:null;
+    const r=await db.query(`INSERT INTO gtm_agent_settings (workspace_id,agent_key,display_label,prompt_override,model_tier,cadence_seconds,send_policy)
+      VALUES ($1,$2,$3,$4,$5,$6,$7)
+      ON CONFLICT (workspace_id,agent_key) DO UPDATE SET display_label=EXCLUDED.display_label,prompt_override=EXCLUDED.prompt_override,model_tier=EXCLUDED.model_tier,cadence_seconds=EXCLUDED.cadence_seconds,send_policy=EXCLUDED.send_policy,updated_at=now()
+      RETURNING agent_key AS "agentKey",display_label AS "displayLabel",prompt_override AS "promptOverride",model_tier AS "modelTier",cadence_seconds AS "cadenceSeconds",send_policy AS "sendPolicy"`,
+      [req.params.workspaceId,req.params.agentKey,String(req.body?.displayLabel||''),String(req.body?.promptOverride||''),model,cadence,sendPolicy]);
+    res.json({setting:r.rows[0]});
+  });
+
+  router.post('/workspaces/:workspaceId/agent-threads', requireOperator, async (req, res) => {
+    const r=await db.query(`INSERT INTO gtm_agent_threads (workspace_id,user_id,title) VALUES ($1,$2,$3) RETURNING agent_thread_id AS "agentThreadId",title,created_at AS "createdAt"`,
+      [req.params.workspaceId,req.gtmSession?.userId||null,String(req.body?.title||'Agent conversation')]);
+    res.status(201).json({thread:r.rows[0]});
+  });
+
+  router.get('/workspaces/:workspaceId/agent-threads/:threadId', async (req, res) => {
+    const [thread,turns]=await Promise.all([
+      db.query(`SELECT agent_thread_id AS "agentThreadId",title,created_at AS "createdAt",updated_at AS "updatedAt" FROM gtm_agent_threads WHERE workspace_id=$1 AND agent_thread_id=$2`,[req.params.workspaceId,req.params.threadId]),
+      db.query(`SELECT agent_turn_id AS "agentTurnId",role,content,tool_name AS "toolName",tool_payload AS "toolPayload",status,created_at AS "createdAt" FROM gtm_agent_turns WHERE workspace_id=$1 AND agent_thread_id=$2 ORDER BY created_at`,[req.params.workspaceId,req.params.threadId])
+    ]);
+    if(!thread.rows[0]) return res.status(404).json({error:'agent thread not found'});
+    res.json({thread:thread.rows[0],turns:turns.rows});
+  });
+
+  router.post('/workspaces/:workspaceId/agent-threads/:threadId/turns', requireOperator, async (req, res) => {
+    const r=await db.query(`INSERT INTO gtm_agent_turns (agent_thread_id,workspace_id,role,content,tool_name,tool_payload,status)
+      VALUES ($1,$2,$3,$4,$5,$6,$7)
+      RETURNING agent_turn_id AS "agentTurnId",role,content,tool_name AS "toolName",tool_payload AS "toolPayload",status,created_at AS "createdAt"`,
+      [req.params.threadId,req.params.workspaceId,String(req.body?.role||'user'),String(req.body?.content||''),req.body?.toolName||null,req.body?.toolPayload||null,String(req.body?.status||'completed')]);
+    res.status(201).json({turn:r.rows[0]});
+  });
+
   return router;
 }
 
