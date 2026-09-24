@@ -22,12 +22,14 @@ function createGtmSalesRouter(){
     bucket.push(now);rateBuckets.set(id,bucket);return true;
   }
   router.get('/catalog',(_req,res)=>res.json({plans:PLANS,addOns:ADDONS,creditPacks:CREDIT_PACKS}));
-  router.get('/readiness',(_req,res)=>{
+  router.get('/readiness',async(_req,res)=>{
     const solo=configForPlan('solo'),agency=configForPlan('agency');
+    let databaseHealthy=false;
+    if(process.env.DATABASE_URL){try{await db.query('SELECT 1');databaseHealthy=true}catch{databaseHealthy=false}}
     const publicBaseUrl=String(process.env.PUBLIC_BASE_URL||'').trim();
     const emailFrom=String(process.env.GTM_EMAIL_FROM||process.env.COACHING_EMAIL_FROM||'').trim();
     const checks={
-      database:Boolean(process.env.DATABASE_URL),
+      database:databaseHealthy,
       stripeSecret:Boolean(process.env.STRIPE_SECRET_KEY),
       soloPrice:solo.enabled,
       agencyPrice:agency.enabled,
@@ -36,6 +38,11 @@ function createGtmSalesRouter(){
       emailFrom:Boolean(emailFrom),
       supportEmail:Boolean(String(process.env.GTM_SUPPORT_EMAIL||'').trim()),
       publicBaseUrl:publicBaseUrl==='https://buildpipeline.online'||publicBaseUrl==='https://www.buildpipeline.online'
+    };
+    const integrations={
+      apollo:Boolean(process.env.APOLLO_API_KEY),
+      googleOAuth:Boolean(process.env.GTM_GOOGLE_CLIENT_ID&&process.env.GTM_GOOGLE_CLIENT_SECRET&&process.env.GTM_GOOGLE_REDIRECT_URI),
+      oauthEncryption:Boolean(process.env.GTM_OAUTH_ENCRYPTION_KEY)
     };
     const missing=Object.entries(checks).filter(([,ok])=>!ok).map(([key])=>key);
     res.json({
@@ -46,7 +53,8 @@ function createGtmSalesRouter(){
       database:checks.database,
       webhook:checks.stripeWebhook,
       missing,
-      requiredBaseUrl:'https://buildpipeline.online'
+      requiredBaseUrl:'https://buildpipeline.online',
+      integrations
     });
   });
   router.post('/lead',async(req,res)=>{
