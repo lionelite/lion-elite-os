@@ -13,6 +13,14 @@ function cleanEmail(v=''){const e=String(v).trim().toLowerCase();return /^[^\s@]
 
 function createGtmSalesRouter(){
   const router=express.Router();
+  const rateBuckets=new Map();
+  function allow(req,key,limit=5,windowMs=60*60*1000){
+    const id=key+':'+String(req.ip||req.headers['x-forwarded-for']||'unknown');
+    const now=Date.now();
+    const bucket=(rateBuckets.get(id)||[]).filter(ts=>now-ts<windowMs);
+    if(bucket.length>=limit){rateBuckets.set(id,bucket);return false}
+    bucket.push(now);rateBuckets.set(id,bucket);return true;
+  }
   router.get('/catalog',(_req,res)=>res.json({plans:PLANS,addOns:ADDONS,creditPacks:CREDIT_PACKS}));
   router.get('/readiness',(_req,res)=>{
     const solo=configForPlan('solo'),agency=configForPlan('agency');
@@ -66,6 +74,7 @@ function createGtmSalesRouter(){
 
 
   router.post('/support',async(req,res)=>{
+    if(!allow(req,'support',3))return res.status(429).json({error:'too many support requests; try again later'});
     const email=cleanEmail(req.body?.email);
     const message=String(req.body?.message||'').trim().slice(0,5000);
     const topic=String(req.body?.topic||'Product support').trim().slice(0,120);
@@ -84,6 +93,7 @@ function createGtmSalesRouter(){
   });
 
   router.post('/access/request',async(req,res)=>{
+    if(!allow(req,'access',5))return res.status(429).json({error:'too many sign-in requests; try again later'});
     const email=cleanEmail(req.body?.email);
     if(!email)return res.status(400).json({error:'valid email required'});
     if(!process.env.DATABASE_URL)return res.status(503).json({error:'database unavailable'});
