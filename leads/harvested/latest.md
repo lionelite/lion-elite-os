@@ -1,6 +1,6 @@
 # New leads from the last harvest
 
-_Generated 2026-09-24T14:44:07.470Z — 0 leads._
+_Generated 2026-09-24T19:04:40.234Z — 0 leads._
 
 | Searches run | Searches failed | Posts read | Matched | Dropped (do-not-engage) |
 |---:|---:|---:|---:|---:|
