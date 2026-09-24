@@ -1226,3 +1226,56 @@ CREATE TABLE IF NOT EXISTS gtm_agent_turns (
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 CREATE INDEX IF NOT EXISTS gtm_agent_turns_thread_idx ON gtm_agent_turns(agent_thread_id, created_at);
+
+
+-- Commercial packaging, credit packs, agency reporting ------------------------
+CREATE TABLE IF NOT EXISTS gtm_credit_packs (
+  credit_pack_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  pack_key TEXT NOT NULL UNIQUE,
+  purse TEXT NOT NULL CHECK (purse IN ('data','action')),
+  credits INTEGER NOT NULL CHECK (credits > 0),
+  price_cents INTEGER NOT NULL CHECK (price_cents > 0),
+  active BOOLEAN NOT NULL DEFAULT true,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS gtm_credit_pack_purchases (
+  credit_pack_purchase_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  workspace_id UUID NOT NULL REFERENCES gtm_workspaces(workspace_id) ON DELETE CASCADE,
+  pack_key TEXT NOT NULL REFERENCES gtm_credit_packs(pack_key),
+  purse TEXT NOT NULL CHECK (purse IN ('data','action')),
+  credits INTEGER NOT NULL,
+  price_cents INTEGER NOT NULL,
+  provider TEXT NOT NULL DEFAULT 'stripe',
+  provider_checkout_id TEXT,
+  provider_payment_id TEXT,
+  status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending','paid','failed','refunded')),
+  period_key TEXT NOT NULL,
+  expires_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  paid_at TIMESTAMPTZ
+);
+CREATE INDEX IF NOT EXISTS gtm_credit_pack_purchases_workspace_idx ON gtm_credit_pack_purchases(workspace_id, period_key, status);
+
+CREATE TABLE IF NOT EXISTS gtm_onboarding_previews (
+  onboarding_preview_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  workspace_id UUID NOT NULL REFERENCES gtm_workspaces(workspace_id) ON DELETE CASCADE,
+  company JSONB NOT NULL DEFAULT '{}'::jsonb,
+  keywords JSONB NOT NULL DEFAULT '[]'::jsonb,
+  channels JSONB NOT NULL DEFAULT '[]'::jsonb,
+  preview JSONB NOT NULL DEFAULT '{}'::jsonb,
+  confirmed_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+INSERT INTO gtm_credit_packs (pack_key,purse,credits,price_cents)
+VALUES
+  ('data-3000','data',3000,3600),
+  ('data-7500','data',7500,9000),
+  ('data-15000','data',15000,18000),
+  ('action-25000','action',25000,8800),
+  ('action-60000','action',60000,21000),
+  ('action-125000','action',125000,43800)
+ON CONFLICT (pack_key) DO NOTHING;
