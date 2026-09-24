@@ -12,7 +12,7 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 
 const {
-  classifyEmail, classifyPhone, ingestRecord, ingestBatch
+  classifyContactKind, classifyPhone, ingestRecord, ingestBatch
 } = require('../lib/contacts/provider-ingest');
 
 const licence = Object.freeze({
@@ -36,30 +36,30 @@ function record(overrides = {}) {
 }
 
 test('a work address on the company domain is a business contact', () => {
-  assert.equal(classifyEmail('dana@glowmedspa.com', 'glowmedspa.com'), 'work_email');
-  assert.equal(classifyEmail('dana@mail.glowmedspa.com', 'glowmedspa.com'), 'work_email');
-  assert.equal(classifyEmail('dana@glowmedspa.com', 'https://www.glowmedspa.com/book'), 'work_email');
+  assert.equal(classifyContactKind('dana@glowmedspa.com', 'glowmedspa.com'), 'work_email');
+  assert.equal(classifyContactKind('dana@mail.glowmedspa.com', 'glowmedspa.com'), 'work_email');
+  assert.equal(classifyContactKind('dana@glowmedspa.com', 'https://www.glowmedspa.com/book'), 'work_email');
 });
 
 test('a role mailbox is a company contact even without a known domain', () => {
-  assert.equal(classifyEmail('info@glowmedspa.com', ''), 'company_general_email');
-  assert.equal(classifyEmail('appointments@spamiamibeach.com', 'other.com'), 'unverified_email');
-  assert.equal(classifyEmail('hello@anything.com', ''), 'company_general_email');
+  assert.equal(classifyContactKind('info@glowmedspa.com', ''), 'company_general_email');
+  assert.equal(classifyContactKind('appointments@spamiamibeach.com', 'other.com'), 'unverified_email');
+  assert.equal(classifyContactKind('hello@anything.com', ''), 'company_general_email');
 });
 
 test('a free-mail address is a person, whoever the provider attached it to', () => {
   // Live example from the harvested store: an aesthetics business whose only
   // listed address was a personal Gmail. A B2B campaign must not send to it.
-  assert.equal(classifyEmail('brianfritze310@gmail.com', 'aventura-aesthetics.com'), 'personal_email');
-  assert.equal(classifyEmail('someone@yahoo.co.uk', 'acme.com'), 'personal_email');
-  assert.equal(classifyEmail('x@proton.me', 'acme.com'), 'personal_email');
+  assert.equal(classifyContactKind('brianfritze310@gmail.com', 'aventura-aesthetics.com'), 'personal_email');
+  assert.equal(classifyContactKind('someone@yahoo.co.uk', 'acme.com'), 'personal_email');
+  assert.equal(classifyContactKind('x@proton.me', 'acme.com'), 'personal_email');
 });
 
 test('a lookalike domain is not promoted to a work address', () => {
   // acme.co is not acme.com, and "probably corporate" is the reasoning that
   // lets a personal domain through.
-  assert.equal(classifyEmail('dana@acme.co', 'acme.com'), 'unverified_email');
-  assert.equal(classifyEmail('dana@notacme.com', 'acme.com'), 'unverified_email');
+  assert.equal(classifyContactKind('dana@acme.co', 'acme.com'), 'unverified_email');
+  assert.equal(classifyContactKind('dana@notacme.com', 'acme.com'), 'unverified_email');
 });
 
 test('phone kind comes from the provider type, and an unknown type fails closed', () => {
