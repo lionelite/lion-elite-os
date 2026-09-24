@@ -26,6 +26,7 @@ function createGtmSalesRouter(){
       stripeWebhook:Boolean(process.env.GTM_STRIPE_WEBHOOK_SECRET),
       resend:Boolean(process.env.RESEND_API_KEY),
       emailFrom:Boolean(emailFrom),
+      supportEmail:Boolean(String(process.env.GTM_SUPPORT_EMAIL||'').trim()),
       publicBaseUrl:publicBaseUrl==='https://buildpipeline.online'||publicBaseUrl==='https://www.buildpipeline.online'
     };
     const missing=Object.entries(checks).filter(([,ok])=>!ok).map(([key])=>key);
@@ -61,6 +62,25 @@ function createGtmSalesRouter(){
       await db.query(`INSERT INTO gtm_sales_leads (email,plan_interest,status) VALUES ($1,$2,'checkout_started')`,[email,planKey]);
     }
     res.json({url:result.url,id:result.id});
+  });
+
+
+  router.post('/support',async(req,res)=>{
+    const email=cleanEmail(req.body?.email);
+    const message=String(req.body?.message||'').trim().slice(0,5000);
+    const topic=String(req.body?.topic||'Product support').trim().slice(0,120);
+    if(!email||message.length<5)return res.status(400).json({error:'valid email and message required'});
+    if(String(req.body?.company||'').trim())return res.json({accepted:true});
+    const apiKey=String(process.env.RESEND_API_KEY||'').trim();
+    const to=String(process.env.GTM_SUPPORT_EMAIL||'').trim();
+    const from=String(process.env.GTM_EMAIL_FROM||process.env.COACHING_EMAIL_FROM||'').trim();
+    if(!apiKey||!to||!from)return res.status(503).json({error:'support email is not configured'});
+    try{
+      const r=await fetch('https://api.resend.com/emails',{method:'POST',headers:{Authorization:'Bearer '+apiKey,'Content-Type':'application/json'},body:JSON.stringify({from,to:[to],reply_to:email,subject:'BuildPipeline support: '+topic,text:'From: '+email+'\nTopic: '+topic+'\n\n'+message})});
+      const j=await r.json().catch(()=>({}));
+      if(!r.ok)throw new Error(j.message||'support delivery failed');
+      res.status(201).json({accepted:true});
+    }catch(error){res.status(502).json({error:'support delivery failed'})}
   });
 
   router.post('/access/request',async(req,res)=>{
