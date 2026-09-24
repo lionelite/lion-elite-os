@@ -1279,3 +1279,34 @@ VALUES
   ('action-60000','action',60000,21000),
   ('action-125000','action',125000,43800)
 ON CONFLICT (pack_key) DO NOTHING;
+
+
+-- Sellable LionOS subscriptions -----------------------------------------------
+CREATE TABLE IF NOT EXISTS gtm_subscriptions (
+  gtm_subscription_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  workspace_id UUID REFERENCES gtm_workspaces(workspace_id) ON DELETE SET NULL,
+  customer_email TEXT NOT NULL,
+  plan_key TEXT NOT NULL CHECK (plan_key IN ('solo','agency')),
+  provider TEXT NOT NULL DEFAULT 'stripe',
+  provider_customer_id TEXT,
+  provider_subscription_id TEXT UNIQUE,
+  provider_checkout_id TEXT UNIQUE,
+  status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending','active','past_due','cancelled','incomplete')),
+  current_period_end TIMESTAMPTZ,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS gtm_subscriptions_email_idx ON gtm_subscriptions(lower(customer_email), status);
+
+CREATE TABLE IF NOT EXISTS gtm_sales_leads (
+  gtm_sales_lead_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  email TEXT NOT NULL,
+  company_name TEXT NOT NULL DEFAULT '',
+  website_url TEXT NOT NULL DEFAULT '',
+  plan_interest TEXT CHECK (plan_interest IN ('solo','agency','enterprise')),
+  source TEXT NOT NULL DEFAULT 'lionos_sales_site',
+  status TEXT NOT NULL DEFAULT 'new' CHECK (status IN ('new','checkout_started','paid','onboarding','active','closed')),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS gtm_sales_leads_email_idx ON gtm_sales_leads(lower(email), created_at DESC);
