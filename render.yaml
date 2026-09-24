@@ -51,6 +51,13 @@ services:
         sync: false
       - key: STRIPE_WEBHOOK_SECRET
         sync: false
+      # LionOS GTM subscriptions. These are separate from coaching billing.
+      - key: GTM_STRIPE_PRICE_SOLO_MONTHLY
+        sync: false
+      - key: GTM_STRIPE_PRICE_AGENCY_MONTHLY
+        sync: false
+      - key: GTM_STRIPE_WEBHOOK_SECRET
+        sync: false
       # Public origin used for Stripe return URLs and coaching invite links.
       - key: COACHING_PUBLIC_URL
         sync: false
