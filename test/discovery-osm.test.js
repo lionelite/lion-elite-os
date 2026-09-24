@@ -209,9 +209,13 @@ test('an enrichment failure does not lose the business', async () => {
 });
 
 test('successive runs rotate areas instead of re-walking one city', () => {
-  const labels = [0, 1, 2, 3].map(i => pickArea(DEFAULT_AREAS, i).label);
-  assert.equal(new Set(labels.slice(0, 3)).size, 3);
-  assert.equal(labels[3], labels[0], 'and wrap around');
+  // Written against the length of the list rather than the behaviour, so adding
+  // a market broke it. The property is what matters: one full cycle visits every
+  // area exactly once, then wraps.
+  const cycle = DEFAULT_AREAS.map((_, i) => pickArea(DEFAULT_AREAS, i).label);
+
+  assert.equal(new Set(cycle).size, DEFAULT_AREAS.length, 'no area is skipped in a cycle');
+  assert.equal(pickArea(DEFAULT_AREAS, DEFAULT_AREAS.length).label, cycle[0], 'and wrap around');
 });
 
 // The scheduled harvest reported "0 new" on every run for weeks. Both sources
@@ -316,4 +320,39 @@ test('every segment failing is an unreachable source, not an empty area', async 
     }),
     error => error.retryable === true
   );
+});
+
+test('every search area is a box Overpass will actually answer', () => {
+  // A bad box does not fail loudly — buildQuery throws deep inside a harvest
+  // run, the business pass reports "unreachable", and the digest shows another
+  // quiet day. Check them here instead, where the failure names the area.
+  const labels = new Set();
+  for (const area of DEFAULT_AREAS) {
+    assert.ok(area.label, 'every area is named; the digest reports the label');
+    assert.ok(!labels.has(area.label), `duplicate area label ${area.label}`);
+    labels.add(area.label);
+
+    assert.doesNotThrow(() => buildQuery({ area }), `${area.label} is not a queryable box`);
+    assert.ok(area.north - area.south <= 0.5, `${area.label} is taller than a metro core`);
+    assert.ok(area.east - area.west <= 0.5, `${area.label} is wider than a metro core`);
+  }
+});
+
+test('rotation reaches every area rather than re-walking one', () => {
+  // The harvest passes the UTC hour as the rotation, so the cycle has to close
+  // over a day. Three Ohio areas got fully harvested and then returned nothing
+  // new for weeks; an area the rotation never reaches is the same bug, quieter.
+  const reached = new Set();
+  for (let hour = 0; hour < 24; hour += 1) reached.add(pickArea(DEFAULT_AREAS, hour).label);
+
+  assert.equal(reached.size, DEFAULT_AREAS.length, 'a day of runs covers every area');
+});
+
+test('the markets the campaigns target are actually searched', () => {
+  // The med-spa supply campaign and the campaign-builder examples both target
+  // South Florida. Searching only Ohio is why a working source found nothing
+  // new, so this pins the intent rather than leaving it to a comment.
+  const labels = DEFAULT_AREAS.map(a => a.label);
+  assert.ok(labels.some(l => l.endsWith('-fl')), 'at least one Florida market');
+  assert.ok(labels.includes('miami-fl'), 'South Florida is the named target market');
 });
