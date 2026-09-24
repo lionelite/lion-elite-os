@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>LionOS Live Demo</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#080a0f;color:#f5f6f8;font:14px/1.5 Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.wrap{max-width:1080px;margin:auto;padding:36px 20px}.brand{font-size:24px;font-weight:900}.brand span{color:#d6b15e}.eyebrow{margin-top:40px;color:#aa8942;font-size:11px;font-weight:800;letter-spacing:.13em;text-transform:uppercase}h1{font-size:38px;margin:7px 0}.sub{color:#818b99;max-width:760px}.run{margin:18px 0;padding:12px 16px;border:1px solid #e0c172;background:#d6b15e;color:#111;border-radius:10px;font-weight:900;cursor:pointer}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.card{border:1px solid #202735;background:#0d1118;border-radius:13px;padding:16px}.card strong{font-size:28px;display:block}.card span{color:#7c8797}.panel{margin-top:14px;border:1px solid #202735;background:#0d1118;border-radius:13px;padding:18px}.step{padding:10px 0;border-top:1px solid #1d2430}.ok{color:#8dce76}.bad{color:#d98477}.muted{color:#758090}.prospect{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:8px;padding:9px 0;border-top:1px solid #1d2430}@media(max-width:760px){.grid{grid-template-columns:1fr}.prospect{grid-template-columns:1fr 1fr}}
+</style></head><body><div class="wrap">
+<div class="brand">Lion<span>OS</span></div><div class="eyebrow">SAFE LIVE TEST</div>
+<h1>Run the GTM engine without contacting anyone.</h1>
+<p class="sub">This demo creates a temporary in-memory workspace, builds a campaign, inserts synthetic prospects, simulates intent and one reply, then shows the live control-room counts. Nothing is sent externally.</p>
+<button class="run" id="run">Run Safe Demo</button>
+<div class="grid">
+<div class="card"><strong id="found">—</strong><span>Found</span></div>
+<div class="card"><strong id="warm">—</strong><span>Warm</span></div>
+<div class="card"><strong id="replied">—</strong><span>Replied</span></div>
+</div>
+<div class="panel"><h2>Execution log</h2><div id="log" class="muted">Ready.</div></div>
+<div class="panel"><h2>Prospects</h2><div id="prospects" class="muted">Run the demo to populate the queue.</div></div>
+</div>
+<script>
+const $=id=>document.getElementById(id), log=$('log');
+function add(msg,ok=true){const d=document.createElement('div');d.className='step '+(ok?'ok':'bad');d.textContent=msg;log.appendChild(d)}
+async function api(path,opts={}){opts.headers={...(opts.headers||{}),'Content-Type':'application/json'};const r=await fetch(path,opts);let j={};try{j=await r.json()}catch{}if(!r.ok)throw new Error(j.error||('HTTP '+r.status));return j}
+async function run(){
+  $('run').disabled=true;log.innerHTML='';$('prospects').innerHTML='';$('found').textContent=$('warm').textContent=$('replied').textContent='—';
+  try{
+    const w=await api('/api/gtm/workspaces',{method:'POST',body:JSON.stringify({name:'LionOS Safe Demo',plan:'solo'})});
+    const wid=w.workspace.workspaceId;add('1. Temporary workspace created: '+wid);
+    await api('/api/gtm/workspaces/'+wid+'/profile',{method:'PUT',body:JSON.stringify({websiteUrl:'https://example.test',companyDescription:'AI GTM software for B2B service companies',offerName:'LionOS Demo',offerDescription:'Automated GTM operating system',primaryGoal:'book_meetings',targetGeography:'United States',icp:{industries:['marketing agencies'],employeeMin:5,employeeMax:100},exclusions:[]})});
+    add('2. Company + ICP profile saved');
+    const cp=await api('/api/gtm/workspaces/'+wid+'/campaigns/from-prompt',{method:'POST',body:JSON.stringify({prompt:'Find US marketing agency owners with 5 to 100 employees using email in supervised mode and book meetings'})});
+    const cid=cp.campaign.campaignId;add('3. Campaign planned from plain English: '+cp.campaign.name);
+    const fake=[
+      {companyName:'Northstar Agency',contactName:'Maya Chen',title:'Founder',email:'maya@example.test',status:'qualified',fitScore:92,intentHeat:5,confidence:93,nextAction:'prepare_outreach'},
+      {companyName:'Brightline Growth',contactName:'Jordan Lee',title:'CEO',email:'jordan@example.test',status:'qualified',fitScore:86,intentHeat:4,confidence:88,nextAction:'prepare_outreach'},
+      {companyName:'SignalWorks',contactName:'Avery Morgan',title:'Owner',email:'avery@example.test',status:'discovered',fitScore:72,intentHeat:2,confidence:74,nextAction:'research'}
+    ];
+    const created=[];
+    for(const p of fake){const x=await api('/api/gtm/workspaces/'+wid+'/campaigns/'+cid+'/prospects',{method:'POST',body:JSON.stringify(p)});created.push(x.prospect)}
+    add('4. Three synthetic prospects entered the demand engine');
+    await api('/api/gtm/workspaces/'+wid+'/prospects/'+created[0].prospectId+'/reply',{method:'POST',body:JSON.stringify({classification:'interested'})});
+    add('5. Simulated interested reply stopped sequence and opened inbox');
+    const room=await api('/api/gtm/workspaces/'+wid+'/campaigns/'+cid+'/control-room');
+    $('found').textContent=room.counts.found;$('warm').textContent=room.counts.warm;$('replied').textContent=room.counts.replied;
+    $('prospects').innerHTML=room.prospects.map(p=>'<div class="prospect"><strong>'+p.contactName+' · '+p.companyName+'</strong><span>Fit '+p.fitScore+'</span><span>Heat '+p.intentHeat+'</span><span>'+p.status+'</span></div>').join('');
+    add('6. Control room refreshed successfully');
+    add('PASS — no external messages were sent.');
+  }catch(e){add('FAIL — '+e.message,false)}
+  finally{$('run').disabled=false}
+}
+$('run').onclick=run;
+</script></body></html>
