@@ -15,6 +15,8 @@ const { ResendProvisioner } = require('../lib/platform/senders/resend');
 const db = require('../lib/database');
 const { beginGoogleOAuth, exchangeGoogleOAuth } = require('../lib/platform/oauth/google');
 const { productionReadiness } = require('../lib/platform/readiness');
+const { PLANS, ADDONS, CREDIT_PACKS, getPack } = require('../lib/platform/commercial-catalog');
+const { buildOnboardingPreview } = require('../lib/platform/fast-onboarding');
 const { runtimeJobCatalog } = require('../lib/platform/runtime-jobs');
 const { allowedTools, assertNoSendTools } = require('../lib/platform/mcp-tools');
 const { assessSenderHealth } = require('../lib/platform/sender-health');
@@ -625,6 +627,79 @@ function createGtmPlatformRouter({ store, authStore }) {
       RETURNING agent_turn_id AS "agentTurnId",role,content,tool_name AS "toolName",tool_payload AS "toolPayload",status,created_at AS "createdAt"`,
       [req.params.threadId,req.params.workspaceId,String(req.body?.role||'user'),String(req.body?.content||''),req.body?.toolName||null,req.body?.toolPayload||null,String(req.body?.status||'completed')]);
     res.status(201).json({turn:r.rows[0]});
+  });
+
+
+  router.get('/commercial/catalog', (_req, res) => {
+    res.json({ plans: PLANS, addOns: ADDONS, creditPacks: CREDIT_PACKS });
+  });
+
+  router.get('/workspaces/:workspaceId/usage/period', async (req, res) => {
+    const period = String(req.query.period || new Date().toISOString().slice(0,7));
+    if(!/^\d{4}-\d{2}$/.test(period)) return res.status(400).json({error:'period must be YYYY-MM'});
+    const start = period + '-01T00:00:00Z';
+    const end = new Date(Date.UTC(Number(period.slice(0,4)),Number(period.slice(5,7)),1)).toISOString();
+    const [ledger,packs] = await Promise.all([
+      db.query(`SELECT purse,action_key AS "actionKey",SUM(credits)::int AS credits,SUM(quantity)::int AS quantity,SUM(COALESCE(provider_cost_cents,0))::int AS "providerCostCents"
+        FROM gtm_usage_ledger WHERE workspace_id=$1 AND occurred_at>=$2::timestamptz AND occurred_at<$3::timestamptz
+        GROUP BY purse,action_key ORDER BY purse,credits DESC`,[req.params.workspaceId,start,end]),
+      db.query(`SELECT purse,SUM(credits)::int AS credits,SUM(price_cents)::int AS "priceCents"
+        FROM gtm_credit_pack_purchases WHERE workspace_id=$1 AND period_key=$2 AND status='paid' GROUP BY purse`,[req.params.workspaceId,period])
+    ]);
+    res.json({period,breakdown:ledger.rows,creditPacks:packs.rows});
+  });
+
+  router.get('/agency/report', requireSession, async (req, res) => {
+    try{
+      const memberships = await authStore.listMemberships(req.gtmSession.userId);
+      const workspaceIds = memberships.filter(x=>['owner','admin'].includes(x.role)).map(x=>x.workspaceId);
+      if(!workspaceIds.length) return res.json({workspaces:[],totals:{sourced:0,replied:0,booked:0}});
+      const r=await db.query(`SELECT w.workspace_id AS "workspaceId",w.name,w.plan,
+        COUNT(p.prospect_id)::int AS sourced,
+        COUNT(p.prospect_id) FILTER (WHERE p.status IN ('replied','meeting','opportunity','won','lost'))::int AS replied,
+        COUNT(p.prospect_id) FILTER (WHERE p.status IN ('meeting','opportunity','won','lost'))::int AS booked
+        FROM gtm_workspaces w
+        LEFT JOIN gtm_prospects p ON p.workspace_id=w.workspace_id
+        WHERE w.workspace_id = ANY($1::uuid[])
+        GROUP BY w.workspace_id,w.name,w.plan
+        ORDER BY w.name`,[workspaceIds]);
+      const totals=r.rows.reduce((a,x)=>({sourced:a.sourced+x.sourced,replied:a.replied+x.replied,booked:a.booked+x.booked}),{sourced:0,replied:0,booked:0});
+      res.json({workspaces:r.rows,totals});
+    }catch(error){res.status(500).json({error:'agency report unavailable'})}
+  });
+
+  router.post('/workspaces/:workspaceId/onboarding/preview', requireOperator, async (req, res) => {
+    try{
+      const profile = await store.getProfile(req.params.workspaceId) || {};
+      const preview = buildOnboardingPreview({
+        website:req.body?.website||profile.websiteUrl||'',
+        companyName:req.body?.companyName||'',
+        keywords:Array.isArray(req.body?.keywords)?req.body.keywords:[],
+        channel:req.body?.channel||'email',
+        profile
+      });
+      const r=await db.query(`INSERT INTO gtm_onboarding_previews (workspace_id,company,keywords,channels,preview)
+        VALUES ($1,$2,$3,$4,$5)
+        RETURNING onboarding_preview_id AS "onboardingPreviewId",preview,created_at AS "createdAt"`,
+        [req.params.workspaceId,preview.company,preview.keywords,preview.channels,preview]);
+      res.status(201).json({preview:r.rows[0]});
+    }catch(error){res.status(400).json({error:error.message})}
+  });
+
+  router.post('/workspaces/:workspaceId/credit-packs/:packKey/purchase-intent', requireAdmin, async (req, res) => {
+    const pack=getPack(req.params.packKey);
+    if(!pack) return res.status(404).json({error:'credit pack not found'});
+    const periodKey=new Date().toISOString().slice(0,7);
+    const r=await db.query(`INSERT INTO gtm_credit_pack_purchases (workspace_id,pack_key,purse,credits,price_cents,period_key,expires_at)
+      VALUES ($1,$2,$3,$4,$5,$6,(date_trunc('month',now())+interval '1 month'))
+      RETURNING credit_pack_purchase_id AS "creditPackPurchaseId",pack_key AS "packKey",purse,credits,price_cents AS "priceCents",status,period_key AS "periodKey",expires_at AS "expiresAt"`,
+      [req.params.workspaceId,pack.key,pack.purse,pack.credits,pack.priceCents,periodKey]);
+    const priceEnv='GTM_STRIPE_PRICE_'+pack.key.toUpperCase().replace(/-/g,'_');
+    res.status(201).json({
+      purchase:r.rows[0],
+      checkoutConfigured:Boolean(process.env.STRIPE_SECRET_KEY&&process.env[priceEnv]),
+      stripePriceEnv:priceEnv
+    });
   });
 
   return router;
