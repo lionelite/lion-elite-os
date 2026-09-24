@@ -1150,3 +1150,79 @@ CREATE TABLE IF NOT EXISTS gtm_linkedin_connections (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   UNIQUE (workspace_id, provider)
 );
+
+
+-- Operator control surface ----------------------------------------------------
+CREATE TABLE IF NOT EXISTS gtm_templates (
+  template_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  workspace_id UUID NOT NULL REFERENCES gtm_workspaces(workspace_id) ON DELETE CASCADE,
+  name TEXT NOT NULL,
+  channel TEXT NOT NULL CHECK (channel IN ('email','linkedin','sms')),
+  subject TEXT NOT NULL DEFAULT '',
+  body TEXT NOT NULL DEFAULT '',
+  variables JSONB NOT NULL DEFAULT '[]'::jsonb,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS gtm_templates_workspace_idx ON gtm_templates(workspace_id, channel, updated_at DESC);
+
+CREATE TABLE IF NOT EXISTS gtm_audiences (
+  audience_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  workspace_id UUID NOT NULL REFERENCES gtm_workspaces(workspace_id) ON DELETE CASCADE,
+  name TEXT NOT NULL,
+  source TEXT NOT NULL DEFAULT 'dynamic',
+  definition JSONB NOT NULL DEFAULT '{}'::jsonb,
+  estimated_size INTEGER,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS gtm_audiences_workspace_idx ON gtm_audiences(workspace_id, updated_at DESC);
+
+CREATE TABLE IF NOT EXISTS gtm_sequences (
+  sequence_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  workspace_id UUID NOT NULL REFERENCES gtm_workspaces(workspace_id) ON DELETE CASCADE,
+  name TEXT NOT NULL,
+  steps JSONB NOT NULL DEFAULT '[]'::jsonb,
+  stop_on_reply BOOLEAN NOT NULL DEFAULT true,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS gtm_sequences_workspace_idx ON gtm_sequences(workspace_id, updated_at DESC);
+
+ALTER TABLE gtm_campaigns ADD COLUMN IF NOT EXISTS audience_id UUID REFERENCES gtm_audiences(audience_id) ON DELETE SET NULL;
+ALTER TABLE gtm_campaigns ADD COLUMN IF NOT EXISTS sequence_id UUID REFERENCES gtm_sequences(sequence_id) ON DELETE SET NULL;
+
+CREATE TABLE IF NOT EXISTS gtm_agent_settings (
+  workspace_id UUID NOT NULL REFERENCES gtm_workspaces(workspace_id) ON DELETE CASCADE,
+  agent_key TEXT NOT NULL,
+  display_label TEXT NOT NULL DEFAULT '',
+  prompt_override TEXT NOT NULL DEFAULT '',
+  model_tier TEXT NOT NULL DEFAULT 'standard' CHECK (model_tier IN ('economy','standard','premium')),
+  cadence_seconds INTEGER,
+  send_policy TEXT CHECK (send_policy IN ('supervised','autopilot')),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  PRIMARY KEY (workspace_id, agent_key)
+);
+
+CREATE TABLE IF NOT EXISTS gtm_agent_threads (
+  agent_thread_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  workspace_id UUID NOT NULL REFERENCES gtm_workspaces(workspace_id) ON DELETE CASCADE,
+  user_id UUID REFERENCES gtm_users(user_id) ON DELETE SET NULL,
+  title TEXT NOT NULL DEFAULT 'Agent conversation',
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS gtm_agent_threads_workspace_idx ON gtm_agent_threads(workspace_id, updated_at DESC);
+
+CREATE TABLE IF NOT EXISTS gtm_agent_turns (
+  agent_turn_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  agent_thread_id UUID NOT NULL REFERENCES gtm_agent_threads(agent_thread_id) ON DELETE CASCADE,
+  workspace_id UUID NOT NULL REFERENCES gtm_workspaces(workspace_id) ON DELETE CASCADE,
+  role TEXT NOT NULL CHECK (role IN ('user','assistant','tool')),
+  content TEXT NOT NULL DEFAULT '',
+  tool_name TEXT,
+  tool_payload JSONB,
+  status TEXT NOT NULL DEFAULT 'completed' CHECK (status IN ('running','completed','errored')),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS gtm_agent_turns_thread_idx ON gtm_agent_turns(agent_thread_id, created_at);
