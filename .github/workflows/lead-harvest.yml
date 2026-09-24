@@ -29,6 +29,10 @@ on:
         required: false
         type: boolean
         default: false
+      rotation:
+        description: 'Which search area to work (blank = derived from the UTC hour)'
+        required: false
+        default: ''
 
 permissions:
   contents: write
@@ -94,9 +98,14 @@ jobs:
         run: |
           audience='${{ github.event.inputs.audience }}'
           per_query='${{ github.event.inputs.per_query }}'
+          rotation='${{ github.event.inputs.rotation }}'
           args=""
           [ -n "$audience" ] && args="$args --audience=$audience"
           [ -n "$per_query" ] && args="$args --per-query=$per_query"
+          # Scheduled runs derive the area from the UTC hour. A manual run can
+          # name one, so a specific market is checkable without waiting for its
+          # hour to come round.
+          [ -n "$rotation" ] && args="$args --rotation=$rotation"
           # The scheduled run always includes the business pass; manual runs opt in.
           if [ "${{ github.event_name }}" = "schedule" ] || [ "${{ github.event.inputs.business }}" = "true" ]; then
             args="$args --business"
