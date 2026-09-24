@@ -51,6 +51,13 @@ services:
         sync: false
       - key: STRIPE_WEBHOOK_SECRET
         sync: false
+      # LionOS GTM subscriptions. These are separate from coaching billing.
+      - key: GTM_STRIPE_PRICE_SOLO_MONTHLY
+        sync: false
+      - key: GTM_STRIPE_PRICE_AGENCY_MONTHLY
+        sync: false
+      - key: GTM_STRIPE_WEBHOOK_SECRET
+        sync: false
       # Public origin used for Stripe return URLs and coaching invite links.
       - key: COACHING_PUBLIC_URL
         sync: false
@@ -346,3 +353,57 @@ services:
     buildCommand: npm install --no-audit --no-fund
     startCommand: node scripts/revenue-scan.js
     envVars: *cronEnv
+
+
+  # Executes the eleven GTM runtime jobs from Postgres. The worker atomically
+  # claims due jobs so multiple instances cannot execute the same run.
+  - type: worker
+    name: lionos-gtm-runtime-worker
+    runtime: node
+    plan: starter
+    buildCommand: npm install --no-audit --no-fund && npm run db:migrate
+    startCommand: npm run worker:gtm-runtime
+    autoDeploy: true
+    envVars: &gtmRuntimeEnv
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: lion-elite-os-db
+          property: connectionString
+      - key: GTM_OAUTH_ENCRYPTION_KEY
+        sync: false
+      - key: GTM_GOOGLE_CLIENT_ID
+        sync: false
+      - key: GTM_GOOGLE_CLIENT_SECRET
+        sync: false
+      - key: GTM_GOOGLE_REDIRECT_URI
+        sync: false
+      - key: RESEND_API_KEY
+        sync: false
+      - key: APOLLO_API_KEY
+        sync: false
+
+  # Optional provider bridge for LinkedIn-side signals/actions. It remains
+  # disabled until the operator supplies a provider URL/token and explicitly
+  # flips GTM_LINKEDIN_WORKER_ENABLED=true.
+  - type: worker
+    name: lionos-gtm-linkedin-worker
+    runtime: node
+    plan: starter
+    buildCommand: npm install --no-audit --no-fund && npm run db:migrate
+    startCommand: npm run worker:gtm-linkedin
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: lion-elite-os-db
+          property: connectionString
+      - key: GTM_LINKEDIN_WORKER_ENABLED
+        sync: false
+      - key: GTM_LINKEDIN_PROVIDER_URL
+        sync: false
+      - key: GTM_LINKEDIN_PROVIDER_TOKEN
+        sync: false

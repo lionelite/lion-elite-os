@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>LionOS — Integrations</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#080a0f;color:#f4f5f7;font:14px/1.5 Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.wrap{max-width:1050px;margin:auto;padding:42px 22px}.brand{font-size:24px;font-weight:900}.brand span{color:#d5b05b}.eyebrow{margin-top:50px;color:#aa8942;font-size:11px;font-weight:800;letter-spacing:.13em;text-transform:uppercase}h1{font-size:40px;margin:7px 0}.sub{color:#838d9c;max-width:720px}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:24px}.card{border:1px solid #222a36;border-radius:14px;background:#0d1118;padding:20px}.card h2{font-size:18px;margin:0 0 8px}.card p{color:#7e8897;min-height:63px}.status{display:inline-block;margin:10px 0 16px;padding:5px 8px;border-radius:999px;font-size:11px;font-weight:800}.ready{background:#142116;color:#8dce76;border:1px solid #284429}.off{background:#181b21;color:#8892a1;border:1px solid #303744}.card button{width:100%;border-radius:9px;padding:10px 12px;font-weight:800;border:1px solid #2b3442;background:#111720;color:#e2e5ea}.note{margin-top:24px;padding:16px;border:1px solid #252d3a;border-radius:12px;background:#0b0f15;color:#7e8897}@media(max-width:760px){.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="brand">Lion<span>OS</span></div>
+<div class="eyebrow">INTEGRATIONS</div>
+<h1>Connect the tools that close the loop.</h1>
+<p class="sub">Gmail powers live reply ingestion. Google Calendar and Calendly power availability and booking. LionOS keeps the campaign, inbox, meeting, and CRM states synchronized.</p>
+<div class="grid">
+<article class="card"><h2>Gmail</h2><p>Ingest inbound replies and attach them to the correct prospect and campaign thread.</p><span id="gmail" class="status off">Checking…</span><button disabled>OAuth connection flow next</button></article>
+<article class="card"><h2>Google Calendar</h2><p>Check availability and create meetings with Google Meet details attached.</p><span id="googleCalendar" class="status off">Checking…</span><button disabled>OAuth connection flow next</button></article>
+<article class="card"><h2>Calendly</h2><p>Use event types and scheduling links as an alternate booking path.</p><span id="calendly" class="status off">Checking…</span><button disabled>OAuth connection flow next</button></article>
+</div>
+<div class="note">Credentials are never stored in the browser or committed to GitHub. The adapters read provider tokens from the server environment and fail closed when a provider is not configured.</div>
+</div>
+<script>
+const qs=new URLSearchParams(location.search),workspaceId=qs.get('workspaceId');
+async function load(){if(!workspaceId)return;const r=await fetch('/api/gtm/workspaces/'+workspaceId+'/integrations/readiness');const j=await r.json();if(!r.ok)return;for(const [key,value] of Object.entries(j.providers||{})){const el=document.getElementById(key);if(!el)continue;el.textContent=value?'Configured':'Not connected';el.className='status '+(value?'ready':'off')}}
+load();
+</script>
+</body></html>

@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>LionOS — Unified Inbox</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#080a0f;color:#f4f5f7;font:14px/1.5 Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.wrap{max-width:1180px;margin:auto;padding:34px 20px}.brand{font-weight:900;font-size:24px}.brand span{color:#d5b05b}.eyebrow{margin-top:42px;color:#aa8942;font-size:11px;font-weight:800;letter-spacing:.13em;text-transform:uppercase}h1{font-size:36px;margin:6px 0}.sub{color:#818b9a}.layout{display:grid;grid-template-columns:.8fr 1.2fr;gap:14px;margin-top:22px}.panel{border:1px solid #202735;background:#0d1118;border-radius:14px;padding:18px}.thread{padding:12px;border-top:1px solid #1c2330;cursor:pointer}.thread:hover{background:#111722}.thread b,.thread small{display:block}.thread small{color:#737d8c}.selected{background:#141b26}.meta{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}.pill{border:1px solid #2a3340;border-radius:999px;padding:5px 8px;color:#a7b0bd}.message{margin-top:14px;padding:14px;border:1px solid #27303d;border-radius:11px;background:#0a0e14}.message textarea{width:100%;min-height:120px;background:#090d13;color:white;border:1px solid #2b3442;border-radius:9px;padding:12px;font:inherit}.actions{display:flex;gap:8px;margin-top:10px}.actions button{border-radius:9px;padding:10px 13px;font-weight:800;cursor:pointer}.primary{background:#d6b15e;color:#111;border:1px solid #dfbf72}.ghost{background:#111720;color:#e2e5ea;border:1px solid #2b3442}.empty{color:#768191;padding:18px}.status{margin-top:10px;color:#8b95a4}@media(max-width:760px){.layout{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="brand">Lion<span>OS</span></div>
+<div class="eyebrow">UNIFIED INBOX</div><h1>Replies become pipeline.</h1><p class="sub">Every inbound message stops the sequence, gets classified, drafts the next response, and can move straight to a meeting.</p>
+<div class="layout">
+<section class="panel"><h2>Conversations</h2><div id="threads" class="empty">Loading…</div></section>
+<section class="panel"><h2 id="title">Select a conversation</h2><div id="detail" class="empty">Choose a thread to review the next action.</div></section>
+</div></div>
+<script>
+const qs=new URLSearchParams(location.search),workspaceId=qs.get('workspaceId');let selected=null,threads=[];
+const $=id=>document.getElementById(id);function esc(v){return String(v||'').replace(/[&<>"]/g,x=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[x]))}
+async function load(){if(!workspaceId){$('threads').textContent='Missing workspaceId';return}const j=await fetch('/api/gtm/workspaces/'+workspaceId+'/inbox').then(r=>r.json());threads=j.threads||[];renderList()}
+function renderList(){const box=$('threads');if(!threads.length){box.className='empty';box.textContent='No replies yet.';return}box.className='';box.innerHTML=threads.map((t,i)=>'<div class="thread '+(selected===i?'selected':'')+'" data-i="'+i+'"><b>'+esc(t.contactName||t.companyName||'Prospect')+'</b><small>'+esc(t.companyName||'')+' · '+esc(t.classification||'unclassified')+'</small></div>').join('');box.querySelectorAll('.thread').forEach(el=>el.onclick=()=>{selected=Number(el.dataset.i);renderList();renderDetail()})}
+function renderDetail(){const t=threads[selected];if(!t)return;$('title').textContent=t.contactName||t.companyName||'Conversation';$('detail').className='';$('detail').innerHTML='<div class="meta"><span class="pill">'+esc(t.classification||'unclassified')+'</span><span class="pill">'+esc(t.status)+'</span><span class="pill">'+esc(t.nextAction||'review_reply')+'</span></div><div class="message"><label>Inbound reply</label><textarea id="inbound" placeholder="Paste or sync the inbound message here"></textarea><div class="actions"><button class="primary" id="draft">Draft response</button><button class="ghost" id="book">Book meeting</button></div><div id="out" class="status"></div></div>';document.getElementById('draft').onclick=()=>draft(t);document.getElementById('book').onclick=()=>book(t)}
+async function draft(t){const inbound=document.getElementById('inbound').value;const r=await fetch('/api/gtm/workspaces/'+workspaceId+'/threads/'+t.threadId+'/draft-reply',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({inboundText:inbound,contactName:t.contactName||'',bookingUrl:''})});const j=await r.json();document.getElementById('out').textContent=j.message?.body||j.error||'Unable to draft'}
+async function book(t){const r=await fetch('/api/gtm/workspaces/'+workspaceId+'/threads/'+t.threadId+'/book-meeting',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({bookingUrl:null})});const j=await r.json();document.getElementById('out').textContent=j.meeting?'Meeting stage created. Calendar integration can attach the exact time.':j.error||'Unable to book';if(j.meeting)load()}
+load();
+</script>
+</body></html>
