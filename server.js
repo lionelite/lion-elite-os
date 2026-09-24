@@ -132,7 +132,9 @@ app.use((req,res,next)=>{
     '/privacy':'gtm/legal/privacy/index.html',
     '/privacy/':'gtm/legal/privacy/index.html',
     '/acceptable-use':'gtm/legal/acceptable-use/index.html',
-    '/acceptable-use/':'gtm/legal/acceptable-use/index.html'
+    '/acceptable-use/':'gtm/legal/acceptable-use/index.html',
+    '/launch-status':'gtm/launch-status/index.html',
+    '/launch-status/':'gtm/launch-status/index.html'
   };
   const target=routes[req.path];
   if(!target)return next();
