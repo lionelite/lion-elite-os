@@ -106,6 +106,37 @@ app.use(['/optin', '/unsubscribe'], (_req, res, next) => {
   });
   next();
 });
+
+// BuildPipeline customer-facing domain. Keep the legacy internal command center
+// on the Render hostname while the custom domain presents the SaaS product.
+app.use((req,res,next)=>{
+  const host=String(req.hostname||req.headers.host||'').toLowerCase().split(':')[0];
+  const buildPipelineHost=host==='buildpipeline.online'||host==='www.buildpipeline.online';
+  if(!buildPipelineHost)return next();
+  const routes={
+    '/':'gtm/index.html',
+    '/pricing':'gtm/pricing/index.html',
+    '/pricing/':'gtm/pricing/index.html',
+    '/login':'gtm/access/index.html',
+    '/login/':'gtm/access/index.html',
+    '/account':'gtm/account/index.html',
+    '/account/':'gtm/account/index.html',
+    '/security':'gtm/security/index.html',
+    '/security/':'gtm/security/index.html',
+    '/support':'gtm/support/index.html',
+    '/support/':'gtm/support/index.html',
+    '/terms':'gtm/legal/terms/index.html',
+    '/terms/':'gtm/legal/terms/index.html',
+    '/privacy':'gtm/legal/privacy/index.html',
+    '/privacy/':'gtm/legal/privacy/index.html',
+    '/acceptable-use':'gtm/legal/acceptable-use/index.html',
+    '/acceptable-use/':'gtm/legal/acceptable-use/index.html'
+  };
+  const target=routes[req.path];
+  if(!target)return next();
+  res.sendFile(path.join(__dirname,'public',target));
+});
+
 app.use(express.static(path.join(__dirname, 'public')));
 
 const customerCommunicationRules = [
