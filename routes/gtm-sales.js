@@ -34,6 +34,8 @@ function createGtmSalesRouter(){
       launchReady:missing.length===0,
       checks,
       checkout:{solo:solo.enabled,agency:agency.enabled},
+      database:checks.database,
+      webhook:checks.stripeWebhook,
       missing,
       requiredBaseUrl:'https://buildpipeline.online'
     });
