@@ -121,6 +121,8 @@ app.use((req,res,next)=>{
     '/login/':'gtm/access/index.html',
     '/account':'gtm/account/index.html',
     '/account/':'gtm/account/index.html',
+    '/onboarding':'gtm/onboarding/index.html',
+    '/onboarding/':'gtm/onboarding/index.html',
     '/security':'gtm/security/index.html',
     '/security/':'gtm/security/index.html',
     '/support':'gtm/support/index.html',
