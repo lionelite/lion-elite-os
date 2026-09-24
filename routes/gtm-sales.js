@@ -4,6 +4,10 @@ const db=require('../lib/database');
 const {PLANS,ADDONS,CREDIT_PACKS}=require('../lib/platform/commercial-catalog');
 const {createGtmCheckout,configForPlan}=require('../lib/platform/stripe-gtm-checkout');
 const {verifyStripeSignature,provisionCheckout,applySubscriptionLifecycle}=require('../lib/platform/stripe-gtm-webhook');
+const {issueLoginLink,consumeLoginLink}=require('../lib/platform/gtm-access');
+const {createBillingPortal}=require('../lib/platform/stripe-billing-portal');
+const {bearerToken}=require('../lib/platform/security/sessions');
+const {AuthStore}=require('../lib/platform/security/auth-store');
 
 function cleanEmail(v=''){const e=String(v).trim().toLowerCase();return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)?e:''}
 
@@ -36,6 +40,35 @@ function createGtmSalesRouter(){
     }
     res.json({url:result.url,id:result.id});
   });
+
+  router.post('/access/request',async(req,res)=>{
+    const email=cleanEmail(req.body?.email);
+    if(!email)return res.status(400).json({error:'valid email required'});
+    if(!process.env.DATABASE_URL)return res.status(503).json({error:'database unavailable'});
+    try{await issueLoginLink(email);res.json({accepted:true})}catch(error){res.status(500).json({error:'access email unavailable'})}
+  });
+  router.post('/access/exchange',async(req,res)=>{
+    if(!process.env.DATABASE_URL)return res.status(503).json({error:'database unavailable'});
+    const session=await consumeLoginLink(String(req.body?.token||''),{userAgent:req.get('user-agent')||'',ip:req.ip||''});
+    if(!session)return res.status(400).json({error:'invalid or expired access link'});
+    const auth=new AuthStore();
+    const me=await auth.resolveSession(session.token);
+    const memberships=await auth.listMemberships(me.userId);
+    res.json({sessionToken:session.token,expiresAt:session.expiresAt,user:me,workspaces:memberships});
+  });
+  router.post('/billing-portal',async(req,res)=>{
+    if(!process.env.DATABASE_URL)return res.status(503).json({error:'database unavailable'});
+    const auth=new AuthStore();
+    const session=await auth.resolveSession(bearerToken(req));
+    if(!session)return res.status(401).json({error:'authentication required'});
+    const sub=await db.query(`SELECT provider_customer_id AS "customerId" FROM gtm_subscriptions
+      WHERE lower(customer_email)=lower($1) AND provider_customer_id IS NOT NULL ORDER BY created_at DESC LIMIT 1`,[session.email]);
+    const origin=String(process.env.PUBLIC_BASE_URL||'https://lion-elite-os.onrender.com').replace(/\/$/,'');
+    const result=await createBillingPortal({customerId:sub.rows[0]?.customerId,returnUrl:origin+'/gtm/account/'});
+    if(!result.ok)return res.status(503).json(result);
+    res.json({url:result.url});
+  });
+
   router.post('/stripe-webhook',async(req,res)=>{
     const secret=String(process.env.GTM_STRIPE_WEBHOOK_SECRET||'').trim();
     if(!secret)return res.status(503).json({error:'GTM_STRIPE_WEBHOOK_SECRET missing'});
