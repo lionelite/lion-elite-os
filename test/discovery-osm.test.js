@@ -356,3 +356,60 @@ test('the markets the campaigns target are actually searched', () => {
   assert.ok(labels.some(l => l.endsWith('-fl')), 'at least one Florida market');
   assert.ok(labels.includes('miami-fl'), 'South Florida is the named target market');
 });
+
+test('a personal address found on a business site is dropped, the lead is kept', async () => {
+  // Live example from the harvested store: an aesthetics business whose site
+  // published the owner's personal Gmail. That is a private individual's
+  // mailbox in a B2B prospect list, and the address that earns spam complaints
+  // instead of replies. The phone is still worth having.
+  const saved = [];
+  const summary = await runDiscovery({
+    areas: [area],
+    categories: ['med-spa'],
+    enrichDelayMs: 0,
+    fetchImpl: async () => ({
+      ok: true,
+      status: 200,
+      json: async () => ({ elements: [{
+        type: 'node', id: 501, lat: 1, lon: 2,
+        tags: {
+          name: 'Aventura Aesthetics',
+          shop: 'beauty',
+          'contact:phone': '+1-305-454-0449',
+          website: 'https://aventura-aesthetics.com'
+        }
+      }] })
+    }),
+    enrichEmail: async () => ({ email: 'brianfritze310@gmail.com' }),
+    saveProspect: async (p) => { saved.push(p); return { created: true }; }
+  });
+
+  assert.equal(summary.personalEmailsRefused, 1);
+  assert.equal(summary.enriched, 0, 'a personal address is not counted as an enrichment');
+  assert.equal(summary.stored, 1, 'the business and its phone are still stored');
+  assert.equal(saved[0].contact.email, null, 'but never the personal address');
+  assert.equal(saved[0].contact.phone, '+1-305-454-0449');
+});
+
+test('a role address on the business own site is still accepted', async () => {
+  const saved = [];
+  const summary = await runDiscovery({
+    areas: [area],
+    categories: ['med-spa'],
+    enrichDelayMs: 0,
+    fetchImpl: async () => ({
+      ok: true,
+      status: 200,
+      json: async () => ({ elements: [{
+        type: 'node', id: 502, lat: 1, lon: 2,
+        tags: { name: 'GlowVita', shop: 'beauty', website: 'https://glowvitamedspa.com' }
+      }] })
+    }),
+    enrichEmail: async () => ({ email: 'info@glowvitamedspa.com' }),
+    saveProspect: async (p) => { saved.push(p); return { created: true }; }
+  });
+
+  assert.equal(summary.personalEmailsRefused, 0);
+  assert.equal(summary.enriched, 1);
+  assert.equal(saved[0].contact.email, 'info@glowvitamedspa.com');
+});
