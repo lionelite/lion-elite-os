@@ -11,6 +11,7 @@ const { createGtmPlatformRouter } = require('./routes/gtm-platform');
 const { createWorkspaceStore } = require('./lib/platform/workspace-store');
 const { AuthStore } = require('./lib/platform/security/auth-store');
 const { createMcpRouter } = require('./routes/mcp');
+const { createGtmSalesRouter } = require('./routes/gtm-sales');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -38,6 +39,7 @@ app.use('/api/leads', createLeadsRouter({ store: leadStore }));
 const gtmWorkspaceStore = createWorkspaceStore();
 const gtmAuthStore = process.env.DATABASE_URL ? new AuthStore() : null;
 app.use('/api/gtm', createGtmPlatformRouter({ store: gtmWorkspaceStore, authStore: gtmAuthStore }));
+app.use('/api/gtm-sales', createGtmSalesRouter());
 if (gtmAuthStore) app.use('/api/mcp', createMcpRouter({ authStore: gtmAuthStore }));
 app.get('/.well-known/oauth-authorization-server', (_req, res) => {
   const origin = String(process.env.PUBLIC_BASE_URL || '').replace(/\/$/,'');
