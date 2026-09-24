@@ -10,7 +10,7 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 
-const { buildQuery, parseBusinesses, fetchBusinesses, CATEGORIES } = require('../lib/discovery/osm-source');
+const { buildQuery, parseBusinesses, fetchBusinesses, fetchBusinessesByCategory, CATEGORIES, DEFAULT_TIMEOUT_MS } = require('../lib/discovery/osm-source');
 const { runDiscovery, pickArea, DEFAULT_AREAS } = require('../lib/discovery/discovery-run');
 
 const area = { south: 39.9, west: -83.1, north: 40.0, east: -82.9 };
@@ -212,4 +212,108 @@ test('successive runs rotate areas instead of re-walking one city', () => {
   const labels = [0, 1, 2, 3].map(i => pickArea(DEFAULT_AREAS, i).label);
   assert.equal(new Set(labels.slice(0, 3)).size, 3);
   assert.equal(labels[3], labels[0], 'and wrap around');
+});
+
+// The scheduled harvest reported "0 new" on every run for weeks. Both sources
+// were failing: Bluesky 403s a datacenter IP, and Overpass never answered a
+// single 18-member union query over a 2-degree box. These cover the Overpass
+// half — the part fixable without a credential.
+
+test('one union member per selector, not a node and a way each', () => {
+  const query = buildQuery({ area });
+  const members = query.split('\n').filter(line => line.trim().endsWith(';') && line.startsWith('  '));
+  const selectors = Object.values(CATEGORIES).flat().length;
+
+  assert.equal(members.length, selectors, 'nwr collapses the node/way pair into one member');
+  assert.ok(!/^\s*node\[/m.test(query), 'no separate node clause');
+  assert.ok(!/^\s*way\[/m.test(query), 'no separate way clause');
+  assert.ok(/^\s*nwr\[/m.test(query));
+});
+
+test('the server gives up before the client does', async () => {
+  // A 60s server budget under a 90s client wait meant a saturated mirror cost
+  // the full 90s and returned nothing to act on. The server must fail first so
+  // failover is driven by a real 504.
+  let sent = null;
+  await fetchBusinesses({
+    area,
+    endpoint: 'https://one.test/api',
+    timeoutMs: 45000,
+    fetchImpl: async (_url, options) => { sent = options.body; return { ok: true, status: 200, json: async () => ({ elements: [] }) }; }
+  });
+
+  const budget = Number(decodeURIComponent(sent).match(/\[timeout:(\d+)\]/)[1]);
+  assert.ok(budget * 1000 < 45000, `server budget ${budget}s must sit inside the 45s client wait`);
+  assert.ok(budget >= 10, 'but still long enough to answer a small query');
+});
+
+test('one unreachable segment no longer takes the whole run down', async () => {
+  // This is the bug: a single union meant all-or-nothing, so one heavy segment
+  // reported the entire area as empty.
+  const asked = [];
+  const { businesses, failures } = await fetchBusinessesByCategory({
+    area,
+    categories: ['med-spa', 'gym'],
+    endpoint: 'https://one.test/api',
+    sleepImpl: async () => {},
+    logger: { warn() {} },
+    fetchImpl: async (_url, options) => {
+      const query = decodeURIComponent(options.body);
+      asked.push(query);
+      if (query.includes('fitness_centre')) {
+        const error = new Error('The operation was aborted due to timeout');
+        error.name = 'TimeoutError';
+        throw error;
+      }
+      return {
+        ok: true,
+        status: 200,
+        json: async () => ({ elements: [{
+          type: 'node', id: 11, lat: 1, lon: 2,
+          tags: { name: 'Still Found Spa', shop: 'beauty', 'contact:phone': '+16145550100' }
+        }] })
+      };
+    }
+  });
+
+  assert.equal(asked.length, 2, 'each category is its own request');
+  assert.equal(businesses.length, 1, 'the reachable segment still produces leads');
+  assert.equal(businesses[0].name, 'Still Found Spa');
+  assert.deepStrictEqual(failures.map(f => f.category), ['gym'], 'and the loss is reported, not swallowed');
+});
+
+test('the same listing found under two segments is stored once', async () => {
+  const { businesses } = await fetchBusinessesByCategory({
+    area,
+    categories: ['med-spa', 'massage'],
+    endpoint: 'https://one.test/api',
+    sleepImpl: async () => {},
+    fetchImpl: async () => ({
+      ok: true,
+      status: 200,
+      json: async () => ({ elements: [{
+        type: 'node', id: 42, lat: 1, lon: 2,
+        tags: { name: 'Overlap Spa', shop: 'beauty', 'contact:phone': '+16145550100' }
+      }] })
+    })
+  });
+
+  assert.equal(businesses.length, 1);
+});
+
+test('every segment failing is an unreachable source, not an empty area', async () => {
+  // "found 0" has to keep meaning "there was nothing there". If a total outage
+  // returned an empty list, a dead pipeline would report a quiet day forever —
+  // which is exactly how this went unnoticed.
+  await assert.rejects(
+    () => fetchBusinessesByCategory({
+      area,
+      categories: ['med-spa', 'gym'],
+      endpoint: 'https://one.test/api',
+      sleepImpl: async () => {},
+      logger: { warn() {} },
+      fetchImpl: async () => ({ ok: false, status: 504 })
+    }),
+    error => error.retryable === true
+  );
 });
