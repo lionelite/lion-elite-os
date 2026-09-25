@@ -1,6 +1,6 @@
 # New leads from the last harvest
 
-_Generated 2026-09-25T15:05:40.692Z — 0 leads._
+_Generated 2026-09-25T19:56:16.643Z — 0 leads._
 
 | Searches run | Searches failed | Posts read | Matched | Dropped (do-not-engage) |
 |---:|---:|---:|---:|---:|
@@ -12,9 +12,9 @@ _Generated 2026-09-25T15:05:40.692Z — 0 leads._
 
 ```
 coach-scaling: Bluesky search failed for "looking for a coaching platform": HTTP 403
-coach-scaling: Bluesky search failed for "what platform do you use for online coaching": HTTP 403
+coach-scaling: fetch failed
 coach-scaling: Bluesky search failed for "starting my online coaching business": HTTP 403
-coach-scaling: Bluesky search failed for "just got certified personal trainer": HTTP 403
+coach-scaling: fetch failed
 coach-scaling: Bluesky search failed for "tired of spreadsheets for my clients": HTTP 403
 coach-scaling: Bluesky search failed for "how do I get my first coaching client": HTTP 403
 coach-scaling: Bluesky search failed for "scale my personal training business": HTTP 403
