@@ -1,11 +1,11 @@
 # Every harvested lead
 
-_Generated 2026-09-29T12:18:44.794Z — 106 leads._
+_Generated 2026-09-29T19:13:25.099Z — 108 leads._
 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-## med-spa-b2b — 106
+## med-spa-b2b — 108
 
 ### Sports Performance & Wellness Center — score 50
 
@@ -854,3 +854,19 @@ any of them — reach out by hand from the post link if a lead is worth it.
 - **Why they matched:** med-spa
 
 > med-spa · 3475 Northeast 163rd Street North Miami Beach FL 33160
+
+### Marino's Haircutting — score 50
+
+- **Handle:** [@null](null)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · Euclid Ave
+
+### Broadview Nail & Spa — score 50
+
+- **Handle:** [@null](null)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 5875
