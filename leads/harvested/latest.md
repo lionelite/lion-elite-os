@@ -1,6 +1,6 @@
 # New leads from the last harvest
 
-_Generated 2026-09-29T19:13:25.098Z — 2 leads._
+_Generated 2026-09-29T23:30:41.932Z — 0 leads._
 
 | Searches run | Searches failed | Posts read | Matched | Dropped (do-not-engage) |
 |---:|---:|---:|---:|---:|
@@ -41,20 +41,4 @@ business-scaling: Bluesky search failed for "trying to scale my business": HTTP 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-## med-spa-b2b — 2
-
-### Marino's Haircutting — score 50
-
-- **Handle:** [@null](null)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
-
-> med-spa · Euclid Ave
-
-### Broadview Nail & Spa — score 50
-
-- **Handle:** [@null](null)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
-
-> med-spa · 5875
+**No leads, because no source could be reached.** Every query failed — see above.
