@@ -1,6 +1,6 @@
 # New leads from the last harvest
 
-_Generated 2026-09-30T14:28:13.513Z — 11 leads._
+_Generated 2026-09-30T14:34:11.502Z — 12 leads._
 
 | Searches run | Searches failed | Posts read | Matched | Dropped (do-not-engage) |
 |---:|---:|---:|---:|---:|
@@ -41,94 +41,102 @@ business-scaling: Bluesky search failed for "trying to scale my business": HTTP 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-**Sources this run:** bluesky: unreachable (23 failed) · openstreetmap: 11 businesses in fort-lauderdale-fl
+**Sources this run:** bluesky: unreachable (23 failed) · openstreetmap: 12 businesses in west-palm-beach-fl
 
-## med-spa-b2b — 11
+## med-spa-b2b — 12
 
-### Moon & Stars Spa + Nails — score 50
+### Oasis Salon & Spa — score 50
 
-- **Handle:** [@null](https://moonandstarsspa.com/)
+- **Handle:** [@null](http://oasissalonspa1.com)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** med-spa
 
-> med-spa · 3085 East Commercial Boulevard Fort Lauderdale FL 33308
+> med-spa · 5100 South Dixie Highway West Palm Beach FL 33405
+
+### Hamilton Aesthetics of the Palm Beaches — score 50
+
+- **Handle:** [@null](https://hamiltonpalmbeach.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 11000 Prosperity Farms Road Palm Beach Gardens FL 33410
+
+### Microblading and Permanent Makeup By Nellie Novillo — score 50
+
+- **Handle:** [@null](http://permanentmakeupbynellienovillo.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 1011 North Dixie Highway West Palm Beach FL 33401
 
 ### Ulta Beauty — score 50
 
-- **Handle:** [@null](https://www.ulta.com/stores/davie-fl-581)
+- **Handle:** [@null](https://www.ulta.com/stores/west-palm-beach-fl-781)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** med-spa
 
-> med-spa · 1950 South University Drive Davie FL 33324
+> med-spa · 1855 Palm Beach Lakes Boulevard West Palm Beach FL 33401
 
-### Nails Spa BK — score 50
+### Noveau Haealth and Wellness — score 70
 
-- **Handle:** [@null](http://nailspabk.com)
+- **Handle:** [@null](https://nouveauhealthandwellness.com/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** med-spa
 
-> med-spa · 1145 North Federal Higway Fort Lauderdale FL 33304
+> med-spa · 4767 PGA Boulevard Palm Beach Gardens FL 33418
 
-### Nail Passion — score 50
+### Ideal Image — score 50
 
-- **Handle:** [@null](https://nailpassion-plantation.com)
+- **Handle:** [@null](https://www.tangeroutlet.com/palmbeach/maps#/profile?location=14999)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** med-spa
 
-> med-spa · 119 N State Road 7 Plantation FL 33317
+> med-spa · West Palm Beach FL 33401
 
-### The Bare Peach Wax Studio — score 70
+### Noire the Nail Bar Florida — score 50
 
-- **Handle:** [@null](https://www.barepeachwax.com)
+- **Handle:** [@null](https://www.tangeroutlet.com/palmbeach/maps#/profile?location=15000)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** med-spa
 
-> med-spa · 2787 East Oakland Park Boulevard Fort Lauderdale FL 33306-1646
+> med-spa · West Palm Beach FL 33401
 
-### Comprehensive Care Center — score 50
+### Tande Health, LLC — score 70
 
-- **Handle:** [@null](https://www.browardhealth.org/locations/comprehensive-care-center)
+- **Handle:** [@null](https://tandehealth.com)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
+- **Why they matched:** med-spa
 
-> clinic · 1101 Northwest 1st Street Fort Lauderdale FL 33311
+> med-spa · 120 South Olive Avenue West Palm Beach FL 33401
 
-### Preferred Men's Medical Center — score 50
+### Synomatic Nails — score 70
 
-- **Handle:** [@null](https://www.preferredmensmedical.com/)
+- **Handle:** [@null](https://synomaticnails.as.me)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
+- **Why they matched:** med-spa
 
-> clinic · 6301 Northwest 5th Way Fort Lauderdale FL 33309
+> med-spa · 505 10th Street Lake Park FL 33403
 
-### MD Now Urgent Care — score 50
+### LA Fitness — score 50
 
-- **Handle:** [@null](https://www.mymdnow.com/locations/broward/downtown-fort-lauderdale)
+- **Handle:** [@null](https://www.lafitness.com/Pages/default.aspx)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
+- **Why they matched:** gym
 
-> clinic
+> gym · 700 South Rosemary Avenue West Palm Beach FL 33401
 
-### The Nail Glow & Co — score 50
+### Venetian Nail Spa — score 50
 
 - **Handle:** [@null](null)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** med-spa
 
-> med-spa · 3808 North Federal Highway Fort Lauderdale FL 33308
+> med-spa · 460 South Rosemary Avenue West Palm Beach FL 33401
 
-### MD Now Urgent Care — score 50
-
-- **Handle:** [@null](null)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
-
-> clinic · 7007 West Broward Boulevard Plantation
-
-### ThriveX™ — score 50
+### Vera 2 Beauty Supply — score 50
 
 - **Handle:** [@null](null)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
+- **Why they matched:** med-spa
 
-> clinic · 2655 East Oakland Park Boulevard Fort Lauderdale FL 33306
+> med-spa
