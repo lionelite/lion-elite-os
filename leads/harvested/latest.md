@@ -1,6 +1,6 @@
 # New leads from the last harvest
 
-_Generated 2026-10-02T04:31:33.111Z — 0 leads._
+_Generated 2026-10-02T12:02:03.010Z — 1 lead._
 
 | Searches run | Searches failed | Posts read | Matched | Dropped (do-not-engage) |
 |---:|---:|---:|---:|---:|
@@ -41,4 +41,12 @@ business-scaling: Bluesky search failed for "trying to scale my business": HTTP 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-**No leads, because no source could be reached.** Every query failed — see above.
+## med-spa-b2b — 1
+
+### WERK — score 50
+
+- **Handle:** [@null](https://werkdancefitness.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 358 Hamilton Road Gahanna OH 43230
