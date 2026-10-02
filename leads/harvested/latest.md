@@ -1,6 +1,6 @@
 # New leads from the last harvest
 
-_Generated 2026-10-02T19:09:10.618Z — 4 leads._
+_Generated 2026-10-02T23:44:12.420Z — 0 leads._
 
 | Searches run | Searches failed | Posts read | Matched | Dropped (do-not-engage) |
 |---:|---:|---:|---:|---:|
@@ -41,38 +41,6 @@ business-scaling: Bluesky search failed for "trying to scale my business": HTTP 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-**Sources this run:** bluesky: unreachable (23 failed) · openstreetmap: 5 businesses in columbus-oh
+**Sources this run:** bluesky: unreachable (23 failed) · openstreetmap: unreachable (The operation was aborted due to timeout)
 
-## med-spa-b2b — 4
-
-### Massage Envy — score 50
-
-- **Handle:** [@null](https://www.massageenvy.com/)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** massage
-
-> massage · 668 North State Street Westerville OH 43082
-
-### Olive Massage & Head Spa — score 70
-
-- **Handle:** [@null](https://olivemassagespa.com/)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** massage
-
-> massage · 6832 Caine Road Columbus OH
-
-### Foot Palace Spa — score 50
-
-- **Handle:** [@null](https://footpalacespa.wixsite.com/43235)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** massage
-
-> massage · 7434 Sawmill Road Columbus OH 43235
-
-### Paloma — score 70
-
-- **Handle:** [@null](https://www.experiencepaloma.com/)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** massage
-
-> massage · 1197 West 5th Avenue Columbus OH 43212
+**No leads, because no source could be reached.** Every query failed — see above.
