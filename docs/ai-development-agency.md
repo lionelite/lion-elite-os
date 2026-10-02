@@ -1,0 +1,476 @@
+# Managed AI-development agency — operating model
+
+The business: we sell a business outcome; vetted contractors do most of the
+technical delivery under our direction. We remain responsible for discovery,
+strategy, architecture, quality control, delivery, and results. Contractors are
+the fulfilment department, not the product.
+
+Implemented in `agency/`. Every rule below is enforced in code and covered by
+tests in `agency/test/` (wired into the root `npm test`), because a margin rule
+that lives only in a document is a rule that gets negotiated away in a sales
+call.
+
+**This is generation only.** Nothing in `agency/` sends email, posts, invoices,
+or opens GitHub issues. It prints documents. Sending remains governed by the
+existing gated paths and the hard limits in `CLAUDE.md`.
+
+## The offer — one thing, deliberately
+
+> We build AI systems that recover missed leads, automate follow-up, qualify
+> prospects, schedule appointments, and show management exactly how much revenue
+> the system produces.
+
+Five capabilities (`agency/src/offer.js`). Four are required — a build without
+capture, follow-up, qualification and reporting is not this offer. Reporting is
+required specifically because a client who cannot see the revenue the system
+produced does not renew a retainer.
+
+Anything else is a priced add-on or a decline. `scopeGuard()` takes the
+prospect's own words and returns which:
+
+```bash
+npm run agency:scope -- "we also need a mobile app for our field crews"
+# ✗ Decline: Consumer mobile app development — different bench, different QA surface, unbounded scope.
+```
+
+Declines exist because each one destroys the model in a specific way — unbounded
+scope, unbounded liability, or a skill set the bench does not have. Staff
+augmentation is a decline because it sells hours instead of outcomes and inverts
+the margin model.
+
+### Target verticals
+
+Businesses where one recovered customer is worth thousands: oil & gas services,
+specialty contractors, private medical practices, logistics, commercial real
+estate, financial firms. Each carries a typical customer value used to sanity-check
+what a prospect reports, and compliance flags that propagate into the contractor
+access plan — a medical practice's build cannot be staffed the way a roofer's can.
+
+## Step 1 — Close the client
+
+`agency/src/qualification.js` sizes the leak in money from discovery facts, then
+qualifies or disqualifies.
+
+**It is deliberately conservative.** Two discounts that an eager model omits:
+
+- We recover **35%** of missed leads, not all of them. A lead that went cold
+  three weeks ago is often gone.
+- A recovered lead closes at **60% of the client's normal close rate**, because
+  it is older and was already ignored once.
+
+An inflated number closes a deal you cannot defend at the 90-day review, which
+kills the retainer that is most of the lifetime value.
+
+**Most businesses should not buy this.** Hard disqualifiers: customer value under
+$1,000, inbound under 25/month, annual recoverable value under $30,000, no
+engaged decision-maker, insisting on hourly billing, or demanding a revenue
+guarantee. A blocker disqualifies regardless of how good everything else looks.
+
+Missing facts produce `DISCOVERY`, not a quote — quoting on a guess is how you
+underprice. A missing fact never masquerades as a failed floor.
+
+## Step 2 — We architect
+
+`agency/src/delivery-plan.js`. The part that is not delegable, because it is what
+makes the delegation safe.
+
+A ticket is only safe to hand over when it carries four things:
+
+1. a narrow, single-purpose statement of work
+2. objective acceptance criteria, testable without a conversation
+3. a fixed price
+4. the lowest access tier that can complete it
+
+`buildDeliveryPlan()` **throws** if any ticket is missing one, if a milestone has
+no acceptance test, or if the payouts do not sum exactly to the budget. A
+malformed plan never reaches a contractor. We never ask a contractor to interpret
+intent, so their output is verifiable and the cost is predictable.
+
+Milestone 1 is always ours: discovery, architecture, the scope document with
+explicit exclusions, and the acceptance test suite — written **before** any build
+work starts.
+
+## Step 3 — Contractors execute
+
+Fixed-price milestones, never hourly (`agency/src/contractor.js`,
+`agency/src/access.js`).
+
+**Access is per-ticket, not per-person.** Four graduated tiers; a ticket declares
+the lowest one that can complete it. An unrecognised resource request defaults to
+deny, because an unassessed resource is an unassessed risk.
+
+`NEVER_GRANT` is absolute and no ticket can override it. It covers two different
+risks that are easy to conflate:
+
+- **Security** — production data, production credentials, production deploy,
+  merge rights, repo settings. It is our company on the contract.
+- **Channel** — the client's inbox, billing portal, and any direct contact. A
+  contractor with those can quote the next phase directly. That is not a security
+  breach; it is the loss of the business.
+
+Compliance flags tighten this further: PHI or financial PII caps every ticket at
+`sandbox`, so contractors work against synthetic fixtures and never reach an
+environment holding real records. A HIPAA engagement additionally requires an
+executed BAA before assignment.
+
+**Paperwork is a gate.** `assignTicket()` throws if the NDA, IP assignment,
+non-solicit and contractor agreement are not signed — plus a BAA where required.
+Code written before an IP assignment is signed is code we may not own, and
+discovering that during a client's due diligence is a catastrophe.
+
+### Quality control
+
+`agency/src/qc.js` is the gate between "a contractor says it's done" and both the
+client seeing it and the contractor being paid. This is the load-bearing part: we
+are not reselling cheap labour, and what the client is buying is that someone
+competent checked the work. If this gate is soft, the agency is an unreliable
+middleman.
+
+Ten blocking items. Unrecorded counts as not passed. Payment release is *derived*
+from acceptance — there is no way to release payment with a blocking item open,
+and the `acceptance-tests` item cannot be self-ticked while a test is
+outstanding.
+
+## Step 4 — We retain the margin
+
+`agency/src/pricing.js`. The reference deal:
+
+| | |
+|---|---|
+| Client pays | $20,000 |
+| Contractor delivery | $5,000–$8,000 |
+| Software / operating | $1,000–$2,000 |
+| **Gross profit** | **$10,000–$14,000** |
+| Plus management retainer | $2,000–$5,000 / month |
+
+Every way that deal degrades is a rule:
+
+- **Price from value, not cost.** `priceFromValue()` prices at 18% of year-one
+  recoverable value. Pricing from estimated hours makes the price a function of
+  *our* cost — which is how an agency charges $6,000 for a system worth $180,000/yr
+  to the buyer.
+- **Margin floor 50%**, target 60%. Below the floor the quote is blocked.
+- **Delivery cost capped at 40% of price.** A high delivery estimate *raises the
+  price* rather than eating the margin.
+- **Deposit floor 50%.** We do not fund a client's build from our working capital.
+- **Cash-flow check.** `checkCashFlow()` verifies the deposit covers every
+  contractor payout falling due before the client's balance lands. Otherwise we
+  are lending the client money at 0% and carrying the delivery risk.
+- **ROI ceiling.** Never price above a third of year-one value, or the return
+  story dies.
+
+### The two gates that replaced a naive ROI test
+
+A single "year-one ROI ≥ 3x" test rejects deals whose build pays back in two
+months, because it counts twelve months of retainer as pure cost. Split in two:
+
+- **Build payback ≤ 6 months** — the capital question, and the hard gate. It is
+  also the persuasive number, so the proposal leads with it.
+- **Year-one ROI ≥ 2x** across build plus retainer — the relationship question.
+  Under 3x is a warning, not a block.
+
+### Productized price ceiling
+
+A value-based calculation on a high-volume client returns $130,000 for the same
+fixed scope. Quoting that invites a procurement process, three competing bids,
+and a custom-software expectation nobody scoped. Above **$45,000** the engine
+clamps to the ceiling and raises `escalateToCustom` — the deal is real, but it is
+not this product, and pricing it is an owner decision.
+
+### Retainer too heavy for a small client
+
+A $2,000/mo retainer on a client gaining $7,500/mo is 26% of the result and will
+not renew. When the build's payback passes but combined ROI does not, the engine
+re-quotes the build alone plus a **quarterly optimization package** instead of
+killing the deal.
+
+## Step 5 — We control the relationship
+
+- The client contracts with our company. Contractors are not parties and are not
+  named.
+- Contractors sign confidentiality, IP assignment and non-solicitation before
+  assignment.
+- We own the code, documentation, accounts and deployment process. Production
+  deploy and merge rights are never granted.
+- Contractors do not quote, invoice, or communicate commercially with the client.
+  `reviewContractorMessage()` pre-screens anything a contractor wants relayed and
+  blocks rate quotes, direct payment paths, solicitations and channel redirects.
+  Technical answers relay fine — it catches commercial content only.
+
+### What each document may contain
+
+Enforced mechanically, not by care:
+
+| Document | Contains | Never contains |
+|---|---|---|
+| Client proposal | Their value case, scope, milestones, acceptance criteria, price, deposit, payback | Delivery cost, margin, contractor anything |
+| Internal plan | Everything | — |
+| Contractor ticket | The work, its acceptance criteria, their own fixed price, their access tier | Client name, client price, other tickets' prices |
+
+`assertNoInternalLeakage()` runs on every client-facing document before it is
+returned, checking both internal vocabulary and the engagement's own internal
+dollar figures in raw and comma-formatted form. A future template edit cannot
+quietly start leaking cost figures — `buildProposal()` throws instead.
+
+## Commands
+
+```bash
+npm run agency:plan     -- --client agency/examples/cedar-roofing.json   # the decision
+npm run agency:proposal -- --client <file>    # client-facing proposal (markdown)
+npm run agency:internal -- --client <file>    # internal plan: margin, cash flow, access
+npm run agency:tickets  -- --client <file>    # every contractor ticket body
+npm run agency:plan     -- --client <file> --json
+npm run agency:scope    -- "<what the prospect asked for>"
+npm run agency:ledger   -- <ref>              # engagement state and next action
+npm run agency:portfolio                      # pipeline, cash, estimate accuracy
+npm run agency:bench                          # contractor roster, capacity, track record
+```
+
+Worked examples in `agency/examples/`, each chosen to exercise a different path:
+
+| Example | What it demonstrates |
+|---|---|
+| `cedar-roofing.json` | The reference deal: $21,000 build, $7,700 delivery, $1,600 operating, $11,700 profit at 55.7%, $2,000/mo retainer, 2.2-month payback |
+| `summit-energy.json` | Value beyond the productized ceiling → clamped and escalated to the owner |
+| `lakeside-dental.json` | PHI: every ticket forced to synthetic fixtures, BAA required, retainer restructured to quarterly |
+| `corner-cafe.json` | Correctly refused — no price, no scope, no proposal generated |
+
+## The bench — contractors as a roster, not a contact list
+
+`contractor.js` gates ONE assignment: is this person papered, and may they hold
+this ticket's access tier. `agency/src/bench.js` answers the questions about the
+bench as a whole, which is where the operational failures actually live:
+
+- **Overloading whoever says yes.** Nothing rejects a sixth concurrent ticket, so
+  the deadline slips silently and it surfaces at the milestone review. A
+  contractor at their `maxConcurrent` (default 3 — these are few-day tickets, and
+  they have other clients) is not assignable.
+- **Assigning outside someone's competence.** A contractor is *cleared for*
+  specific capability ids, validated against the offer's vocabulary so a typo
+  fails at the bench instead of silently making them ineligible for the work they
+  were hired for. An empty capability list means "not cleared for anything yet",
+  not "anything".
+- **Picking the cheapest.** The recommendation ranks on **first-pass quality
+  control rate** first, headroom second, cost variance last. A ticket that comes
+  back twice has consumed our review time three times over — that is our margin,
+  not theirs, and it is the mistake this ranking exists to prevent. A contractor
+  with a 0% first-pass record ranks *below* someone with no record at all.
+- **Concentration risk.** One contractor holding more than half the live tickets
+  is flagged: their absence stalls the whole book. A bench above 85% committed
+  warns to recruit before selling another build.
+
+**Track record and current load are derived from the ledgers**, never stored on
+the contractor record. A hand-maintained "tickets completed: 12" field drifts
+from reality within a month; a count over assignments people actually recorded
+cannot. `ledger.recordAssignment()` only accepts a `contractor.assignTicket()`
+result — the same provenance rule milestone acceptance uses — so an assignment
+that skipped the paperwork gate cannot be written.
+
+Two honesty guards, matching the ones elsewhere:
+
+- **Free capacity is only shown for contractors who can actually be assigned.**
+  Printing "2 free" beside someone whose IP assignment is unsigned invites exactly
+  the assignment the paperwork gate exists to stop, so they render as `blocked`
+  and contribute zero usable capacity to the bench total.
+- **Work held by someone suspended or off the bench is surfaced for
+  reassignment**, rather than quietly counting as covered.
+
+```bash
+npm run agency:bench                                            # roster, capacity, record
+npm run agency:ledger -- <ref> --suggest <ticketId>             # who should take it, and why
+npm run agency:ledger -- <ref> --assign <ticketId> --to <id>    # assign through the real gate
+```
+
+`--assign` runs the bench check *and* `contractor.assignTicket()`; the bench check
+is additional, never a substitute for the paperwork gate.
+
+Assignments close out with an outcome — `completed`, `completed-after-rework`,
+`reassigned` or `abandoned` — and that distinction is the whole track record.
+Unknown outcomes are refused rather than recorded as a mystery.
+
+### Schema evolution
+
+Ledgers outlive the code that wrote them. A ledger opened before `assignments`
+existed is still a live engagement, so `ledger.normalize()` fills fields added
+later and `ledger-store.loadLedger()` applies it on the way in. Schema additions
+get a default there rather than a scattered `|| []` at each call site, since the
+scattered version only covers the paths someone remembered.
+
+## Arbitration — the appeal the QC gate never had
+
+`qc.js` refuses acceptance and `ledger.js` refuses payment. Both were
+one-directional and final: a contractor who genuinely believed their ticket met
+the acceptance criteria had nowhere to go. That is three problems at once — unfair
+(we hold the money, the review, and the definition of done), legally exposed (an
+unpaid contractor with no process is a claim), and operationally bad (a stuck
+ticket blocks its milestone, which blocks the client's balance).
+
+`agency/src/arbitration.js` is the process. Four rules do the real work:
+
+**A ruling must cite the specific acceptance criterion it turns on.** This is why
+`delivery-plan.js` refuses to emit a ticket without objective criteria — a dispute
+over objective criteria is *resolvable by reading them*. A ruling citing nothing
+is refused, because "we looked at it and we're right" is how arbitration becomes
+theatre in which the agency always wins. A ruling also cannot cite an item quality
+control never raised.
+
+**Ambiguity is our fault.** If the criterion turns out ambiguous, we wrote the
+ticket. The `split` outcome pays the contractor in full and records a spec defect
+against us. The incentive that creates is the right one, and `specDefectRate()`
+turns repeated findings into a signal to fix the ticket templates.
+
+**The reviewer cannot be the person who failed it.** Enforced, not encouraged —
+otherwise the appeal is to the same judgement being appealed.
+
+**It is time-boxed to 5 business days.** An undecided dispute escalates rather
+than sitting open, because an indefinite "under review" is functionally a refusal
+to pay. `isOverdue()` surfaces it and the portfolio report flags it.
+
+| Outcome | Contractor paid | Recorded against |
+|---|---|---|
+| `upheld` | No — reworks at no extra cost | The contractor's delivery |
+| `overturned` | Yes | **Our quality control** called it wrong |
+| `split` | Yes, in full | **Our specification** was ambiguous |
+| `withdrawn` | No | Nobody |
+
+**Read the statistics the right way round.** A high overturn rate is a finding
+about *our* gate; a high split rate is a finding about *our* specs. Only `upheld`
+says anything about the contractor, and `contractorDisputeRecord()` separates
+"contested and was right" from "contested and was wrong" — a naive dispute count
+would penalise the contractor who successfully challenges bad rejections, which is
+exactly the wrong person. Rates stay `null` below three substantive rulings, since
+before that they are noise.
+
+Ledger integration: a milestone with an open dispute **cannot be accepted**
+(whether it meets the criteria is precisely what is contested), and payment on a
+disputed milestone is held. Undisputed accepted milestones still pay on schedule —
+one contested ticket does not freeze a contractor's other work. Disputes can be
+raised and resolved after the build closes, because a late dispute is still a real
+obligation. `recordDispute()` accepts only an `arbitration.openDispute()` result,
+the same provenance rule as milestone acceptance and assignment.
+
+The matching agreement language is in
+`agency/templates/contractor-agreement-terms.md` (and mirrored for clients),
+including the clause worth refusing even though it favours us on paper: a "sole
+discretion" acceptance term makes the written criteria decorative and is what makes
+good contractors decline the work.
+
+## Step 6 — Operating the book
+
+Steps 1–5 decide and execute one deal. `agency/src/ledger.js` and
+`agency/src/portfolio.js` are what make it a business rather than a series of
+one-off calculations: the engine recomputes a plan from scratch every run and
+remembers nothing, so without a ledger there is no record of whether the deposit
+landed, which milestones passed, or what delivery actually cost.
+
+### The engagement ledger
+
+A state machine with fail-closed transitions. An illegal move throws rather than
+being recorded, because a ledger you cannot trust is worse than no ledger.
+
+```
+qualified → proposed → won → in_delivery → delivered → closed
+     ↘ lost / disqualified        ↘ lost
+```
+
+The preconditions are the rules that stop the ledger recording a fiction:
+
+- **`won` requires the full deposit on record.** Half a deposit is not a signed
+  project.
+- **A milestone cannot be accepted outside `in_delivery`**, and acceptance must
+  come from a real `qc.evaluateMilestone()` result — the evaluation carries a
+  provenance stamp, so a hand-written `{accepted: true}` cannot make the ten
+  blocking QC items decorative. A passing checklist with no named reviewer is
+  also refused: somebody owns every sign-off.
+- **Payment is refused until the milestone is accepted.** Paying "just to keep
+  them moving" is the habit that makes the QC gate ornamental.
+- **`delivered` requires every milestone accepted and the full price collected.**
+
+`closed` is terminal for the *build*, not the relationship: retainer receipts and
+ongoing hosting costs are still recorded against a closed engagement, because
+that is when retainer money actually arrives. Only `lost` and `disqualified` are
+fully dead.
+
+Two honesty guards worth knowing, because the naive version of each lies to you:
+
+- **Profit is not reported as final mid-build.** The deposit arrives before any
+  contractor is paid, so `grossMarginPct` reads 100% on a ledger where nothing has
+  been delivered. `profitIsFinal` is false until the build is collected and paid
+  out, and the CLI prints a cash position instead.
+- **Our own zero-payout milestone is never "accepted but unpaid."** Discovery and
+  architecture is our work with no contractor payment, and flagging it would put a
+  permanent false alarm on every ledger.
+
+### The portfolio roll-up
+
+Three questions no single engagement can answer:
+
+1. **Is the pipeline real?** Weighted at 10% qualified / 30% proposed, and counting
+   unsigned work only — signed work is `contractedValue`, so nothing is
+   double-counted. A stack of unsigned proposals is not revenue, and planning
+   spend against the gross figure is how agencies die with a full pipeline.
+   Win rate is measured over *decided* deals and excludes prospects we
+   disqualified, which were never winnable.
+2. **Where is the cash?** Deposits held against contractor payouts still owed,
+   including on delivered builds whose final payment has not cleared. A
+   profitable agency can still fail this test.
+3. **Are our estimates any good?** Actual delivery cost against planned, across
+   finished engagements. A consistent overrun means the planning numbers in
+   `engagement.js` are too low and **every open quote is underpriced** — the report
+   says so in those words. This is the feedback loop the `estimate-variance` QC
+   item exists to feed, and it is invisible without a ledger.
+
+The report also separates **contracted** retainer from **collected** retainer, and
+says so when a delivered engagement has a retainer nobody has billed.
+
+### Storage, and why it is not committed
+
+Client files (`agency/clients/`) and ledgers (`agency/ledgers/`) are local JSON and
+are **gitignored**. The reason is specific rather than general caution: `access.js`
+grants contractors `repo-branch` access by design, so committing a client's
+revenue, lead volume and customer value — or our own delivery costs and margins —
+would route exactly that data through the access tier built to keep contractors
+away from it.
+
+Filenames are the client `ref`, validated to reject path separators and traversal,
+and written write-then-rename so an interrupted write cannot leave a truncated
+ledger. This is deliberately **not** Postgres and does not touch
+`lib/database.js`: the agency engine has no service, pool or migration, and
+claiming otherwise is the aspirational-docs trap this file warns about elsewhere.
+Concurrent multi-user access would be a real migration, not a config change.
+
+```bash
+npm run agency:plan -- --client agency/clients/<ref>.json --open   # open a ledger
+npm run agency:ledger -- <ref>                                     # show one engagement
+npm run agency:ledger -- <ref> --sent                              # proposal issued
+npm run agency:ledger -- <ref> --receipt 12600 --kind deposit
+npm run agency:ledger -- <ref> --state in_delivery
+npm run agency:portfolio                                           # roll-up
+```
+
+Milestone acceptance and contractor payment go through `qc.evaluateMilestone()`
+and `ledger.releasePayment()` rather than a CLI flag — deliberately, since both
+need a real checklist and a named reviewer, not a one-liner.
+
+## Templates
+
+`agency/templates/` — the discovery call script (collects exactly the fields the
+engine needs), and the required-terms checklists for the contractor and client
+agreements.
+
+**The agreement templates are not legal advice and are not agreements.** They are
+the terms an attorney needs to draft or review for the relevant jurisdiction.
+`contractor.js` tracks *that* an agreement is signed; it cannot tell you whether
+it is enforceable.
+
+## Where this sits in the repo
+
+A standalone module, like `real-estate/intelligence/` and
+`business-scaling/founder-intelligence/`: pure functions, no database, no queue,
+no Render service, no network. It shares the repo's house style — frozen
+constants, fail-closed gates, an explicit blocker list instead of a silent
+default — but shares no runtime with the outreach pipeline.
+
+Deliberately **not** connected to the outreach send path. The agency engine
+produces documents for a human to send; it holds no send capability at all, and
+the hard limits in `CLAUDE.md` govern anything that would change that.

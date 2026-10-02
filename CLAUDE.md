@@ -195,8 +195,10 @@ runner — locally, pass `--transcript-file`. Docs: `docs/video-learning.md`.
   `lib/outreach/campaign-emails.js` fail closed if it creeps in); the
   consumer campaign must carry a working unsubscribe + postal address
   (CAN-SPAM); suppression, transactional daily quota, and the Redis kill
-  switch still apply to every send; discovery enriches only a business's own
-  published contact email (no data broker). Actually enabling sends remains a
+  switch still apply to every send. (The "discovery enriches only a business's own
+  published contact email (no data broker)" condition in this amendment was
+  **lifted on 2026-09-22** — see the licensed-contact-data amendment below.)
+  Actually enabling sends remains a
   human action (`OUTREACH_SEND_ENABLED` + Resend vars) — Claude does not flip
   the send switch.
   *Owner amendment 2026-07-27 (SMS authorized):* **SMS ("text") is authorized**
@@ -216,6 +218,46 @@ runner — locally, pass `--transcript-file`. Docs: `docs/video-learning.md`.
   language). Actually enabling sends remains a human action
   (`SMS_SEND_ENABLED` + Twilio credentials) — Claude does not flip the send
   switch or add the Twilio account/payment method.
+  *Owner amendment 2026-09-22 (licensed B2B contact data authorized):* the prior
+  restriction "discovery enriches only a business's own published contact email
+  (no data broker)" is **lifted for business contacts**. Licensed third-party B2B
+  contact data may be purchased and used as a lead source, so the outbound engine
+  can operate at the scale of a product like trygtm.com rather than only at the
+  scale of what we can scrape. The owner made this call after the restriction was
+  flagged as theirs to change.
+  What this **does** change: `lib/contacts/sources.js` is the source registry, and
+  `approved_source` in the 16-check engine is now a **provenance** question rather
+  than "does it have a URL". It previously read
+  `Boolean(source.approved && source.url)`, which would have failed *every*
+  purchased record at the first check. A `licensed_provider` record must carry
+  `providerId`, `licenceRef` and `acquiredAt`, plus a `region`; records from
+  EU/UK/EEA/CH additionally need a recorded `lawfulBasis`
+  (`legitimate_interests`/`consent`/`contract`), because an unknown region must not
+  default to the most permissive rules. Provenance is stored per record
+  (`provenanceRecord()`) for three operational reasons, not ceremony: erasure and
+  suppression are per person and must survive the next import; bounce and complaint
+  rates differ per provider, so `CONTACT_SOURCE_QUARANTINE` can disable one origin
+  in minutes without a deploy; and a data licence is a contract that governs
+  whether a record may ever be passed to an agency client.
+  What this does **not** change, none of it waivable by buying a list: CAN-SPAM
+  still requires accurate headers, a working unsubscribe and a postal address on
+  consumer sends; suppression and opt-out still bind regardless of where a record
+  came from; the other fifteen checks, the transactional daily quota and the Redis
+  kill switch still gate every send; content stays RUO-gated by
+  `lib/social/social-compliance.js`; **SMS still requires prior express written
+  consent** (TCPA — a purchased number is exactly what that prohibits, so licensed
+  data feeds e-mail only); and the authorization is **B2B only** — a `contactKind`
+  outside `work_email`/`company_general_email`/`company_phone` is refused, so
+  consumer personal data cannot enter on this route.
+  Still separately prohibited and **not** the owner's to authorize against a third
+  party's terms: automated LinkedIn connection requests or DMs (LinkedIn User
+  Agreement, plus the standing no-DMs limit). If a GTM-style "send via LinkedIn"
+  channel is wanted, that stays a manual human action.
+  Legacy records matter here: every prospect stored before this change carries
+  `{ approved: true, url }` with no `type`, so that shape is read as
+  `public_website` and warned about. Requiring an explicit type outright would have
+  failed `approved_source` for the entire existing prospect table and halted the
+  live pipeline. Docs: `docs/licensed-contact-data.md`.
 - Never make unrelated paid purchases or upgrade billing/plan tiers without
   explicit owner authorization.
 
@@ -271,6 +313,11 @@ Workers (`workers/*.js`), each its own Render worker/consumer:
   `prospects` table (stage `affiliate_applied`) instead of cascading to the
   executive queue; a result already flagged `status: 'suppressed'` (an
   existing suppressed fingerprint match) is not cascaded further.
+  **Fixed (this pass):** the cascade called `addJob('executive', ...)`, but
+  `executive-worker.js` listens on `QUEUE_NAMES.analytics` and its allowlist
+  contains exactly the two job names the cascade emits — so every cascaded
+  revenue and lead/retention event was enqueued where nothing consumes and
+  silently dropped. Now `addJob('analytics', ...)`.
 
 Cron (`scripts/cron-scheduler.js <task>`, one Render cron service per task,
 8 schedules in `render.yaml`): `discovery`, `staleData`, `followups`,
@@ -281,12 +328,29 @@ blueprint entry — worth a human decision). `scripts/operations-monitor.js`
 runs as its own cron, polling DB/Redis/queue health and worker heartbeat
 freshness.
 
-Shared `lib/`: `database.js`/`db.js` (Postgres pool; `db.js` is a one-line
-re-export, not dead code), `redis.js` (ioredis + distributed locks),
+Shared `lib/`: `agents/` (the AI agent roster — see below),
+`queue-manifest.js` (**declarative** map of which worker consumes which queue and
+which job names it accepts, dependency-free so tests can read it without
+bullmq/Redis; `executive-worker.js` sources its allowlist from it so the two
+cannot drift, and `test/queue-producer-consumer.test.js` verifies the manifest
+against the real worker files in both directions. Declared rather than inferred
+because a regex over `workers/*.js` missed `outreach-worker.js` entirely — it
+subscribes via a `startWorker(QUEUE_NAMES.email, ...)` helper, and a guard that
+silently under-reports is worse than no guard),
+`action-catalog.js` (the dispatcher's allowlist/blocklist, extracted as a
+dependency-free module so the agent registry and its tests can read the action
+vocabulary without pulling in bullmq/Redis — same extraction and reason as
+`integration-normalization.js`; the dispatcher re-exports both constants so
+existing consumers are unaffected), `database.js`/`db.js` (Postgres pool;
+`db.js` is a one-line re-export, not dead code), `redis.js` (ioredis + distributed locks),
 `job-queues.js` (BullMQ queue registry + dead-letter), `observability.js`
 (structured logging/metrics), `outreach-validation.js` (16-check
-fail-closed policy engine), `email-enrichment.js` (scrapes a business's own
-site for public contact emails — no third-party data broker),
+fail-closed policy engine), `contacts/sources.js` (contact-origin registry and the
+provenance rules behind the `approved_source` check — licensed third-party B2B data
+authorized 2026-09-22, with per-record provenance, region/lawful-basis handling and
+env-driven provider quarantine via `CONTACT_SOURCE_QUARANTINE`),
+`email-enrichment.js` (scrapes a business's own
+site for public contact emails; now one approved origin among several),
 `email-generation.js` (deterministic template email builder, exports
 `buildEmail`/`scoreEmail`), `email-delivery.js` (real Resend send, hard
 env-gated), `postgres-prospect-store.js` (live Postgres store),
@@ -312,6 +376,194 @@ Standalone modules that share the repo but not the architecture above:
   `test/scoring.test.js`), but was completely orphaned until this pass —
   not in `npm test`, no CI, no Render service. Now wired into `npm test`
   (see Recent fixes).
+- **`agency/`** — the managed AI-development agency engine: we sell the
+  business outcome, vetted contractors do most of the technical delivery under
+  our direction. One productized offer (missed-lead recovery → follow-up →
+  qualification → scheduling → revenue reporting) sold into verticals where one
+  recovered customer is worth thousands. Pure, deterministic, offline — no DB,
+  queue, network, or Render service, like the two modules above. The business
+  rules are enforced in code because a margin rule that lives only in a document
+  gets negotiated away in a sales call:
+  `qualification.js` sizes the revenue leak from discovery facts and
+  **disqualifies** most prospects (customer value < $1k, inbound < 25/mo,
+  recoverable value < $30k, no decision-maker, wants hourly, wants a revenue
+  guarantee); `pricing.js` prices at 18% of year-one client value — never from
+  our cost — and blocks on a 50% margin floor, a 40%-of-price delivery-cost cap,
+  a 50% deposit floor, and a cash-flow check that the deposit covers contractor
+  payouts falling due before the client's balance lands; `delivery-plan.js`
+  **throws** unless every ticket has acceptance criteria, a fixed price and an
+  access tier, and payouts sum exactly to the budget; `access.js` scopes
+  contractor access per-ticket with an absolute `NEVER_GRANT` list (production
+  data/credentials/deploy, merge rights, and — equally important — the client's
+  inbox and billing portal, since a contractor who can reach those can quote the
+  next phase); `contractor.js` throws on assignment until NDA + IP assignment +
+  non-solicit are signed, and screens any contractor message bound for the
+  client for commercial content; `qc.js` derives payment release from a
+  ten-item blocking checklist where unrecorded counts as not passed.
+  `proposal.js` renders the client proposal, the internal plan and the
+  contractor ticket bodies, and `assertNoInternalLeakage()` makes
+  `buildProposal()` **throw** if a client-facing document would carry delivery
+  cost, margin, or the word contractor — so a later template edit can't quietly
+  start leaking it. Two calibrations worth knowing because the naive version is
+  wrong: a single "ROI ≥ 3x" gate rejects deals whose build pays back in two
+  months, so it is split into a hard 6-month build-payback gate plus a softer 2x
+  whole-relationship floor; and a value-based price on a high-volume client
+  returns ~$130k for the same fixed scope, so anything above a $45k productized
+  ceiling is clamped and escalated to the owner rather than auto-quoted.
+  `ledger.js` + `portfolio.js` hold the state the planning engine deliberately
+  forgets. The ledger is a fail-closed state machine
+  (`qualified→proposed→won→in_delivery→delivered→closed`, plus `lost`/
+  `disqualified`) whose preconditions stop it recording a fiction: `won` needs the
+  full deposit, `delivered` needs every milestone accepted *and* the full price
+  collected, payment is refused until a milestone is accepted, and acceptance must
+  carry a `gate: 'qc.evaluateMilestone'` provenance stamp plus a named reviewer —
+  otherwise a hand-written `{accepted: true}` would make the ten blocking QC items
+  decorative. `closed` is terminal for the **build only**: retainer receipts and
+  hosting costs still record against a closed engagement, because that is when
+  retainer money actually arrives; only `lost`/`disqualified` are fully dead.
+  Two honesty guards, each fixing a number that otherwise lies — profit is not
+  reported as final mid-build (the deposit lands before any contractor is paid, so
+  margin reads 100%; `profitIsFinal` gates it and the CLI shows a cash position
+  instead), and the agency-owned zero-payout discovery milestone is never flagged
+  "accepted but unpaid". `portfolio.js` rolls up weighted pipeline (10% qualified /
+  30% proposed, unsigned only, so signed work is never double-counted; win rate
+  excludes disqualified prospects, which were never winnable), cash held against
+  contractor commitments including delivered-but-unpaid builds, contracted vs
+  *collected* retainer, and delivery-cost variance across finished engagements —
+  a consistent overrun means every open quote is underpriced and the report says
+  so. **`agency/clients/` and `agency/ledgers/` are gitignored and must stay that
+  way**: they hold client financials and our margins, and `access.js` grants
+  contractors `repo-branch` access by design, so committing them would route that
+  data straight through the tier built to prevent it. Local JSON via
+  `ledger-store.js` (ref-validated filenames, write-then-rename), deliberately
+  **not** Postgres and not touching `lib/database.js` — no service, pool or
+  migration exists.
+  `bench.js` is the contractor roster: who is cleared for which capability ids
+  (validated against the offer's vocabulary), a `maxConcurrent` ceiling (default
+  3) so nobody is quietly handed a sixth ticket, and a track record **derived
+  from the ledgers** rather than stored — a hand-maintained "tickets completed"
+  field drifts within a month. `ledger.recordAssignment()` only accepts a
+  `contractor.assignTicket()` result (same provenance rule as milestone
+  acceptance), so an assignment that skipped the paperwork gate cannot be
+  written; assignments close out as `completed` / `completed-after-rework` /
+  `reassigned` / `abandoned`, and that distinction is the whole record.
+  `recommendAssignee()` ranks on first-pass QC rate, then headroom, then cost
+  variance — cost is last deliberately, since a ticket that comes back twice
+  consumes our review time three times over, and a 0% first-pass record ranks
+  *below* no record at all. Capacity flags concentration (>50% of live tickets in
+  one pair of hands), a bench over 85% committed ("recruit before selling"), and
+  work held by someone suspended or off the bench. Same honesty guard as
+  elsewhere: an unpapered contractor renders as `blocked` and contributes **zero**
+  usable capacity, because "2 free" next to an unsigned IP assignment invites the
+  exact assignment the gate exists to stop. `agency/bench/` is gitignored with the
+  other two. Schema evolution: ledgers outlive the code that wrote them, so
+  `ledger.normalize()` fills fields added later and `loadLedger()` applies it on
+  the way in — add new ledger fields there, not as a scattered `|| []`.
+  `arbitration.js` closes the one-directional hole in the QC gate: before it, a
+  contractor whose work was rejected had no appeal, no timebox and no named
+  decider, which is unfair, a claim waiting to happen, and an operational block
+  (a stuck ticket blocks its milestone, which blocks the client's balance). Four
+  rules carry it: **a ruling must cite the contested acceptance item** (that is
+  why `delivery-plan.js` insists on objective criteria — a dispute over them is
+  resolvable by reading them; an uncited ruling is refused, and one citing
+  something QC never raised is too); **ambiguity is ours** — the `split` outcome
+  pays the contractor in full and records a spec defect against us, because we
+  wrote the ticket; **the reviewer cannot be whoever failed it**; and it is
+  **time-boxed to 5 business days**, after which it escalates, since an indefinite
+  "under review" is a refusal to pay. Read the stats the right way round: a high
+  overturn rate is a finding about *our* QC and a high split rate about *our*
+  specs — only `upheld` says anything about the contractor, and
+  `contractorDisputeRecord()` separates "contested and was right" from "contested
+  and was wrong" so a naive count can't penalise the contractor who successfully
+  challenges bad rejections. Rates stay `null` under three substantive rulings.
+  A disputed milestone cannot be accepted and its payment is held, while
+  undisputed milestones still pay on schedule; disputes survive `closed`, because
+  a late dispute is still an obligation. `recordDispute()` takes only an
+  `arbitration.openDispute()` result (same provenance rule as acceptance and
+  assignment). Agreement language in `agency/templates/*-agreement-terms.md`.
+  **Generation only — it holds no send capability at all** (no email, SMS,
+  social, invoicing, or issue creation), and is deliberately disconnected from
+  the outreach pipeline. Tests in the root `npm test`;
+  `npm run agency:plan|proposal|internal|tickets|scope|ledger|portfolio|bench`; docs
+  `docs/ai-development-agency.md`, module `agency/README.md`. The agreement
+  templates in `agency/templates/` are required-terms checklists for an
+  attorney, **not** legal advice and not agreements. Example client files are
+  named after their own `ref` because `loadClient(ref)` derives the filename
+  from it — keep that invariant (pinned by `agency/test/ledger-store.test.js`).
+- **`lib/agents/`** — the AI agent roster (Issue #73), seven roles that coordinate
+  against the $3,500/day target ($5,000 stretch, both env-overridable).
+  `roles.js` is the **authoritative registry** and the fix for the
+  `ai-agents/*.md` ↔ `server.js` drift described under "Docs landscape": every
+  role must own a decision, carry a KPI and declare a knowledge domain or
+  `validateRegistry()` fails, and every declared action is checked against
+  `action-catalog.js` so no role can name something the dispatcher would refuse —
+  or anything on `BLOCKED_ACTIONS` (enforced per role per blocked action by test).
+  Two deliberate asymmetries: research-compliance has a **veto and no revenue
+  KPI** (a revenue target would put it in conflict with what it enforces), and
+  `client-success` was missing from the dashboard roster entirely despite being one
+  of #73's named agents — now added.
+  `knowledge.js` builds each role a corpus from *the repo's own data* (1,131 facts
+  across 7 roles today). Every fact carries `file`+`line` — the same discipline
+  video-learning applies with timestamps, since an agent assertion nobody can
+  trace is one nobody should act on. Deterministic and offline: no model call, no
+  network, no secrets, so a behaviour change is attributable to a data change.
+  Missing domains are **reported, never skipped** (a role pointing at absent data
+  is a broken agent) — which immediately caught that **Issue #41 directs everything
+  to be built on `docs/core-sales-framework.md`, a path that has never existed in
+  this repo; the real file is `sales/master-sales-framework.md`**. Sources quoting
+  dosing/human-use language are marked `internalOnly`, because several compliance
+  docs quote the phrasing they prohibit and an agent parroting it into customer
+  copy is an incident: adopt the rule, never the wording.
+  `coordinator.js` is the loop #73 asks for — it emits **assignments, not prose**.
+  Gap is measured against *pace* over an 8am–8pm day, not just total ($500 at 7pm
+  is not $500 at 9am). Behind pace ⇒ sales/client-success outrank
+  marketing/operations/finance. **Target met ⇒ it stops assigning outreach** and
+  switches to verification, because pushing volume after the number is hit is how
+  a good day becomes a compliance incident. Compliance is pulled into any plan
+  containing customer-facing copy, before drafts go anywhere.
+  **The honesty posture is the point: it holds no send capability, never flips a
+  control, and never reports work that did not happen.** Sales/client-success
+  follow-through is gated on `OUTREACH_SEND_ENABLED`/`SMS_SEND_ENABLED`, marketing
+  on `SOCIAL_PUBLISH_ENABLED`/the ad cap; a closed gate returns `blocked` naming
+  the env var and stating that a human sets it. `dayReport()` on a fully gated day
+  says "The agents produced no outward effect today; a human has to open a gate"
+  rather than implying progress. **No phantom gates:** this module's first version
+  named `AD_DAILY_SPEND_CAP` as the ad-cap control, a variable nothing else in the
+  repo reads — a gate that opens on a variable governing nothing looks like
+  authorization while providing none, which is worse than no check. There is no env
+  var for the ad cap (`lib/ads/` only generates plans; the cap is established out
+  of band by the owner per the pre-authorized-advertising section), so it and
+  `HUMAN_APPROVAL` are human decisions no variable can satisfy, and a regression
+  test greps every named control's env var outside `lib/agents/` to stop another
+  being invented.
+  `runner.js` closes the loop #73 actually asks for: `coordinator.js` only
+  planned, so "triggers agent jobs, records their actions and outcomes" was unmet.
+  It dispatches through the existing allowlisted dispatcher (injected, so it is
+  testable without bullmq) and **records `dispatched`, never `completed`** — the
+  runner knows it enqueued something, not that the work succeeded, and the working
+  agreement's "a fired deploy hook is not evidence the thing works" applies
+  exactly. It weakens nothing: the dispatcher requires human approval unless told
+  `automatic`, and the runner sets neither that nor `requiresApproval: false` on
+  its own — `scripts/run-agent-checkpoint.js` takes `--auto` /
+  `AGENT_APPROVAL_MODE` as an explicit operator decision and states which mode it
+  used. Runs persist to Redis (30-day TTL) or a local `agent-outputs/` file, and
+  say which rather than silently discarding the record; a checkpoint that
+  dispatched nothing exits non-zero.
+  **Pre-existing gap this surfaced, needing an owner decision:** four allowlisted
+  actions target queues **no worker consumes** — `generate-social-content`
+  (executive), `research-prospect` (research), `enrich-prospect` (enrichment) and
+  `qualify-prospect` (qualification). `dispatchAction()` returns `queued` either
+  way, so those are silent no-ops; on a behind-pace afternoon plan 5 of 11
+  assignments land there, and `qualify-prospect` is the sales agent's
+  joint-highest-impact action. `lib/action-catalog.js` now exposes
+  `CONSUMED_QUEUES`/`hasConsumer()`/`orphanedActions()`, the runner reports
+  `effectivelyDispatched` apart from `dispatched` and flags each affected
+  assignment, and `test/action-catalog.test.js` greps `workers/*.js` so the
+  hand-maintained consumed-queue list cannot drift. Fix is either writing the four
+  workers or removing those actions from the allowlist — not something to decide
+  autonomously.
+  `npm run agents:roster|knowledge|recall|plan|run`; docs
+  `docs/ai-agent-roster.md`; 77 tests in the root `npm test`.
 - **`social-listening/`** — Bluesky firehose (Jetstream) monitor. The
   *listening* half is read-only. A *reply* path does exist and this file
   previously denied it: `social-listening/src/bluesky-delivery.js` has
@@ -393,6 +645,21 @@ npm run real-estate                # real-estate/intelligence/src/dashboard-serv
 npm run real-estate:demo           # real-estate/intelligence/src/demo.js
 npm run learn:video -- <url>       # scripts/learn-from-video.js (one video)
 npm run learn:inbox                # process knowledge/video-lessons/inbox.md
+npm run agency:plan -- --client agency/examples/cedar-roofing.json   # agency engagement plan
+npm run agency:proposal -- --client <file>   # client proposal (never leaks cost/margin)
+npm run agency:internal -- --client <file>   # internal margin, cash flow, access plan
+npm run agency:tickets -- --client <file>    # contractor ticket bodies
+npm run agency:scope -- "<prospect request>" # in-offer / add-on / decline
+npm run agency:plan -- --client <file> --open        # open an engagement ledger
+npm run agency:ledger -- <ref>                       # state, cash, next action
+npm run agency:portfolio                             # pipeline, cash, estimate accuracy
+npm run agency:bench                                 # contractor roster, capacity, record
+npm run agency:ledger -- <ref> --suggest <ticketId>  # who should take it, and why
+npm run agency:ledger -- <ref> --assign <ticketId> --to <contractorId>
+npm run agents:roster                        # authoritative agent registry
+npm run agents:knowledge [-- <roleId>]       # what each agent learned, and from where
+npm run agents:recall -- <roleId> "<query>"  # cited facts from that agent's corpus
+npm run agents:plan -- --collected N --hour H --checkpoint <id>
 ```
 
 This machine has no standalone Node.js install, only `bun`. `bun install`
@@ -458,7 +725,8 @@ Current and accurate: `docs/postgres-live-store.md`,
 `docs/outreach-validation-api.md`, `docs/prospect-pipeline.md`,
 `docs/render-redis-workers.md`, `docs/render-cron-automation.md`,
 `docs/render-observability.md`, `docs/customer-communication-rules.md`,
-`docs/video-learning.md`.
+`docs/video-learning.md`, `docs/ai-development-agency.md`,
+`docs/ai-agent-roster.md`.
 
 Doc sprawl to clean up: `docs/daily-email-quota.md`,
 `-v2.md`, `-v3.md` all say the same thing (100/day default via
@@ -476,10 +744,17 @@ roadmap through "Phase 4 — Portfolio intelligence"; only Phase 1 scoring
 exists.
 
 `ai-agents/*.md` (finance-kpi/marketing/operations/research-compliance/
-sales) are standalone design docs. `server.js` has its own inline agent
-definitions with independently-written prompts covering the same roles —
-nothing in code reads the `ai-agents/*.md` files, so the two can and do
-drift apart with no enforcement.
+sales) are standalone design docs. They used to drift freely from `server.js`'s
+independently-written inline prompts because nothing reconciled them. **Fixed:**
+`lib/agents/roles.js` is now the authoritative registry for every role's mandate,
+decision, KPIs, knowledge domains and dispatchable actions; `server.js` imports
+it, validates it at startup and **throws if its roster disagrees**, and
+`test/agent-roles.test.js` compares the two by source text (server.js can't be
+required without express/pg). The `ai-agents/*.md` files are now *indexed as
+knowledge sources* by the roles that own them, so they are read by code rather
+than decorative — but the registry, not the markdown, is the source of truth for
+role structure. The prose prompts stay in `server.js`; they encode real brand
+rules. See `docs/ai-agent-roster.md`.
 
 `agent-outputs/` and `automation-triggers/` are one-off run artifacts (a
 single overwritten "latest daily automation" file, throwaway commit-trigger
@@ -507,6 +782,32 @@ notes), not live infrastructure — don't treat them as configuration.
   in the root `npm test`.
 - Video learning connection: YouTube/Instagram links in, timestamp-cited
   lessons and gated task proposals out, in the root `npm test`.
+- Managed AI-development agency engine (`agency/`): client qualification and
+  value sizing, value-based pricing with enforced margin/deposit/cash-flow
+  gates, milestone + acceptance-test + fixed-price ticket generation,
+  per-ticket least-privilege contractor access, contractor agreement and
+  channel gates, a blocking QC checklist that releases payment, and
+  proposal/internal/ticket document generation with an enforced
+  client-facing-leakage guard. Plus a fail-closed engagement ledger (local,
+  gitignored JSON) recording deposits, milestone acceptances and real delivery
+  cost, and a portfolio roll-up reporting weighted pipeline, cash against
+  contractor commitments, and estimate accuracy that feeds future quotes. Plus a
+  contractor bench with capability clearance, concurrent-ticket ceilings,
+  concentration/utilisation warnings, and an assignment recommendation ranked on
+  first-pass quality rather than price, and a contractor dispute process with
+  cited rulings, an independent reviewer, a 5-business-day timebox, and statistics
+  that attribute overturns to our own gate rather than to contractors.
+  Test-covered in the root `npm test`.
+- AI agent roster (`lib/agents/`, Issue #73): seven roles with owned decisions,
+  KPIs and per-role knowledge bases built from the repo's own data with
+  file+line citations; an executive loop that measures the revenue gap against
+  pace across four daily checkpoints, orders assignments by expected impact,
+  prioritises revenue work when behind, stops pushing volume once the target is
+  met, and reports gated follow-through honestly rather than implying progress.
+  Dispatches through the existing allowlisted dispatcher and records outcomes,
+  distinguishing `dispatched` from `completed` and flagging work queued to a
+  consumer-less queue. Holds no send capability. Test-covered in the root
+  `npm test`.
 
 ## Recent fixes (this pass)
 
@@ -543,6 +844,48 @@ notes), not live infrastructure — don't treat them as configuration.
   (`test/postgres-prospect-store-schema.test.js`) that fails if the two
   ever drift apart again, since a live DB isn't available in CI to catch it
   the normal way.
+- **Fixed a third and fourth production bug of the same class** as the two
+  above — a producer naming something the consumer does not answer to, unguarded
+  because no test crossed the boundary:
+  (3) `workers/integration-worker.js` cascaded `midday-revenue-check` /
+  `business-health-snapshot` to the **`executive`** queue, but
+  `executive-worker.js` listens on **`analytics`** and its allowlist contains
+  exactly those two names. Every cascaded revenue and lead/retention-risk webhook
+  event was enqueued where nothing consumes it and dropped. One-word fix; intent
+  was unambiguous because the handler already existed and matched.
+  (4) `lib/action-catalog.js` mapped the `discover-prospects` action to the job
+  name `discover-prospects`, but `discovery-worker.js` accepts only
+  `scheduled-business-discovery` and throws `UNSUPPORTED_DISCOVERY_JOB` on
+  anything else — so dispatching it reached the right queue and then failed at the
+  worker into the dead-letter queue. A queue-only audit had passed this as "fine";
+  the job-name check caught it. The action verb is unchanged (the catalog's
+  `{queue, job}` split is exactly for this).
+  Both are now guarded by **`test/queue-producer-consumer.test.js`**, which reads
+  `lib/queue-manifest.js` and asserts every statically-known produced (queue, job)
+  pair would actually be handled, distinguishing *no consumer* from *name
+  rejected*. It also pins the produced-but-unconsumed queues so a new one fails
+  loudly instead of joining them quietly.
+- **A booked call was invisible to revenue reporting.** `lib/postgres-prospect-store.js`
+  and `lib/outreach-enqueue.js` have had a `meeting_booked` prospect **stage** since
+  they were written, but `lib/revenue/funnel-events.js` had no matching **event** —
+  so `buildEvent()` rejected it as `UNKNOWN_EVENT_TYPE` and the conversion walk
+  jumped straight from `qualified` to `offer_sent`. A prospect could reach "meeting
+  booked" and the funnel could not see it. Same two-vocabularies-nothing-reconciles
+  class as the producer/consumer bugs above. Added `meeting_booked` **and**
+  `meeting_held` as separate ordered stages, weighted 0.35 / 0.45 in
+  `STAGE_PROBABILITY` — booked sits barely above `qualified` because cold-booked
+  calendars no-show heavily, and a funnel recording only bookings reports the
+  number most flattering to whoever booked them. Neither is a `REVENUE_EVENT`: a
+  calendar entry is not money. `test/funnel-meeting-stages.test.js` pins the order,
+  the weighting gap, and reconciles prospect stages against funnel events so the
+  drift cannot recur.
+- **Known dropped job, needs an owner decision:** the daily `staleData` cron
+  enqueues `refresh-stale-prospect-data` to the `enrichment` queue, which no
+  worker consumes — it has been piling up unprocessed every day. Either write the
+  enrichment worker (the pieces exist: `lib/email-enrichment.js` +
+  `lib/postgres-prospect-store.js`) or drop the cron task. Writing it also means a
+  new Render worker service, which is recurring spend and therefore not an
+  autonomous call.
 - **Added an `affiliate` webhook intake path** to the integration gateway
   (`/webhooks/affiliate`, `AFFILIATE_WEBHOOK_SECRET`) so partner/affiliate
   applications land in the `prospects` table (stage `affiliate_applied`,
@@ -574,7 +917,12 @@ notes), not live infrastructure — don't treat them as configuration.
 6. **If real-estate/founder-intelligence persistence is wanted**, connect
    `real-estate/intelligence/db/schema.sql` and `src/import-csv.js` to an
    actual Postgres pool instead of stdout — currently demo-data only.
-7. **Document the outreach-send env vars** (`RESEND_API_KEY`,
-   `OUTREACH_FROM_EMAIL`, `OUTREACH_SEND_ENABLED`, etc.) even though they
-   should stay unset in production for now — an undocumented kill switch
-   is a foot-gun for whoever eventually flips it.
+7. ~~Document the outreach-send env vars.~~ **Done** — `.env.example` now
+   carries a SEND CONTROLS section covering `OUTREACH_SEND_ENABLED` +
+   `RESEND_API_KEY` + `OUTREACH_FROM_EMAIL` (all three required or
+   `email-delivery.js` throws — the fail-closed default), the CAN-SPAM
+   unsubscribe/postal vars, `DAILY_EMAIL_LIMIT`, `SOCIAL_PUBLISH_ENABLED`, both
+   Bluesky reply switches, and an explicit note that **there is no ad-spend-cap
+   env var** and adding one would look like authorization while governing
+   nothing. Every switch is `false`, every secret blank, and it points at
+   `docs/automated-outreach.md` for the enablement order.

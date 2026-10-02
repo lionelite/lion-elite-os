@@ -1,0 +1,13 @@
+{
+  "ref": "lakeside-dental",
+  "name": "Lakeside Dental Group",
+  "verticalId": "private-medical",
+  "monthlyInboundLeads": 90,
+  "missedLeadRate": 0.28,
+  "currentCloseRate": 0.35,
+  "averageCustomerValue": 3400,
+  "manualFollowUpHoursWeekly": 14,
+  "loadedHourlyCost": 30,
+  "decisionMakerEngaged": true,
+  "channelCount": 3
+}

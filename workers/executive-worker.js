@@ -6,7 +6,11 @@ const { QUEUE_NAMES, queueMetrics } = require('../lib/job-queues');
 const { buildLeadsDigest } = require('../lib/leads-digest');
 
 const concurrency = Number(process.env.EXECUTIVE_WORKER_CONCURRENCY || 2);
-const allowed = new Set(['morning-brief', 'midday-revenue-check', 'evening-review', 'business-health-snapshot', 'daily-executive-report', 'queue-and-data-maintenance']);
+// Sourced from lib/queue-manifest.js so this list and the manifest the
+// producer/consumer guard checks against cannot drift apart. Bug #3 in that
+// file's history was exactly a producer/consumer disagreement nothing tested.
+const { consumersFor } = require('../lib/queue-manifest');
+const allowed = new Set(consumersFor('analytics').flatMap(c => c.jobs || []));
 
 function total(metrics, key) {
   return Object.values(metrics).reduce((sum, value) => sum + Number(value[key] || 0), 0);

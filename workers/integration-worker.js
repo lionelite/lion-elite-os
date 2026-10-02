@@ -78,7 +78,15 @@ const worker = new Worker(QUEUE_NAMES.integrations, async job => {
   }
 
   if (executiveJob) {
-    await addJob('executive', executiveJob, {
+    // Queue key is `analytics`, not `executive`: executive-worker.js listens on
+    // QUEUE_NAMES.analytics, and its allowlist contains exactly these two job
+    // names. Sending them to the `executive` queue enqueued them where nothing
+    // consumes, so every cascaded revenue and lead/retention event was silently
+    // dropped. Same bug class as the email-generator and audit_events mismatches
+    // in CLAUDE.md's recent fixes: a producer naming something the consumer does
+    // not answer to, unguarded because no test crossed the boundary.
+    // test/queue-producer-consumer.test.js now crosses it.
+    await addJob('analytics', executiveJob, {
       trigger: 'integration-event',
       sourceEvent: record,
       generatedAt: new Date().toISOString()

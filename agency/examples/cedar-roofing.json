@@ -1,0 +1,13 @@
+{
+  "ref": "cedar-roofing",
+  "name": "Cedar Roofing",
+  "verticalId": "specialty-contractor",
+  "monthlyInboundLeads": 70,
+  "missedLeadRate": 0.3,
+  "currentCloseRate": 0.22,
+  "averageCustomerValue": 9000,
+  "manualFollowUpHoursWeekly": 10,
+  "loadedHourlyCost": 32,
+  "decisionMakerEngaged": true,
+  "channelCount": 3
+}

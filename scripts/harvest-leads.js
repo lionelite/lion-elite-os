@@ -75,7 +75,13 @@ function renderLead(lead) {
   return lines.join('\n');
 }
 
-function renderDigest(title, leads, summary) {
+// `sources` is the per-source outcome line the run already builds. Without it
+// the conclusion below was drawn from the Bluesky counters alone, so a run
+// where Bluesky was blocked but OpenStreetMap returned 32 businesses printed
+// "No leads, because no source could be reached" — the digest contradicting
+// its own run log. The digest is what a human actually reads, so it is the
+// last place that should round a partial outage up to a total one.
+function renderDigest(title, leads, summary, sources = []) {
   const lines = [
     `# ${title}`,
     '',
@@ -117,10 +123,27 @@ function renderDigest(title, leads, summary) {
     ''
   );
 
+  if (sources.length) {
+    lines.push('**Sources this run:** ' + sources.join(' · '), '');
+  }
+
   if (leads.length === 0) {
-    // Distinguish "asked and got nothing" from "never got to ask".
-    if (summary && summary.searched === 0 && summary.errors.length > 0) {
+    // Three outcomes, not two: nothing was asked, something was asked and the
+    // area was already fully harvested, or nothing matched. Collapsing the
+    // middle one into "unreachable" hides the opposite problem — a working
+    // source with nowhere new to look.
+    const blueskyDead = summary && summary.searched === 0 && summary.errors.length > 0;
+    const anotherSourceAnswered = sources.some(line => !/unreachable/i.test(line));
+
+    if (blueskyDead && !anotherSourceAnswered) {
       lines.push('**No leads, because no source could be reached.** Every query failed — see above.', '');
+    } else if (blueskyDead && anotherSourceAnswered) {
+      lines.push(
+        '**No new leads, but a source did answer.** Bluesky was unreachable; the sources line ' +
+        'above shows what did respond. Nothing new means that area is already fully harvested — ' +
+        'widen the search areas rather than waiting for a different result.',
+        ''
+      );
     } else {
       lines.push('No leads matched this pass. The searches ran; nothing cleared the classifier.', '');
     }
@@ -190,7 +213,7 @@ async function main() {
   console.log(`[harvest] sources — ${sourceStatus.join(' | ')}`);
 
   if (dryRun) {
-    console.log(renderDigest('Lead harvest (dry run)', leads, summary));
+    console.log(renderDigest('Lead harvest (dry run)', leads, summary, sourceStatus));
     return;
   }
 
@@ -204,7 +227,7 @@ async function main() {
   const all = existing.concat(fresh).sort((a, b) => String(b.postedAt).localeCompare(String(a.postedAt)));
 
   fs.writeFileSync(JSONL, all.map((lead) => JSON.stringify(lead)).join('\n') + '\n');
-  fs.writeFileSync(path.join(OUT_DIR, 'latest.md'), renderDigest('New leads from the last harvest', fresh, summary));
+  fs.writeFileSync(path.join(OUT_DIR, 'latest.md'), renderDigest('New leads from the last harvest', fresh, summary, sourceStatus));
   fs.writeFileSync(path.join(OUT_DIR, 'all-leads.md'), renderDigest('Every harvested lead', all, null));
 
   console.log(`[harvest] ${fresh.length} new, ${all.length} total -> leads/harvested/`);
