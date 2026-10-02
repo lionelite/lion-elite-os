@@ -1,11 +1,11 @@
 # Every harvested lead
 
-_Generated 2026-10-02T12:02:03.010Z — 132 leads._
+_Generated 2026-10-02T19:09:10.619Z — 136 leads._
 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-## med-spa-b2b — 132
+## med-spa-b2b — 136
 
 ### Sports Performance & Wellness Center — score 50
 
@@ -1062,3 +1062,35 @@ any of them — reach out by hand from the post link if a lead is worth it.
 - **Why they matched:** gym
 
 > gym · 358 Hamilton Road Gahanna OH 43230
+
+### Massage Envy — score 50
+
+- **Handle:** [@null](https://www.massageenvy.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** massage
+
+> massage · 668 North State Street Westerville OH 43082
+
+### Olive Massage & Head Spa — score 70
+
+- **Handle:** [@null](https://olivemassagespa.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** massage
+
+> massage · 6832 Caine Road Columbus OH
+
+### Foot Palace Spa — score 50
+
+- **Handle:** [@null](https://footpalacespa.wixsite.com/43235)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** massage
+
+> massage · 7434 Sawmill Road Columbus OH 43235
+
+### Paloma — score 70
+
+- **Handle:** [@null](https://www.experiencepaloma.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** massage
+
+> massage · 1197 West 5th Avenue Columbus OH 43212
