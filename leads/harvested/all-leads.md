@@ -1,11 +1,11 @@
 # Every harvested lead
 
-_Generated 2026-10-02T23:44:12.420Z — 136 leads._
+_Generated 2026-10-03T04:18:04.716Z — 161 leads._
 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-## med-spa-b2b — 136
+## med-spa-b2b — 161
 
 ### Sports Performance & Wellness Center — score 50
 
@@ -1094,3 +1094,203 @@ any of them — reach out by hand from the post link if a lead is worth it.
 - **Why they matched:** massage
 
 > massage · 1197 West 5th Avenue Columbus OH 43212
+
+### TLC Nails & Spa — score 50
+
+- **Handle:** [@null](http://tlcnailsandspafl.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 6345 Naples Boulevard Naples FL 34109
+
+### Brow Studio 7 — score 50
+
+- **Handle:** [@null](https://www.browstudio7.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · Tamiami Trail North Naples FL 34102
+
+### LA Nails I — score 50
+
+- **Handle:** [@null](https://lanailsnaples.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 1890 Tamiami Trail North Naples FL 34102
+
+### Time 4 U Med Spa — score 70
+
+- **Handle:** [@null](https://www.time4umedspa.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 4380 Gulf Shore Boulevard North Naples FL 34103
+
+### Zoomtan — score 70
+
+- **Handle:** [@null](https://www.zoomtan.com/tanning-salon-locations/florida-fl-naples-34102/113)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 2095 Tamiami Trail North Naples FL 34102
+
+### Med Spa on 5th — score 50
+
+- **Handle:** [@null](https://www.medspaon5th.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 300 5th Avenue South Naples FL 34102
+
+### Newme Clinics — score 70
+
+- **Handle:** [@null](https://www.newmeclinics.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 478 5th Avenue South Naples FL 34102
+
+### The Woodhouse Day Spa — score 50
+
+- **Handle:** [@null](http://naples.woodhousespas.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 2059 Tamiami Trail North Naples FL 34102
+
+### Paint Nail Bar — score 50
+
+- **Handle:** [@null](https://www.paintnailbar.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 515 5th Avenue South Naples FL 34102
+
+### Zenvie Salon and Head Spa — score 50
+
+- **Handle:** [@null](https://zenviesalonheadspa.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 977 4th Avenue North Naples FL 34102
+
+### LV Nail Bar — score 50
+
+- **Handle:** [@null](https://lvnailbarfl.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa
+
+### Daisy Nail Spa — score 50
+
+- **Handle:** [@null](http://daisynailspafl.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 3345 Tamiami Trail North Naples FL 34103
+
+### Skin Deep Naples — score 70
+
+- **Handle:** [@null](http://www.skindeepnaples.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 3363 Tamiami Trail North Naples FL 34103
+
+### Before & After Salon & Spa — score 50
+
+- **Handle:** [@null](http://beforeandaftersalon.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa
+
+### Anna's Nail & Spa — score 50
+
+- **Handle:** [@null](https://annas-nails-spa-llc.square.site/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 500 11th Street North Naples FL 34102
+
+### Essence of Health Primary Care & Aesthetics — score 70
+
+- **Handle:** [@null](https://www.essenceofhealthnaples.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa
+
+### Vintage Lashes & Beauty Services — score 50
+
+- **Handle:** [@null](https://www.vintagelashes.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa
+
+### 4Ever Young Med Spa — score 50
+
+- **Handle:** [@null](https://4everyoungantiaging.com/naples-pine-ridge/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa
+
+### Radiology Regional Center, North Naples — score 50
+
+- **Handle:** [@null](https://radiologyregional.com/locations/north-naples/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · Unit 2101 1875 Veterans Park Drive Naples 34109
+
+### Bascom Palmer Eye Institute — score 50
+
+- **Handle:** [@null](https://umiamihealth.org/en/locations/bascom-palmer-eye-institute-naples)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic
+
+### VA Naples — score 50
+
+- **Handle:** [@null](https://www.va.gov/bay-pines-health-care/locations/naples-va-clinic/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 800 Goodlette-Frank Road North Naples FL 34102
+
+### Community Pregnancy Clinics — score 50
+
+- **Handle:** [@null](https://communitypregnancyclinic.com/make-appointment/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic
+
+### Prime IV Hydration & Wellness — score 50
+
+- **Handle:** [@null](https://primeivhydration.com/locations/florida/gateway-fl/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic
+
+### The Aviators' Clinic — score 50
+
+- **Handle:** [@null](https://www.aviatorsclinic.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 200 Aviation Drive North Naples FL 34104
+
+### Anytime Fitness — score 50
+
+- **Handle:** [@null](https://www.anytimefitness.com/gyms/1508/naples-fl-34105/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 13040 Livingston Road Naples FL 34105
