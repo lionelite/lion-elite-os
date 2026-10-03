@@ -1,11 +1,11 @@
 # Every harvested lead
 
-_Generated 2026-10-03T11:20:07.265Z — 161 leads._
+_Generated 2026-10-03T15:56:23.376Z — 167 leads._
 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-## med-spa-b2b — 161
+## med-spa-b2b — 167
 
 ### Sports Performance & Wellness Center — score 50
 
@@ -1294,3 +1294,51 @@ any of them — reach out by hand from the post link if a lead is worth it.
 - **Why they matched:** gym
 
 > gym · 13040 Livingston Road Naples FL 34105
+
+### Honor Yoga — score 50
+
+- **Handle:** [@null](https://www.honoryoga.com/northnaples/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 2220 Logan Boulevard North Naples FL 34119
+
+### Performance Optimal Health — score 50
+
+- **Handle:** [@null](https://performanceoptimalhealth.com/naples/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 225 Banyan Boulevard Naples FL 34102
+
+### Pure Skill Fitness — score 70
+
+- **Handle:** [@null](https://pureskillfitness.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 2170 Tamiami Trail North Naples FL 34102
+
+### iFlex Stretch Studios — score 50
+
+- **Handle:** [@null](https://www.iflexstretchstudios.com/location/mercato)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 9128 Strada Place Naples FL 34108
+
+### House of HIIT — score 50
+
+- **Handle:** [@null](https://www.hohfitness.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 3349 Tamiami Trail North Naples FL 34103
+
+### Fit For You — score 50
+
+- **Handle:** [@null](https://www.fitforyounaples.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 3341 Tamiami Trail North Naples FL 34103
