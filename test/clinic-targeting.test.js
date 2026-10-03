@@ -21,6 +21,11 @@ test('practices this campaign must never contact are excluded', () => {
     { name: 'UH Rainbow Center for Women and Children', category: 'clinic' },
     { name: 'University Hospitals Otis Moss Jr. Health Center', category: 'clinic' },
     { name: 'Childwise ABA', website: 'https://childwiseaba.com/', category: 'clinic' },
+    // From the live list on 2026-10-03: tiered medium-fit on a bare
+    // `amenity=clinic` tag. Preterm was already excluded by name while the
+    // whole category it belongs to was not.
+    { name: 'Community Pregnancy Clinics', category: 'clinic' },
+    { name: 'Riverside Prenatal & Maternity Center', category: 'clinic' },
     { name: 'MED+ Urgent Care', category: 'clinic' },
     { name: 'Happy Tails Veterinary Clinic', category: 'clinic' },
     { name: 'Bright Smiles Dental', category: 'clinic' }
@@ -117,4 +122,20 @@ test('a mid-word coincidence in a name still does not fire', () => {
   // "Titan" must not read as tanning, "Chairs & Co" must not read as hair.
   assert.notEqual(clinicRelevance({ name: 'Titan Strength Co', category: 'med-spa' }).tier, 'exclude');
   assert.notEqual(clinicRelevance({ name: 'Chairs and Co', category: 'med-spa' }).tier, 'exclude');
+});
+
+test('occupational and regulatory medicine is not a research-supply target', () => {
+  // "The Aviators' Clinic" tiered medium-fit on the live list. A flight
+  // physical practice buys nothing a research supplier sells — not a
+  // compliance problem like the pregnancy clinics, just a wasted send that
+  // drags every downstream rate down.
+  for (const name of ["The Aviators' Clinic", 'Metro Occupational Health', 'QuickDOT Physicals']) {
+    assert.equal(clinicRelevance({ name, category: 'clinic' }).tier, 'exclude', `${name} is not a buyer`);
+  }
+});
+
+test('a hormone practice for women is still a target', () => {
+  // The pregnancy exclusions must not swallow womens hormone and longevity
+  // medicine, which is squarely in this campaign.
+  assert.equal(clinicRelevance({ name: "Renew Women's Hormone & Wellness", category: 'clinic' }).tier, 'high');
 });
