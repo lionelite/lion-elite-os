@@ -1,11 +1,11 @@
 # Every harvested lead
 
-_Generated 2026-10-03T15:56:23.376Z — 167 leads._
+_Generated 2026-10-03T19:04:54.801Z — 181 leads._
 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-## med-spa-b2b — 167
+## med-spa-b2b — 181
 
 ### Sports Performance & Wellness Center — score 50
 
@@ -1342,3 +1342,115 @@ any of them — reach out by hand from the post link if a lead is worth it.
 - **Why they matched:** gym
 
 > gym · 3341 Tamiami Trail North Naples FL 34103
+
+### Panacea Luxury Spa — score 70
+
+- **Handle:** [@null](https://panacealuxuryspa.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 2130 Quarry Trails Dr Columbus OH 43228
+
+### Solaire Sun Spray — score 50
+
+- **Handle:** [@null](https://solairesunspraybridgepark.glossgenius.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 4548 Bridge Park Avenue Dublin OH 43017
+
+### Spavia — score 50
+
+- **Handle:** [@null](https://dublinoh.spaviadayspa.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 4546 Bridge Park Avenue Dublin OH 43017
+
+### Anthony Vincé Nail Spa — score 50
+
+- **Handle:** [@null](https://www.anthonyvincenailspa.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 4545 Bridge Park Avenue Dublin OH 43017
+
+### JC Nails — score 70
+
+- **Handle:** [@null](https://www.lldtek.com/salon/appt/OTg1MXxqY25haWxzMzUwMHxPSF8wNTY5OHxjMmRkNWNjYWI1NzgwMGY5MDgzNGE3ZDE0ZjEyMDBmNw==)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 3500 West Dublin Granville Road Columbus OH 43235
+
+### Juju's Beauty Center — score 50
+
+- **Handle:** [@null](https://jujusbeautycenter.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 4713 Reed Road Upper Arlington OH 43220
+
+### Sally Beauty — score 50
+
+- **Handle:** [@null](https://stores.sallybeauty.com/oh/dublin/beauty-supply-dublin-oh-10363.html)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 7648 Sawmill Road
+
+### Nails by Alie — score 70
+
+- **Handle:** [@null](https://nailsbyalie.square.site)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 2675 Sawbury Boulevard Columbus OH 43235
+
+### Qinky Beauty Spa Beautique — score 50
+
+- **Handle:** [@null](https://www.yoursqin.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 360 East Long Street Columbus OH 43215
+
+### Nails by Tonya at Southpaw Creations — score 50
+
+- **Handle:** [@null](https://nails-by-tonya.square.site)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 1761 Harrisburg Pike Columbus OH 43223-3664
+
+### Precise Threading & Spa — score 70
+
+- **Handle:** [@null](https://www.precisespa.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 7370JJ Sawmill Road Columbus OH 43235
+
+### Tan Pro — score 50
+
+- **Handle:** [@null](https://www.tanprousa.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 1450 Olentangy River Road Columbus 43212
+
+### Charles Penzone Grand Salon — score 50
+
+- **Handle:** [@null](http://charlespenzone.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 771 Polaris Parkway Lewis Center OH 43035
+
+### Nailholix — score 50
+
+- **Handle:** [@null](https://nailholixdublin.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 5784 Frantz Road Dublin Ohio 43016
