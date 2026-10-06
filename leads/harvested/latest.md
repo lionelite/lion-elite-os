@@ -1,6 +1,6 @@
 # New leads from the last harvest
 
-_Generated 2026-10-06T01:11:18.092Z — 14 leads._
+_Generated 2026-10-06T08:47:35.552Z — 0 leads._
 
 | Searches run | Searches failed | Posts read | Matched | Dropped (do-not-engage) |
 |---:|---:|---:|---:|---:|
@@ -41,118 +41,6 @@ business-scaling: Bluesky search failed for "trying to scale my business": HTTP 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-**Sources this run:** bluesky: unreachable (23 failed) · openstreetmap: 25 businesses in fort-lauderdale-fl
+**Sources this run:** bluesky: unreachable (23 failed) · openstreetmap: 43 businesses in columbus-oh
 
-## med-spa-b2b — 14
-
-### C.Skin.Care Aesthetics — score 70
-
-- **Handle:** [@null](https://www.cskincare.net)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
-
-> med-spa · 1845 Cordova Road Fort Lauderdale FL 33316-6100
-
-### Sweat Equity Fitness — score 50
-
-- **Handle:** [@null](https://www.sweatequityfit.com/)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
-
-> gym · 909 East Cypress Creek Rd. Fort Lauderdale FL 33334
-
-### LA Lee YMCA — score 50
-
-- **Handle:** [@null](https://ymcasouthflorida.org/l-a-lee-ymca-mizell-community-center/)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
-
-> gym · 1409 Northwest 6th Street Fort Lauderdale FL 33311
-
-### Cycleward Studios LLC — score 50
-
-- **Handle:** [@null](https://cyclewardstudio.com/)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
-
-> gym · 6161 Federal Highway Fort Lauderdale FL 33308
-
-### Xtreme Body Transformations — score 50
-
-- **Handle:** [@null](https://xtremebodytransformations.com/)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
-
-> gym · 1107 Northeast 34th Court Oakland Park FL 33334
-
-### Boulder Bloc Gym — score 70
-
-- **Handle:** [@null](https://www.boulderblocgym.com)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
-
-> gym · 437 East Atlantic Boulevard 33060
-
-### Youth Impact Center — score 70
-
-- **Handle:** [@null](https://youthimpactcenters.org/)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
-
-> gym · 909 Cypress Creek Road 33334
-
-### Club Pilates — score 70
-
-- **Handle:** [@null](https://www.clubpilates.com/location/ftlauderdaleeast)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
-
-> gym · 3802 North Federal Highway Fort Lauderdale FL 33308
-
-### LA Fitness — score 50
-
-- **Handle:** [@null](https://www.lafitness.com/Pages/clubhome.aspx?clubid=57)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
-
-> gym · 3825 North Federal Highway Fort Lauderdale FL 33308
-
-### Yoga Now Pompano Beach — score 50
-
-- **Handle:** [@null](https://yoganowpompanobeach.com/)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
-
-> gym · 3155 East Atlantic Boulevard Pompano Beach FL 33062-5010
-
-### Planet Massage Spa — score 50
-
-- **Handle:** [@null](https://planetmassage.com/)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** massage
-
-> massage · 500 SE 15th Street Fort Lauderdale FL 33316
-
-### Planet Fitness — score 50
-
-- **Handle:** [@null](null)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
-
-> gym · 2670 West Broward Boulevard 33312
-
-### LA Fitness — score 50
-
-- **Handle:** [@null](null)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
-
-> gym · 1900 Southeast 10th Avenue 33316
-
-### Fort Lauderdale Medical Center — score 70
-
-- **Handle:** [@null](null)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** physiotherapy
-
-> physiotherapy · 4825 North Dixie Highway Fort Lauderdale FL 33334
+**No new leads, but a source did answer.** Bluesky was unreachable; the sources line above shows what did respond. Nothing new means that area is already fully harvested — widen the search areas rather than waiting for a different result.
