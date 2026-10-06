@@ -20,6 +20,7 @@ const { buildOnboardingPreview } = require('../lib/platform/fast-onboarding');
 const { runtimeJobCatalog } = require('../lib/platform/runtime-jobs');
 const { allowedTools, assertNoSendTools } = require('../lib/platform/mcp-tools');
 const { assessSenderHealth } = require('../lib/platform/sender-health');
+const { transformationCampaignSeeds } = require('../lib/platform/transformation-targets');
 const { evaluateBudget } = require('../lib/platform/budget-policy');
 const { encrypt } = require('../lib/platform/security/crypto-vault');
 
@@ -152,6 +153,23 @@ function createGtmPlatformRouter({ store, authStore }) {
       const plan = planCampaign(req.body?.prompt, profile);
       const campaign = await store.createCampaign(req.params.workspaceId, plan);
       res.status(201).json({ plan, campaign });
+    } catch (error) {
+      res.status(400).json({ error: error.message });
+    }
+  });
+
+  router.post('/workspaces/:workspaceId/campaigns/transformation-seeds', requireOperator, async (req, res) => {
+    try {
+      const workspace = await store.getWorkspace(req.params.workspaceId);
+      if (!workspace) return res.status(404).json({ error: 'workspace not found' });
+      const profile = await store.getProfile(req.params.workspaceId) || {};
+      const geography = String(req.body?.geography || profile.targetGeography || '').trim();
+      const plans = transformationCampaignSeeds({ geography });
+      const campaigns = [];
+      for (const plan of plans) {
+        campaigns.push(await store.createCampaign(req.params.workspaceId, plan));
+      }
+      res.status(201).json({ count: campaigns.length, campaigns });
     } catch (error) {
       res.status(400).json({ error: error.message });
     }
