@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Life Audit · Lion Elite</title>
+  <meta name="description" content="Start with a full-life audit and identify the highest-leverage changes to make over the next 30, 90 and 365 days.">
+  <link rel="stylesheet" href="/optin/styles.css?v=1">
+</head>
+<body>
+  <main class="wrap">
+    <p class="eyebrow">Lion Elite Life Transformation</p>
+    <h1>Change the person. Change the life.</h1>
+    <p class="lede">You already know something needs to change. Start by telling us where you want the biggest improvement. We will use that as the first input to your full Life Audit.</p>
+
+    <section class="card" id="card">
+      <form id="life-audit-form" novalidate>
+        <label>
+          Your name
+          <input name="name" type="text" autocomplete="name" placeholder="Your name">
+        </label>
+
+        <label>
+          Where do you want the biggest change right now?
+          <select name="goal" required>
+            <option value="">Choose one</option>
+            <option value="life-reset">My whole life needs a reset</option>
+            <option value="confidence">Confidence & self-belief</option>
+            <option value="discipline">Discipline & consistency</option>
+            <option value="direction">Direction, goals & purpose</option>
+            <option value="career-money">Career, business & money</option>
+            <option value="health-energy">Health, energy & lifestyle</option>
+            <option value="relationships-standards">Relationships, boundaries & standards</option>
+          </select>
+        </label>
+
+        <label>
+          Email address <span aria-hidden="true">*</span>
+          <input name="email" type="email" autocomplete="email" required placeholder="you@example.com">
+        </label>
+
+        <label>
+          Mobile number
+          <span class="hint">Optional. Add it only if you want text updates.</span>
+          <input name="phone" type="tel" autocomplete="tel" placeholder="(305) 555-0142">
+        </label>
+
+        <label class="consent">
+          <input type="checkbox" name="emailMarketingConsent">
+          <span>Email me about my Life Audit, coaching and Lion Elite updates.</span>
+        </label>
+
+        <label class="consent">
+          <input type="checkbox" name="smsMarketingConsent">
+          <span>
+            Text me about my Life Audit, coaching and Lion Elite updates.
+            <span class="disclosure" id="sms-disclosure">Loading disclosure…</span>
+          </span>
+        </label>
+
+        <button type="submit" id="submit">Start My Life Audit</button>
+        <p class="message" id="message" role="status" aria-live="polite"></p>
+      </form>
+
+      <p class="note">This first step is for coaching intake and personalization. Medical, mental-health, legal or other licensed-professional issues are identified for appropriate professional support rather than diagnosed here.</p>
+    </section>
+  </main>
+  <script src="/life-audit/app.js?v=1" defer></script>
+</body>
+</html>
