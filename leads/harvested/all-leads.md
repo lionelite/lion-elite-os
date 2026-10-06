@@ -1,11 +1,11 @@
 # Every harvested lead
 
-_Generated 2026-10-05T19:08:27.385Z — 198 leads._
+_Generated 2026-10-06T01:11:18.092Z — 212 leads._
 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-## med-spa-b2b — 198
+## med-spa-b2b — 212
 
 ### Sports Performance & Wellness Center — score 50
 
@@ -1590,3 +1590,115 @@ any of them — reach out by hand from the post link if a lead is worth it.
 - **Why they matched:** massage
 
 > massage · 5135 West Cypress Street Tampa FL 33607
+
+### C.Skin.Care Aesthetics — score 70
+
+- **Handle:** [@null](https://www.cskincare.net)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 1845 Cordova Road Fort Lauderdale FL 33316-6100
+
+### Sweat Equity Fitness — score 50
+
+- **Handle:** [@null](https://www.sweatequityfit.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 909 East Cypress Creek Rd. Fort Lauderdale FL 33334
+
+### LA Lee YMCA — score 50
+
+- **Handle:** [@null](https://ymcasouthflorida.org/l-a-lee-ymca-mizell-community-center/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 1409 Northwest 6th Street Fort Lauderdale FL 33311
+
+### Cycleward Studios LLC — score 50
+
+- **Handle:** [@null](https://cyclewardstudio.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 6161 Federal Highway Fort Lauderdale FL 33308
+
+### Xtreme Body Transformations — score 50
+
+- **Handle:** [@null](https://xtremebodytransformations.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 1107 Northeast 34th Court Oakland Park FL 33334
+
+### Boulder Bloc Gym — score 70
+
+- **Handle:** [@null](https://www.boulderblocgym.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 437 East Atlantic Boulevard 33060
+
+### Youth Impact Center — score 70
+
+- **Handle:** [@null](https://youthimpactcenters.org/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 909 Cypress Creek Road 33334
+
+### Club Pilates — score 70
+
+- **Handle:** [@null](https://www.clubpilates.com/location/ftlauderdaleeast)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 3802 North Federal Highway Fort Lauderdale FL 33308
+
+### LA Fitness — score 50
+
+- **Handle:** [@null](https://www.lafitness.com/Pages/clubhome.aspx?clubid=57)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 3825 North Federal Highway Fort Lauderdale FL 33308
+
+### Yoga Now Pompano Beach — score 50
+
+- **Handle:** [@null](https://yoganowpompanobeach.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 3155 East Atlantic Boulevard Pompano Beach FL 33062-5010
+
+### Planet Massage Spa — score 50
+
+- **Handle:** [@null](https://planetmassage.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** massage
+
+> massage · 500 SE 15th Street Fort Lauderdale FL 33316
+
+### Planet Fitness — score 50
+
+- **Handle:** [@null](null)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 2670 West Broward Boulevard 33312
+
+### LA Fitness — score 50
+
+- **Handle:** [@null](null)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 1900 Southeast 10th Avenue 33316
+
+### Fort Lauderdale Medical Center — score 70
+
+- **Handle:** [@null](null)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** physiotherapy
+
+> physiotherapy · 4825 North Dixie Highway Fort Lauderdale FL 33334
