@@ -1,11 +1,11 @@
 # Every harvested lead
 
-_Generated 2026-10-06T08:47:35.552Z — 212 leads._
+_Generated 2026-10-06T16:36:21.129Z — 237 leads._
 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-## med-spa-b2b — 212
+## med-spa-b2b — 237
 
 ### Sports Performance & Wellness Center — score 50
 
@@ -1702,3 +1702,203 @@ any of them — reach out by hand from the post link if a lead is worth it.
 - **Why they matched:** physiotherapy
 
 > physiotherapy · 4825 North Dixie Highway Fort Lauderdale FL 33334
+
+### Elite Nails & Spa — score 50
+
+- **Handle:** [@null](http://elitenailsspaflorida.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 5305 East Fowler Avenue 33617
+
+### SOHO Tan — score 50
+
+- **Handle:** [@null](www.sohotan.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 3217D South Macdill Avenue Tampa 33629
+
+### Kuts Hair Salon — score 50
+
+- **Handle:** [@null](https://www.kutshairsalon.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa
+
+### European Wax Center — score 50
+
+- **Handle:** [@null](https://locations.waxcenter.com/fl/tampa/tampa-downtown-0456.html)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 105 East Jackson Street Tampa FL 33602
+
+### Blush Rock — score 50
+
+- **Handle:** [@null](https://blushrockbeauty.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 3623 West Kennedy Boulevard Tampa FL 33609
+
+### Tampa Nails — score 70
+
+- **Handle:** [@null](https://tampanails.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 4730 West Cypress Street Tampa FL 33607
+
+### Glow Aesthetics Bar — score 70
+
+- **Handle:** [@null](https://www.glowaestheticsbar.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 13149 N Dale Mabry Hwy Tampa FL 33618
+
+### Magick Moon Nails — score 70
+
+- **Handle:** [@null](https://www.magickmoonnails.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 10005 North Dale Mabry Highway Tampa FL 33618-4409
+
+### Pia Esthetics Day Spa — score 50
+
+- **Handle:** [@null](https://www.bypia.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 3210 West Bay To Bay Boulevard Tampa FL 33629
+
+### Heightened Aesthetics — score 70
+
+- **Handle:** [@null](https://heightenedaesthetics.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 5606 North Nebraska Avenue Tampa FL 33604
+
+### Brow Saint — score 50
+
+- **Handle:** [@null](https://browsaint.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 4402 North Florida Avenue Tampa FL 33603
+
+### Happy Foot Spa — score 50
+
+- **Handle:** [@null](https://tampahappyfootspa.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 3636 West Kennedy Boulevard Tampa FL 33609
+
+### Tao Wellnes Med Spa — score 70
+
+- **Handle:** [@null](https://taowellnessmedspa.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 2001 West Kennedy Boulevard Tampa FL 33606
+
+### Tampa Bay Surgery Center — score 50
+
+- **Handle:** [@null](http://www.tampabaysurgerycenter.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 11811 North Dale Mabry Highway Tampa 33618
+
+### Genesis Women’s Center at Healthpark — score 50
+
+- **Handle:** [@null](https://www.tgh.org/locations/genesis-womens-center-healthpark)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 5802 North 30th Street Tampa 33610
+
+### Tampa General Hospital Specialty Center at Healthpark — score 50
+
+- **Handle:** [@null](https://www.tgh.org/locations/specialty-center-healthpark)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 5802 North 30th Street Tampa 33610
+
+### DaVita Dialysis — score 50
+
+- **Handle:** [@null](https://www.davita.com/locations/fl/ybor-city/1701-e-9th-ave--2461)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 1701 East 9th Avenue Tampa FL 33605
+
+### Florida Medical Clinic — score 50
+
+- **Handle:** [@null](https://www.floridamedicalclinic.com/locations/central-tampa/2727-w-dr-mlk-jr-blvd/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic
+
+### Farrior Facial Plastic Surgery — score 50
+
+- **Handle:** [@null](https://www.drfarrior.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 2908 West Azeele Street Tampa FL 33609
+
+### Premier Image — score 70
+
+- **Handle:** [@null](https://www.yourpremierimage.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 4290 W Linebaugh Ave Tampa FL 33624
+
+### Cano Health — score 70
+
+- **Handle:** [@null](https://canohealth.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 13510 University Plaza 33613
+
+### HealthSpine Chiropractic — score 70
+
+- **Handle:** [@null](https://healthspinechiropractic.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 10330 North Dale Mabry Highway Tampa FL 33618
+
+### Complete Ketamine Solutions Tampa — score 70
+
+- **Handle:** [@null](https://completeketaminesolutions.com/locations/tampa-fl/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 13801 Bruce B Downs Boulevard Tampa FL 33613
+
+### BayCare Urgent Care — score 50
+
+- **Handle:** [@null](https://baycare.org/locations/b/baycare-urgent-care-south-tampa)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 1155 South Dale Mabry Highway Tampa FL 33629
+
+### TGH Urgent Care — score 50
+
+- **Handle:** [@null](https://www.fasttrackurgentcare.com/locations-and-hours/downtown-on-water-street-tampa/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 564 Channelside Drive Tampa FL 33602
