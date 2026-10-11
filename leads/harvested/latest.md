@@ -1,6 +1,6 @@
 # New leads from the last harvest
 
-_Generated 2026-10-11T04:34:05.726Z — 7 leads._
+_Generated 2026-10-11T12:16:53.690Z — 0 leads._
 
 | Searches run | Searches failed | Posts read | Matched | Dropped (do-not-engage) |
 |---:|---:|---:|---:|---:|
@@ -41,62 +41,6 @@ business-scaling: Bluesky search failed for "trying to scale my business": HTTP 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-**Sources this run:** bluesky: unreachable (23 failed) · openstreetmap: 31 businesses in naples-fl
+**Sources this run:** bluesky: unreachable (23 failed) · openstreetmap: 9 businesses in fort-lauderdale-fl
 
-## med-spa-b2b — 7
-
-### Hand & Stone Massage and Facial Spa — score 50
-
-- **Handle:** [@null](https://handandstone.com/locations/naples-mercato/)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** massage
-
-> massage · 9128 Strada Place Naples FL 34108
-
-### Infinity Massage & Spa — score 50
-
-- **Handle:** [@null](https://naplesinfinityspa.com/)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** massage
-
-> massage · 619 8th Street South Naples FL 34102
-
-### Sports Massage & Rehabilitation — score 50
-
-- **Handle:** [@null](https://www.sportsmassagerehab.com/)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** massage
-
-> massage
-
-### Kinetic Physical Therapy — score 70
-
-- **Handle:** [@null](https://www.kineticpt-naples.com)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** physiotherapy
-
-> physiotherapy · 1082 6th Avenue North Naples FL 34102
-
-### PhysioRight — score 50
-
-- **Handle:** [@null](https://www.physioright.com/)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** physiotherapy
-
-> physiotherapy · 3355 Tamiami Trail North Naples FL 34103
-
-### Jaffe Sports Medicine — score 50
-
-- **Handle:** [@null](https://jaffesportsmedicine.com/)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** physiotherapy
-
-> physiotherapy · 150 9th Street North Naples FL 34102
-
-### 5th Ave Nail Spa — score 50
-
-- **Handle:** [@null](null)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
-
-> med-spa · 800 5th Avenue South Naples FL 34102
+**No new leads, but a source did answer.** Bluesky was unreachable; the sources line above shows what did respond. Nothing new means that area is already fully harvested — widen the search areas rather than waiting for a different result.
