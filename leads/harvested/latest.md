@@ -1,6 +1,6 @@
 # New leads from the last harvest
 
-_Generated 2026-10-12T14:47:35.314Z — 4 leads._
+_Generated 2026-10-12T22:47:01.308Z — 0 leads._
 
 | Searches run | Searches failed | Posts read | Matched | Dropped (do-not-engage) |
 |---:|---:|---:|---:|---:|
@@ -41,38 +41,6 @@ business-scaling: Bluesky search failed for "trying to scale my business": HTTP 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-**Sources this run:** bluesky: unreachable (23 failed) · openstreetmap: 4 businesses in boca-raton-fl
+**Sources this run:** bluesky: unreachable (23 failed) · openstreetmap: 102 businesses in miami-fl
 
-## med-spa-b2b — 4
-
-### Evergreen Day Spa — score 50
-
-- **Handle:** [@null](http://evergreendayspa.com)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
-
-> med-spa · 9 Plaza Real South Boca Raton FL 33432
-
-### Sasha.B.B.B Nail Studio — score 70
-
-- **Handle:** [@null](https://sashabbb.com)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
-
-> med-spa · 8177 Glades Road Boca Raton FL 33434
-
-### Zpro — score 50
-
-- **Handle:** [@null](null)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
-
-> med-spa · 7600 West Camino Real
-
-### Sonis Salon — score 50
-
-- **Handle:** [@null](null)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
-
-> med-spa · 1610 N Federal Hwy Boca Raton FL 33432
+**No new leads, but a source did answer.** Bluesky was unreachable; the sources line above shows what did respond. Nothing new means that area is already fully harvested — widen the search areas rather than waiting for a different result.
