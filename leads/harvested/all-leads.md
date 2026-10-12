@@ -1,11 +1,11 @@
 # Every harvested lead
 
-_Generated 2026-10-12T04:48:43.916Z — 282 leads._
+_Generated 2026-10-12T14:47:35.315Z — 286 leads._
 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-## med-spa-b2b — 282
+## med-spa-b2b — 286
 
 ### Sports Performance & Wellness Center — score 50
 
@@ -2262,3 +2262,35 @@ any of them — reach out by hand from the post link if a lead is worth it.
 - **Why they matched:** med-spa
 
 > med-spa · 800 5th Avenue South Naples FL 34102
+
+### Evergreen Day Spa — score 50
+
+- **Handle:** [@null](http://evergreendayspa.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 9 Plaza Real South Boca Raton FL 33432
+
+### Sasha.B.B.B Nail Studio — score 70
+
+- **Handle:** [@null](https://sashabbb.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 8177 Glades Road Boca Raton FL 33434
+
+### Zpro — score 50
+
+- **Handle:** [@null](null)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 7600 West Camino Real
+
+### Sonis Salon — score 50
+
+- **Handle:** [@null](null)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 1610 N Federal Hwy Boca Raton FL 33432
