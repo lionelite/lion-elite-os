@@ -1,11 +1,11 @@
 # Every harvested lead
 
-_Generated 2026-10-12T22:47:01.309Z — 286 leads._
+_Generated 2026-10-13T05:55:50.363Z — 290 leads._
 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-## med-spa-b2b — 286
+## med-spa-b2b — 290
 
 ### Sports Performance & Wellness Center — score 50
 
@@ -2294,3 +2294,35 @@ any of them — reach out by hand from the post link if a lead is worth it.
 - **Why they matched:** med-spa
 
 > med-spa · 1610 N Federal Hwy Boca Raton FL 33432
+
+### University Diagnostic Institute — score 50
+
+- **Handle:** [@null](https://www.universitydiagnostic.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 3301 USF Alumni Drive Tampa 33612
+
+### MediCruz — score 70
+
+- **Handle:** [@null](https://medicruztampa.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 2309 W West Doctor Martin Luther King Junior Boulevard Tampa FL
+
+### Moffitt Cancer Center - McKinley Campus — score 50
+
+- **Handle:** [@null](https://www.moffitt.org/locations-directions/moffitt-cancer-center-richard-m-schulze-family-foundation-outpatient-center-at-mckinley-campus/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 10920 North McKinley Drive Tampa FL 33612
+
+### DaVita Dialysis — score 50
+
+- **Handle:** [@null](https://www.davita.com/locations/fl/tampa/2205-w-kennedy-blvd--5161)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 2205 West Kennedy Boulevard Tampa FL 33606

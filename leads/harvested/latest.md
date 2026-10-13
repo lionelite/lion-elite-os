@@ -1,6 +1,6 @@
 # New leads from the last harvest
 
-_Generated 2026-10-12T22:47:01.308Z — 0 leads._
+_Generated 2026-10-13T05:55:50.363Z — 4 leads._
 
 | Searches run | Searches failed | Posts read | Matched | Dropped (do-not-engage) |
 |---:|---:|---:|---:|---:|
@@ -41,6 +41,38 @@ business-scaling: Bluesky search failed for "trying to scale my business": HTTP 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-**Sources this run:** bluesky: unreachable (23 failed) · openstreetmap: 102 businesses in miami-fl
+**Sources this run:** bluesky: unreachable (23 failed) · openstreetmap: 34 businesses in tampa-fl
 
-**No new leads, but a source did answer.** Bluesky was unreachable; the sources line above shows what did respond. Nothing new means that area is already fully harvested — widen the search areas rather than waiting for a different result.
+## med-spa-b2b — 4
+
+### University Diagnostic Institute — score 50
+
+- **Handle:** [@null](https://www.universitydiagnostic.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 3301 USF Alumni Drive Tampa 33612
+
+### MediCruz — score 70
+
+- **Handle:** [@null](https://medicruztampa.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 2309 W West Doctor Martin Luther King Junior Boulevard Tampa FL
+
+### Moffitt Cancer Center - McKinley Campus — score 50
+
+- **Handle:** [@null](https://www.moffitt.org/locations-directions/moffitt-cancer-center-richard-m-schulze-family-foundation-outpatient-center-at-mckinley-campus/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 10920 North McKinley Drive Tampa FL 33612
+
+### DaVita Dialysis — score 50
+
+- **Handle:** [@null](https://www.davita.com/locations/fl/tampa/2205-w-kennedy-blvd--5161)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 2205 West Kennedy Boulevard Tampa FL 33606
