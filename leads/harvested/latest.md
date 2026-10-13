@@ -1,6 +1,6 @@
 # New leads from the last harvest
 
-_Generated 2026-10-13T05:55:50.363Z — 4 leads._
+_Generated 2026-10-13T13:48:27.232Z — 3 leads._
 
 | Searches run | Searches failed | Posts read | Matched | Dropped (do-not-engage) |
 |---:|---:|---:|---:|---:|
@@ -41,38 +41,30 @@ business-scaling: Bluesky search failed for "trying to scale my business": HTTP 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-**Sources this run:** bluesky: unreachable (23 failed) · openstreetmap: 34 businesses in tampa-fl
+**Sources this run:** bluesky: unreachable (23 failed) · openstreetmap: 4 businesses in west-palm-beach-fl
 
-## med-spa-b2b — 4
+## med-spa-b2b — 3
 
-### University Diagnostic Institute — score 50
+### The Longevity Centers — score 70
 
-- **Handle:** [@null](https://www.universitydiagnostic.com/)
+- **Handle:** [@null](https://www.thelcfl.com/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** clinic
 
-> clinic · 3301 USF Alumni Drive Tampa 33612
+> clinic · 580 Village Boulevard West Palm Beach FL 33409
 
-### MediCruz — score 70
+### MD Now Urgent Care — score 50
 
-- **Handle:** [@null](https://medicruztampa.com/)
+- **Handle:** [@null](https://www.mymdnow.com/locations/palm-beach/west-palm-beach)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** clinic
 
-> clinic · 2309 W West Doctor Martin Luther King Junior Boulevard Tampa FL
+> clinic · 2007 Palm Beach Lakes Boulevard West Palm Beach FL 33409
 
-### Moffitt Cancer Center - McKinley Campus — score 50
+### Synergy Sobriety Solutions — score 50
 
-- **Handle:** [@null](https://www.moffitt.org/locations-directions/moffitt-cancer-center-richard-m-schulze-family-foundation-outpatient-center-at-mckinley-campus/)
+- **Handle:** [@null](https://synergysobrietysolutions.com/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** clinic
 
-> clinic · 10920 North McKinley Drive Tampa FL 33612
-
-### DaVita Dialysis — score 50
-
-- **Handle:** [@null](https://www.davita.com/locations/fl/tampa/2205-w-kennedy-blvd--5161)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
-
-> clinic · 2205 West Kennedy Boulevard Tampa FL 33606
+> clinic · 8895 North Military Trail Palm Beach Gardens FL 33410

@@ -1,11 +1,11 @@
 # Every harvested lead
 
-_Generated 2026-10-13T05:55:50.363Z — 290 leads._
+_Generated 2026-10-13T13:48:27.233Z — 293 leads._
 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-## med-spa-b2b — 290
+## med-spa-b2b — 293
 
 ### Sports Performance & Wellness Center — score 50
 
@@ -2326,3 +2326,27 @@ any of them — reach out by hand from the post link if a lead is worth it.
 - **Why they matched:** clinic
 
 > clinic · 2205 West Kennedy Boulevard Tampa FL 33606
+
+### The Longevity Centers — score 70
+
+- **Handle:** [@null](https://www.thelcfl.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 580 Village Boulevard West Palm Beach FL 33409
+
+### MD Now Urgent Care — score 50
+
+- **Handle:** [@null](https://www.mymdnow.com/locations/palm-beach/west-palm-beach)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 2007 Palm Beach Lakes Boulevard West Palm Beach FL 33409
+
+### Synergy Sobriety Solutions — score 50
+
+- **Handle:** [@null](https://synergysobrietysolutions.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 8895 North Military Trail Palm Beach Gardens FL 33410
