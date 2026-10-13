@@ -1,11 +1,11 @@
 # Every harvested lead
 
-_Generated 2026-10-13T13:48:27.233Z — 293 leads._
+_Generated 2026-10-13T20:12:34.834Z — 294 leads._
 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-## med-spa-b2b — 293
+## med-spa-b2b — 294
 
 ### Sports Performance & Wellness Center — score 50
 
@@ -2350,3 +2350,11 @@ any of them — reach out by hand from the post link if a lead is worth it.
 - **Why they matched:** clinic
 
 > clinic · 8895 North Military Trail Palm Beach Gardens FL 33410
+
+### Neon Collinwood Health Center — score 50
+
+- **Handle:** [@null](null)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 15322 Saint Clair Avenue Cleveland OH 44110

@@ -1,6 +1,6 @@
 # New leads from the last harvest
 
-_Generated 2026-10-13T13:48:27.232Z — 3 leads._
+_Generated 2026-10-13T20:12:34.834Z — 1 lead._
 
 | Searches run | Searches failed | Posts read | Matched | Dropped (do-not-engage) |
 |---:|---:|---:|---:|---:|
@@ -41,30 +41,14 @@ business-scaling: Bluesky search failed for "trying to scale my business": HTTP 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-**Sources this run:** bluesky: unreachable (23 failed) · openstreetmap: 4 businesses in west-palm-beach-fl
+**Sources this run:** bluesky: unreachable (23 failed) · openstreetmap: 15 businesses in cleveland-oh
 
-## med-spa-b2b — 3
+## med-spa-b2b — 1
 
-### The Longevity Centers — score 70
+### Neon Collinwood Health Center — score 50
 
-- **Handle:** [@null](https://www.thelcfl.com/)
+- **Handle:** [@null](null)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** clinic
 
-> clinic · 580 Village Boulevard West Palm Beach FL 33409
-
-### MD Now Urgent Care — score 50
-
-- **Handle:** [@null](https://www.mymdnow.com/locations/palm-beach/west-palm-beach)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
-
-> clinic · 2007 Palm Beach Lakes Boulevard West Palm Beach FL 33409
-
-### Synergy Sobriety Solutions — score 50
-
-- **Handle:** [@null](https://synergysobrietysolutions.com/)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
-
-> clinic · 8895 North Military Trail Palm Beach Gardens FL 33410
+> clinic · 15322 Saint Clair Avenue Cleveland OH 44110
