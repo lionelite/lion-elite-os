@@ -1,11 +1,11 @@
 # Every harvested lead
 
-_Generated 2026-10-14T00:58:20.233Z — 294 leads._
+_Generated 2026-10-14T07:16:55.627Z — 296 leads._
 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-## med-spa-b2b — 294
+## med-spa-b2b — 296
 
 ### Sports Performance & Wellness Center — score 50
 
@@ -2358,3 +2358,19 @@ any of them — reach out by hand from the post link if a lead is worth it.
 - **Why they matched:** clinic
 
 > clinic · 15322 Saint Clair Avenue Cleveland OH 44110
+
+### Planet Fitness — score 50
+
+- **Handle:** [@null](https://www.planetfitness.com/gyms/jacksonville-southside-commons-fl)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 651 Commerce Center Drive Jacksonville FL 32225
+
+### Blocker Boulders — score 70
+
+- **Handle:** [@null](https://www.blockerboulders.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 100 Bowden Road 32216
