@@ -1,6 +1,6 @@
 # New leads from the last harvest
 
-_Generated 2026-10-13T20:12:34.834Z — 1 lead._
+_Generated 2026-10-14T00:58:20.233Z — 0 leads._
 
 | Searches run | Searches failed | Posts read | Matched | Dropped (do-not-engage) |
 |---:|---:|---:|---:|---:|
@@ -41,14 +41,6 @@ business-scaling: Bluesky search failed for "trying to scale my business": HTTP 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-**Sources this run:** bluesky: unreachable (23 failed) · openstreetmap: 15 businesses in cleveland-oh
+**Sources this run:** bluesky: unreachable (23 failed) · openstreetmap: 96 businesses in miami-fl
 
-## med-spa-b2b — 1
-
-### Neon Collinwood Health Center — score 50
-
-- **Handle:** [@null](null)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
-
-> clinic · 15322 Saint Clair Avenue Cleveland OH 44110
+**No new leads, but a source did answer.** Bluesky was unreachable; the sources line above shows what did respond. Nothing new means that area is already fully harvested — widen the search areas rather than waiting for a different result.
