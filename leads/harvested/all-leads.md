@@ -1,11 +1,11 @@
 # Every harvested lead
 
-_Generated 2026-10-14T23:05:40.462Z — 296 leads._
+_Generated 2026-10-15T03:37:20.919Z — 297 leads._
 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-## med-spa-b2b — 296
+## med-spa-b2b — 297
 
 ### Sports Performance & Wellness Center — score 50
 
@@ -2374,3 +2374,11 @@ any of them — reach out by hand from the post link if a lead is worth it.
 - **Why they matched:** gym
 
 > gym · 100 Bowden Road 32216
+
+### Core Medical Group — score 50
+
+- **Handle:** [@null](https://www.coremedicalgrp.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 101 Plaza Real South Boca Raton FL 33432
