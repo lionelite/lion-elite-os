@@ -1,11 +1,11 @@
 # Every harvested lead
 
-_Generated 2026-10-15T08:59:06.904Z — 311 leads._
+_Generated 2026-10-15T14:44:01.994Z — 315 leads._
 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-## med-spa-b2b — 311
+## med-spa-b2b — 315
 
 ### Sports Performance & Wellness Center — score 50
 
@@ -2494,3 +2494,35 @@ any of them — reach out by hand from the post link if a lead is worth it.
 - **Why they matched:** gym
 
 > gym · 449 East Main Street Columbus OH 43215
+
+### LA Fitness — score 50
+
+- **Handle:** [@null](Lafitness.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 7060 Beracasa Way Boca Raton FL
+
+### The Boca Raton Harborside Fitness Center — score 50
+
+- **Handle:** [@null](https://thebocaraton.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym
+
+### Life Time — score 50
+
+- **Handle:** [@null](https://www.lifetime.life/life-time-locations/fl-boca-raton.html)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 1499 Yamato Road Boca Raton FL 33431
+
+### F45 Training — score 50
+
+- **Handle:** [@null](https://f45training.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 1101 South Federal Highway Boca Raton FL 33432
