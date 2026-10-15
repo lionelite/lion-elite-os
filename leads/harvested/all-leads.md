@@ -1,11 +1,11 @@
 # Every harvested lead
 
-_Generated 2026-10-15T03:37:20.919Z — 297 leads._
+_Generated 2026-10-15T08:59:06.904Z — 311 leads._
 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-## med-spa-b2b — 297
+## med-spa-b2b — 311
 
 ### Sports Performance & Wellness Center — score 50
 
@@ -2382,3 +2382,115 @@ any of them — reach out by hand from the post link if a lead is worth it.
 - **Why they matched:** clinic
 
 > clinic · 101 Plaza Real South Boca Raton FL 33432
+
+### Snap Fitness — score 50
+
+- **Handle:** [@null](https://www.snapfitness.com/us/gyms/bexley-oh)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 2408 East Main Street Bexley OH 43209
+
+### 614 Barbell — score 50
+
+- **Handle:** [@null](https://614barbell.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 4565 Scioto Darby Road Hilliard OH 43026
+
+### Crunch Fitness — score 50
+
+- **Handle:** [@null](https://www.crunch.com/locations/reynoldsburg)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 5929 East Main Street Columbus Ohio 43232
+
+### Grandview Pro Fitness — score 50
+
+- **Handle:** [@null](https://www.grandviewprofitness.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 840 Grandview Avenue Columbus OH 43215
+
+### Ronin Training Center — score 70
+
+- **Handle:** [@null](https://www.ronintrainingcenter.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym
+
+### Sparked Society Gym — score 70
+
+- **Handle:** [@null](https://sparkedsocietygym.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 2840 North High Street Columbus OH 43202
+
+### Central Ohio Martial Arts & Supply — score 50
+
+- **Handle:** [@null](https://centralohiomartialarts.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 4364 North High Street 43214
+
+### Life Time — score 50
+
+- **Handle:** [@null](https://www.lifetime.life/life-time-locations/oh-dublin.html)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 3825 Hard Road Dublin OH 43016
+
+### Life Time — score 50
+
+- **Handle:** [@null](https://www.lifetime.life/life-time-locations/oh-columbus-easton.html)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 3900 Easton Station Columbus OH 43219
+
+### Life Time — score 50
+
+- **Handle:** [@null](https://www.lifetimefitness.com/en/clubs/upper-arlington-oh/your-lt.html)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 1860 West Henderson Road Columbus OH 43220
+
+### Boss Fitness — score 70
+
+- **Handle:** [@null](https://www.boss-fitness.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 333 East Livingston Avenue Columbus OH 43215
+
+### Columbus Sports Connection — score 50
+
+- **Handle:** [@null](https://www.columbussportsconnection.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 4250 North High Street Columbus OH 43214
+
+### The Butcher Shop Fitness — score 70
+
+- **Handle:** [@null](https://www.butchershopfitness.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 780 South High Street Columbus OH 43206
+
+### iResolve Fitness — score 70
+
+- **Handle:** [@null](http://www.iresolvefitnessclub.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 449 East Main Street Columbus OH 43215
