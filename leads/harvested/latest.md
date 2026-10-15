@@ -1,6 +1,6 @@
 # New leads from the last harvest
 
-_Generated 2026-10-15T14:44:01.993Z — 4 leads._
+_Generated 2026-10-15T19:47:41.735Z — 2 leads._
 
 | Searches run | Searches failed | Posts read | Matched | Dropped (do-not-engage) |
 |---:|---:|---:|---:|---:|
@@ -41,38 +41,22 @@ business-scaling: Bluesky search failed for "trying to scale my business": HTTP 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-**Sources this run:** bluesky: unreachable (23 failed) · openstreetmap: 4 businesses in boca-raton-fl
+**Sources this run:** bluesky: unreachable (23 failed) · openstreetmap: 22 businesses in columbus-oh
 
-## med-spa-b2b — 4
+## med-spa-b2b — 2
 
-### LA Fitness — score 50
+### Chalmers P. Wylie VA Ambulatory Care Center — score 50
 
-- **Handle:** [@null](Lafitness.com)
+- **Handle:** [@null](null)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
+- **Why they matched:** clinic
 
-> gym · 7060 Beracasa Way Boca Raton FL
+> clinic · 420 North James Road Columbus OH 43219
 
-### The Boca Raton Harborside Fitness Center — score 50
+### Chalmers P. Wylie VA Behavioral Health Center — score 50
 
-- **Handle:** [@null](https://thebocaraton.com)
+- **Handle:** [@null](null)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
+- **Why they matched:** clinic
 
-> gym
-
-### Life Time — score 50
-
-- **Handle:** [@null](https://www.lifetime.life/life-time-locations/fl-boca-raton.html)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
-
-> gym · 1499 Yamato Road Boca Raton FL 33431
-
-### F45 Training — score 50
-
-- **Handle:** [@null](https://f45training.com/)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
-
-> gym · 1101 South Federal Highway Boca Raton FL 33432
+> clinic · 2720 Airport Drive Columbus OH 43129

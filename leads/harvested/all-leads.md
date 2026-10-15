@@ -1,11 +1,11 @@
 # Every harvested lead
 
-_Generated 2026-10-15T14:44:01.994Z — 315 leads._
+_Generated 2026-10-15T19:47:41.735Z — 317 leads._
 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-## med-spa-b2b — 315
+## med-spa-b2b — 317
 
 ### Sports Performance & Wellness Center — score 50
 
@@ -2526,3 +2526,19 @@ any of them — reach out by hand from the post link if a lead is worth it.
 - **Why they matched:** gym
 
 > gym · 1101 South Federal Highway Boca Raton FL 33432
+
+### Chalmers P. Wylie VA Ambulatory Care Center — score 50
+
+- **Handle:** [@null](null)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 420 North James Road Columbus OH 43219
+
+### Chalmers P. Wylie VA Behavioral Health Center — score 50
+
+- **Handle:** [@null](null)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 2720 Airport Drive Columbus OH 43129
