@@ -1,11 +1,11 @@
 # Every harvested lead
 
-_Generated 2026-10-15T22:58:20.845Z — 317 leads._
+_Generated 2026-10-16T03:35:50.222Z — 318 leads._
 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-## med-spa-b2b — 317
+## med-spa-b2b — 318
 
 ### Sports Performance & Wellness Center — score 50
 
@@ -2542,3 +2542,11 @@ any of them — reach out by hand from the post link if a lead is worth it.
 - **Why they matched:** clinic
 
 > clinic · 2720 Airport Drive Columbus OH 43129
+
+### LA Fitness — score 50
+
+- **Handle:** [@null](https://www.lafitness.com/Pages/clubhome.aspx?clubid=356)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 4950 Technology Way Boca Raton FL 33431
