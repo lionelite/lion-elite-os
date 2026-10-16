@@ -1,11 +1,11 @@
 # Every harvested lead
 
-_Generated 2026-10-16T08:50:42.014Z — 318 leads._
+_Generated 2026-10-16T14:40:03.355Z — 319 leads._
 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-## med-spa-b2b — 318
+## med-spa-b2b — 319
 
 ### Sports Performance & Wellness Center — score 50
 
@@ -2550,3 +2550,11 @@ any of them — reach out by hand from the post link if a lead is worth it.
 - **Why they matched:** gym
 
 > gym · 4950 Technology Way Boca Raton FL 33431
+
+### Sol Luna Aesthetics — score 50
+
+- **Handle:** [@null](https://www.sollunaderm.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 2499 Glades Road Boca Raton FL 33431
