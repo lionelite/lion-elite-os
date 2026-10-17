@@ -1,11 +1,11 @@
 # Every harvested lead
 
-_Generated 2026-10-17T08:22:39.971Z — 320 leads._
+_Generated 2026-10-17T13:31:00.114Z — 321 leads._
 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-## med-spa-b2b — 320
+## med-spa-b2b — 321
 
 ### Sports Performance & Wellness Center — score 50
 
@@ -2566,3 +2566,11 @@ any of them — reach out by hand from the post link if a lead is worth it.
 - **Why they matched:** clinic
 
 > clinic · 5258 Linton Boulevard Delray Beach FL 33484
+
+### Health Haven — score 50
+
+- **Handle:** [@null](https://gohealthhaven.com/locations/west-palm-beach)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 4400 North Congress Avenue West Palm Beach FL 33407
