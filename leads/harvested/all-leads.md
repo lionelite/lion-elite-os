@@ -1,11 +1,11 @@
 # Every harvested lead
 
-_Generated 2026-10-18T08:41:02.370Z — 321 leads._
+_Generated 2026-10-18T13:50:58.258Z — 323 leads._
 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-## med-spa-b2b — 321
+## med-spa-b2b — 323
 
 ### Sports Performance & Wellness Center — score 50
 
@@ -2574,3 +2574,19 @@ any of them — reach out by hand from the post link if a lead is worth it.
 - **Why they matched:** clinic
 
 > clinic · 4400 North Congress Avenue West Palm Beach FL 33407
+
+### Massage Envy — score 50
+
+- **Handle:** [@null](https://www.tangeroutlet.com/palmbeach/maps#/profile?location=15201)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** massage
+
+> massage · West Palm Beach FL 33401
+
+### Garra Spas — score 50
+
+- **Handle:** [@null](https://www.tangeroutlet.com/palmbeach/maps#/profile?location=15202)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** massage
+
+> massage · West Palm Beach FL 33401

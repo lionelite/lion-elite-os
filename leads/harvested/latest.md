@@ -1,6 +1,6 @@
 # New leads from the last harvest
 
-_Generated 2026-10-18T08:41:02.370Z — 0 leads._
+_Generated 2026-10-18T13:50:58.257Z — 2 leads._
 
 | Searches run | Searches failed | Posts read | Matched | Dropped (do-not-engage) |
 |---:|---:|---:|---:|---:|
@@ -41,6 +41,22 @@ business-scaling: Bluesky search failed for "trying to scale my business": HTTP 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-**Sources this run:** bluesky: unreachable (23 failed) · openstreetmap: 85 businesses in columbus-oh
+**Sources this run:** bluesky: unreachable (23 failed) · openstreetmap: 18 businesses in west-palm-beach-fl
 
-**No new leads, but a source did answer.** Bluesky was unreachable; the sources line above shows what did respond. Nothing new means that area is already fully harvested — widen the search areas rather than waiting for a different result.
+## med-spa-b2b — 2
+
+### Massage Envy — score 50
+
+- **Handle:** [@null](https://www.tangeroutlet.com/palmbeach/maps#/profile?location=15201)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** massage
+
+> massage · West Palm Beach FL 33401
+
+### Garra Spas — score 50
+
+- **Handle:** [@null](https://www.tangeroutlet.com/palmbeach/maps#/profile?location=15202)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** massage
+
+> massage · West Palm Beach FL 33401
