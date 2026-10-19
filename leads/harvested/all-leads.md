@@ -1,11 +1,11 @@
 # Every harvested lead
 
-_Generated 2026-10-18T23:57:21.449Z — 323 leads._
+_Generated 2026-10-19T04:18:53.763Z — 326 leads._
 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-## med-spa-b2b — 323
+## med-spa-b2b — 326
 
 ### Sports Performance & Wellness Center — score 50
 
@@ -2590,3 +2590,27 @@ any of them — reach out by hand from the post link if a lead is worth it.
 - **Why they matched:** massage
 
 > massage · West Palm Beach FL 33401
+
+### Feel Good Health and Wellness — score 50
+
+- **Handle:** [@null](null)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 590 11th Street North Naples FL 34102
+
+### CMS DNA Agency LLC — score 50
+
+- **Handle:** [@null](null)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 11th Street North Naples FL 34102
+
+### Sandra Urrea, PT — score 50
+
+- **Handle:** [@null](null)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** physiotherapy
+
+> physiotherapy · 5600 Trail Boulevard Naples FL 34108
