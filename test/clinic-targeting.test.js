@@ -139,3 +139,64 @@ test('a hormone practice for women is still a target', () => {
   // medicine, which is squarely in this campaign.
   assert.equal(clinicRelevance({ name: "Renew Women's Hormone & Wellness", category: 'clinic' }).tier, 'high');
 });
+
+// --- faults found in the live harvest, 2026-10-20 ------------------------
+
+test('fertility and reproductive practices are refused, not tiered high', () => {
+  // Both of these came out of the live harvest tiered **high**, because the
+  // pregnancy terms did not contain the words a fertility clinic uses. A
+  // research-peptide supply letter is the wrong thing to send either one.
+  for (const name of [
+    'The IVF Center',
+    'Advanced Reproductive Specialists',
+    'Genesis Women’s Center at Healthpark',
+    'John Albritton Md Obgyn Specialist'
+  ]) {
+    const result = clinicRelevance({ name, category: 'clinic', email: 'a@b.com' });
+    assert.equal(result.tier, 'exclude', `${name} must not be a target`);
+  }
+});
+
+test('a sobriety provider is refused even though it says neither rehab nor addiction', () => {
+  // "Synergy Sobriety Solutions" matched none of rehab/addiction/detox and
+  // came through as medium.
+  assert.equal(
+    clinicRelevance({ name: 'Synergy Sobriety Solutions', category: 'clinic' }).tier,
+    'exclude'
+  );
+});
+
+test('surgery centres and hospital institutes are refused', () => {
+  // These buy through procurement; a supplier introduction goes nowhere.
+  for (const name of ['The Ohio Surgery Center', 'Tampa Bay Surgery Center', 'Heart Institute']) {
+    assert.equal(clinicRelevance({ name, category: 'clinic' }).tier, 'exclude', name);
+  }
+});
+
+test('the exclusions do not catch the clinics this campaign exists to reach', () => {
+  // The guard on the guard. Widening a deny list is how a real target list
+  // quietly empties, so the high-fit names from the same harvest must survive.
+  for (const name of [
+    'GlowVita',
+    'Miami Beach Laser & Aesthetics',
+    'Time 4 U Med Spa',
+    'Tao Wellnes Med Spa',
+    'The Longevity Centers',
+    'Heightened Aesthetics'
+  ]) {
+    const result = clinicRelevance({ name, category: 'med-spa', email: 'a@b.com' });
+    assert.notEqual(result.tier, 'exclude', `${name} is a real target`);
+  }
+});
+
+test('a curly apostrophe does not let a name evade the rules', () => {
+  // The bug this found: "Genesis Women’s Center" uses U+2019, so it matched
+  // none of the terms written with a straight apostrophe and came through as
+  // medium. Every apostrophe-containing rule was unenforceable until names
+  // were normalised.
+  const curly = clinicRelevance({ name: 'Genesis Women’s Center at Healthpark', category: 'clinic' });
+  const straight = clinicRelevance({ name: "Genesis Women's Center at Healthpark", category: 'clinic' });
+
+  assert.equal(curly.tier, 'exclude');
+  assert.equal(curly.tier, straight.tier, 'the two spellings must classify identically');
+});
