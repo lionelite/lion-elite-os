@@ -1,6 +1,6 @@
 # New leads from the last harvest
 
-_Generated 2026-10-21T23:11:35.321Z — 0 leads._
+_Generated 2026-10-22T03:43:01.141Z — 0 leads._
 
 | Searches run | Searches failed | Posts read | Matched | Dropped (do-not-engage) |
 |---:|---:|---:|---:|---:|
@@ -41,6 +41,6 @@ business-scaling: Bluesky search failed for "trying to scale my business": HTTP 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-**Sources this run:** bluesky: unreachable (23 failed) · openstreetmap: 26 businesses in fort-lauderdale-fl
+**Sources this run:** bluesky: unreachable (23 failed) · openstreetmap: 12 businesses in boca-raton-fl
 
 **No new leads, but a source did answer.** Bluesky was unreachable; the sources line above shows what did respond. Nothing new means that area is already fully harvested — widen the search areas rather than waiting for a different result.
