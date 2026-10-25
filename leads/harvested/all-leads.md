@@ -1,11 +1,11 @@
 # Every harvested lead
 
-_Generated 2026-10-25T00:06:13.204Z — 327 leads._
+_Generated 2026-10-25T07:24:24.336Z — 337 leads._
 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-## med-spa-b2b — 327
+## med-spa-b2b — 337
 
 ### Sports Performance & Wellness Center — score 50
 
@@ -2622,3 +2622,83 @@ any of them — reach out by hand from the post link if a lead is worth it.
 - **Why they matched:** gym
 
 > gym · 928 North Federal Highway Fort Lauderdale FL 33304
+
+### Die Pretty Lashes | Lash Extensions & Training — score 70
+
+- **Handle:** [@null](https://stan.store/Diepretty)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 1628 San Marco Blvd Jacksonville FL 32207
+
+### Be Magnificent Beauty — score 70
+
+- **Handle:** [@null](https://www.bemagnificentbeauty.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 807 Edgewood Avenue South Jacksonville FL 32205-5338
+
+### ANNAZUR Organic Spa — score 70
+
+- **Handle:** [@null](https://annazur.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 4130 Salisbury Road Jacksonville FL 32216
+
+### UF Health Pain Management Center – Jacksonville — score 50
+
+- **Handle:** [@null](https://ufhealthjax.org/location/25/uf-health-pain-management-center-jacksonville/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 555 West 8th Street Jacksonville 32209
+
+### Jacksonville Center for Reproductive Medicine — score 70
+
+- **Handle:** [@null](https://jcrm.org/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 7051 Southpoint Pkwy Jacksonville FL 32216
+
+### Sanitas Medical Center — score 50
+
+- **Handle:** [@null](https://www.mysanitas.com/en/fl/sanitas-regency)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 9400 Atlantic Boulevard Jacksonville FL 32225
+
+### Borland Groover — score 50
+
+- **Handle:** [@null](https://borlandgroover.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 4800 Belfort Road Jacksonville FL 322256
+
+### Jacksonville Center for Endoscopy - Southside — score 50
+
+- **Handle:** [@null](https://borlandgroover.com/locations/jacksonville-center-for-endoscopy-southside/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 4800 Belfort Road Jacksonville FL 32256
+
+### UF Health Proton Therapy Institute — score 50
+
+- **Handle:** [@null](https://www.floridaproton.org)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic
+
+### Immunization Center - Florida Department of Health — score 50
+
+- **Handle:** [@null](null)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 3225 University Boulevard South 32216
