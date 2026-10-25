@@ -1,6 +1,6 @@
 # New leads from the last harvest
 
-_Generated 2026-10-24T20:31:55.252Z — 0 leads._
+_Generated 2026-10-25T00:06:13.204Z — 0 leads._
 
 | Searches run | Searches failed | Posts read | Matched | Dropped (do-not-engage) |
 |---:|---:|---:|---:|---:|
@@ -41,6 +41,6 @@ business-scaling: Bluesky search failed for "trying to scale my business": HTTP 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-**Sources this run:** bluesky: unreachable (23 failed) · openstreetmap: unreachable (The operation was aborted due to timeout)
+**Sources this run:** bluesky: unreachable (23 failed) · openstreetmap: 105 businesses in miami-fl
 
-**No leads, because no source could be reached.** Every query failed — see above.
+**No new leads, but a source did answer.** Bluesky was unreachable; the sources line above shows what did respond. Nothing new means that area is already fully harvested — widen the search areas rather than waiting for a different result.
