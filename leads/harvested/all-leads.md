@@ -1,11 +1,11 @@
 # Every harvested lead
 
-_Generated 2026-10-27T11:55:17.095Z — 368 leads._
+_Generated 2026-10-27T17:45:29.330Z — 369 leads._
 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-## med-spa-b2b — 368
+## med-spa-b2b — 369
 
 ### Sports Performance & Wellness Center — score 50
 
@@ -2950,3 +2950,11 @@ any of them — reach out by hand from the post link if a lead is worth it.
 - **Why they matched:** gym
 
 > gym · 3009 Salzedo Street Coral Gables FL 33134
+
+### Parks PT — score 70
+
+- **Handle:** [@null](https://www.parkspt.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** physiotherapy
+
+> physiotherapy · 1172 Solana Avenue Winter Park fl 32789
