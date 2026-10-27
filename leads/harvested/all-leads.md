@@ -1,11 +1,11 @@
 # Every harvested lead
 
-_Generated 2026-10-26T22:28:19.029Z — 337 leads._
+_Generated 2026-10-27T04:10:02.713Z — 343 leads._
 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-## med-spa-b2b — 337
+## med-spa-b2b — 343
 
 ### Sports Performance & Wellness Center — score 50
 
@@ -2702,3 +2702,51 @@ any of them — reach out by hand from the post link if a lead is worth it.
 - **Why they matched:** clinic
 
 > clinic · 3225 University Boulevard South 32216
+
+### Central Fitness — score 50
+
+- **Handle:** [@null](https://www.centralfitnessnaples.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym
+
+### Athletica — score 50
+
+- **Handle:** [@null](https://www.athleticahf.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym
+
+### The Pilates Firm — score 50
+
+- **Handle:** [@null](http://www.pilatesfirm.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 3357 Tamiami Trail North Naples FL 34103
+
+### Paradise Coast Personal Training — score 50
+
+- **Handle:** [@null](https://paradisecoastpersonaltraining.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym
+
+### Matterhorn Fit Naples — score 50
+
+- **Handle:** [@null](https://www.matterhornfit.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 2079 Pine Ridge Road Naples FL 34109
+
+### Bonded Naples — score 70
+
+- **Handle:** [@null](https://bondedlagree.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 290 14th Avenue South Naples FL 34102

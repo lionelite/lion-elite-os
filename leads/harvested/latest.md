@@ -1,6 +1,6 @@
 # New leads from the last harvest
 
-_Generated 2026-10-26T22:28:19.028Z — 0 leads._
+_Generated 2026-10-27T04:10:02.713Z — 6 leads._
 
 | Searches run | Searches failed | Posts read | Matched | Dropped (do-not-engage) |
 |---:|---:|---:|---:|---:|
@@ -41,6 +41,54 @@ business-scaling: Bluesky search failed for "trying to scale my business": HTTP 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-**Sources this run:** bluesky: unreachable (23 failed) · openstreetmap: 103 businesses in miami-fl
+**Sources this run:** bluesky: unreachable (23 failed) · openstreetmap: 31 businesses in naples-fl
 
-**No new leads, but a source did answer.** Bluesky was unreachable; the sources line above shows what did respond. Nothing new means that area is already fully harvested — widen the search areas rather than waiting for a different result.
+## med-spa-b2b — 6
+
+### Central Fitness — score 50
+
+- **Handle:** [@null](https://www.centralfitnessnaples.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym
+
+### Athletica — score 50
+
+- **Handle:** [@null](https://www.athleticahf.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym
+
+### The Pilates Firm — score 50
+
+- **Handle:** [@null](http://www.pilatesfirm.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 3357 Tamiami Trail North Naples FL 34103
+
+### Paradise Coast Personal Training — score 50
+
+- **Handle:** [@null](https://paradisecoastpersonaltraining.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym
+
+### Matterhorn Fit Naples — score 50
+
+- **Handle:** [@null](https://www.matterhornfit.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 2079 Pine Ridge Road Naples FL 34109
+
+### Bonded Naples — score 70
+
+- **Handle:** [@null](https://bondedlagree.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 290 14th Avenue South Naples FL 34102
