@@ -200,3 +200,32 @@ test('a curly apostrophe does not let a name evade the rules', () => {
   assert.equal(curly.tier, 'exclude');
   assert.equal(curly.tier, straight.tier, 'the two spellings must classify identically');
 });
+
+test('a hospital system is refused on its domain, whatever the page is called', () => {
+  // The name rules cannot catch these. A health system titles its location
+  // pages after the department — the live harvest tiered "Sports Medicine
+  // Center" as HIGH fit on a my.clevelandclinic.org URL, and "Comprehensive
+  // Care Center" the same way on browardhealth.org. Only the host says what
+  // the business actually is, and a system buys through central procurement.
+  const cases = [
+    ['Sports Medicine Center', 'https://my.clevelandclinic.org/locations/directions/240-sports-health-center'],
+    ['Comprehensive Care Center', 'https://www.browardhealth.org/locations/comprehensive-care-center'],
+    ['Bascom Palmer Eye Institute', 'https://umiamihealth.org/en/locations/bascom-palmer-eye-institute-naples']
+  ];
+  for (const [name, website] of cases) {
+    const result = clinicRelevance({ name, website, category: 'clinic' });
+    assert.equal(result.tier, 'exclude', `${name} is a hospital system`);
+  }
+});
+
+test('an independent practice on its own domain is untouched by that rule', () => {
+  // The guard on the guard again: a domain deny list must not start refusing
+  // the independent clinics this campaign exists to reach.
+  for (const [name, website] of [
+    ['Med Spa on 5th', 'https://www.medspaon5th.com/'],
+    ['Sol Luna Aesthetics', 'https://www.sollunaderm.com'],
+    ['Hamilton Aesthetics of the Palm Beaches', 'https://hamiltonpalmbeach.com/']
+  ]) {
+    assert.notEqual(clinicRelevance({ name, website, category: 'med-spa' }).tier, 'exclude', name);
+  }
+});

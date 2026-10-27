@@ -1,0 +1,140 @@
+name: Enrich Contacts
+
+# Give admitted leads a contact address, so the sendable list grows without
+# re-harvesting.
+#
+# The harvest enriches a lead once, when it is found. A site that was slow or
+# unbuilt that day never gets a second look, and the lead keeps a phone number
+# forever. This pass revisits them. On the live store that is the difference
+# between 40 contactable businesses and potentially 90.
+#
+# It runs here rather than in a Claude session for the same reason the harvest
+# does: the dev sandbox's egress proxy refuses arbitrary hosts, so every clinic
+# site reads as unreachable there. This runner has real outbound access.
+#
+# Read-only toward the businesses: it reads pages they publish themselves and
+# writes notes to a branch. It sends nothing.
+on:
+  schedule:
+    # Daily, a few hours after the harvest rotation has had time to add rows.
+    - cron: '41 6 * * *'
+  workflow_dispatch:
+    inputs:
+      limit:
+        description: 'How many sites to attempt this run'
+        required: false
+        default: '40'
+      tier:
+        description: 'Lowest fit tier to enrich (high | medium | low)'
+        required: false
+        default: 'medium'
+      dry_run:
+        description: 'Report what it would find without writing'
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  # Shares the lead store with the harvest, so the two must not interleave —
+  # both rewrite leads.jsonl wholesale and the loser's rows would vanish.
+  group: lead-store
+  cancel-in-progress: false
+
+jobs:
+  enrich:
+    name: Find published contact addresses
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Restore lead history
+        run: |
+          if git fetch origin automation/leads 2>/dev/null; then
+            git checkout FETCH_HEAD -- leads/harvested/ 2>/dev/null \
+              || echo "No leads/harvested/ on the history branch yet."
+          else
+            echo "No automation/leads branch yet. Nothing to enrich."
+          fi
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Enrich
+        id: enrich
+        run: |
+          limit='${{ github.event.inputs.limit }}'
+          tier='${{ github.event.inputs.tier }}'
+          args=""
+          [ -n "$limit" ] && args="$args --limit=$limit"
+          [ -n "$tier" ] && args="$args --tier=$tier"
+          [ "${{ github.event.inputs.dry_run }}" = "true" ] && args="$args --dry-run"
+          node scripts/enrich-missing-emails.js $args 2>&1 | tee enrich.log
+          exit "${PIPESTATUS[0]}"
+
+      - name: Show what was found
+        if: always()
+        run: |
+          {
+            echo "## Contact enrichment"
+            echo
+            echo "- **Addresses found this run:** ${{ steps.enrich.outputs.enriched || '0' }}"
+            echo "- **Sites attempted:** ${{ steps.enrich.outputs.attempted || '0' }}"
+            echo
+            echo '<details><summary>Run log</summary>'
+            echo
+            echo '```'
+            cat enrich.log 2>/dev/null || echo 'No output captured.'
+            echo '```'
+            echo
+            echo '</details>'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Commit enriched leads
+        if: github.event.inputs.dry_run != 'true'
+        run: |
+          git config user.name "Lion Elite Contact Enrichment"
+          git config user.email "actions@github.com"
+
+          if [ -z "$(git status --porcelain -- leads/harvested/)" ]; then
+            echo "Nothing enriched; nothing to commit."
+            exit 0
+          fi
+
+          output_tmp="$(mktemp -d)"
+          trap 'rm -rf "$output_tmp"' EXIT
+          cp -a leads/harvested/. "$output_tmp/"
+          git reset --hard HEAD
+          git clean -fd -- leads/harvested/
+
+          git fetch origin automation/leads
+          git checkout automation/leads
+
+          mkdir -p leads/harvested
+          cp -a "$output_tmp/." leads/harvested/
+
+          git add leads/harvested/
+          if git diff --cached --quiet; then
+            echo "No lead changes to commit."
+          else
+            git commit -m "Enrich contacts: ${{ steps.enrich.outputs.enriched || '0' }} addresses found"
+            git push origin HEAD:automation/leads \
+              || echo "Push skipped because the remote moved. The next run retries."
+          fi
+
+      # A run that reached no site at all must not report success. Green on
+      # zero found is exactly how a dead enrichment pass stays invisible —
+      # the same failure the harvest workflow guards against.
+      - name: Fail if nothing was reachable
+        if: steps.enrich.outputs.all_unreachable == 'true'
+        run: |
+          echo "Every site was unreachable. That is a network result, not a data result."
+          exit 1
