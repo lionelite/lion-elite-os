@@ -1,11 +1,11 @@
 # Every harvested lead
 
-_Generated 2026-10-27T04:10:02.713Z — 343 leads._
+_Generated 2026-10-27T11:55:17.095Z — 368 leads._
 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-## med-spa-b2b — 343
+## med-spa-b2b — 368
 
 ### Sports Performance & Wellness Center — score 50
 
@@ -2750,3 +2750,203 @@ any of them — reach out by hand from the post link if a lead is worth it.
 - **Why they matched:** gym
 
 > gym · 290 14th Avenue South Naples FL 34102
+
+### LA Fitness — score 50
+
+- **Handle:** [@null](https://www.lafitness.com/Pages/clubhome.aspx?clubid=502)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 1801 Northeast 123rd Street North Miami FL 33181
+
+### Nobe Yoga — score 50
+
+- **Handle:** [@null](https://www.nobeyoga.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 214 67th Street Miami Beach FL 33141
+
+### Synergy Yoga Center — score 50
+
+- **Handle:** [@null](https://synergyyoga.org)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 844 Alton Road Miami Beach FL 33139
+
+### Kodiak Fitness Center — score 70
+
+- **Handle:** [@null](https://www.kodiakfitnesscenter.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 17050 Collins Avenue Sunny Isles Beach FL 33160
+
+### tenthirtythree — score 70
+
+- **Handle:** [@null](https://tenthirtythreewellnesscollective.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 1033 Kane Concourse Bay Harbor Islands FL 33154
+
+### The Only Studio — score 50
+
+- **Handle:** [@null](https://www.mindbodyonline.com/explore/locations/the-only-studio)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 1015 Kane Concourse Bay Harbor Islands FL 33154
+
+### Police Athletic League (PAL) Gym Miami Beach) — score 70
+
+- **Handle:** [@null](https://www.beachpal.org/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 999 11th Street Miami Beach FL 33139
+
+### Thunder Gym — score 50
+
+- **Handle:** [@null](https://miamithundergym.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 1524 West Flagler Street Miami FL 33135
+
+### LA Fitness — score 50
+
+- **Handle:** [@null](https://www.lafitness.com/Pages/clubhome.aspx?clubid=631)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 630 West 49th Street Hialeah FL 33012
+
+### Planet Fitness — score 50
+
+- **Handle:** [@null](https://www.planetfitness.com/gyms/hialeah-49th-street-fl/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 502 West 49th Street Hialeah FL 33012
+
+### AHANA YOGA STUDIO — score 70
+
+- **Handle:** [@null](https://ahanayoga.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 43 Northeast 38th Street Miami FL 33137
+
+### Planet Fitness — score 50
+
+- **Handle:** [@null](https://www.planetfitness.com/gyms/north-miami-beach-fl)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 1630 Northeast 163rd Street North Miami Beach FL 33162
+
+### Life Time — score 50
+
+- **Handle:** [@null](https://www.lifetime.life/life-time-locations/fl-coral-gables.html)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 237 South Dixie Highway Coral Gables FL 33133
+
+### Punch Elite Fitness Miami — score 50
+
+- **Handle:** [@null](https://punchelitefitnessmiami.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 1911 Northwest Miami Court Miami FL 33136
+
+### JETSET Pilates — score 50
+
+- **Handle:** [@null](https://jetsetpilates.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 110 Washington Avenue Miami Beach FL 33139
+
+### Proof of Work Fitness — score 50
+
+- **Handle:** [@null](https://www.proofofwork.fit/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · Miami FL 33131
+
+### Central Rock Gym — score 50
+
+- **Handle:** [@null](https://centralrockgym.com/wynwood/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 2916 Northwest 29th Street
+
+### Velocity Climbing — score 70
+
+- **Handle:** [@null](https://www.velocityclimbing.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 2280 Northwest 41st Street
+
+### Reforming Pilates — score 70
+
+- **Handle:** [@null](https://reformingpilates.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 1072 Kane Concourse Bay Harbor Islands FL 33154
+
+### LA Fitness — score 50
+
+- **Handle:** [@null](https://lafitness.com/Pages/clubhome.aspx?clubid=263&South+Miami-Florida+GYM)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 5701 Sunset Drive South Miami FL 33143
+
+### BPM Wellness — score 50
+
+- **Handle:** [@null](https://www.bpm-wellness.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 363 Northeast 61st Street Miami FL 33137
+
+### Pelican Community Park - Fitness Center — score 70
+
+- **Handle:** [@null](https://www.sibfl.gov/Parks-Recreation/Parks/Parks-Facilities/Pelican-Community-Park)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 18115 North Bay Road Sunny Isles Beach FL 33160
+
+### Kung Fu Connection — score 50
+
+- **Handle:** [@null](https://www.kungfuconnection.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 12739 Biscayne Boulevard North Miami FL 33181
+
+### LA Fitness — score 50
+
+- **Handle:** [@null](https://www.lafitness.com/Pages/clubhome.aspx?clubid=553)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 900 South Miami Avenue Miami FL 33130
+
+### Ignite Fit Training — score 70
+
+- **Handle:** [@null](https://ignitefittraining.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 3009 Salzedo Street Coral Gables FL 33134
