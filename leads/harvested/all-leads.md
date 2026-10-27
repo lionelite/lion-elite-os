@@ -1,11 +1,11 @@
 # Every harvested lead
 
-_Generated 2026-10-27T17:45:29.330Z — 369 leads._
+_Generated 2026-10-27T22:00:47.455Z — 380 leads._
 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-## med-spa-b2b — 369
+## med-spa-b2b — 380
 
 ### Sports Performance & Wellness Center — score 50
 
@@ -2958,3 +2958,91 @@ any of them — reach out by hand from the post link if a lead is worth it.
 - **Why they matched:** physiotherapy
 
 > physiotherapy · 1172 Solana Avenue Winter Park fl 32789
+
+### Katy's Nails — score 70
+
+- **Handle:** [@null](https://katysnailssalon.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 720 Main Street Cincinnati OH 45202
+
+### Cincy Designer Lashes — score 70
+
+- **Handle:** [@null](https://www.cincydesignerlashes.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 9122 Montgomery Road Cincinnati OH 45242
+
+### Beauty Obsessions — score 50
+
+- **Handle:** [@null](https://beautyobsessions.glossgenius.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa
+
+### Valencia Nail Studio — score 70
+
+- **Handle:** [@null](https://valencianailstudio.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 9340 Montgomery Road Montgomery OH 45242
+
+### Siilver & Sage Nail Salon — score 50
+
+- **Handle:** [@null](https://silver-sage-100719.square.site/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa
+
+### Hue Aesthetics — score 70
+
+- **Handle:** [@null](https://huemedspa.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa
+
+### Oasis Face Bar — score 50
+
+- **Handle:** [@null](https://www.oasisfacebar.com/oakley-oh)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 3300 Brotherton Road Cincinnati OH 45209
+
+### Valenti – Mariemont — score 70
+
+- **Handle:** [@null](https://valentisalon.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 7459 Wooster Pike Cincinnati OH 45227
+
+### Advanced Pain & Spine Institute — score 50
+
+- **Handle:** [@null](https://apsiwellness.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** physiotherapy
+
+> physiotherapy
+
+### Athletico Physical Therapy — score 50
+
+- **Handle:** [@null](https://www.athletico.com/locations/cincinnati-mariemont/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** physiotherapy
+
+> physiotherapy · 7215 Wooster Pike Columbia Township OH 45227
+
+### Beyond Exercize — score 50
+
+- **Handle:** [@null](https://www.gobeyondexercise.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** physiotherapy
+
+> physiotherapy · 5812 Madison Road Cincinnati OH 45227
