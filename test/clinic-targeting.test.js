@@ -21,6 +21,11 @@ test('practices this campaign must never contact are excluded', () => {
     { name: 'UH Rainbow Center for Women and Children', category: 'clinic' },
     { name: 'University Hospitals Otis Moss Jr. Health Center', category: 'clinic' },
     { name: 'Childwise ABA', website: 'https://childwiseaba.com/', category: 'clinic' },
+    // From the live list on 2026-10-03: tiered medium-fit on a bare
+    // `amenity=clinic` tag. Preterm was already excluded by name while the
+    // whole category it belongs to was not.
+    { name: 'Community Pregnancy Clinics', category: 'clinic' },
+    { name: 'Riverside Prenatal & Maternity Center', category: 'clinic' },
     { name: 'MED+ Urgent Care', category: 'clinic' },
     { name: 'Happy Tails Veterinary Clinic', category: 'clinic' },
     { name: 'Bright Smiles Dental', category: 'clinic' }
@@ -117,4 +122,110 @@ test('a mid-word coincidence in a name still does not fire', () => {
   // "Titan" must not read as tanning, "Chairs & Co" must not read as hair.
   assert.notEqual(clinicRelevance({ name: 'Titan Strength Co', category: 'med-spa' }).tier, 'exclude');
   assert.notEqual(clinicRelevance({ name: 'Chairs and Co', category: 'med-spa' }).tier, 'exclude');
+});
+
+test('occupational and regulatory medicine is not a research-supply target', () => {
+  // "The Aviators' Clinic" tiered medium-fit on the live list. A flight
+  // physical practice buys nothing a research supplier sells — not a
+  // compliance problem like the pregnancy clinics, just a wasted send that
+  // drags every downstream rate down.
+  for (const name of ["The Aviators' Clinic", 'Metro Occupational Health', 'QuickDOT Physicals']) {
+    assert.equal(clinicRelevance({ name, category: 'clinic' }).tier, 'exclude', `${name} is not a buyer`);
+  }
+});
+
+test('a hormone practice for women is still a target', () => {
+  // The pregnancy exclusions must not swallow womens hormone and longevity
+  // medicine, which is squarely in this campaign.
+  assert.equal(clinicRelevance({ name: "Renew Women's Hormone & Wellness", category: 'clinic' }).tier, 'high');
+});
+
+// --- faults found in the live harvest, 2026-10-20 ------------------------
+
+test('fertility and reproductive practices are refused, not tiered high', () => {
+  // Both of these came out of the live harvest tiered **high**, because the
+  // pregnancy terms did not contain the words a fertility clinic uses. A
+  // research-peptide supply letter is the wrong thing to send either one.
+  for (const name of [
+    'The IVF Center',
+    'Advanced Reproductive Specialists',
+    'Genesis Women’s Center at Healthpark',
+    'John Albritton Md Obgyn Specialist'
+  ]) {
+    const result = clinicRelevance({ name, category: 'clinic', email: 'a@b.com' });
+    assert.equal(result.tier, 'exclude', `${name} must not be a target`);
+  }
+});
+
+test('a sobriety provider is refused even though it says neither rehab nor addiction', () => {
+  // "Synergy Sobriety Solutions" matched none of rehab/addiction/detox and
+  // came through as medium.
+  assert.equal(
+    clinicRelevance({ name: 'Synergy Sobriety Solutions', category: 'clinic' }).tier,
+    'exclude'
+  );
+});
+
+test('surgery centres and hospital institutes are refused', () => {
+  // These buy through procurement; a supplier introduction goes nowhere.
+  for (const name of ['The Ohio Surgery Center', 'Tampa Bay Surgery Center', 'Heart Institute']) {
+    assert.equal(clinicRelevance({ name, category: 'clinic' }).tier, 'exclude', name);
+  }
+});
+
+test('the exclusions do not catch the clinics this campaign exists to reach', () => {
+  // The guard on the guard. Widening a deny list is how a real target list
+  // quietly empties, so the high-fit names from the same harvest must survive.
+  for (const name of [
+    'GlowVita',
+    'Miami Beach Laser & Aesthetics',
+    'Time 4 U Med Spa',
+    'Tao Wellnes Med Spa',
+    'The Longevity Centers',
+    'Heightened Aesthetics'
+  ]) {
+    const result = clinicRelevance({ name, category: 'med-spa', email: 'a@b.com' });
+    assert.notEqual(result.tier, 'exclude', `${name} is a real target`);
+  }
+});
+
+test('a curly apostrophe does not let a name evade the rules', () => {
+  // The bug this found: "Genesis Women’s Center" uses U+2019, so it matched
+  // none of the terms written with a straight apostrophe and came through as
+  // medium. Every apostrophe-containing rule was unenforceable until names
+  // were normalised.
+  const curly = clinicRelevance({ name: 'Genesis Women’s Center at Healthpark', category: 'clinic' });
+  const straight = clinicRelevance({ name: "Genesis Women's Center at Healthpark", category: 'clinic' });
+
+  assert.equal(curly.tier, 'exclude');
+  assert.equal(curly.tier, straight.tier, 'the two spellings must classify identically');
+});
+
+test('a hospital system is refused on its domain, whatever the page is called', () => {
+  // The name rules cannot catch these. A health system titles its location
+  // pages after the department — the live harvest tiered "Sports Medicine
+  // Center" as HIGH fit on a my.clevelandclinic.org URL, and "Comprehensive
+  // Care Center" the same way on browardhealth.org. Only the host says what
+  // the business actually is, and a system buys through central procurement.
+  const cases = [
+    ['Sports Medicine Center', 'https://my.clevelandclinic.org/locations/directions/240-sports-health-center'],
+    ['Comprehensive Care Center', 'https://www.browardhealth.org/locations/comprehensive-care-center'],
+    ['Bascom Palmer Eye Institute', 'https://umiamihealth.org/en/locations/bascom-palmer-eye-institute-naples']
+  ];
+  for (const [name, website] of cases) {
+    const result = clinicRelevance({ name, website, category: 'clinic' });
+    assert.equal(result.tier, 'exclude', `${name} is a hospital system`);
+  }
+});
+
+test('an independent practice on its own domain is untouched by that rule', () => {
+  // The guard on the guard again: a domain deny list must not start refusing
+  // the independent clinics this campaign exists to reach.
+  for (const [name, website] of [
+    ['Med Spa on 5th', 'https://www.medspaon5th.com/'],
+    ['Sol Luna Aesthetics', 'https://www.sollunaderm.com'],
+    ['Hamilton Aesthetics of the Palm Beaches', 'https://hamiltonpalmbeach.com/']
+  ]) {
+    assert.notEqual(clinicRelevance({ name, website, category: 'med-spa' }).tier, 'exclude', name);
+  }
 });
