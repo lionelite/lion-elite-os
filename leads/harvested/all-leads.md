@@ -1,11 +1,11 @@
 # Every harvested lead
 
-_Generated 2026-10-30T19:05:49.458Z — 405 leads._
+_Generated 2026-10-30T23:32:32.296Z — 406 leads._
 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-## med-spa-b2b — 405
+## med-spa-b2b — 406
 
 ### Sports Performance & Wellness Center — score 50
 
@@ -3246,3 +3246,11 @@ any of them — reach out by hand from the post link if a lead is worth it.
 - **Why they matched:** clinic
 
 > clinic · 1475 Northwest 12th Avenue Miami 33136
+
+### Winggate Body Therapy and Facial Spa — score 70
+
+- **Handle:** [@null](https://winggatespa.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** massage
+
+> massage · 263 Commercial Boulevard Lauderdale-by-the-Sea FL 33308
