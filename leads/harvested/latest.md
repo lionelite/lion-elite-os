@@ -1,6 +1,6 @@
 # New leads from the last harvest
 
-_Generated 2026-10-30T23:32:32.296Z — 1 lead._
+_Generated 2026-10-31T04:34:08.356Z — 0 leads._
 
 | Searches run | Searches failed | Posts read | Matched | Dropped (do-not-engage) |
 |---:|---:|---:|---:|---:|
@@ -41,14 +41,6 @@ business-scaling: Bluesky search failed for "trying to scale my business": HTTP 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-**Sources this run:** bluesky: unreachable (23 failed) · openstreetmap: 27 businesses in fort-lauderdale-fl
+**Sources this run:** bluesky: unreachable (23 failed) · openstreetmap: 57 businesses in naples-fl
 
-## med-spa-b2b — 1
-
-### Winggate Body Therapy and Facial Spa — score 70
-
-- **Handle:** [@null](https://winggatespa.com/)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** massage
-
-> massage · 263 Commercial Boulevard Lauderdale-by-the-Sea FL 33308
+**No new leads, but a source did answer.** Bluesky was unreachable; the sources line above shows what did respond. Nothing new means that area is already fully harvested — widen the search areas rather than waiting for a different result.
