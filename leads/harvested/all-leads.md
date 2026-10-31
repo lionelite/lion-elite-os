@@ -1,11 +1,11 @@
 # Every harvested lead
 
-_Generated 2026-10-31T16:59:03.788Z — 406 leads._
+_Generated 2026-10-31T21:10:22.981Z — 409 leads._
 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-## med-spa-b2b — 406
+## med-spa-b2b — 409
 
 ### Sports Performance & Wellness Center — score 50
 
@@ -3254,3 +3254,27 @@ any of them — reach out by hand from the post link if a lead is worth it.
 - **Why they matched:** massage
 
 > massage · 263 Commercial Boulevard Lauderdale-by-the-Sea FL 33308
+
+### The Jewish Hospital – Mercy Health Outpatient Clinic — score 50
+
+- **Handle:** [@null](https://www.mercy.com/locations/medical-centers-clinics/cincinnati/the-jewish-hospital-mercy-health-outpatient-clinic)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 6350 East Galbraith Road Cincinnati OH
+
+### Good Samaritan Glenway — score 50
+
+- **Handle:** [@null](https://www.trihealth.com/hospitals-and-practices/good-samaritan-outpatient-center-glenway)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 6350 Glenway Avenue Cincinnati 45211
+
+### Crossroad Health Center — score 50
+
+- **Handle:** [@null](https://www.crossroadhc.org/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 1712 Race Street Cincinnati OH 45202

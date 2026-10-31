@@ -1,6 +1,6 @@
 # New leads from the last harvest
 
-_Generated 2026-10-31T16:59:03.787Z — 0 leads._
+_Generated 2026-10-31T21:10:22.981Z — 3 leads._
 
 | Searches run | Searches failed | Posts read | Matched | Dropped (do-not-engage) |
 |---:|---:|---:|---:|---:|
@@ -41,6 +41,30 @@ business-scaling: Bluesky search failed for "trying to scale my business": HTTP 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-**Sources this run:** bluesky: unreachable (23 failed) · openstreetmap: 51 businesses in tampa-fl
+**Sources this run:** bluesky: unreachable (23 failed) · openstreetmap: 67 businesses in cincinnati-oh
 
-**No new leads, but a source did answer.** Bluesky was unreachable; the sources line above shows what did respond. Nothing new means that area is already fully harvested — widen the search areas rather than waiting for a different result.
+## med-spa-b2b — 3
+
+### The Jewish Hospital – Mercy Health Outpatient Clinic — score 50
+
+- **Handle:** [@null](https://www.mercy.com/locations/medical-centers-clinics/cincinnati/the-jewish-hospital-mercy-health-outpatient-clinic)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 6350 East Galbraith Road Cincinnati OH
+
+### Good Samaritan Glenway — score 50
+
+- **Handle:** [@null](https://www.trihealth.com/hospitals-and-practices/good-samaritan-outpatient-center-glenway)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 6350 Glenway Avenue Cincinnati 45211
+
+### Crossroad Health Center — score 50
+
+- **Handle:** [@null](https://www.crossroadhc.org/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 1712 Race Street Cincinnati OH 45202
