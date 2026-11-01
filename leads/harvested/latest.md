@@ -1,6 +1,6 @@
 # New leads from the last harvest
 
-_Generated 2026-11-01T08:55:29.870Z — 1 lead._
+_Generated 2026-11-01T16:43:14.661Z — 3 leads._
 
 | Searches run | Searches failed | Posts read | Matched | Dropped (do-not-engage) |
 |---:|---:|---:|---:|---:|
@@ -41,14 +41,30 @@ business-scaling: Bluesky search failed for "trying to scale my business": HTTP 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-**Sources this run:** bluesky: unreachable (23 failed) · openstreetmap: 103 businesses in columbus-oh
+**Sources this run:** bluesky: unreachable (23 failed) · openstreetmap: 17 businesses in tampa-fl
 
-## med-spa-b2b — 1
+## med-spa-b2b — 3
 
-### Lacquer Gallery Nails — score 50
+### T & L Nails — score 50
 
-- **Handle:** [@null](https://www.thegoldroomtattoo.com)
+- **Handle:** [@null](null)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** med-spa
 
-> med-spa · 1117 Michigan Avenue Columbus OH 43201
+> med-spa · 304 East Davis Boulevard Tampa FL 33606
+
+### Florida Float Spa — score 50
+
+- **Handle:** [@null](null)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 14405 North Dale Mabry Highway Tampa FL 33618
+
+### The Extraction Lounge — score 50
+
+- **Handle:** [@null](null)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 2312 West Waters Avenue Tampa FL 33604

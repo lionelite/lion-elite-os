@@ -1,11 +1,11 @@
 # Every harvested lead
 
-_Generated 2026-11-01T08:55:29.870Z — 410 leads._
+_Generated 2026-11-01T16:43:14.661Z — 413 leads._
 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-## med-spa-b2b — 410
+## med-spa-b2b — 413
 
 ### Sports Performance & Wellness Center — score 50
 
@@ -3286,3 +3286,27 @@ any of them — reach out by hand from the post link if a lead is worth it.
 - **Why they matched:** med-spa
 
 > med-spa · 1117 Michigan Avenue Columbus OH 43201
+
+### T & L Nails — score 50
+
+- **Handle:** [@null](null)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 304 East Davis Boulevard Tampa FL 33606
+
+### Florida Float Spa — score 50
+
+- **Handle:** [@null](null)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 14405 North Dale Mabry Highway Tampa FL 33618
+
+### The Extraction Lounge — score 50
+
+- **Handle:** [@null](null)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 2312 West Waters Avenue Tampa FL 33604
