@@ -1,11 +1,11 @@
 # Every harvested lead
 
-_Generated 2026-11-01T00:50:00.625Z — 409 leads._
+_Generated 2026-11-01T08:55:29.870Z — 410 leads._
 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-## med-spa-b2b — 409
+## med-spa-b2b — 410
 
 ### Sports Performance & Wellness Center — score 50
 
@@ -3278,3 +3278,11 @@ any of them — reach out by hand from the post link if a lead is worth it.
 - **Why they matched:** clinic
 
 > clinic · 1712 Race Street Cincinnati OH 45202
+
+### Lacquer Gallery Nails — score 50
+
+- **Handle:** [@null](https://www.thegoldroomtattoo.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 1117 Michigan Avenue Columbus OH 43201
