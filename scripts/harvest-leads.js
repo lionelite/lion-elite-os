@@ -188,7 +188,14 @@ async function main() {
   ];
 
   if (has('business')) {
-    const rotation = Number(arg('rotation', String(new Date().getUTCHours())));
+    // A 2-hourly tick since the epoch, matching the cron, so consecutive runs
+    // take consecutive areas and the cycle covers the whole list however long
+    // it is. This was `getUTCHours()`, which only ever yields 0-23 — with more
+    // than 24 areas every one past index 23 would have been unreachable on a
+    // scheduled run, so the area list could not grow past 24 without silently
+    // stranding the extras. A manual --rotation= still overrides it.
+    const tick = Math.floor(Date.now() / (2 * 60 * 60 * 1000));
+    const rotation = Number(arg('rotation', String(tick)));
     try {
       const known = new Set(existingForSkip.filter((l) => l.source === 'openstreetmap').map((l) => l.id));
       const business = await harvestBusinesses({
