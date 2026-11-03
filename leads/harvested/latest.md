@@ -1,6 +1,6 @@
 # New leads from the last harvest
 
-_Generated 2026-11-02T20:04:31.852Z — 0 leads._
+_Generated 2026-11-03T02:15:29.596Z — 0 leads._
 
 | Searches run | Searches failed | Posts read | Matched | Dropped (do-not-engage) |
 |---:|---:|---:|---:|---:|
@@ -41,6 +41,6 @@ business-scaling: Bluesky search failed for "trying to scale my business": HTTP 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-**Sources this run:** bluesky: unreachable (23 failed) · openstreetmap: 32 businesses in cleveland-oh
+**Sources this run:** bluesky: unreachable (23 failed) · openstreetmap: 18 businesses in west-palm-beach-fl
 
 **No new leads, but a source did answer.** Bluesky was unreachable; the sources line above shows what did respond. Nothing new means that area is already fully harvested — widen the search areas rather than waiting for a different result.
