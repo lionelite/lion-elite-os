@@ -1,6 +1,6 @@
 # New leads from the last harvest
 
-_Generated 2026-11-03T11:47:44.774Z — 12 leads._
+_Generated 2026-11-03T19:19:07.087Z — 2 leads._
 
 | Searches run | Searches failed | Posts read | Matched | Dropped (do-not-engage) |
 |---:|---:|---:|---:|---:|
@@ -41,102 +41,22 @@ business-scaling: Bluesky search failed for "trying to scale my business": HTTP 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-**Sources this run:** bluesky: unreachable (23 failed) · openstreetmap: 12 businesses in fort-myers-fl
+**Sources this run:** bluesky: unreachable (23 failed) · openstreetmap: 32 businesses in cleveland-oh
 
-## med-spa-b2b — 12
+## med-spa-b2b — 2
 
-### Profiles — score 50
+### Center for Integrated Therapies — score 50
 
-- **Handle:** [@null](https://profilesnails.com/)
+- **Handle:** [@null](wwe.cfitonline.org)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** clinic
 
-> med-spa · 2282 First Street 33901
+> clinic · 11002 Detroit Ave
 
-### Salon Nicholas — score 50
+### ArchWell Health — score 70
 
-- **Handle:** [@null](http://www.salonnicholasfl.com)
+- **Handle:** [@null](https://archwellhealth.com/locations/parma/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** clinic
 
-> med-spa · 2229 First Street Fort Myers FL 33901
-
-### Idol Nails & Spa — score 50
-
-- **Handle:** [@null](https://idolnailsandspa.com/)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
-
-> med-spa · 15245 S Tamiami Trl #3 Fort Myers FL 33908
-
-### Brazilian Silhouette — score 70
-
-- **Handle:** [@null](https://www.braziliansilhouette.com/)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
-
-> med-spa · 12520 World Plaza Lane Fort Myers FL 33907
-
-### VN Nails & Spa — score 50
-
-- **Handle:** [@null](https://vnnailspafortmyers.com/)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
-
-> med-spa · 8646 Gladiolus Drive Fort Myers FL 33908
-
-### Divine Beauty Day Spa — score 50
-
-- **Handle:** [@null](https://www.divinebeautydayspa.com/)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
-
-> med-spa · 8961 Daniels Center Drive Fort Myers FL 33912
-
-### Elements Nail Lounge — score 70
-
-- **Handle:** [@null](https://www.enl239.com)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
-
-> med-spa · 12691 McGregor Boulevard Fort Myers FL 33919-4453
-
-### Dream Fit — score 50
-
-- **Handle:** [@null](https://dreamfitfl.com/)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
-
-> gym · 8646 Gladiolus Drive Fort Myers FL 33908
-
-### Central Rock Gym — score 50
-
-- **Handle:** [@null](https://centralrockgym.com/)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
-
-> gym · 6150 Exchange Lane 33912
-
-### Therapeutic Massage of SWFL — score 50
-
-- **Handle:** [@null](https://www.therapeuticmassageswfl.com)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** massage
-
-> massage · 6202 Presidential Court Fort Myers FL 33919
-
-### Phanny's Nails and Spa — score 50
-
-- **Handle:** [@null](null)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
-
-> med-spa · 3398 Forum Boulevard Fort Myers FL 33905
-
-### Famous Nails & Spa — score 50
-
-- **Handle:** [@null](null)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
-
-> med-spa · 6900 Daniels Parkway Fort Myers FL 33912
+> clinic

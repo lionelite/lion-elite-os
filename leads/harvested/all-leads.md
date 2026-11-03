@@ -1,11 +1,11 @@
 # Every harvested lead
 
-_Generated 2026-11-03T11:47:44.775Z — 486 leads._
+_Generated 2026-11-03T19:19:07.088Z — 488 leads._
 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-## med-spa-b2b — 486
+## med-spa-b2b — 488
 
 ### Sports Performance & Wellness Center — score 50
 
@@ -3894,3 +3894,19 @@ any of them — reach out by hand from the post link if a lead is worth it.
 - **Why they matched:** med-spa
 
 > med-spa · 6900 Daniels Parkway Fort Myers FL 33912
+
+### Center for Integrated Therapies — score 50
+
+- **Handle:** [@null](wwe.cfitonline.org)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 11002 Detroit Ave
+
+### ArchWell Health — score 70
+
+- **Handle:** [@null](https://archwellhealth.com/locations/parma/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic
