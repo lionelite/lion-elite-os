@@ -339,13 +339,22 @@ test('every search area is a box Overpass will actually answer', () => {
 });
 
 test('rotation reaches every area rather than re-walking one', () => {
-  // The harvest passes the UTC hour as the rotation, so the cycle has to close
-  // over a day. Three Ohio areas got fully harvested and then returned nothing
-  // new for weeks; an area the rotation never reaches is the same bug, quieter.
+  // Three Ohio areas got fully harvested and then returned nothing new for
+  // weeks; an area the rotation never reaches is the same bug, quieter.
+  //
+  // The harvest used to pass the UTC hour, so this closed the cycle over a
+  // day. That only works while there are at most 24 areas — past that, every
+  // area from index 24 on was unreachable on a scheduled run, and adding
+  // markets would have looked like more coverage while those markets were
+  // never searched once. The rotation is now a 2-hourly tick matching the
+  // cron, so the cycle closes over the list whatever its length.
+  const tick = Math.floor(Date.now() / (2 * 60 * 60 * 1000));
   const reached = new Set();
-  for (let hour = 0; hour < 24; hour += 1) reached.add(pickArea(DEFAULT_AREAS, hour).label);
+  for (let i = 0; i < DEFAULT_AREAS.length; i += 1) {
+    reached.add(pickArea(DEFAULT_AREAS, tick + i).label);
+  }
 
-  assert.equal(reached.size, DEFAULT_AREAS.length, 'a day of runs covers every area');
+  assert.equal(reached.size, DEFAULT_AREAS.length, 'one cycle covers every area');
 });
 
 test('the markets the campaigns target are actually searched', () => {
@@ -412,4 +421,41 @@ test('a role address on the business own site is still accepted', async () => {
   assert.equal(summary.personalEmailsRefused, 0);
   assert.equal(summary.enriched, 1);
   assert.equal(saved[0].contact.email, 'info@glowvitamedspa.com');
+});
+
+// --- the search ceiling --------------------------------------------------
+
+test('the area labels are unique', () => {
+  // Two areas sharing a label makes the per-market lead counts wrong, and the
+  // daily brief picks the market with fewest leads from those counts.
+  const { DEFAULT_AREAS } = require('../lib/discovery/discovery-run');
+  const labels = DEFAULT_AREAS.map(area => area.label);
+  assert.equal(new Set(labels).size, labels.length);
+});
+
+test('search boxes stay tight enough to be worth querying', () => {
+  // Overpass cost scales with area. A box drawn round a whole county spends
+  // the request budget on suburbs holding nothing, and times out the run for
+  // every market behind it in the rotation.
+  const { DEFAULT_AREAS } = require('../lib/discovery/discovery-run');
+  for (const area of DEFAULT_AREAS) {
+    const height = area.north - area.south;
+    const width = area.east - area.west;
+    assert.ok(height > 0 && width > 0, `${area.label} has an inverted box`);
+    assert.ok(height <= 0.5, `${area.label} spans ${height.toFixed(2)} deg of latitude`);
+    assert.ok(width <= 0.5, `${area.label} spans ${width.toFixed(2)} deg of longitude`);
+  }
+});
+
+test('the clinic category searches where independent practices are tagged', () => {
+  // `amenity=clinic` is what mappers use for an institution. The practices
+  // that actually buy research supply are usually `amenity=doctors`, and
+  // functional and integrative medicine sits under `healthcare=alternative`.
+  // Searching only the institutional tags capped the pipeline at the least
+  // relevant slice of the map.
+  const { CATEGORIES } = require('../lib/discovery/osm-source');
+  const selectors = CATEGORIES.clinic.join(' ');
+  for (const tag of ['amenity"="doctors', 'healthcare"="doctor', 'healthcare"="alternative']) {
+    assert.ok(selectors.includes(tag), `clinic search must include ${tag}`);
+  }
 });
