@@ -1,6 +1,6 @@
 # New leads from the last harvest
 
-_Generated 2026-11-03T05:10:12.492Z — 25 leads._
+_Generated 2026-11-03T11:47:44.774Z — 12 leads._
 
 | Searches run | Searches failed | Posts read | Matched | Dropped (do-not-engage) |
 |---:|---:|---:|---:|---:|
@@ -41,206 +41,102 @@ business-scaling: Bluesky search failed for "trying to scale my business": HTTP 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-**Sources this run:** bluesky: unreachable (23 failed) · openstreetmap: 25 businesses in delray-boynton-fl
+**Sources this run:** bluesky: unreachable (23 failed) · openstreetmap: 12 businesses in fort-myers-fl
 
-## med-spa-b2b — 25
+## med-spa-b2b — 12
 
-### European Wax Center — score 50
+### Profiles — score 50
 
-- **Handle:** [@null](https://locations.waxcenter.com/fl/boyntonbeach/boynton-beach-boynton-town-center-0333.html)
+- **Handle:** [@null](https://profilesnails.com/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** med-spa
 
-> med-spa
+> med-spa · 2282 First Street 33901
 
-### Hot Heads Salon — score 70
+### Salon Nicholas — score 50
 
-- **Handle:** [@null](https://www.salonhotheads.com/)
+- **Handle:** [@null](http://www.salonnicholasfl.com)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** med-spa
 
-> med-spa · 950 FL
+> med-spa · 2229 First Street Fort Myers FL 33901
 
-### Lina Nails — score 50
+### Idol Nails & Spa — score 50
 
-- **Handle:** [@null](http://linanailsflordia.com)
+- **Handle:** [@null](https://idolnailsandspa.com/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** med-spa
 
-> med-spa · 455 NE 5th Ave Delray Beach FL 33483
+> med-spa · 15245 S Tamiami Trl #3 Fort Myers FL 33908
 
-### Ulta Beauty — score 50
+### Brazilian Silhouette — score 70
 
-- **Handle:** [@null](https://www.ulta.com/stores/delray-beach-fl-731)
+- **Handle:** [@null](https://www.braziliansilhouette.com/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** med-spa
 
-> med-spa · 1636 South Federal Highway Delray Beach FL 33483
+> med-spa · 12520 World Plaza Lane Fort Myers FL 33907
 
-### Tipsy Salonbar — score 50
+### VN Nails & Spa — score 50
 
-- **Handle:** [@null](https://tipsysalonbarboyntonbeach.com/)
+- **Handle:** [@null](https://vnnailspafortmyers.com/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** med-spa
 
-> med-spa · 2244 North Congress Avenue Boynton Beach FL 33426
+> med-spa · 8646 Gladiolus Drive Fort Myers FL 33908
 
-### Venetian Nail Spa — score 50
+### Divine Beauty Day Spa — score 50
 
-- **Handle:** [@null](https://venetiansalon.com/renaissance-commons/)
+- **Handle:** [@null](https://www.divinebeautydayspa.com/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** med-spa
 
-> med-spa · 1500 Gateway Boulevard Boynton Beach FL 33426
+> med-spa · 8961 Daniels Center Drive Fort Myers FL 33912
 
-### Zoom Tan — score 70
+### Elements Nail Lounge — score 70
 
-- **Handle:** [@null](https://www.zoomtan.com/tanning-salon-locations/florida-fl-boyntonbeach-33426/341)
+- **Handle:** [@null](https://www.enl239.com)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** med-spa
 
-> med-spa · 1750 North Congress Avenue Boynton Beach FL 33426
+> med-spa · 12691 McGregor Boulevard Fort Myers FL 33919-4453
 
-### Clough's Colon Hydrotherapy — score 50
+### Dream Fit — score 50
 
-- **Handle:** [@null](https://cloughs-colon-hydrotherapy.lakeworthdirect.us/)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
-
-> clinic · 940 South Dixie Highway Lantana FL 33462
-
-### One On One Services — score 50
-
-- **Handle:** [@null](https://www.1on1nursing.com/)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
-
-> clinic · 4731 W Atlantic Ave Ste B5 Delray Beach FL 33445
-
-### Coastal Vitality and Anti-Aging — score 70
-
-- **Handle:** [@null](https://mycoastalvitality.com/)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
-
-> clinic · 4600 N Ocean Blvd Boynton Beach FL 33435
-
-### Auravie Medspa — score 70
-
-- **Handle:** [@null](https://auraviemedspa.com/)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
-
-> clinic · 2276 North Congress Avenue Boynton Beach FL 33426
-
-### MD Now Urgent Care — score 50
-
-- **Handle:** [@null](https://www.mymdnow.com/locations/palm-beach/boynton-beach)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
-
-> clinic · 2272 North Congress Avenue Boynton Beach FL 33426
-
-### Kidney & Hypertension Specialists, P.A. — score 50
-
-- **Handle:** [@null](https://www.kidneyfl.com/)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
-
-> clinic · 1500 Gateway Boulevard Boynton Beach FL 33426
-
-### IV Nutrition — score 50
-
-- **Handle:** [@null](https://boynton-beach.ivnutrition.com/)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
-
-> clinic · 1880 North Congress Avenue Boynton Beach FL 33426
-
-### U.S. Renal Care — score 50
-
-- **Handle:** [@null](https://www.usrenalcare.com/location/boynton-beach/)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
-
-> clinic · 1500 Gateway Boulevard Boynton Beach FL 33426
-
-### Schrier Family Chiropractic — score 70
-
-- **Handle:** [@null](https://www.drelan.com/)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
-
-> clinic · 111 Southeast 1st Avenue Delray Beach FL 33444
-
-### Xpress Urgent Care — score 50
-
-- **Handle:** [@null](https://xpressfl.com/)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
-
-> clinic
-
-### MedFlorida Medical Centers — score 50
-
-- **Handle:** [@null](https://medflorida.com/boynton-beach)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
-
-> clinic
-
-### RAYUS Radiology — score 50
-
-- **Handle:** [@null](https://rayusradiology.com/locations/rayus-radiology-boynton-beach-east/)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
-
-> clinic · 1425 Gateway Boulevard Boynton Beach FL 33426
-
-### Total Nutrition & Strength — score 50
-
-- **Handle:** [@null](https://totalnutritionstrength.com/)
+- **Handle:** [@null](https://dreamfitfl.com/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** gym
 
-> gym · 800 North Congress Avenue Boynton Beach FL 33426
+> gym · 8646 Gladiolus Drive Fort Myers FL 33908
 
-### EōS Fitness — score 50
+### Central Rock Gym — score 50
 
-- **Handle:** [@null](https://www.eosfitness.com/gym/boynton-beach-n-congress-ave-e-gateway-blvd)
+- **Handle:** [@null](https://centralrockgym.com/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** gym
 
-> gym
+> gym · 6150 Exchange Lane 33912
 
-### Rainbow Nails — score 50
+### Therapeutic Massage of SWFL — score 50
+
+- **Handle:** [@null](https://www.therapeuticmassageswfl.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** massage
+
+> massage · 6202 Presidential Court Fort Myers FL 33919
+
+### Phanny's Nails and Spa — score 50
 
 - **Handle:** [@null](null)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** med-spa
 
-> med-spa
+> med-spa · 3398 Forum Boulevard Fort Myers FL 33905
 
-### J P Medical — score 50
-
-- **Handle:** [@null](null)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
-
-> clinic · 2401 Quantum Boulevard Boynton Beach FL 33426
-
-### Hacker Dermatology — score 50
+### Famous Nails & Spa — score 50
 
 - **Handle:** [@null](null)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
+- **Why they matched:** med-spa
 
-> clinic · 226 Palm Court Delray Beach FL 33444
-
-### Palm Beach Wellness — score 50
-
-- **Handle:** [@null](null)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
-
-> clinic · 2645 North Federal Highway Delray Beach FL 33483
+> med-spa · 6900 Daniels Parkway Fort Myers FL 33912
