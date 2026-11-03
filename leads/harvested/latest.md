@@ -1,6 +1,6 @@
 # New leads from the last harvest
 
-_Generated 2026-11-03T04:22:11.912Z — 25 leads._
+_Generated 2026-11-03T05:05:29.661Z — 11 leads._
 
 | Searches run | Searches failed | Posts read | Matched | Dropped (do-not-engage) |
 |---:|---:|---:|---:|---:|
@@ -41,206 +41,94 @@ business-scaling: Bluesky search failed for "trying to scale my business": HTTP 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-**Sources this run:** bluesky: unreachable (23 failed) · openstreetmap: 83 businesses in scottsdale-az
+**Sources this run:** bluesky: unreachable (23 failed) · openstreetmap: 11 businesses in newport-beach-ca
 
-## med-spa-b2b — 25
+## med-spa-b2b — 11
 
-### Diva Nails & Lash — score 50
+### Rocket Science Fitness — score 50
 
-- **Handle:** [@null](https://www.divanailsandlashaz.com/)
+- **Handle:** [@null](https://www.fitbyrocketscience.com)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** gym
 
-> med-spa · 6204 North Scottsdale Road Paradise Valley AZ 85253
+> gym · 2675 Irvine Avenue Costa Mesa CA 92627
 
-### Millennium Day Spa & Salon — score 70
+### CorePower Yoga — score 50
 
-- **Handle:** [@null](http://mdssalon.com/)
+- **Handle:** [@null](https://www.corepoweryoga.com/yoga-studios/CA/Newport-Beach/fashion-island)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** gym
 
-> med-spa · 7609 East Pinnacle Peak Road Scottsdale AZ 85255
+> gym · 957 Newport Center Drive Newport Beach CA 92660
 
-### Palm Beach Tan — score 50
+### A7 Personal Training — score 50
 
-- **Handle:** [@null](https://palmbeachtan.com/locations/AZ/Scottsdale-North-Northsight-Boulevard)
+- **Handle:** [@null](https://A7PERSONALTRAINING.com)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** gym
 
-> med-spa
+> gym · 700 Carnation Avenue Corona Del Mar CA 92625
 
-### Loma Skin & Laser — score 70
+### Breeze Lagree — score 70
 
-- **Handle:** [@null](https://www.LomaLaser.com)
+- **Handle:** [@null](https://breezelagree.com)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** gym
 
-> med-spa
+> gym · 1450 Baker Street Costa Mesa CA 92626
 
-### European Wax Center — score 50
+### Loosen Up Massage Center — score 70
 
-- **Handle:** [@null](https://locations.waxcenter.com/az/scottsdale/scottsdale-mcdowell-mountain-0008.html)
+- **Handle:** [@null](https://loosenupmassagecenter.com)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** massage
 
-> med-spa
+> massage · 1525 Mesa Verde Drive East Costa Mesa CA 92626
 
-### European Wax Center — score 50
+### Don't Wait 2 Rejuvenate — score 50
 
-- **Handle:** [@null](https://locations.waxcenter.com/az/phoenix/phoenix-desert-ridge-0066.html)
+- **Handle:** [@null](https://dw2r.com)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** massage
 
-> med-spa
+> massage · 20281 Southwest Birch Street Newport Beach CA 92660
 
-### Palm Beach Tan — score 50
+### Lymphatic by Siane — score 70
 
-- **Handle:** [@null](https://palmbeachtan.com/locations/AZ/Phoenix-North-Tatum-Boulevard)
+- **Handle:** [@null](https://www.lymphaticbysiane.com)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** massage
 
-> med-spa
+> massage · 234 East 17th Street Costa Mesa CA 92627
 
-### Vina Nails & Spa — score 50
+### Massage Essence — score 50
 
-- **Handle:** [@null](https://vinanailsspa.com)
+- **Handle:** [@null](https://massage-essence.com)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** massage
 
-> med-spa · 4757 E Greenway Rd Phoenix AZ 85032
+> massage · 2905 Red Hill Avenue Costa Mesa CA 92626
 
-### LuxeNails & Spa — score 50
+### Spa Pendry Newport Beach — score 70
 
-- **Handle:** [@null](https://luxenailandspa.com/)
+- **Handle:** [@null](https://www.pendry.com/newport-beach/wellness/spa-pendry/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** massage
 
-> med-spa · 7342 East Shea Boulevard Scottsdale AZ 85254
+> massage · 690 Newport Center Drive Newport Beach CA 92660
 
-### Whish — score 50
+### Elements Massage — score 50
 
-- **Handle:** [@null](https://whishbody.com)
+- **Handle:** [@null](null)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** massage
 
-> med-spa · 15649 North Greenway Hayden Loop Scottsdale AZ 85260
+> massage
 
-### Brazillian Touch MedSpa — score 70
+### A+ Massage — score 50
 
-- **Handle:** [@null](https://www.braziliantouchmedspa.com/)
+- **Handle:** [@null](null)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** massage
 
-> med-spa · 5415 East High Street Phoenix AZ 85054-5461
-
-### Primp and Blow — score 50
-
-- **Handle:** [@null](https://primpandblow.com/locations/phoenix-location/)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
-
-> med-spa · 5410 East High Street Phoenix AZ 85054-5457
-
-### M3V The Nail Bar — score 50
-
-- **Handle:** [@null](https://www.m3vnailbar.com/)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
-
-> med-spa · 5450 East High Street Phoenix AZ 85054-5459
-
-### SkinFix Studios — score 50
-
-- **Handle:** [@null](https://www.skinfixstudios.com/)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
-
-> med-spa · 4032 North Miller Road Scottsdale AZ 85251
-
-### Radiant Lash Boutique — score 50
-
-- **Handle:** [@null](https://www.radiantlashboutique.com/)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
-
-> med-spa · 4032 North Miller Road Scottsdale AZ 85251
-
-### Palm Beach Tan — score 50
-
-- **Handle:** [@null](https://palmbeachtan.com/locations/AZ/Scottsdale-North-Scottsdale-Road)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
-
-> med-spa · 1819 North Scottsdale Road Scottsdale AZ 85257
-
-### Ulta Beauty — score 50
-
-- **Handle:** [@null](https://www.ulta.com/stores/phoenix-az-108)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
-
-> med-spa · 21001 North Tatum Boulevard Phoenix AZ 85050
-
-### Arizona Hearing Center — score 50
-
-- **Handle:** [@null](http://hearingaidsarizona.com/)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
-
-> clinic · 10893 North Scottsdale Road Scottsdale AZ 85254
-
-### North Valley Surgery Center — score 50
-
-- **Handle:** [@null](http://northvalleysc.com/)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
-
-> clinic · 8901 East Raintree Drive Scottsdale AZ 85260
-
-### De Bruin Chiropractic — score 70
-
-- **Handle:** [@null](https://www.debruinchiropractic.com/)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
-
-> clinic · 8010 East McDowell Road Scottsdale AZ 85257
-
-### Arizona Allergy Associates — score 70
-
-- **Handle:** [@null](https://azallergy.com/)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
-
-> clinic · 8140 East Cactus Road Scottsdale AZ 85260
-
-### Robert Cohen, MD — score 50
-
-- **Handle:** [@null](https://www.robertcohenmd.com/plastic-surgery/nonsurgical/)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
-
-> clinic · 5410 North Scottsdale Road Paradise Valley AZ 85253
-
-### The Get Well Center — score 50
-
-- **Handle:** [@null](https://www.thegetwellcenter.com/)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
-
-> clinic · 10613 North Hayden Road Scottsdale AZ 85260
-
-### Fix Body Chiropractor Group Scottsdale — score 70
-
-- **Handle:** [@null](https://www.fixbodygroup.com/scottsdale-az/)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
-
-> clinic
-
-### Arcadia Allergy & Asthma — score 70
-
-- **Handle:** [@null](https://arcadiaallergy.com/)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
-
-> clinic · 4840 East Indian School Road Phoenix AZ 85018
+> massage · 3021

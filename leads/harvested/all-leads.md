@@ -1,11 +1,11 @@
 # Every harvested lead
 
-_Generated 2026-11-03T04:22:11.912Z — 438 leads._
+_Generated 2026-11-03T05:05:29.661Z — 449 leads._
 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-## med-spa-b2b — 438
+## med-spa-b2b — 449
 
 ### Sports Performance & Wellness Center — score 50
 
@@ -3510,3 +3510,91 @@ any of them — reach out by hand from the post link if a lead is worth it.
 - **Why they matched:** clinic
 
 > clinic · 4840 East Indian School Road Phoenix AZ 85018
+
+### Rocket Science Fitness — score 50
+
+- **Handle:** [@null](https://www.fitbyrocketscience.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 2675 Irvine Avenue Costa Mesa CA 92627
+
+### CorePower Yoga — score 50
+
+- **Handle:** [@null](https://www.corepoweryoga.com/yoga-studios/CA/Newport-Beach/fashion-island)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 957 Newport Center Drive Newport Beach CA 92660
+
+### A7 Personal Training — score 50
+
+- **Handle:** [@null](https://A7PERSONALTRAINING.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 700 Carnation Avenue Corona Del Mar CA 92625
+
+### Breeze Lagree — score 70
+
+- **Handle:** [@null](https://breezelagree.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 1450 Baker Street Costa Mesa CA 92626
+
+### Loosen Up Massage Center — score 70
+
+- **Handle:** [@null](https://loosenupmassagecenter.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** massage
+
+> massage · 1525 Mesa Verde Drive East Costa Mesa CA 92626
+
+### Don't Wait 2 Rejuvenate — score 50
+
+- **Handle:** [@null](https://dw2r.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** massage
+
+> massage · 20281 Southwest Birch Street Newport Beach CA 92660
+
+### Lymphatic by Siane — score 70
+
+- **Handle:** [@null](https://www.lymphaticbysiane.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** massage
+
+> massage · 234 East 17th Street Costa Mesa CA 92627
+
+### Massage Essence — score 50
+
+- **Handle:** [@null](https://massage-essence.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** massage
+
+> massage · 2905 Red Hill Avenue Costa Mesa CA 92626
+
+### Spa Pendry Newport Beach — score 70
+
+- **Handle:** [@null](https://www.pendry.com/newport-beach/wellness/spa-pendry/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** massage
+
+> massage · 690 Newport Center Drive Newport Beach CA 92660
+
+### Elements Massage — score 50
+
+- **Handle:** [@null](null)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** massage
+
+> massage
+
+### A+ Massage — score 50
+
+- **Handle:** [@null](null)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** massage
+
+> massage · 3021
