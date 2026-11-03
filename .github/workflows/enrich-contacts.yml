@@ -88,6 +88,10 @@ jobs:
             echo
             echo "- **Addresses found this run:** ${{ steps.enrich.outputs.enriched || '0' }}"
             echo "- **Sites attempted:** ${{ steps.enrich.outputs.attempted || '0' }}"
+            echo "- **Found but below the confidence bar:** ${{ steps.enrich.outputs.below_bar || '0' }}"
+            echo "- **Reached, no address on the page:** ${{ steps.enrich.outputs.no_candidates || '0' }}"
+            echo
+            echo "A run dominated by *below the bar* is a scoring decision, not a sourcing problem."
             echo
             echo '<details><summary>Run log</summary>'
             echo

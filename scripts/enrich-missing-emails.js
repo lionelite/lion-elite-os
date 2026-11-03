@@ -88,7 +88,9 @@ async function main() {
   const byId = new Map(leads.map(lead => [lead.id, lead]));
   let enriched = 0;
   const unreachable = [];
-  const nothingPublished = [];
+  // Split deliberately — see the blocked branch below.
+  const noCandidates = [];
+  const belowBar = [];
 
   for (const lead of batch) {
     const website = lead.website || lead.profileUrl;
@@ -102,14 +104,32 @@ async function main() {
     }
 
     if (result.status === 'blocked') {
-      if (result.reason === 'OFFICIAL_WEBSITE_UNAVAILABLE') unreachable.push(lead.name);
-      else nothingPublished.push(`${lead.name} — ${result.reason}`);
+      if (result.reason === 'OFFICIAL_WEBSITE_UNAVAILABLE') {
+        unreachable.push(lead.name);
+        continue;
+      }
+
+      // Say WHICH kind of nothing this was. The first live run returned
+      // NO_VERIFIED_PUBLIC_BUSINESS_EMAIL for 17 of 18 reachable sites, and
+      // that one reason covers two completely different situations needing
+      // opposite fixes: the page published no address at all (an extraction
+      // problem, or a site that only offers a contact form), or it published
+      // one that did not clear the confidence bar (a scoring question).
+      // Reporting them identically is how a tuning problem gets mistaken for
+      // a fact about the businesses.
+      const found = result.candidates || [];
+      if (!found.length) {
+        noCandidates.push(lead.name);
+      } else {
+        const best = found[0];
+        belowBar.push(`${lead.name} — best ${best.email} at ${best.confidence}`);
+      }
       continue;
     }
 
     const email = result.email || (result.candidates || [])[0]?.email;
     if (!email) {
-      nothingPublished.push(`${lead.name} — no candidate cleared the confidence bar`);
+      noCandidates.push(lead.name);
       continue;
     }
 
@@ -134,7 +154,8 @@ async function main() {
 
   console.log(`\nenriched: ${enriched} of ${batch.length} attempted`);
   console.log(`unreachable sites: ${unreachable.length}`);
-  console.log(`reachable but publishing no usable address: ${nothingPublished.length}`);
+  console.log(`reached, no address found on the page: ${noCandidates.length}`);
+  console.log(`reached, address found but below the confidence bar: ${belowBar.length}`);
 
   // A run where EVERY site was unreachable is an environment failure, not a
   // finding about the businesses. Saying so is the difference between "these
@@ -153,9 +174,15 @@ async function main() {
 
   setOutput('enriched', String(enriched));
   setOutput('attempted', String(batch.length));
+  setOutput('below_bar', String(belowBar.length));
+  setOutput('no_candidates', String(noCandidates.length));
 
-  if (unreachable.length) console.log(`\nUnreachable: ${unreachable.slice(0, 10).join(', ')}`);
-  if (nothingPublished.length) console.log(`No address: ${nothingPublished.slice(0, 10).join('; ')}`);
+  if (unreachable.length) console.log(`\nUnreachable: ${unreachable.slice(0, 12).join(', ')}`);
+  if (noCandidates.length) console.log(`\nNo address on the page: ${noCandidates.slice(0, 12).join(', ')}`);
+  // The actionable list. A run where these dominate means the bar is the
+  // problem, not the sourcing, and the fix is a scoring decision rather than
+  // more harvesting.
+  if (belowBar.length) console.log(`\nFound but below the bar:\n  ${belowBar.slice(0, 12).join('\n  ')}`);
 }
 
 main().catch(error => {
