@@ -1,6 +1,6 @@
 # New leads from the last harvest
 
-_Generated 2026-11-04T17:56:44.019Z — 25 leads._
+_Generated 2026-11-04T23:26:18.586Z — 25 leads._
 
 | Searches run | Searches failed | Posts read | Matched | Dropped (do-not-engage) |
 |---:|---:|---:|---:|---:|
@@ -41,206 +41,206 @@ business-scaling: Bluesky search failed for "trying to scale my business": HTTP 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-**Sources this run:** bluesky: unreachable (23 failed) · openstreetmap: 37 businesses in newport-beach-ca
+**Sources this run:** bluesky: unreachable (23 failed) · openstreetmap: 105 businesses in denver-co
 
 ## med-spa-b2b — 25
 
-### Dr. Aaron Kosins — score 50
+### Clementines A Boutique Salon — score 70
 
-- **Handle:** [@null](https://aaronkosinsmd.com/)
+- **Handle:** [@null](https://clementinesdenver.com/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
+- **Why they matched:** med-spa
 
-> clinic · 1441 Avocado Avenue Newport Beach CA 92660
+> med-spa · 2009 West 33rd Avenue Denver CO 80211
 
-### OC Fertility — score 70
+### Palm Beach Tan — score 50
 
-- **Handle:** [@null](https://www.ocfertility.com/)
+- **Handle:** [@null](https://palmbeachtan.com/locations/CO/Denver-Broadway)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
+- **Why they matched:** med-spa
 
-> clinic · 1401 Avocado Avenue Newport Beach CA 92660
+> med-spa · 555 Broadway Denver CO 80203
 
-### ET Chiropractic — score 50
+### 3rd Ave Studio — score 70
 
-- **Handle:** [@null](https://www.etchiropractic.com/)
+- **Handle:** [@null](http://3rdavenuestudio.com)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
+- **Why they matched:** med-spa
 
-> clinic · 20331 Irvine Avenue Newport Beach CA 92660
+> med-spa · 5575 East 3rd Avenue Denver CO 80220
 
-### The Derm Studio — score 50
+### Wild Kitty Waxing — score 50
 
-- **Handle:** [@null](https://www.thedermstudios.com/)
+- **Handle:** [@null](https://wildkittywaxing.com/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
+- **Why they matched:** med-spa
 
-> clinic · 1617 Westcliff Drive Newport Beach CA 92660
+> med-spa · 1220 East 6th Avenue Denver CO 80218
 
-### Bonakdar Aesthetics — score 50
+### Glam Aesthetics — score 70
 
-- **Handle:** [@null](https://www.bonakdaraesthetics.com/)
+- **Handle:** [@null](https://glammedispa.com)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
+- **Why they matched:** med-spa
 
-> clinic · 20321 Irvine Avenue Newport Beach CA 92660
+> med-spa · 1321 South Broadway Denver CO 80210
 
-### Dr. Kevin Sadati — score 50
+### Bronzed Denver — score 50
 
-- **Handle:** [@null](https://drkevinsadati.com)
+- **Handle:** [@null](https://bronzeddenver.com/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
+- **Why they matched:** med-spa
 
-> clinic · 359 San Miguel Drive Newport Beach CA 92660
+> med-spa · 1138 East 6th Avenue Denver CO 80218
 
-### Pacific Lipo Newport Beach — score 50
+### JW's Salon — score 70
 
-- **Handle:** [@null](https://www.pacificlipo.com/)
+- **Handle:** [@null](https://www.facebook.com/pages/JWs-Salon-on-6th/1489419591295720)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
+- **Why they matched:** med-spa
 
-> clinic · 301 Bayview Cir, Ste 218 Newport Beach CA 92660
+> med-spa · 1134 East 6th Avenue
 
-### Newport Children's Medical Group — score 70
+### Classy Nails — score 50
 
-- **Handle:** [@null](https://www.newportchildren.com/)
+- **Handle:** [@null](http://browsonupper15th.com/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
+- **Why they matched:** med-spa
 
-> clinic · 1401 Avocado Avenue Newport Beach CA 92660
+> med-spa · 2510 15th Street Denver CO 80211
 
-### The Patel Center for Functional Regeneration — score 70
+### Waxxpot — score 50
 
-- **Handle:** [@null](https://fxregencenter.com/)
+- **Handle:** [@null](https://waxxpot.com/locations/denver/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
+- **Why they matched:** med-spa
 
-> clinic · 5020 Campus Drive Newport Beach CA 92660
+> med-spa · 760 South Colorado Boulevard Glendale CO 80246
 
-### Rose Point Acupuncture Inc — score 70
+### Simplicity Laser — score 50
 
-- **Handle:** [@null](https://rosepointacu.com/)
+- **Handle:** [@null](https://www.simplicitylaser.com/pages/denver-co)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
+- **Why they matched:** med-spa
 
-> clinic · 151 Kalmus Dr Costa Mesa CA 92626
+> med-spa · 760 South Colorado Boulevard Glendale CO 80246
 
-### YourEggs — score 70
+### Jack & Jill Salon Spa Shoppe — score 50
 
-- **Handle:** [@null](https://youreggs.com/egg-donors-newport-beach)
+- **Handle:** [@null](https://www.jackandjillchildrenssalon.com/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
+- **Why they matched:** med-spa
 
-> clinic · 2001 Westcliff Drive Newport Beach CA 92660
+> med-spa · 760 South Colorado Boulevard Glendale CO 80246
 
-### Resiliency Mind+Body Medicine — score 70
+### Studio Urban Wax — score 50
 
-- **Handle:** [@null](https://resiliencymbmedicine.com/)
+- **Handle:** [@null](https://studiourbanwax.com/locations/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
+- **Why they matched:** med-spa
 
-> clinic · 1501 Superior Ave Newport Beach CA 92663
+> med-spa
 
-### Injection Artistry — score 70
+### Rejuvenate MedSpa — score 50
 
-- **Handle:** [@null](https://injectionartistryclinic.com/)
+- **Handle:** [@null](https://www.rejuvenatecolorado.com/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
+- **Why they matched:** med-spa
 
-> clinic · 20301 Southwest Birch Street Newport Beach CA 92660
+> med-spa · 501 South Cherry Street Denver CO 80246
 
-### Philip Robinson MD — score 50
+### Heyday — score 70
 
-- **Handle:** [@null](https://www.philiprobinsonmd.com/)
+- **Handle:** [@null](https://www.heydayskincare.com/pages/lowry)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
+- **Why they matched:** med-spa
 
-> clinic · 320 Superior Avenue Newport Beach CA 92663
+> med-spa · 63 North Quebec Street Denver CO 80230
 
-### Susan Cavka Hypnotherapy — score 50
+### Blue Sky Nails & Lash — score 50
 
-- **Handle:** [@null](https://susancavka.com)
+- **Handle:** [@null](https://www.vagaro.com/blueskynailsandlashlowry)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
+- **Why they matched:** med-spa
 
-> clinic · 2515 East Pacific Coast Highway Corona Del Mar CA
+> med-spa · 7111 East Lowry Boulevard Denver CO 80230
 
-### Dr. Shabnam Ghazizadeh MD, Facial Plastic Surgery — score 70
+### Vesper Gray Med Spa — score 70
 
-- **Handle:** [@null](https://drghazizadeh.com/)
+- **Handle:** [@null](https://vespergray.com/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
+- **Why they matched:** med-spa
 
-> clinic · 20072 Southwest Birch Street Newport Beach CA 92660
+> med-spa · 671 East 19th Avenue Denver CO 80203
 
-### Ardesh Facial Plastic Surgery — score 70
+### Accent Beauty — score 50
 
-- **Handle:** [@null](https://www.drardesh.com/)
+- **Handle:** [@null](https://go.booker.com/location/accentbeauty)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
+- **Why they matched:** med-spa
 
-> clinic · 1441 Avocado Avenue Newport Beach CA 92660
+> med-spa · 1045 Acoma Street Denver CO 80204
 
-### Cruise Plastic Surgery — score 50
+### Laser Loft Denver — score 50
 
-- **Handle:** [@null](https://lagynecomastia.org/)
+- **Handle:** [@null](https://www.laser-lofts.com/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
+- **Why they matched:** med-spa
 
-> clinic · San Joaquin Hills Road Newport Beach CA 92660
+> med-spa · 24 East 11th Avenue Denver CO 80203
 
-### IceLab Cryotherapy and Wellness — score 50
+### My Friends Nail Spa — score 70
 
-- **Handle:** [@null](https://icelabcryoandwellness.com/)
+- **Handle:** [@null](https://www.myfriendsnailspa.com/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
+- **Why they matched:** med-spa
 
-> clinic · 440 West 19th Street Costa Mesa CA 92627
+> med-spa · 79 South Pennsylvania Street Denver CO 80209
 
-### Pure Beauty Medical Spa — score 50
+### Palm Beach Tan — score 50
 
-- **Handle:** [@null](https://www.purebeautymedicalspa.com/newport-beach/)
+- **Handle:** [@null](https://palmbeachtan.com/locations/CO/Denver-Lowry)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
+- **Why they matched:** med-spa
 
-> clinic · 377 E Coast Hwy, Unit 250 A Newport Beach CA 92660
+> med-spa · 200 North Quebec Street Denver CO 80230
 
-### Strive Chiropractic — score 50
+### VIO Med Spa — score 50
 
-- **Handle:** [@null](https://www.strivechiroca.com)
+- **Handle:** [@null](https://www.viomedspa.com/locations/lowry)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
+- **Why they matched:** med-spa
 
-> clinic · 4299 MacArthur Boulevard Newport Beach CA 92660
+> med-spa · 200 North Quebec Street Denver CO 80230
 
-### Coast Family Chiropractic — score 50
+### Nails Touch — score 50
 
-- **Handle:** [@null](https://https:/coastfamilychiropractic.com)
+- **Handle:** [@null](http://nailstouchdenver.com/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
+- **Why they matched:** med-spa
 
-> clinic · 179 East 17th Street Costa Mesa CA
+> med-spa · 200 North Quebec Street Denver CO 80230
 
-### Pacific Center For Plastic Surgery — score 50
+### Kalon Laser Aesthetics — score 70
 
-- **Handle:** [@null](https://www.pacificcenterplasticsurgery.com/)
+- **Handle:** [@null](https://kalonlaser.com/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
+- **Why they matched:** med-spa
 
-> clinic · 3991 MacArthur Boulevard Newport Beach CA 92660
+> med-spa · 1951 Wazee Street Denver CO 80202
 
-### Wellness Choice — score 70
+### Fingers & Toes — score 50
 
-- **Handle:** [@null](https://wellnesschoice.com/)
+- **Handle:** [@null](https://www.fingersandtoesdenver.com)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
+- **Why they matched:** med-spa
 
-> clinic · 1101 Dove Street Newport Beach CA 92660
+> med-spa · 743 South University Boulevard Denver CO 80209
 
-### John M. Compoginis MD Plastic & Cosmetic Surgery — score 70
+### YEEHAW CLAWS — score 50
 
-- **Handle:** [@null](https://johncompoginismd.com)
+- **Handle:** [@null](https://yeehawclaws.glossgenius.com/about)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
+- **Why they matched:** med-spa
 
-> clinic · 901 Dover Drive Newport Beach CA 92660
+> med-spa · 711 West 8th Avenue Denver CO 80204

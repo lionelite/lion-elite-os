@@ -1,11 +1,11 @@
 # Every harvested lead
 
-_Generated 2026-11-04T17:56:44.019Z — 563 leads._
+_Generated 2026-11-04T23:26:18.587Z — 588 leads._
 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-## med-spa-b2b — 563
+## med-spa-b2b — 588
 
 ### Sports Performance & Wellness Center — score 50
 
@@ -4510,3 +4510,203 @@ any of them — reach out by hand from the post link if a lead is worth it.
 - **Why they matched:** clinic
 
 > clinic · 901 Dover Drive Newport Beach CA 92660
+
+### Clementines A Boutique Salon — score 70
+
+- **Handle:** [@null](https://clementinesdenver.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 2009 West 33rd Avenue Denver CO 80211
+
+### Palm Beach Tan — score 50
+
+- **Handle:** [@null](https://palmbeachtan.com/locations/CO/Denver-Broadway)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 555 Broadway Denver CO 80203
+
+### 3rd Ave Studio — score 70
+
+- **Handle:** [@null](http://3rdavenuestudio.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 5575 East 3rd Avenue Denver CO 80220
+
+### Wild Kitty Waxing — score 50
+
+- **Handle:** [@null](https://wildkittywaxing.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 1220 East 6th Avenue Denver CO 80218
+
+### Glam Aesthetics — score 70
+
+- **Handle:** [@null](https://glammedispa.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 1321 South Broadway Denver CO 80210
+
+### Bronzed Denver — score 50
+
+- **Handle:** [@null](https://bronzeddenver.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 1138 East 6th Avenue Denver CO 80218
+
+### JW's Salon — score 70
+
+- **Handle:** [@null](https://www.facebook.com/pages/JWs-Salon-on-6th/1489419591295720)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 1134 East 6th Avenue
+
+### Classy Nails — score 50
+
+- **Handle:** [@null](http://browsonupper15th.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 2510 15th Street Denver CO 80211
+
+### Waxxpot — score 50
+
+- **Handle:** [@null](https://waxxpot.com/locations/denver/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 760 South Colorado Boulevard Glendale CO 80246
+
+### Simplicity Laser — score 50
+
+- **Handle:** [@null](https://www.simplicitylaser.com/pages/denver-co)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 760 South Colorado Boulevard Glendale CO 80246
+
+### Jack & Jill Salon Spa Shoppe — score 50
+
+- **Handle:** [@null](https://www.jackandjillchildrenssalon.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 760 South Colorado Boulevard Glendale CO 80246
+
+### Studio Urban Wax — score 50
+
+- **Handle:** [@null](https://studiourbanwax.com/locations/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa
+
+### Rejuvenate MedSpa — score 50
+
+- **Handle:** [@null](https://www.rejuvenatecolorado.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 501 South Cherry Street Denver CO 80246
+
+### Heyday — score 70
+
+- **Handle:** [@null](https://www.heydayskincare.com/pages/lowry)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 63 North Quebec Street Denver CO 80230
+
+### Blue Sky Nails & Lash — score 50
+
+- **Handle:** [@null](https://www.vagaro.com/blueskynailsandlashlowry)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 7111 East Lowry Boulevard Denver CO 80230
+
+### Vesper Gray Med Spa — score 70
+
+- **Handle:** [@null](https://vespergray.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 671 East 19th Avenue Denver CO 80203
+
+### Accent Beauty — score 50
+
+- **Handle:** [@null](https://go.booker.com/location/accentbeauty)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 1045 Acoma Street Denver CO 80204
+
+### Laser Loft Denver — score 50
+
+- **Handle:** [@null](https://www.laser-lofts.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 24 East 11th Avenue Denver CO 80203
+
+### My Friends Nail Spa — score 70
+
+- **Handle:** [@null](https://www.myfriendsnailspa.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 79 South Pennsylvania Street Denver CO 80209
+
+### Palm Beach Tan — score 50
+
+- **Handle:** [@null](https://palmbeachtan.com/locations/CO/Denver-Lowry)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 200 North Quebec Street Denver CO 80230
+
+### VIO Med Spa — score 50
+
+- **Handle:** [@null](https://www.viomedspa.com/locations/lowry)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 200 North Quebec Street Denver CO 80230
+
+### Nails Touch — score 50
+
+- **Handle:** [@null](http://nailstouchdenver.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 200 North Quebec Street Denver CO 80230
+
+### Kalon Laser Aesthetics — score 70
+
+- **Handle:** [@null](https://kalonlaser.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 1951 Wazee Street Denver CO 80202
+
+### Fingers & Toes — score 50
+
+- **Handle:** [@null](https://www.fingersandtoesdenver.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 743 South University Boulevard Denver CO 80209
+
+### YEEHAW CLAWS — score 50
+
+- **Handle:** [@null](https://yeehawclaws.glossgenius.com/about)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 711 West 8th Avenue Denver CO 80204
