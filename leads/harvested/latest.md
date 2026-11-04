@@ -1,6 +1,6 @@
 # New leads from the last harvest
 
-_Generated 2026-11-04T08:52:44.068Z — 25 leads._
+_Generated 2026-11-04T17:56:44.019Z — 25 leads._
 
 | Searches run | Searches failed | Posts read | Matched | Dropped (do-not-engage) |
 |---:|---:|---:|---:|---:|
@@ -41,206 +41,206 @@ business-scaling: Bluesky search failed for "trying to scale my business": HTTP 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-**Sources this run:** bluesky: unreachable (23 failed) · openstreetmap: 104 businesses in atlanta-ga
+**Sources this run:** bluesky: unreachable (23 failed) · openstreetmap: 37 businesses in newport-beach-ca
 
 ## med-spa-b2b — 25
 
-### North DeKalb Mental Health Center — score 50
+### Dr. Aaron Kosins — score 50
 
-- **Handle:** [@null](https://dekcsb.org/)
+- **Handle:** [@null](https://aaronkosinsmd.com/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** clinic
 
-> clinic · 3807 Clairmont Road Chamblee 30341
+> clinic · 1441 Avocado Avenue Newport Beach CA 92660
 
-### Center for Rehabilitation Medicine — score 50
+### OC Fertility — score 70
 
-- **Handle:** [@null](https://www.emoryhealthcare.org/locations/offices/center-for-rehab-medicine.html)
+- **Handle:** [@null](https://www.ocfertility.com/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** clinic
 
-> clinic · 1441 Clifton Road Northeast Atlanta GA 30322
+> clinic · 1401 Avocado Avenue Newport Beach CA 92660
 
-### Piedmont West Surgery Center — score 50
+### ET Chiropractic — score 50
 
-- **Handle:** [@null](http://www.piedmont.org/locations/piedmont-west/piedmont-west-home)
+- **Handle:** [@null](https://www.etchiropractic.com/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** clinic
 
-> clinic · Howell Mill Road Northwest Atlanta GA
+> clinic · 20331 Irvine Avenue Newport Beach CA 92660
 
-### LumiVita Wellspa — score 50
+### The Derm Studio — score 50
 
-- **Handle:** [@null](https://lumivita.com/location/midtown)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
-
-> med-spa · 190 10th Street Northeast
-
-### Georgia Eye Associates — score 50
-
-- **Handle:** [@null](http://www.georgiaeyeassociates.com/)
+- **Handle:** [@null](https://www.thedermstudios.com/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** clinic
 
-> clinic · 3120 Maple Drive Northeast Atlanta GA 30305
+> clinic · 1617 Westcliff Drive Newport Beach CA 92660
 
-### Healing Quest — score 50
+### Bonakdar Aesthetics — score 50
 
-- **Handle:** [@null](https://healingquestinfo.com/)
+- **Handle:** [@null](https://www.bonakdaraesthetics.com/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** clinic
 
-> clinic · 2751 Buford Highway Northeast Atlanta GA 30324
+> clinic · 20321 Irvine Avenue Newport Beach CA 92660
 
-### Vivicare Wellness Center — score 50
+### Dr. Kevin Sadati — score 50
 
-- **Handle:** [@null](https://vivicarewellness.com/)
+- **Handle:** [@null](https://drkevinsadati.com)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** clinic
 
-> clinic · 4920 Roswell Road Atlanta GA 30342
+> clinic · 359 San Miguel Drive Newport Beach CA 92660
 
-### Balance Atlanta Family Chiropractic — score 70
+### Pacific Lipo Newport Beach — score 50
 
-- **Handle:** [@null](https://balanceatlanta.com)
+- **Handle:** [@null](https://www.pacificlipo.com/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** clinic
 
-> clinic · 360 Pharr Road Northeast Atlanta GA 30305
+> clinic · 301 Bayview Cir, Ste 218 Newport Beach CA 92660
 
-### Atlanta Urgent Care — score 50
+### Newport Children's Medical Group — score 70
 
-- **Handle:** [@null](https://www.atlantaurgentcare.com)
+- **Handle:** [@null](https://www.newportchildren.com/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** clinic
 
-> clinic · 2738 Clairmont Road Northeast Atlanta GA 30329
+> clinic · 1401 Avocado Avenue Newport Beach CA 92660
 
-### Servy Institute for Reproductive Endocrinology, S.I.R.E. — score 50
+### The Patel Center for Functional Regeneration — score 70
 
-- **Handle:** [@null](https://ivfdoctors.net/ivfatlanta/)
+- **Handle:** [@null](https://fxregencenter.com/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** clinic
 
-> clinic · 1201 Peachtree Street Northeast Atlanta GA 30361
+> clinic · 5020 Campus Drive Newport Beach CA 92660
 
-### Fidelity Health Care, LLC — score 50
+### Rose Point Acupuncture Inc — score 70
 
-- **Handle:** [@null](https://fidelityatlanta.com)
+- **Handle:** [@null](https://rosepointacu.com/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** clinic
 
-> clinic · 1100 Spring Street Northwest Atlanta GA 30309
+> clinic · 151 Kalmus Dr Costa Mesa CA 92626
 
-### Intown Pediatrics — score 70
+### YourEggs — score 70
 
-- **Handle:** [@null](https://intownpediatrics.com/)
+- **Handle:** [@null](https://youreggs.com/egg-donors-newport-beach)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** clinic
 
-> clinic · 490 Bill Kennedy Way Atlanta GA 30316
+> clinic · 2001 Westcliff Drive Newport Beach CA 92660
 
-### Buckhead Primary Care — score 50
+### Resiliency Mind+Body Medicine — score 70
 
-- **Handle:** [@null](https://buckheadprimarycare.com)
+- **Handle:** [@null](https://resiliencymbmedicine.com/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** clinic
 
-> clinic
+> clinic · 1501 Superior Ave Newport Beach CA 92663
 
-### Peachtree Allergy & Asthma Clinic PC — score 50
+### Injection Artistry — score 70
 
-- **Handle:** [@null](https://peachtreeallergyclinic.com/buckhead-office/)
+- **Handle:** [@null](https://injectionartistryclinic.com/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** clinic
 
-> clinic · 1800 Peachtree Street Northeast Atlanta GA 30309
+> clinic · 20301 Southwest Birch Street Newport Beach CA 92660
 
-### Kerolus Facial Plastic Surgery — score 70
+### Philip Robinson MD — score 50
 
-- **Handle:** [@null](https://www.kerolusplasticsurgery.com)
+- **Handle:** [@null](https://www.philiprobinsonmd.com/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** clinic
 
-> clinic · 1218 West Paces Ferry Road Northwest Atlanta GA 30327
+> clinic · 320 Superior Avenue Newport Beach CA 92663
 
-### Lexington Plastic Surgeons — score 50
+### Susan Cavka Hypnotherapy — score 50
 
-- **Handle:** [@null](https://lexingtonplasticsurgeons.com/location/atlanta/)
+- **Handle:** [@null](https://susancavka.com)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** clinic
 
-> clinic · 1 Spring Street Northwest Atlanta GA 30308
+> clinic · 2515 East Pacific Coast Highway Corona Del Mar CA
 
-### Nip & Tuck Plastic Surgery — score 50
+### Dr. Shabnam Ghazizadeh MD, Facial Plastic Surgery — score 70
 
-- **Handle:** [@null](https://www.drnipandtuck.com)
+- **Handle:** [@null](https://drghazizadeh.com/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** clinic
 
-> clinic · 3280 Howell Mill Road Northwest Atlanta GA 30327
+> clinic · 20072 Southwest Birch Street Newport Beach CA 92660
 
-### LaserAway — score 50
+### Ardesh Facial Plastic Surgery — score 70
 
-- **Handle:** [@null](https://www.laseraway.com/locations/ga/atlanta-midtown/)
+- **Handle:** [@null](https://www.drardesh.com/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** clinic
 
-> clinic · 931 Monroe Drive Northeast
+> clinic · 1441 Avocado Avenue Newport Beach CA 92660
 
-### Highland Urgent Care and Family Medicine — score 70
+### Cruise Plastic Surgery — score 50
 
-- **Handle:** [@null](https://hucfm.com/)
+- **Handle:** [@null](https://lagynecomastia.org/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** clinic
 
-> clinic · 920 Ponce de Leon Avenue Northeast
+> clinic · San Joaquin Hills Road Newport Beach CA 92660
 
-### Atlanta Chiropractic Injury Center — score 50
+### IceLab Cryotherapy and Wellness — score 50
 
-- **Handle:** [@null](https://www.atlantachiroinjurycenter.com/)
+- **Handle:** [@null](https://icelabcryoandwellness.com/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** clinic
 
-> clinic · 342 West Peachtree Street Northwest
+> clinic · 440 West 19th Street Costa Mesa CA 92627
 
-### Oculus Plastic Surgery — score 50
+### Pure Beauty Medical Spa — score 50
 
-- **Handle:** [@null](https://oculusplasticsurgery.com)
+- **Handle:** [@null](https://www.purebeautymedicalspa.com/newport-beach/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** clinic
 
-> clinic · Atlanta GA 30305
+> clinic · 377 E Coast Hwy, Unit 250 A Newport Beach CA 92660
 
-### AllCare Primary & Immediate Care — score 50
+### Strive Chiropractic — score 50
 
-- **Handle:** [@null](https://allcarefamilymed.com/locations/midtown/)
+- **Handle:** [@null](https://www.strivechiroca.com)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** clinic
 
-> clinic · 805 Peachtree Street Northeast
+> clinic · 4299 MacArthur Boulevard Newport Beach CA 92660
 
-### Atlanta Kidney Center — score 70
+### Coast Family Chiropractic — score 50
 
-- **Handle:** [@null](https://www.atlkidneycenter.com)
+- **Handle:** [@null](https://https:/coastfamilychiropractic.com)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** clinic
 
-> clinic · 121 Linden Avenue Northeast Atlanta 30308
+> clinic · 179 East 17th Street Costa Mesa CA
 
-### Neurospine of Atlanta — score 70
+### Pacific Center For Plastic Surgery — score 50
 
-- **Handle:** [@null](https://neurospineatl.com/)
+- **Handle:** [@null](https://www.pacificcenterplasticsurgery.com/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** clinic
 
-> clinic · 145 North Avenue Northeast Atlanta 30308
+> clinic · 3991 MacArthur Boulevard Newport Beach CA 92660
 
-### Georgia Sports Chiropractic — score 50
+### Wellness Choice — score 70
 
-- **Handle:** [@null](https://www.georgiasportschiropractic.com/)
+- **Handle:** [@null](https://wellnesschoice.com/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** clinic
 
-> clinic · 754 Peachtree Street Northeast
+> clinic · 1101 Dove Street Newport Beach CA 92660
+
+### John M. Compoginis MD Plastic & Cosmetic Surgery — score 70
+
+- **Handle:** [@null](https://johncompoginismd.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 901 Dover Drive Newport Beach CA 92660
