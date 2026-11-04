@@ -1,6 +1,6 @@
 # New leads from the last harvest
 
-_Generated 2026-11-04T00:30:40.141Z — 25 leads._
+_Generated 2026-11-04T08:52:44.068Z — 25 leads._
 
 | Searches run | Searches failed | Posts read | Matched | Dropped (do-not-engage) |
 |---:|---:|---:|---:|---:|
@@ -41,206 +41,206 @@ business-scaling: Bluesky search failed for "trying to scale my business": HTTP 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-**Sources this run:** bluesky: unreachable (23 failed) · openstreetmap: 75 businesses in phoenix-az
+**Sources this run:** bluesky: unreachable (23 failed) · openstreetmap: 104 businesses in atlanta-ga
 
 ## med-spa-b2b — 25
 
-### Biagio Nail & Spa 2 — score 50
+### North DeKalb Mental Health Center — score 50
 
-- **Handle:** [@null](https://www.biagonailspa2.com/)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
-
-> med-spa · 6825 North 16th Street Phoenix AZ 85016
-
-### European Wax Center — score 50
-
-- **Handle:** [@null](https://locations.waxcenter.com/az/phoenix/phoenix-camelback-0016.html)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
-
-> med-spa
-
-### Grand Mart - Hair Store — score 50
-
-- **Handle:** [@null](https://www.grandmarthair.com/)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
-
-> med-spa · 3446 West Camelback Road Phoenix AZ 85017
-
-### Intoxicating Injections — score 50
-
-- **Handle:** [@null](http://lisacockrellrn.com/)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
-
-> med-spa · 1130 North 2nd Street Phoenix AZ 85004
-
-### Your Brow Bar — score 50
-
-- **Handle:** [@null](https://yourbrowbar.com/)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
-
-> med-spa · 4515 North 16th Street Phoenix AZ 85016
-
-### Be Transformed Beauty, LLC — score 50
-
-- **Handle:** [@null](http://www.btbeautyaz.com/)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
-
-> med-spa · 4607 East Thomas Road Phoenix AZ 85018-7709
-
-### Spa & Fitness at The Peak — score 50
-
-- **Handle:** [@null](https://www.hiltonphoenixresortatthepeak.com/spa)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
-
-> med-spa · 7677 North 16th Street Phoenix AZ 85020
-
-### The Muhammad Ali Parkinson Center — score 70
-
-- **Handle:** [@null](https://www.barrowneuro.org/get-to-know-barrow/centers-programs/muhammad-ali-parkinson-center/)
+- **Handle:** [@null](https://dekcsb.org/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** clinic
 
-> clinic · 350 West Thomas Road Phoenix AZ 85013
+> clinic · 3807 Clairmont Road Chamblee 30341
 
-### Young Mind Community Center — score 70
+### Center for Rehabilitation Medicine — score 50
 
-- **Handle:** [@null](https://www.youngmindcenter.org/)
+- **Handle:** [@null](https://www.emoryhealthcare.org/locations/offices/center-for-rehab-medicine.html)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 1441 Clifton Road Northeast Atlanta GA 30322
+
+### Piedmont West Surgery Center — score 50
+
+- **Handle:** [@null](http://www.piedmont.org/locations/piedmont-west/piedmont-west-home)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · Howell Mill Road Northwest Atlanta GA
+
+### LumiVita Wellspa — score 50
+
+- **Handle:** [@null](https://lumivita.com/location/midtown)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 190 10th Street Northeast
+
+### Georgia Eye Associates — score 50
+
+- **Handle:** [@null](http://www.georgiaeyeassociates.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 3120 Maple Drive Northeast Atlanta GA 30305
+
+### Healing Quest — score 50
+
+- **Handle:** [@null](https://healingquestinfo.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 2751 Buford Highway Northeast Atlanta GA 30324
+
+### Vivicare Wellness Center — score 50
+
+- **Handle:** [@null](https://vivicarewellness.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 4920 Roswell Road Atlanta GA 30342
+
+### Balance Atlanta Family Chiropractic — score 70
+
+- **Handle:** [@null](https://balanceatlanta.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 360 Pharr Road Northeast Atlanta GA 30305
+
+### Atlanta Urgent Care — score 50
+
+- **Handle:** [@null](https://www.atlantaurgentcare.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 2738 Clairmont Road Northeast Atlanta GA 30329
+
+### Servy Institute for Reproductive Endocrinology, S.I.R.E. — score 50
+
+- **Handle:** [@null](https://ivfdoctors.net/ivfatlanta/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 1201 Peachtree Street Northeast Atlanta GA 30361
+
+### Fidelity Health Care, LLC — score 50
+
+- **Handle:** [@null](https://fidelityatlanta.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 1100 Spring Street Northwest Atlanta GA 30309
+
+### Intown Pediatrics — score 70
+
+- **Handle:** [@null](https://intownpediatrics.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 490 Bill Kennedy Way Atlanta GA 30316
+
+### Buckhead Primary Care — score 50
+
+- **Handle:** [@null](https://buckheadprimarycare.com)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** clinic
 
 > clinic
 
-### Willo MediSpa — score 70
+### Peachtree Allergy & Asthma Clinic PC — score 50
 
-- **Handle:** [@null](http://willomedispa.com)
+- **Handle:** [@null](https://peachtreeallergyclinic.com/buckhead-office/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** clinic
 
-> clinic · 201 East Monterey Way Phoenix AZ 85012
+> clinic · 1800 Peachtree Street Northeast Atlanta GA 30309
 
-### Urban Wellness — score 50
+### Kerolus Facial Plastic Surgery — score 70
 
-- **Handle:** [@null](https://www.urbanwellnessphx.com)
+- **Handle:** [@null](https://www.kerolusplasticsurgery.com)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** clinic
 
-> clinic
+> clinic · 1218 West Paces Ferry Road Northwest Atlanta GA 30327
 
-### Honor Health FastMed Urgent Care — score 50
+### Lexington Plastic Surgeons — score 50
 
-- **Handle:** [@null](https://fastmed.com)
+- **Handle:** [@null](https://lexingtonplasticsurgeons.com/location/atlanta/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** clinic
 
-> clinic
+> clinic · 1 Spring Street Northwest Atlanta GA 30308
 
-### Choices Pregnancy Centers — score 50
+### Nip & Tuck Plastic Surgery — score 50
 
-- **Handle:** [@null](https://www.choicesaz.com/)
+- **Handle:** [@null](https://www.drnipandtuck.com)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** clinic
 
-> clinic · West Camelback Road Phoenix AZ 85015
+> clinic · 3280 Howell Mill Road Northwest Atlanta GA 30327
 
-### Dt Neumann Neurologist, Barrow Neurological Center — score 70
+### LaserAway — score 50
 
-- **Handle:** [@null](https://www.barrowneuro.org)
+- **Handle:** [@null](https://www.laseraway.com/locations/ga/atlanta-midtown/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** clinic
 
-> clinic · 304 West Thomas Road Phoenix AZ 85013
+> clinic · 931 Monroe Drive Northeast
 
-### Native Health Central — score 50
+### Highland Urgent Care and Family Medicine — score 70
 
-- **Handle:** [@null](https://www.nativehealthphoenix.org/locations/native-health-central/)
+- **Handle:** [@null](https://hucfm.com/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** clinic
 
-> clinic
+> clinic · 920 Ponce de Leon Avenue Northeast
 
-### Dr. Diane Grise, ND — score 70
+### Atlanta Chiropractic Injury Center — score 50
 
-- **Handle:** [@null](https://drdianegrise.com/)
+- **Handle:** [@null](https://www.atlantachiroinjurycenter.com/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** clinic
 
-> clinic · 210 E East Morris Drive Phoenix AZ 85012
+> clinic · 342 West Peachtree Street Northwest
 
-### BridgeCare ABA — score 70
+### Oculus Plastic Surgery — score 50
 
-- **Handle:** [@null](https://bridgecareaba.com/)
+- **Handle:** [@null](https://oculusplasticsurgery.com)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** clinic
 
-> clinic · 2 North 1st Avenue Phoenix AZ 85004
+> clinic · Atlanta GA 30305
 
-### US Dermatology Partners — score 50
+### AllCare Primary & Immediate Care — score 50
 
-- **Handle:** [@null](https://www.usdermatologypartners.com/locations/arizona/phoenix/1331-n-7th-st-ste-250/)
+- **Handle:** [@null](https://allcarefamilymed.com/locations/midtown/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** clinic
 
-> clinic · 1313 North 7th Street Phoenix AZ
+> clinic · 805 Peachtree Street Northeast
 
-### Biltmore Cardiology At Arizona Heart — score 50
+### Atlanta Kidney Center — score 70
 
-- **Handle:** [@null](https://www.biltmorecardiology.com/locations/detail/biltmore-cardiology-at-arizona-heart)
+- **Handle:** [@null](https://www.atlkidneycenter.com)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** clinic
 
-> clinic · 1910 East Thomas Road Phoenix AZ 85016
+> clinic · 121 Linden Avenue Northeast Atlanta 30308
 
-### Biltmore Cardiology - Camelback — score 50
+### Neurospine of Atlanta — score 70
 
-- **Handle:** [@null](https://www.biltmorecardiology.com/locations/detail/biltmore-cardiology-at-camelback)
+- **Handle:** [@null](https://neurospineatl.com/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** clinic
 
-> clinic · 2777 East Camelback Road Phoenix AZ 85016
+> clinic · 145 North Avenue Northeast Atlanta 30308
 
-### Abrazo Urologic Institute at Biltmore Terrace — score 50
+### Georgia Sports Chiropractic — score 50
 
-- **Handle:** [@null](https://www.abrazomedicalgroup.com/locations/detail/abrazo-urologic-institute-at-biltmore-terrace)
+- **Handle:** [@null](https://www.georgiasportschiropractic.com/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** clinic
 
-> clinic · 2122 East Highland Avenue Phoenix AZ 85016
-
-### Abrazo Orthopedic Specialists at Biltmore Terrace — score 50
-
-- **Handle:** [@null](https://www.abrazomedicalgroup.com/locations/detail/abrazo-orthopedic-specialists-at-biltmore-terrace)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
-
-> clinic · 2122 East Highland Avenue Phoenix AZ 85016
-
-### Biltmore Cardiology At Central Campus — score 50
-
-- **Handle:** [@null](https://www.biltmorecardiology.com/locations/detail/biltmore-cardiology-at-central-campus)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
-
-> clinic · 6036 North 19th Avenue Phoenix AZ 85015
-
-### Abrazo Medical & Surgical Weight Loss at Biltmore Terrace — score 50
-
-- **Handle:** [@null](https://www.abrazomedicalgroup.com/locations/detail/abrazo-medical-surgical-weight-loss-at-biltmore-terrace)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
-
-> clinic · 2122 East Highland Avenue Phoenix AZ 85016
-
-### Nirvana Center — score 50
-
-- **Handle:** [@null](https://www.nirvanacenter.com/arizona/downtown-phoenix-(7th))
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
-
-> clinic · 702 East Buckeye Road 85034
+> clinic · 754 Peachtree Street Northeast
