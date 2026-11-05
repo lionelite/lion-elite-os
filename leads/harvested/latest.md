@@ -1,6 +1,6 @@
 # New leads from the last harvest
 
-_Generated 2026-11-04T23:26:18.586Z — 25 leads._
+_Generated 2026-11-05T05:41:15.195Z — 25 leads._
 
 | Searches run | Searches failed | Posts read | Matched | Dropped (do-not-engage) |
 |---:|---:|---:|---:|---:|
@@ -41,206 +41,206 @@ business-scaling: Bluesky search failed for "trying to scale my business": HTTP 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-**Sources this run:** bluesky: unreachable (23 failed) · openstreetmap: 105 businesses in denver-co
+**Sources this run:** bluesky: unreachable (23 failed) · openstreetmap: 54 businesses in northern-nj
 
 ## med-spa-b2b — 25
 
-### Clementines A Boutique Salon — score 70
+### East Coast Salon Services — score 50
 
-- **Handle:** [@null](https://clementinesdenver.com/)
+- **Handle:** [@null](https://www.eastcoastsalon.com/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** med-spa
 
-> med-spa · 2009 West 33rd Avenue Denver CO 80211
+> med-spa · 375 Liberty Street Little Ferry NJ 07643
 
-### Palm Beach Tan — score 50
+### Spa Jolíe — score 50
 
-- **Handle:** [@null](https://palmbeachtan.com/locations/CO/Denver-Broadway)
+- **Handle:** [@null](https://www.spajolieny.com)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** med-spa
 
-> med-spa · 555 Broadway Denver CO 80203
+> med-spa · 180 7th Avenue South 10014
 
-### 3rd Ave Studio — score 70
+### Blush Face & Body Lab — score 70
 
-- **Handle:** [@null](http://3rdavenuestudio.com)
+- **Handle:** [@null](https://www.blushfaceandbodylab.com)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** med-spa
 
-> med-spa · 5575 East 3rd Avenue Denver CO 80220
+> med-spa · 161 4th Street Hoboken NJ 07030-3833
 
-### Wild Kitty Waxing — score 50
+### Perfect Brows — score 70
 
-- **Handle:** [@null](https://wildkittywaxing.com/)
+- **Handle:** [@null](https://www.perfectbrowsnyc.com)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** med-spa
 
-> med-spa · 1220 East 6th Avenue Denver CO 80218
+> med-spa · 181 8th Avenue 10011
 
-### Glam Aesthetics — score 70
+### Walker's Apothecary — score 70
 
-- **Handle:** [@null](https://glammedispa.com)
+- **Handle:** [@null](https://www.walkersapothecary.com/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** med-spa
 
-> med-spa · 1321 South Broadway Denver CO 80210
+> med-spa · 264 Newark Avenue Jersey City NJ 07302
 
-### Bronzed Denver — score 50
+### European Wax Center — score 50
 
-- **Handle:** [@null](https://bronzeddenver.com/)
+- **Handle:** [@null](https://locations.waxcenter.com/nj/hoboken/hoboken-0059.html)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** med-spa
 
-> med-spa · 1138 East 6th Avenue Denver CO 80218
+> med-spa · 1135 Maxwell Lane Hoboken NJ 07030
 
-### JW's Salon — score 70
+### Hibba Beauty Studios — score 50
 
-- **Handle:** [@null](https://www.facebook.com/pages/JWs-Salon-on-6th/1489419591295720)
+- **Handle:** [@null](https://hibbabeauty.com/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** med-spa
 
-> med-spa · 1134 East 6th Avenue
+> med-spa · 448 West Broadway New York NY 10012
 
-### Classy Nails — score 50
+### Elvy Rose Nail Spa — score 50
 
-- **Handle:** [@null](http://browsonupper15th.com/)
+- **Handle:** [@null](https://elvyrose-nail-spa.square.site/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** med-spa
 
-> med-spa · 2510 15th Street Denver CO 80211
+> med-spa · 252 Park Avenue East Rutherford NJ 07073
 
-### Waxxpot — score 50
+### Natural Skin Care — score 70
 
-- **Handle:** [@null](https://waxxpot.com/locations/denver/)
+- **Handle:** [@null](https://www.naturalskincarellc.com/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** med-spa
 
-> med-spa · 760 South Colorado Boulevard Glendale CO 80246
+> med-spa · 553 Newark Avenue Jersey City NJ 07306
 
-### Simplicity Laser — score 50
+### All Seasons Spa — score 50
 
-- **Handle:** [@null](https://www.simplicitylaser.com/pages/denver-co)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
-
-> med-spa · 760 South Colorado Boulevard Glendale CO 80246
-
-### Jack & Jill Salon Spa Shoppe — score 50
-
-- **Handle:** [@null](https://www.jackandjillchildrenssalon.com/)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
-
-> med-spa · 760 South Colorado Boulevard Glendale CO 80246
-
-### Studio Urban Wax — score 50
-
-- **Handle:** [@null](https://studiourbanwax.com/locations/)
+- **Handle:** [@null](https://fourseasonsbeautyspa.wixsite.com/locations/6thave-newyork)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** med-spa
 
 > med-spa
 
-### Rejuvenate MedSpa — score 50
+### Blink Lash Club — score 70
 
-- **Handle:** [@null](https://www.rejuvenatecolorado.com/)
+- **Handle:** [@null](https://blinklashclub.com)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** med-spa
 
-> med-spa · 501 South Cherry Street Denver CO 80246
+> med-spa · 321 Bleecker Street 10014
 
-### Heyday — score 70
+### Aspen Prime Medspa — score 70
 
-- **Handle:** [@null](https://www.heydayskincare.com/pages/lowry)
+- **Handle:** [@null](https://aspenprimemedspa.com)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** med-spa
 
-> med-spa · 63 North Quebec Street Denver CO 80230
+> med-spa · 74 Hudson Street Hoboken NJ 07030
 
-### Blue Sky Nails & Lash — score 50
+### Retro Fitness — score 70
 
-- **Handle:** [@null](https://www.vagaro.com/blueskynailsandlashlowry)
+- **Handle:** [@null](https://www.retrofitness.com/location/jerseycitynj)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** gym
 
-> med-spa · 7111 East Lowry Boulevard Denver CO 80230
+> gym · 701 State Rt 440 Jersey City NJ 07304
 
-### Vesper Gray Med Spa — score 70
+### Retro Fitness — score 70
 
-- **Handle:** [@null](https://vespergray.com/)
+- **Handle:** [@null](https://www.retrofitness.com/location/westnewyorknj)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** gym
 
-> med-spa · 671 East 19th Avenue Denver CO 80203
+> gym · 6402 Kennedy Boulevard West West New York NJ 07093
 
-### Accent Beauty — score 50
+### Retro Fitness — score 70
 
-- **Handle:** [@null](https://go.booker.com/location/accentbeauty)
+- **Handle:** [@null](https://www.retrofitness.com/location/wallingtonnj)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** gym
 
-> med-spa · 1045 Acoma Street Denver CO 80204
+> gym · 450 Main Avenue Wallington NJ 07057
 
-### Laser Loft Denver — score 50
+### Sacred Sounds Yoga — score 50
 
-- **Handle:** [@null](https://www.laser-lofts.com/)
+- **Handle:** [@null](https://www.sacredsoundsyoga.com/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** gym
 
-> med-spa · 24 East 11th Avenue Denver CO 80203
+> gym · 163 Bleecker Street New York NY 10012
 
-### My Friends Nail Spa — score 70
+### Integral Yoga Institute NYC — score 70
 
-- **Handle:** [@null](https://www.myfriendsnailspa.com/)
+- **Handle:** [@null](https://iyiny.org/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** gym
 
-> med-spa · 79 South Pennsylvania Street Denver CO 80209
+> gym · 227 West 13th Street
 
-### Palm Beach Tan — score 50
+### Refine Method West Village — score 70
 
-- **Handle:** [@null](https://palmbeachtan.com/locations/CO/Denver-Lowry)
+- **Handle:** [@null](http://refinemethod.com/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** gym
 
-> med-spa · 200 North Quebec Street Denver CO 80230
+> gym · 131 Perry Street
 
-### VIO Med Spa — score 50
+### Fit Foundry — score 70
 
-- **Handle:** [@null](https://www.viomedspa.com/locations/lowry)
+- **Handle:** [@null](https://fitfoundry.com)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** gym
 
-> med-spa · 200 North Quebec Street Denver CO 80230
+> gym · 1416 Willow Avenue Hoboken NJ 07030
 
-### Nails Touch — score 50
+### Newport Swim & Fitness — score 50
 
-- **Handle:** [@null](http://nailstouchdenver.com/)
+- **Handle:** [@null](https://www.newportsaf.com/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** gym
 
-> med-spa · 200 North Quebec Street Denver CO 80230
+> gym · 55 River Drive South Jersey City NJ 07310
 
-### Kalon Laser Aesthetics — score 70
+### Club Metro USA — score 50
 
-- **Handle:** [@null](https://kalonlaser.com/)
+- **Handle:** [@null](https://clubmetrousa.com/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** gym
 
-> med-spa · 1951 Wazee Street Denver CO 80202
+> gym · 525 Washington Boulevard Jersey City NJ 07310
 
-### Fingers & Toes — score 50
+### The Max Challenge — score 50
 
-- **Handle:** [@null](https://www.fingersandtoesdenver.com)
+- **Handle:** [@null](https://themaxchallenge.com/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** gym
 
-> med-spa · 743 South University Boulevard Denver CO 80209
+> gym
 
-### YEEHAW CLAWS — score 50
+### Good Day Pilates Studio — score 70
 
-- **Handle:** [@null](https://yeehawclaws.glossgenius.com/about)
+- **Handle:** [@null](https://www.gooddaypilates.com/sohogd)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** gym
 
-> med-spa · 711 West 8th Avenue Denver CO 80204
+> gym · 150 Spring Street 10012
+
+### PAC Fitness NJ — score 50
+
+- **Handle:** [@null](http://www.pacfitnessnj.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 6900 Park Avenue Guttenberg NJ 07093
+
+### Club Pilates — score 70
+
+- **Handle:** [@null](https://www.clubpilates.com/location/westvillage)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · New York NY
