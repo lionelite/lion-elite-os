@@ -564,6 +564,27 @@ Standalone modules that share the repo but not the architecture above:
   autonomously.
   `npm run agents:roster|knowledge|recall|plan|run`; docs
   `docs/ai-agent-roster.md`; 77 tests in the root `npm test`.
+- **BuildPipeline VSL funnels** (`apps/buildpipeline` + `routes/gtm-funnels.js`,
+  mounted at `/api/gtm-funnels` on `server.js`). The Next.js app is a thin front
+  end; config, analytics and CRM writes live here. `lib/platform/vsl-funnel.js`
+  holds the closed six-stage taxonomy (Traffic → VSL → Application → Booking →
+  Confirmation → Follow-up) and `lib/platform/funnel-store.js` writes into the
+  existing GTM tables: application → `gtm_prospects` + `gtm_evidence`, booking →
+  `gtm_meetings`/`gtm_opportunities`, follow-up → `gtm_agent_tasks`. Funnel tables
+  are `gtm_funnels`, `gtm_funnel_events` and `gtm_funnel_leads`. Four rules carry
+  it. Analytics events hold **no PII** (the prototype logged name/email/phone
+  inside the analytics event). **A calendar click is a `proposed` meeting**; only
+  a signed Calendly `invitee.created` webhook or an operator marks it `booked`,
+  and browsers are refused if they report `booking_confirmed` themselves.
+  **Follow-up is `draft_only` agent tasks**, so there is no new send path, and
+  SMS steps appear only with a stored, explicit consent record. **A funnel cannot
+  be published without a specific scheduling page.** Embedded videos do not
+  report `video_play`, because an iframe load is not a play. Hosting the app is an
+  owner decision (`buildpipeline.online` is on Base44). CI builds it as the
+  separate `buildpipeline` job. Docs: `apps/buildpipeline/README.md`.
+  `lib/database.js` `migrate()` now takes a Postgres advisory lock. Concurrent
+  migrations on a fresh DB raced on `CREATE EXTENSION`, and the Postgres
+  integration tests serialize on `test/helpers/db-exclusive.js`.
 - **`social-listening/`** — Bluesky firehose (Jetstream) monitor. The
   *listening* half is read-only. A *reply* path does exist and this file
   previously denied it: `social-listening/src/bluesky-delivery.js` has

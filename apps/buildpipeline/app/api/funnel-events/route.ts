@@ -1,2 +1,7 @@
-import {NextRequest,NextResponse} from 'next/server';
-export async function POST(req:NextRequest){const payload=await req.json(); console.log('[FUNNEL_EVENT]',JSON.stringify(payload)); return NextResponse.json({ok:true});}
+import { NextRequest } from 'next/server';
+import { forward } from '../../../lib/proxy';
+
+// Analytics events → gtm_funnel_events (PII-free; identity goes via /api/funnel-leads).
+export async function POST(req: NextRequest) {
+  return forward(req, 'events');
+}

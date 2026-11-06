@@ -17,6 +17,8 @@ Production domain: https://buildpipeline.online
 - [x] Security / Support / Terms / Privacy / Acceptable Use
 - [x] Custom-domain root routing
 - [x] Launch readiness endpoint + launch status page
+- [x] VSL funnel engine: funnel config model, PII-free funnel analytics, application → CRM prospect, booking click vs confirmed booking, draft-only follow-up plan, conversion report (`routes/gtm-funnels.js`, `apps/buildpipeline`)
+- [x] Funnel app compiled and type-checked in CI (`buildpipeline` job)
 
 ## External production switches
 These remain fail-closed until configured.
@@ -34,6 +36,9 @@ These remain fail-closed until configured.
 - [ ] Set Google OAuth credentials if Gmail/Calendar connections are enabled.
 - [ ] Set APOLLO_API_KEY for provider-backed prospect sourcing.
 - [ ] Configure sender infrastructure before enabling external campaign delivery.
+- [ ] Decide where `apps/buildpipeline` is hosted (the domain is on Base44 today; see `base44-bridge/CLAUDE.md`), then set `BUILDPIPELINE_API_URL` and `BUILDPIPELINE_PROXY_SECRET` there.
+- [ ] Publish a funnel with a real scheduling page (`PUT /api/gtm-funnels/workspaces/:id/funnels/:slug`, `status: published`).
+- [ ] Create a Calendly webhook (`invitee.created`) to `/api/gtm-funnels/public/<slug>/calendly-webhook` and set `GTM_CALENDLY_WEBHOOK_SIGNING_KEY`. Until then, operators confirm bookings with `POST .../bookings/confirm`.
 
 ## Launch gate
 Do not send paid traffic until:

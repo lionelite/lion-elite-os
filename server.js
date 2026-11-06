@@ -13,6 +13,8 @@ const { createWorkspaceStore } = require('./lib/platform/workspace-store');
 const { AuthStore } = require('./lib/platform/security/auth-store');
 const { createMcpRouter } = require('./routes/mcp');
 const { createGtmSalesRouter } = require('./routes/gtm-sales');
+const { createGtmFunnelsRouter } = require('./routes/gtm-funnels');
+const { createFunnelStore } = require('./lib/platform/funnel-store');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -41,6 +43,9 @@ const gtmWorkspaceStore = createWorkspaceStore();
 const gtmAuthStore = process.env.DATABASE_URL ? new AuthStore() : null;
 app.use('/api/gtm', createGtmPlatformRouter({ store: gtmWorkspaceStore, authStore: gtmAuthStore }));
 app.use('/api/gtm-sales', createGtmSalesRouter());
+// BuildPipeline VSL funnels: config, PII-free analytics, application → CRM
+// prospect, booking confirmation. Called by apps/buildpipeline.
+app.use('/api/gtm-funnels', createGtmFunnelsRouter({ store: createFunnelStore(), authStore: gtmAuthStore }));
 if (gtmAuthStore) app.use('/api/mcp', createMcpRouter({ authStore: gtmAuthStore }));
 app.get('/.well-known/oauth-authorization-server', (_req, res) => {
   const origin = String(process.env.PUBLIC_BASE_URL || '').replace(/\/$/,'');
