@@ -1,11 +1,11 @@
 # Every harvested lead
 
-_Generated 2026-11-05T21:51:58.385Z — 613 leads._
+_Generated 2026-11-06T02:09:16.761Z — 617 leads._
 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-## med-spa-b2b — 613
+## med-spa-b2b — 617
 
 ### Sports Performance & Wellness Center — score 50
 
@@ -4910,3 +4910,35 @@ any of them — reach out by hand from the post link if a lead is worth it.
 - **Why they matched:** gym
 
 > gym · New York NY
+
+### Massage Envy — score 50
+
+- **Handle:** [@null](Massageenvy.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** massage
+
+> massage · 5020 4th Street North Saint Petersburg FL 33703
+
+### Essentials Massage & Facials — score 50
+
+- **Handle:** [@null](https://essentialslockwood.mysalononline.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** massage
+
+> massage · 6400 4th Street North Saint Petersburg FL 33702
+
+### Back 2 Normal — score 50
+
+- **Handle:** [@null](https://back2normalpt.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** physiotherapy
+
+> physiotherapy · 465 2nd Avenue North Saint Petersburg FL 33701
+
+### Made Possible Personal Training — score 50
+
+- **Handle:** [@null](MadePossiblePT.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** physiotherapy
+
+> physiotherapy

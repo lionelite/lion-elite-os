@@ -1,6 +1,6 @@
 # New leads from the last harvest
 
-_Generated 2026-11-05T21:51:58.385Z — 0 leads._
+_Generated 2026-11-06T02:09:16.761Z — 4 leads._
 
 | Searches run | Searches failed | Posts read | Matched | Dropped (do-not-engage) |
 |---:|---:|---:|---:|---:|
@@ -41,6 +41,38 @@ business-scaling: Bluesky search failed for "trying to scale my business": HTTP 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-**Sources this run:** bluesky: unreachable (23 failed) · openstreetmap: 5 businesses in jacksonville-fl
+**Sources this run:** bluesky: unreachable (23 failed) · openstreetmap: 4 businesses in st-petersburg-fl
 
-**No new leads, but a source did answer.** Bluesky was unreachable; the sources line above shows what did respond. Nothing new means that area is already fully harvested — widen the search areas rather than waiting for a different result.
+## med-spa-b2b — 4
+
+### Massage Envy — score 50
+
+- **Handle:** [@null](Massageenvy.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** massage
+
+> massage · 5020 4th Street North Saint Petersburg FL 33703
+
+### Essentials Massage & Facials — score 50
+
+- **Handle:** [@null](https://essentialslockwood.mysalononline.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** massage
+
+> massage · 6400 4th Street North Saint Petersburg FL 33702
+
+### Back 2 Normal — score 50
+
+- **Handle:** [@null](https://back2normalpt.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** physiotherapy
+
+> physiotherapy · 465 2nd Avenue North Saint Petersburg FL 33701
+
+### Made Possible Personal Training — score 50
+
+- **Handle:** [@null](MadePossiblePT.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** physiotherapy
+
+> physiotherapy
