@@ -1,6 +1,6 @@
 # New leads from the last harvest
 
-_Generated 2026-11-06T11:59:21.072Z — 16 leads._
+_Generated 2026-11-06T19:04:47.611Z — 25 leads._
 
 | Searches run | Searches failed | Posts read | Matched | Dropped (do-not-engage) |
 |---:|---:|---:|---:|---:|
@@ -41,134 +41,206 @@ business-scaling: Bluesky search failed for "trying to scale my business": HTTP 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-**Sources this run:** bluesky: unreachable (23 failed) · openstreetmap: 31 businesses in cincinnati-oh
+**Sources this run:** bluesky: unreachable (23 failed) · openstreetmap: 123 businesses in austin-tx
 
-## med-spa-b2b — 16
+## med-spa-b2b — 25
 
-### Delhi Fitness Club — score 70
+### Palm Beach Tan — score 50
 
-- **Handle:** [@null](https://delhifitnessclub.org/)
+- **Handle:** [@null](https://palmbeachtan.com/locations/TX/Austin-West-Braker-Lane)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
+- **Why they matched:** med-spa
 
-> gym · 5259 Delhi Pike Cincinnati OH 45238
+> med-spa
 
-### Vision MMA — score 70
+### Tegan's Nail Salon — score 50
 
-- **Handle:** [@null](https://visionmma.com/)
+- **Handle:** [@null](https://tegans-nail-salon.edan.io/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
+- **Why they matched:** med-spa
 
-> gym · 3470 Cardiff Avenue 45209
+> med-spa · 11900 Metric Boulevard Austin TX 78758
 
-### TITLE Boxing Club — score 70
+### Great Nails — score 50
 
-- **Handle:** [@null](https://www.titleboxingclub.com/location/downtown-cincinnati-oh)
+- **Handle:** [@null](https://greatnailsaustin.net/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
+- **Why they matched:** med-spa
 
-> gym · 710 Sycamore Street Cincinnati OH 45202
+> med-spa · 1201 Barbara Jordan Boulevard Austin TX 78723
 
-### Sölhaus — score 50
+### Ava Spa & Nails — score 50
 
-- **Handle:** [@null](https://www.solhausotr.com/)
+- **Handle:** [@null](https://www.avaspaandnails.com/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
+- **Why they matched:** med-spa
 
-> gym · 15 West 14th Street Cincinnati OH 45202
+> med-spa · 1611 STE 115 West 5th Street Austin TX 78703
 
-### 12th St. Pilates — score 50
+### SEV Laser — score 50
 
-- **Handle:** [@null](https://12thstreetpilates)
+- **Handle:** [@null](https://sevlaser.com/austin/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
+- **Why they matched:** med-spa
 
-> gym · 330 Scott Street Covington KY 41011
+> med-spa · 208 Colorado Street Austin TX 78701
 
-### Embody Pilates — score 50
+### bez + Co. Salon — score 50
 
-- **Handle:** [@null](https://embodypilates.studio)
+- **Handle:** [@null](https://www.bexandcosalon.com/barton-hills)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
+- **Why they matched:** med-spa
 
-> gym · 842 Monmouth Street Newport KY 41071
+> med-spa · 1501 South Lamar Boulevard Austin TX 78704
 
-### The Rowing Place — score 50
+### VS Nails and Spa — score 50
 
-- **Handle:** [@null](https://www.nolimitsrowing.com)
+- **Handle:** [@null](https://vsnailspa.com/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
+- **Why they matched:** med-spa
 
-> gym
+> med-spa · 2501 West Parmer Lane Austin TX 78727
 
-### Brian Wiefering's Wiefit — score 50
+### Ulta Beauty — score 50
 
-- **Handle:** [@null](https://www.wiefit.com)
+- **Handle:** [@null](https://www.ulta.com/stores/austin-tx-75)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
+- **Why they matched:** med-spa
 
-> gym · 846 Monmouth Street Newport KY 41071
+> med-spa · 9607 Research Boulevard Austin TX 78759
 
-### Clifton Recreation Center — score 70
+### Embellish Nails & Boutique — score 70
 
-- **Handle:** [@null](https://cincyrec.org/search/facility.aspx?id=43)
+- **Handle:** [@null](https://www.embellishnails.com/book)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
+- **Why they matched:** med-spa
 
-> gym · 320 McAlpin Avenue 45220
+> med-spa · 3010 West Anderson Lane Austin TX 78757
 
-### Dimension Fitness — score 70
+### L A Nails — score 50
 
-- **Handle:** [@null](https://www.dimension.fitness/)
+- **Handle:** [@null](https://l-a-nails-austin.edan.io/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
+- **Why they matched:** med-spa
 
-> gym · 3390 Red Bank Road Fairfax OH 45227
+> med-spa · 8312 Burnet Road Austin TX 78757
 
-### Barre3 — score 50
+### T4 Nails & Spa — score 50
 
-- **Handle:** [@null](https://online.barre3.com/studio-locations/cincinnati-mariemont)
+- **Handle:** [@null](http://t4nails.com/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
+- **Why they matched:** med-spa
 
-> gym · 7449 Wooster Pike Columbia Township OH 45227
+> med-spa · 5728 Burnet Road Austin TX 78756
 
-### Pure Barre — score 50
+### Palm Beach Tan — score 50
 
-- **Handle:** [@null](https://www.purebarre.com/oh-cincinnati/)
+- **Handle:** [@null](https://palmbeachtan.com/locations/TX/Austin-East-41st-Street/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
+- **Why they matched:** med-spa
 
-> gym · 3083 Madison Road Cincinnati OH 45209
+> med-spa · 1000 East 41st Street Austin TX 78751
 
-### YEP! Fitness — score 50
+### Sugarcoat & Co Beauty Bar — score 50
 
-- **Handle:** [@null](https://yepfitness.com)
+- **Handle:** [@null](https://sugarcoatandcobeautybar.com/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
+- **Why they matched:** med-spa
 
-> gym · 6009 Hamilton Avenue Cincinnati OH 45224
+> med-spa · 1000 East 41st Street Austin TX 78751
 
-### Anytime Fitness — score 50
+### Amazing Lash Studio — score 50
 
-- **Handle:** [@null](https://www.anytimefitness.com/locations/mariemont-ohio-3251)
+- **Handle:** [@null](https://www.amazinglashstudio.com/studios/tx/austin/hancock-center)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
+- **Why they matched:** med-spa
 
-> gym · 7247 Wooster Pike Columbia Township OH 45227
+> med-spa · 1000 East 41st Street Austin TX 78751
 
-### The Exercise Coach — score 50
+### All Star Eyebrow Threading — score 50
 
-- **Handle:** [@null](https://exercisecoach.com/hyde-park/)
+- **Handle:** [@null](http://allstareyebrowthreading.com/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
+- **Why they matched:** med-spa
 
-> gym · 2701 Observatory Avenue Cincinnati OH 45208
+> med-spa · 3909 North Interstate 35 Austin TX 78722
 
-### HossFit — score 70
+### Envy Nails — score 50
 
-- **Handle:** [@null](https://hossfit.com/)
+- **Handle:** [@null](https://envynailsaustin.com/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
+- **Why they matched:** med-spa
 
-> gym · 2210 Beechmont Avenue Cincinnati 45230
+> med-spa · 1801 East 51st Street Austin TX 78723
+
+### Organic Spa/Nails — score 70
+
+- **Handle:** [@null](https://organicnailsaustin.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 1920 East Riverside Drive Austin TX 78741
+
+### Foot Relax — score 50
+
+- **Handle:** [@null](https://footrelaxaustintx.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 10901 North Lamar Boulevard Austin TX 78753
+
+### Foot Heaven — score 50
+
+- **Handle:** [@null](https://footheavenspa.wixsite.com/78753)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 11712 North Lamar Boulevard Austin TX 78758
+
+### Haute European Salon and Beauty Products — score 50
+
+- **Handle:** [@null](https://www.haute-salon.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 4533 Ruiz Street Austin TX 78723
+
+### European Wax Center — score 50
+
+- **Handle:** [@null](https://locations.waxcenter.com/tx/austin/austin-aldrich-street-at-mueller-1025.html)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 1900 Aldrich Street Austin TX 78723
+
+### Luna Lash — score 70
+
+- **Handle:** [@null](https://lunalashatx.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 4524 Mattie Street Austin TX 78723
+
+### VIO Med Spa — score 50
+
+- **Handle:** [@null](https://www.viomedspa.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 1900 Aldrich Street Austin TX 78723
+
+### European Wax Center — score 50
+
+- **Handle:** [@null](https://locations.waxcenter.com/tx/austin/austin-south-lamar-0643.html)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 1100 South Lamar Boulevard Austin TX 78704
+
+### Hiatus Spa + Retreat — score 50
+
+- **Handle:** [@null](https://www.hiatusspa.com/location/austin)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 1611 West 5th Street Austin TX 78703

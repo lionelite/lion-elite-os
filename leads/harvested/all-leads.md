@@ -1,11 +1,11 @@
 # Every harvested lead
 
-_Generated 2026-11-06T11:59:21.072Z — 633 leads._
+_Generated 2026-11-06T19:04:47.611Z — 658 leads._
 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-## med-spa-b2b — 633
+## med-spa-b2b — 658
 
 ### Sports Performance & Wellness Center — score 50
 
@@ -5070,3 +5070,203 @@ any of them — reach out by hand from the post link if a lead is worth it.
 - **Why they matched:** gym
 
 > gym · 2210 Beechmont Avenue Cincinnati 45230
+
+### Palm Beach Tan — score 50
+
+- **Handle:** [@null](https://palmbeachtan.com/locations/TX/Austin-West-Braker-Lane)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa
+
+### Tegan's Nail Salon — score 50
+
+- **Handle:** [@null](https://tegans-nail-salon.edan.io/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 11900 Metric Boulevard Austin TX 78758
+
+### Great Nails — score 50
+
+- **Handle:** [@null](https://greatnailsaustin.net/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 1201 Barbara Jordan Boulevard Austin TX 78723
+
+### Ava Spa & Nails — score 50
+
+- **Handle:** [@null](https://www.avaspaandnails.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 1611 STE 115 West 5th Street Austin TX 78703
+
+### SEV Laser — score 50
+
+- **Handle:** [@null](https://sevlaser.com/austin/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 208 Colorado Street Austin TX 78701
+
+### bez + Co. Salon — score 50
+
+- **Handle:** [@null](https://www.bexandcosalon.com/barton-hills)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 1501 South Lamar Boulevard Austin TX 78704
+
+### VS Nails and Spa — score 50
+
+- **Handle:** [@null](https://vsnailspa.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 2501 West Parmer Lane Austin TX 78727
+
+### Ulta Beauty — score 50
+
+- **Handle:** [@null](https://www.ulta.com/stores/austin-tx-75)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 9607 Research Boulevard Austin TX 78759
+
+### Embellish Nails & Boutique — score 70
+
+- **Handle:** [@null](https://www.embellishnails.com/book)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 3010 West Anderson Lane Austin TX 78757
+
+### L A Nails — score 50
+
+- **Handle:** [@null](https://l-a-nails-austin.edan.io/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 8312 Burnet Road Austin TX 78757
+
+### T4 Nails & Spa — score 50
+
+- **Handle:** [@null](http://t4nails.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 5728 Burnet Road Austin TX 78756
+
+### Palm Beach Tan — score 50
+
+- **Handle:** [@null](https://palmbeachtan.com/locations/TX/Austin-East-41st-Street/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 1000 East 41st Street Austin TX 78751
+
+### Sugarcoat & Co Beauty Bar — score 50
+
+- **Handle:** [@null](https://sugarcoatandcobeautybar.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 1000 East 41st Street Austin TX 78751
+
+### Amazing Lash Studio — score 50
+
+- **Handle:** [@null](https://www.amazinglashstudio.com/studios/tx/austin/hancock-center)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 1000 East 41st Street Austin TX 78751
+
+### All Star Eyebrow Threading — score 50
+
+- **Handle:** [@null](http://allstareyebrowthreading.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 3909 North Interstate 35 Austin TX 78722
+
+### Envy Nails — score 50
+
+- **Handle:** [@null](https://envynailsaustin.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 1801 East 51st Street Austin TX 78723
+
+### Organic Spa/Nails — score 70
+
+- **Handle:** [@null](https://organicnailsaustin.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 1920 East Riverside Drive Austin TX 78741
+
+### Foot Relax — score 50
+
+- **Handle:** [@null](https://footrelaxaustintx.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 10901 North Lamar Boulevard Austin TX 78753
+
+### Foot Heaven — score 50
+
+- **Handle:** [@null](https://footheavenspa.wixsite.com/78753)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 11712 North Lamar Boulevard Austin TX 78758
+
+### Haute European Salon and Beauty Products — score 50
+
+- **Handle:** [@null](https://www.haute-salon.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 4533 Ruiz Street Austin TX 78723
+
+### European Wax Center — score 50
+
+- **Handle:** [@null](https://locations.waxcenter.com/tx/austin/austin-aldrich-street-at-mueller-1025.html)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 1900 Aldrich Street Austin TX 78723
+
+### Luna Lash — score 70
+
+- **Handle:** [@null](https://lunalashatx.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 4524 Mattie Street Austin TX 78723
+
+### VIO Med Spa — score 50
+
+- **Handle:** [@null](https://www.viomedspa.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 1900 Aldrich Street Austin TX 78723
+
+### European Wax Center — score 50
+
+- **Handle:** [@null](https://locations.waxcenter.com/tx/austin/austin-south-lamar-0643.html)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 1100 South Lamar Boulevard Austin TX 78704
+
+### Hiatus Spa + Retreat — score 50
+
+- **Handle:** [@null](https://www.hiatusspa.com/location/austin)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 1611 West 5th Street Austin TX 78703
