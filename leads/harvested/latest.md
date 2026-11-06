@@ -1,6 +1,6 @@
 # New leads from the last harvest
 
-_Generated 2026-11-06T02:09:16.761Z — 4 leads._
+_Generated 2026-11-06T11:59:21.072Z — 16 leads._
 
 | Searches run | Searches failed | Posts read | Matched | Dropped (do-not-engage) |
 |---:|---:|---:|---:|---:|
@@ -41,38 +41,134 @@ business-scaling: Bluesky search failed for "trying to scale my business": HTTP 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-**Sources this run:** bluesky: unreachable (23 failed) · openstreetmap: 4 businesses in st-petersburg-fl
+**Sources this run:** bluesky: unreachable (23 failed) · openstreetmap: 31 businesses in cincinnati-oh
 
-## med-spa-b2b — 4
+## med-spa-b2b — 16
 
-### Massage Envy — score 50
+### Delhi Fitness Club — score 70
 
-- **Handle:** [@null](Massageenvy.com)
+- **Handle:** [@null](https://delhifitnessclub.org/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** massage
+- **Why they matched:** gym
 
-> massage · 5020 4th Street North Saint Petersburg FL 33703
+> gym · 5259 Delhi Pike Cincinnati OH 45238
 
-### Essentials Massage & Facials — score 50
+### Vision MMA — score 70
 
-- **Handle:** [@null](https://essentialslockwood.mysalononline.com/)
+- **Handle:** [@null](https://visionmma.com/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** massage
+- **Why they matched:** gym
 
-> massage · 6400 4th Street North Saint Petersburg FL 33702
+> gym · 3470 Cardiff Avenue 45209
 
-### Back 2 Normal — score 50
+### TITLE Boxing Club — score 70
 
-- **Handle:** [@null](https://back2normalpt.com/)
+- **Handle:** [@null](https://www.titleboxingclub.com/location/downtown-cincinnati-oh)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** physiotherapy
+- **Why they matched:** gym
 
-> physiotherapy · 465 2nd Avenue North Saint Petersburg FL 33701
+> gym · 710 Sycamore Street Cincinnati OH 45202
 
-### Made Possible Personal Training — score 50
+### Sölhaus — score 50
 
-- **Handle:** [@null](MadePossiblePT.com)
+- **Handle:** [@null](https://www.solhausotr.com/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** physiotherapy
+- **Why they matched:** gym
 
-> physiotherapy
+> gym · 15 West 14th Street Cincinnati OH 45202
+
+### 12th St. Pilates — score 50
+
+- **Handle:** [@null](https://12thstreetpilates)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 330 Scott Street Covington KY 41011
+
+### Embody Pilates — score 50
+
+- **Handle:** [@null](https://embodypilates.studio)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 842 Monmouth Street Newport KY 41071
+
+### The Rowing Place — score 50
+
+- **Handle:** [@null](https://www.nolimitsrowing.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym
+
+### Brian Wiefering's Wiefit — score 50
+
+- **Handle:** [@null](https://www.wiefit.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 846 Monmouth Street Newport KY 41071
+
+### Clifton Recreation Center — score 70
+
+- **Handle:** [@null](https://cincyrec.org/search/facility.aspx?id=43)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 320 McAlpin Avenue 45220
+
+### Dimension Fitness — score 70
+
+- **Handle:** [@null](https://www.dimension.fitness/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 3390 Red Bank Road Fairfax OH 45227
+
+### Barre3 — score 50
+
+- **Handle:** [@null](https://online.barre3.com/studio-locations/cincinnati-mariemont)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 7449 Wooster Pike Columbia Township OH 45227
+
+### Pure Barre — score 50
+
+- **Handle:** [@null](https://www.purebarre.com/oh-cincinnati/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 3083 Madison Road Cincinnati OH 45209
+
+### YEP! Fitness — score 50
+
+- **Handle:** [@null](https://yepfitness.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 6009 Hamilton Avenue Cincinnati OH 45224
+
+### Anytime Fitness — score 50
+
+- **Handle:** [@null](https://www.anytimefitness.com/locations/mariemont-ohio-3251)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 7247 Wooster Pike Columbia Township OH 45227
+
+### The Exercise Coach — score 50
+
+- **Handle:** [@null](https://exercisecoach.com/hyde-park/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 2701 Observatory Avenue Cincinnati OH 45208
+
+### HossFit — score 70
+
+- **Handle:** [@null](https://hossfit.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 2210 Beechmont Avenue Cincinnati 45230
