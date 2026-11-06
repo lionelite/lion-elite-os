@@ -21,3 +21,9 @@ agency/bench/
 
 # Harvested lead store is pulled from the automation/leads branch on demand.
 leads/harvested/
+
+# BuildPipeline funnel app build output. No lockfile is committed here either
+# (same policy as the root: docs/render-dependency-policy.md).
+apps/buildpipeline/.next/
+apps/buildpipeline/tsconfig.tsbuildinfo
+apps/buildpipeline/package-lock.json
