@@ -1,11 +1,11 @@
 # Every harvested lead
 
-_Generated 2026-11-06T19:04:47.611Z — 658 leads._
+_Generated 2026-11-07T00:03:42.900Z — 682 leads._
 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-## med-spa-b2b — 658
+## med-spa-b2b — 682
 
 ### Sports Performance & Wellness Center — score 50
 
@@ -5270,3 +5270,195 @@ any of them — reach out by hand from the post link if a lead is worth it.
 - **Why they matched:** med-spa
 
 > med-spa · 1611 West 5th Street Austin TX 78703
+
+### The Landing Strip Wax And Sugaring Studio — score 70
+
+- **Handle:** [@null](https://landingstripstudio.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 1985 Howell Mill Road Northwest 30318
+
+### Bestie Vibe Braids — score 70
+
+- **Handle:** [@null](https://www.bestievibe.shop/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 20 10th Street Northwest Atlanta 30309
+
+### Indigo Wellness — score 50
+
+- **Handle:** [@null](https://indigowellnessatl.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 1963 Hosea L Williams Drive Southeast Atlanta GA 30317
+
+### Secret Essence & Beauty — score 50
+
+- **Handle:** [@null](https://essencesoap.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 103 Peachtree Street Southwest Atlanta GA 30303
+
+### Charm Lash — score 50
+
+- **Handle:** [@null](https://www.charm-lash.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 1099 Spring Street Northwest Atlanta GA 30309
+
+### Gloss Salon De Beaute — score 70
+
+- **Handle:** [@null](https://www.glossbuckhead.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 414 E Paces Ferry Atlanta GA 30305
+
+### Spa at The Starling — score 70
+
+- **Handle:** [@null](https://www.thestarling.com/spa-midtown-atlanta)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 188 14th Street Northeast Atlanta GA 30361
+
+### Aveda Arts & Sciences Institute — score 70
+
+- **Handle:** [@null](https://avedaarts.edu/locations/atlanta/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 1745 Peachtree Street Northeast Atlanta GA 30309
+
+### Jade Nails In Brookhaven — score 50
+
+- **Handle:** [@null](https://jadenailsinbrookhaven.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 3575 Durden Drive Northeast Atlanta GA 30319
+
+### Blanc Nail Bar — score 50
+
+- **Handle:** [@null](https://blancnailbaratlanta.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 945 Memorial Drive Southeast
+
+### Les Mains Nail Bar — score 50
+
+- **Handle:** [@null](https://www.lesmainsnailbar.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 931 Monroe Drive Northeast
+
+### Heyday — score 70
+
+- **Handle:** [@null](https://www.heydayskincare.com/pages/midtown)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 931 Monroe Drive Northeast
+
+### Melanated Beauty Spa — score 70
+
+- **Handle:** [@null](https://www.melanatedbeautyspa.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 249 Peters Street Southwest Atlanta 30313
+
+### Pamper Nail Salon — score 50
+
+- **Handle:** [@null](https://pamperatl.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 319 Walker Street Southwest Atlanta 30313
+
+### Ulta Beauty — score 50
+
+- **Handle:** [@null](https://www.ulta.com/stores/atlanta-ga-72)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 3495 Buckhead Loop Northeast Atlanta GA 30326
+
+### Ulta Beauty — score 50
+
+- **Handle:** [@null](https://www.ulta.com/stores/atlanta-ga-223)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 1801 Howell Mill Road Northwest Atlanta GA 30318
+
+### Beellagio Nail Bar — score 50
+
+- **Handle:** [@null](https://www.instagram.com/beellagionailbarmidtown/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 860 Peachtree Street Northeast
+
+### European Wax Center — score 50
+
+- **Handle:** [@null](https://locations.waxcenter.com/ga/atlanta/atlanta-midtown-1228.html)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 800 Peachtree Street Northeast
+
+### Meshella Hair Extension Botique — score 70
+
+- **Handle:** [@null](https://www.meshellaroseboutique.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 800 Peachtree Street Northeast
+
+### Aya Medical Spa — score 50
+
+- **Handle:** [@null](https://ayaskin.com/locations/colony-square)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 145 15th Street Northeast
+
+### Lush Nail Bar — score 50
+
+- **Handle:** [@null](https://www.lushnailbar-colonysquare.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 1197 Peachtree Street Northeast Atlanta GA 30361
+
+### Lotus Flower Om Apothecary — score 70
+
+- **Handle:** [@null](https://www.lotusflowerom.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 1197 Peachtree Street Northeast Atlanta GA 30361
+
+### Minerva Nails — score 50
+
+- **Handle:** [@null](https://minervanails@gmail.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 1170 Collier Road Northwest
+
+### Sugarcoat — score 50
+
+- **Handle:** [@null](https://www.sugarcoatbeauty.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 60 11th Street Northeast

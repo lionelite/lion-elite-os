@@ -1,6 +1,6 @@
 # New leads from the last harvest
 
-_Generated 2026-11-06T19:04:47.611Z — 25 leads._
+_Generated 2026-11-07T00:03:42.900Z — 24 leads._
 
 | Searches run | Searches failed | Posts read | Matched | Dropped (do-not-engage) |
 |---:|---:|---:|---:|---:|
@@ -41,206 +41,198 @@ business-scaling: Bluesky search failed for "trying to scale my business": HTTP 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-**Sources this run:** bluesky: unreachable (23 failed) · openstreetmap: 123 businesses in austin-tx
+**Sources this run:** bluesky: unreachable (23 failed) · openstreetmap: 155 businesses in atlanta-ga
 
-## med-spa-b2b — 25
+## med-spa-b2b — 24
 
-### Palm Beach Tan — score 50
+### The Landing Strip Wax And Sugaring Studio — score 70
 
-- **Handle:** [@null](https://palmbeachtan.com/locations/TX/Austin-West-Braker-Lane)
+- **Handle:** [@null](https://landingstripstudio.com/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** med-spa
 
-> med-spa
+> med-spa · 1985 Howell Mill Road Northwest 30318
 
-### Tegan's Nail Salon — score 50
+### Bestie Vibe Braids — score 70
 
-- **Handle:** [@null](https://tegans-nail-salon.edan.io/)
+- **Handle:** [@null](https://www.bestievibe.shop/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** med-spa
 
-> med-spa · 11900 Metric Boulevard Austin TX 78758
+> med-spa · 20 10th Street Northwest Atlanta 30309
 
-### Great Nails — score 50
+### Indigo Wellness — score 50
 
-- **Handle:** [@null](https://greatnailsaustin.net/)
+- **Handle:** [@null](https://indigowellnessatl.com/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** med-spa
 
-> med-spa · 1201 Barbara Jordan Boulevard Austin TX 78723
+> med-spa · 1963 Hosea L Williams Drive Southeast Atlanta GA 30317
 
-### Ava Spa & Nails — score 50
+### Secret Essence & Beauty — score 50
 
-- **Handle:** [@null](https://www.avaspaandnails.com/)
+- **Handle:** [@null](https://essencesoap.com/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** med-spa
 
-> med-spa · 1611 STE 115 West 5th Street Austin TX 78703
+> med-spa · 103 Peachtree Street Southwest Atlanta GA 30303
 
-### SEV Laser — score 50
+### Charm Lash — score 50
 
-- **Handle:** [@null](https://sevlaser.com/austin/)
+- **Handle:** [@null](https://www.charm-lash.com/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** med-spa
 
-> med-spa · 208 Colorado Street Austin TX 78701
+> med-spa · 1099 Spring Street Northwest Atlanta GA 30309
 
-### bez + Co. Salon — score 50
+### Gloss Salon De Beaute — score 70
 
-- **Handle:** [@null](https://www.bexandcosalon.com/barton-hills)
+- **Handle:** [@null](https://www.glossbuckhead.com/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** med-spa
 
-> med-spa · 1501 South Lamar Boulevard Austin TX 78704
+> med-spa · 414 E Paces Ferry Atlanta GA 30305
 
-### VS Nails and Spa — score 50
+### Spa at The Starling — score 70
 
-- **Handle:** [@null](https://vsnailspa.com/)
+- **Handle:** [@null](https://www.thestarling.com/spa-midtown-atlanta)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** med-spa
 
-> med-spa · 2501 West Parmer Lane Austin TX 78727
+> med-spa · 188 14th Street Northeast Atlanta GA 30361
+
+### Aveda Arts & Sciences Institute — score 70
+
+- **Handle:** [@null](https://avedaarts.edu/locations/atlanta/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 1745 Peachtree Street Northeast Atlanta GA 30309
+
+### Jade Nails In Brookhaven — score 50
+
+- **Handle:** [@null](https://jadenailsinbrookhaven.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 3575 Durden Drive Northeast Atlanta GA 30319
+
+### Blanc Nail Bar — score 50
+
+- **Handle:** [@null](https://blancnailbaratlanta.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 945 Memorial Drive Southeast
+
+### Les Mains Nail Bar — score 50
+
+- **Handle:** [@null](https://www.lesmainsnailbar.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 931 Monroe Drive Northeast
+
+### Heyday — score 70
+
+- **Handle:** [@null](https://www.heydayskincare.com/pages/midtown)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 931 Monroe Drive Northeast
+
+### Melanated Beauty Spa — score 70
+
+- **Handle:** [@null](https://www.melanatedbeautyspa.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 249 Peters Street Southwest Atlanta 30313
+
+### Pamper Nail Salon — score 50
+
+- **Handle:** [@null](https://pamperatl.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 319 Walker Street Southwest Atlanta 30313
 
 ### Ulta Beauty — score 50
 
-- **Handle:** [@null](https://www.ulta.com/stores/austin-tx-75)
+- **Handle:** [@null](https://www.ulta.com/stores/atlanta-ga-72)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** med-spa
 
-> med-spa · 9607 Research Boulevard Austin TX 78759
+> med-spa · 3495 Buckhead Loop Northeast Atlanta GA 30326
 
-### Embellish Nails & Boutique — score 70
+### Ulta Beauty — score 50
 
-- **Handle:** [@null](https://www.embellishnails.com/book)
+- **Handle:** [@null](https://www.ulta.com/stores/atlanta-ga-223)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** med-spa
 
-> med-spa · 3010 West Anderson Lane Austin TX 78757
+> med-spa · 1801 Howell Mill Road Northwest Atlanta GA 30318
 
-### L A Nails — score 50
+### Beellagio Nail Bar — score 50
 
-- **Handle:** [@null](https://l-a-nails-austin.edan.io/)
+- **Handle:** [@null](https://www.instagram.com/beellagionailbarmidtown/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** med-spa
 
-> med-spa · 8312 Burnet Road Austin TX 78757
-
-### T4 Nails & Spa — score 50
-
-- **Handle:** [@null](http://t4nails.com/)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
-
-> med-spa · 5728 Burnet Road Austin TX 78756
-
-### Palm Beach Tan — score 50
-
-- **Handle:** [@null](https://palmbeachtan.com/locations/TX/Austin-East-41st-Street/)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
-
-> med-spa · 1000 East 41st Street Austin TX 78751
-
-### Sugarcoat & Co Beauty Bar — score 50
-
-- **Handle:** [@null](https://sugarcoatandcobeautybar.com/)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
-
-> med-spa · 1000 East 41st Street Austin TX 78751
-
-### Amazing Lash Studio — score 50
-
-- **Handle:** [@null](https://www.amazinglashstudio.com/studios/tx/austin/hancock-center)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
-
-> med-spa · 1000 East 41st Street Austin TX 78751
-
-### All Star Eyebrow Threading — score 50
-
-- **Handle:** [@null](http://allstareyebrowthreading.com/)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
-
-> med-spa · 3909 North Interstate 35 Austin TX 78722
-
-### Envy Nails — score 50
-
-- **Handle:** [@null](https://envynailsaustin.com/)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
-
-> med-spa · 1801 East 51st Street Austin TX 78723
-
-### Organic Spa/Nails — score 70
-
-- **Handle:** [@null](https://organicnailsaustin.com/)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
-
-> med-spa · 1920 East Riverside Drive Austin TX 78741
-
-### Foot Relax — score 50
-
-- **Handle:** [@null](https://footrelaxaustintx.com/)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
-
-> med-spa · 10901 North Lamar Boulevard Austin TX 78753
-
-### Foot Heaven — score 50
-
-- **Handle:** [@null](https://footheavenspa.wixsite.com/78753)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
-
-> med-spa · 11712 North Lamar Boulevard Austin TX 78758
-
-### Haute European Salon and Beauty Products — score 50
-
-- **Handle:** [@null](https://www.haute-salon.com/)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
-
-> med-spa · 4533 Ruiz Street Austin TX 78723
+> med-spa · 860 Peachtree Street Northeast
 
 ### European Wax Center — score 50
 
-- **Handle:** [@null](https://locations.waxcenter.com/tx/austin/austin-aldrich-street-at-mueller-1025.html)
+- **Handle:** [@null](https://locations.waxcenter.com/ga/atlanta/atlanta-midtown-1228.html)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** med-spa
 
-> med-spa · 1900 Aldrich Street Austin TX 78723
+> med-spa · 800 Peachtree Street Northeast
 
-### Luna Lash — score 70
+### Meshella Hair Extension Botique — score 70
 
-- **Handle:** [@null](https://lunalashatx.com/)
+- **Handle:** [@null](https://www.meshellaroseboutique.com/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** med-spa
 
-> med-spa · 4524 Mattie Street Austin TX 78723
+> med-spa · 800 Peachtree Street Northeast
 
-### VIO Med Spa — score 50
+### Aya Medical Spa — score 50
 
-- **Handle:** [@null](https://www.viomedspa.com/)
+- **Handle:** [@null](https://ayaskin.com/locations/colony-square)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** med-spa
 
-> med-spa · 1900 Aldrich Street Austin TX 78723
+> med-spa · 145 15th Street Northeast
 
-### European Wax Center — score 50
+### Lush Nail Bar — score 50
 
-- **Handle:** [@null](https://locations.waxcenter.com/tx/austin/austin-south-lamar-0643.html)
+- **Handle:** [@null](https://www.lushnailbar-colonysquare.com/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** med-spa
 
-> med-spa · 1100 South Lamar Boulevard Austin TX 78704
+> med-spa · 1197 Peachtree Street Northeast Atlanta GA 30361
 
-### Hiatus Spa + Retreat — score 50
+### Lotus Flower Om Apothecary — score 70
 
-- **Handle:** [@null](https://www.hiatusspa.com/location/austin)
+- **Handle:** [@null](https://www.lotusflowerom.com/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** med-spa
 
-> med-spa · 1611 West 5th Street Austin TX 78703
+> med-spa · 1197 Peachtree Street Northeast Atlanta GA 30361
+
+### Minerva Nails — score 50
+
+- **Handle:** [@null](https://minervanails@gmail.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 1170 Collier Road Northwest
+
+### Sugarcoat — score 50
+
+- **Handle:** [@null](https://www.sugarcoatbeauty.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 60 11th Street Northeast
