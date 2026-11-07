@@ -1,6 +1,6 @@
 # New leads from the last harvest
 
-_Generated 2026-11-07T00:03:42.900Z — 24 leads._
+_Generated 2026-11-07T05:52:12.640Z — 25 leads._
 
 | Searches run | Searches failed | Posts read | Matched | Dropped (do-not-engage) |
 |---:|---:|---:|---:|---:|
@@ -41,198 +41,206 @@ business-scaling: Bluesky search failed for "trying to scale my business": HTTP 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-**Sources this run:** bluesky: unreachable (23 failed) · openstreetmap: 155 businesses in atlanta-ga
+**Sources this run:** bluesky: unreachable (23 failed) · openstreetmap: 46 businesses in las-vegas-nv
 
-## med-spa-b2b — 24
+## med-spa-b2b — 25
 
-### The Landing Strip Wax And Sugaring Studio — score 70
+### The Skin Laser Institute — score 70
 
-- **Handle:** [@null](https://landingstripstudio.com/)
+- **Handle:** [@null](https://www.skinandlaserlv.com/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** clinic
 
-> med-spa · 1985 Howell Mill Road Northwest 30318
+> clinic · 7905 suit 107 West Sahara Avenue 89117
 
-### Bestie Vibe Braids — score 70
+### Elite Endoscopy — score 50
 
-- **Handle:** [@null](https://www.bestievibe.shop/)
+- **Handle:** [@null](https://www.colondocs.com/location/elite-endoscopy/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** clinic
 
-> med-spa · 20 10th Street Northwest Atlanta 30309
+> clinic · 7150 Smoke Ranch Road Las Vegas NV 89128
 
-### Indigo Wellness — score 50
+### The Essential Element — score 70
 
-- **Handle:** [@null](https://indigowellnessatl.com/)
+- **Handle:** [@null](https://theessentialelement.com/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** clinic
 
-> med-spa · 1963 Hosea L Williams Drive Southeast Atlanta GA 30317
+> clinic · 1815 West Charleston Boulevard
 
-### Secret Essence & Beauty — score 50
+### Hale Family Practice — score 70
 
-- **Handle:** [@null](https://essencesoap.com/)
+- **Handle:** [@null](https://www.halefamilypractice.com/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** clinic
 
-> med-spa · 103 Peachtree Street Southwest Atlanta GA 30303
+> clinic · 1815 West Charleston Boulevard Las Vegas NV 89102
 
-### Charm Lash — score 50
+### Las Vegas Circumcision — score 50
 
-- **Handle:** [@null](https://www.charm-lash.com/)
+- **Handle:** [@null](https://lasvegascircumcision.com)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** clinic
 
-> med-spa · 1099 Spring Street Northwest Atlanta GA 30309
+> clinic · 400 South Rampart Boulevard Las Vegas NV 89145
 
-### Gloss Salon De Beaute — score 70
+### CareNow Urgent Care — score 50
 
-- **Handle:** [@null](https://www.glossbuckhead.com/)
+- **Handle:** [@null](https://www.carenow.com/locations/las-vegas/charleston-decatur)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** clinic
 
-> med-spa · 414 E Paces Ferry Atlanta GA 30305
+> clinic · 4575 West Charleston Boulevard Las Vegas NV 89102
 
-### Spa at The Starling — score 70
+### Kalologie | ARIA Resort | IV Therapy & More — score 50
 
-- **Handle:** [@null](https://www.thestarling.com/spa-midtown-atlanta)
+- **Handle:** [@null](https://kalologie.com/our-locations/kalologie-at-aria)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** clinic
 
-> med-spa · 188 14th Street Northeast Atlanta GA 30361
+> clinic · 3730 South Las Vegas Boulevard Las Vegas NV 89158
 
-### Aveda Arts & Sciences Institute — score 70
+### Kalologie | Mandalay Bay | IV Therapy & More — score 50
 
-- **Handle:** [@null](https://avedaarts.edu/locations/atlanta/)
+- **Handle:** [@null](https://kalologie.com/our-locations/kalologie-at-mandalay-bay)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** clinic
 
-> med-spa · 1745 Peachtree Street Northeast Atlanta GA 30309
+> clinic · 3950 South Las Vegas Boulevard Las Vegas NV 89119
 
-### Jade Nails In Brookhaven — score 50
+### Kalologie | The Bellagio | IV Therapy & More — score 50
 
-- **Handle:** [@null](https://jadenailsinbrookhaven.com)
+- **Handle:** [@null](https://kalologie.com/our-locations/kalologie-at-bellagio)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** clinic
 
-> med-spa · 3575 Durden Drive Northeast Atlanta GA 30319
+> clinic · 3600 South Las Vegas Boulevard Las Vegas NV 89109
 
-### Blanc Nail Bar — score 50
+### Las Vegas Spine & Pain Center — score 50
 
-- **Handle:** [@null](https://blancnailbaratlanta.com/)
+- **Handle:** [@null](https://lvpainclinic.com/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** clinic
 
-> med-spa · 945 Memorial Drive Southeast
+> clinic · 8367 West Flamingo Road 89147
 
-### Les Mains Nail Bar — score 50
+### Farabi Wellness Center — score 70
 
-- **Handle:** [@null](https://www.lesmainsnailbar.com/)
+- **Handle:** [@null](https://hpvlv.com)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** clinic
 
-> med-spa · 931 Monroe Drive Northeast
+> clinic · 701 Shadow Lane 89106
 
-### Heyday — score 70
+### Addiction Rehab Las Vegas — score 50
 
-- **Handle:** [@null](https://www.heydayskincare.com/pages/midtown)
+- **Handle:** [@null](http://addictionrehablasvegas.com/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** clinic
 
-> med-spa · 931 Monroe Drive Northeast
+> clinic · 3960 Howard Hughes Parkway Las Vegas NV 89169
 
-### Melanated Beauty Spa — score 70
+### Elite Medical Center — score 50
 
-- **Handle:** [@null](https://www.melanatedbeautyspa.com/)
+- **Handle:** [@null](https://elitelv.com)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** clinic
 
-> med-spa · 249 Peters Street Southwest Atlanta 30313
+> clinic · 150 East Harmon Avenue Las Vegas NV 89109
 
-### Pamper Nail Salon — score 50
+### Lou Ruvo Center for Brain Health — score 50
 
-- **Handle:** [@null](https://pamperatl.com/)
+- **Handle:** [@null](https://my.clevelandclinic.org/departments/neurological/depts/brain-health)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** clinic
 
-> med-spa · 319 Walker Street Southwest Atlanta 30313
+> clinic · 888 West Bonneville Avenue Las Vegas NV 89106
 
-### Ulta Beauty — score 50
+### AB Clinical Trials — score 50
 
-- **Handle:** [@null](https://www.ulta.com/stores/atlanta-ga-72)
+- **Handle:** [@null](https://www.abclinicaltrials.com/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** clinic
 
-> med-spa · 3495 Buckhead Loop Northeast Atlanta GA 30326
+> clinic · 2110 East Flamingo Road Las Vegas NV 89119
 
-### Ulta Beauty — score 50
+### Sunrise Pediatrics — score 50
 
-- **Handle:** [@null](https://www.ulta.com/stores/atlanta-ga-223)
+- **Handle:** [@null](https://www.sunrisepediatricslasvegas.com/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** clinic
 
-> med-spa · 1801 Howell Mill Road Northwest Atlanta GA 30318
+> clinic · 3061 South Maryland Parkway Las Vegas NV 89109
 
-### Beellagio Nail Bar — score 50
+### UMC Quick Care — score 50
 
-- **Handle:** [@null](https://www.instagram.com/beellagionailbarmidtown/)
+- **Handle:** [@null](https://www.umcsn.com/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** clinic
 
-> med-spa · 860 Peachtree Street Northeast
+> clinic · 9320 West Sahara Avenue 89117
 
-### European Wax Center — score 50
+### Nevada Eye Physicians — score 50
 
-- **Handle:** [@null](https://locations.waxcenter.com/ga/atlanta/atlanta-midtown-1228.html)
+- **Handle:** [@null](https://www.nevadaeyephysicians.com/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** clinic
 
-> med-spa · 800 Peachtree Street Northeast
+> clinic · 2020 Wellness Way Las Vegas NV 89106
 
-### Meshella Hair Extension Botique — score 70
+### Medical District Surgery Center — score 50
 
-- **Handle:** [@null](https://www.meshellaroseboutique.com/)
+- **Handle:** [@null](http://www.medicaldistrictsurgery.com/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** clinic
 
-> med-spa · 800 Peachtree Street Northeast
+> clinic · 2020 Goldring Avenue Las Vegas 89106
 
-### Aya Medical Spa — score 50
+### Las Vegas Surgical Center — score 50
 
-- **Handle:** [@null](https://ayaskin.com/locations/colony-square)
+- **Handle:** [@null](https://lvdaysurgery.com/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** clinic
 
-> med-spa · 145 15th Street Northeast
+> clinic · 870 South Rancho Drive Las Vegas 89106
 
-### Lush Nail Bar — score 50
+### Las Vegas Skin & Cancer Clinics — score 50
 
-- **Handle:** [@null](https://www.lushnailbar-colonysquare.com/)
+- **Handle:** [@null](https://www.lvscc.com/location/south-rancho/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** clinic
 
-> med-spa · 1197 Peachtree Street Northeast Atlanta GA 30361
+> clinic · 630 South Rancho Drive Las Vegas NV 89106
 
-### Lotus Flower Om Apothecary — score 70
+### A&M Chiropractic Center — score 50
 
-- **Handle:** [@null](https://www.lotusflowerom.com/)
+- **Handle:** [@null](https://amchiropracticlv.com/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** clinic
 
-> med-spa · 1197 Peachtree Street Northeast Atlanta GA 30361
+> clinic · 228 South Jones Boulevard Las Vegas NV 89107-2657
 
-### Minerva Nails — score 50
+### Las Vegas Paiute Tribe Health and Human Services — score 50
 
-- **Handle:** [@null](https://minervanails@gmail.com)
+- **Handle:** [@null](https://www.lvpaiutetribe.com/hhs)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** clinic
 
-> med-spa · 1170 Collier Road Northwest
+> clinic · 1257 Paiute Circle Las Vegas NV 89106
 
-### Sugarcoat — score 50
+### Sahara Surgery Center — score 50
 
-- **Handle:** [@null](https://www.sugarcoatbeauty.com)
+- **Handle:** [@null](https://saharasurgery.com/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** clinic
 
-> med-spa · 60 11th Street Northeast
+> clinic · 2401 Paseo del Prado Las Vegas 89102
+
+### Jurani Clinic — score 50
+
+- **Handle:** [@null](http://www.juraniclinic.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 633 North Decatur Boulevard Las Vegas 89107
