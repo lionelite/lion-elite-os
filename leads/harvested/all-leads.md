@@ -1,11 +1,11 @@
 # Every harvested lead
 
-_Generated 2026-11-07T18:35:14.402Z — 720 leads._
+_Generated 2026-11-07T23:32:16.811Z — 729 leads._
 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-## med-spa-b2b — 720
+## med-spa-b2b — 729
 
 ### Sports Performance & Wellness Center — score 50
 
@@ -5766,3 +5766,75 @@ any of them — reach out by hand from the post link if a lead is worth it.
 - **Why they matched:** clinic
 
 > clinic · 634 Summit Avenue Jersey City NJ 07306
+
+### Fort Lauderdale Family Chiropractic — score 50
+
+- **Handle:** [@null](https://www.ftlauderdalefamilychiropractic.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 3020 East Commercial Boulevard Fort Lauderdale FL 33308
+
+### DoctorDocs Medical Transcription Services — score 50
+
+- **Handle:** [@null](https://doctordocs.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 100 Southeast 13th Street Pompano Beach FL 33060
+
+### Foot Heaven Spa — score 50
+
+- **Handle:** [@null](http://footheavenftl.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 4820 North Federal Highway Fort Lauderdale FL 33308
+
+### ARC Plastic Surgery — score 50
+
+- **Handle:** [@null](https://www.arcplasticsurgeons.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 6550 North Federal Highway Fort Lauderdale FL 33308
+
+### New Life Chiropractic Center — score 70
+
+- **Handle:** [@null](https://www.topdocfl.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 820 South State Road 7 Plantation FL 33317
+
+### Healing Herbs and Acupuncture — score 70
+
+- **Handle:** [@null](https://healingherbs-108484.square.site)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 3402 Griffin Road Fort Lauderdale FL 33312-5564
+
+### The Joint Chiropractic — score 70
+
+- **Handle:** [@null](https://www.thejoint.com/florida/fort-lauderdale/fort-lauderdale-27016)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 1586 North Federal Highway 33304
+
+### Douglas Chiropractic — score 70
+
+- **Handle:** [@null](https://douglaschiropractic.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 4140 Northwest 12th Street Lauderhill FL
+
+### Nancy J. Cotterman Center — score 50
+
+- **Handle:** [@null](https://www.broward.org/nancyjcottermancenter)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 2995 North Dixie Highway Oakland Park FL 33334

@@ -1,6 +1,6 @@
 # New leads from the last harvest
 
-_Generated 2026-11-07T18:35:14.401Z — 13 leads._
+_Generated 2026-11-07T23:32:16.811Z — 9 leads._
 
 | Searches run | Searches failed | Posts read | Matched | Dropped (do-not-engage) |
 |---:|---:|---:|---:|---:|
@@ -41,110 +41,78 @@ business-scaling: Bluesky search failed for "trying to scale my business": HTTP 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-**Sources this run:** bluesky: unreachable (23 failed) · openstreetmap: 39 businesses in northern-nj
+**Sources this run:** bluesky: unreachable (23 failed) · openstreetmap: 38 businesses in fort-lauderdale-fl
 
-## med-spa-b2b — 13
+## med-spa-b2b — 9
 
-### Prompt-MD Urgent Care Center Of Hoboken — score 50
+### Fort Lauderdale Family Chiropractic — score 50
 
-- **Handle:** [@null](https://promptmd.com/)
+- **Handle:** [@null](https://www.ftlauderdalefamilychiropractic.com/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** clinic
 
-> clinic · 309 1st Street Hoboken NJ 07030
+> clinic · 3020 East Commercial Boulevard Fort Lauderdale FL 33308
 
-### CityMD — score 50
+### DoctorDocs Medical Transcription Services — score 50
 
-- **Handle:** [@null](https://www.citymd.com/urgent-care-locations/ny/new-york/west-village/069)
+- **Handle:** [@null](https://doctordocs.com/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** clinic
 
-> clinic · 331 6th Avenue 10014
+> clinic · 100 Southeast 13th Street Pompano Beach FL 33060
 
-### Hoboken Integrated Healthcare — score 50
+### Foot Heaven Spa — score 50
 
-- **Handle:** [@null](https://www.hobokenintegratedhealthcare.com/)
+- **Handle:** [@null](http://footheavenftl.com)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** clinic
 
-> clinic · 90 Hudson Street Hoboken NJ 07030
+> clinic · 4820 North Federal Highway Fort Lauderdale FL 33308
 
-### Hackensack Meridian Health — score 50
+### ARC Plastic Surgery — score 50
 
-- **Handle:** [@null](https://www.hackensackmeridianhealth.org/)
+- **Handle:** [@null](https://www.arcplasticsurgeons.com/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** clinic
 
-> clinic · 108 Washington Street Hoboken NJ 07030
+> clinic · 6550 North Federal Highway Fort Lauderdale FL 33308
 
-### Optum — score 50
+### New Life Chiropractic Center — score 70
 
-- **Handle:** [@null](https://east.optum.com/locations/pediatrics-hoboken-1111/)
+- **Handle:** [@null](https://www.topdocfl.com/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** clinic
 
-> clinic · 1111 Hudson Street Hoboken NJ 07030
+> clinic · 820 South State Road 7 Plantation FL 33317
 
-### IV Elements — score 70
+### Healing Herbs and Acupuncture — score 70
 
-- **Handle:** [@null](https://ivelements.net)
+- **Handle:** [@null](https://healingherbs-108484.square.site)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** clinic
 
-> clinic · 36 Newark Street Hoboken NJ 07030
+> clinic · 3402 Griffin Road Fort Lauderdale FL 33312-5564
 
-### Occupational & Industrial Orthopedic Center — score 50
+### The Joint Chiropractic — score 70
 
-- **Handle:** [@null](https://nyulangone.org/care-services/nyu-langone-occupational-industrial-orthopedic-center)
+- **Handle:** [@null](https://www.thejoint.com/florida/fort-lauderdale/fort-lauderdale-27016)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** clinic
 
-> clinic · 63 Downing Street 10014
+> clinic · 1586 North Federal Highway 33304
 
-### Oasis Orthopedic & Spine — score 70
+### Douglas Chiropractic — score 70
 
-- **Handle:** [@null](https://oasismed.com/west-new-york/)
+- **Handle:** [@null](https://douglaschiropractic.com/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** clinic
 
-> clinic · 6000 John F. Kennedy Boulevard West New York NJ 07093
+> clinic · 4140 Northwest 12th Street Lauderhill FL
 
-### Oasis Orthopedic & Spine - Jersey City — score 70
+### Nancy J. Cotterman Center — score 50
 
-- **Handle:** [@null](https://oasismed.com/jersey-city/)
+- **Handle:** [@null](https://www.broward.org/nancyjcottermancenter)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** clinic
 
-> clinic · 574 Summit Avenue Jersey City NJ 07306
-
-### Irene Hong — score 70
-
-- **Handle:** [@null](https://www.facebook.com/IreneHLAc/)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
-
-> clinic · 150 Flanagan Way Secaucus NJ 07094
-
-### JPS Health — score 70
-
-- **Handle:** [@null](https://www.drjosephsalamone.com/jpshealth)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
-
-> clinic · 3200 John F. Kennedy Boulevard Jersey City NJ 07306
-
-### Maiden Lane Medical — score 50
-
-- **Handle:** [@null](https://maidenlanemedical.com/location-ny-new-york-soho-10012/)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
-
-> clinic
-
-### Alpine Medical Group — score 50
-
-- **Handle:** [@null](https://alpine-medical-group.edan.io)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
-
-> clinic · 634 Summit Avenue Jersey City NJ 07306
+> clinic · 2995 North Dixie Highway Oakland Park FL 33334
