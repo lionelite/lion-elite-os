@@ -1,11 +1,11 @@
 # Every harvested lead
 
-_Generated 2026-11-07T12:40:05.260Z — 707 leads._
+_Generated 2026-11-07T18:35:14.402Z — 720 leads._
 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-## med-spa-b2b — 707
+## med-spa-b2b — 720
 
 ### Sports Performance & Wellness Center — score 50
 
@@ -5662,3 +5662,107 @@ any of them — reach out by hand from the post link if a lead is worth it.
 - **Why they matched:** clinic
 
 > clinic · 633 North Decatur Boulevard Las Vegas 89107
+
+### Prompt-MD Urgent Care Center Of Hoboken — score 50
+
+- **Handle:** [@null](https://promptmd.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 309 1st Street Hoboken NJ 07030
+
+### CityMD — score 50
+
+- **Handle:** [@null](https://www.citymd.com/urgent-care-locations/ny/new-york/west-village/069)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 331 6th Avenue 10014
+
+### Hoboken Integrated Healthcare — score 50
+
+- **Handle:** [@null](https://www.hobokenintegratedhealthcare.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 90 Hudson Street Hoboken NJ 07030
+
+### Hackensack Meridian Health — score 50
+
+- **Handle:** [@null](https://www.hackensackmeridianhealth.org/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 108 Washington Street Hoboken NJ 07030
+
+### Optum — score 50
+
+- **Handle:** [@null](https://east.optum.com/locations/pediatrics-hoboken-1111/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 1111 Hudson Street Hoboken NJ 07030
+
+### IV Elements — score 70
+
+- **Handle:** [@null](https://ivelements.net)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 36 Newark Street Hoboken NJ 07030
+
+### Occupational & Industrial Orthopedic Center — score 50
+
+- **Handle:** [@null](https://nyulangone.org/care-services/nyu-langone-occupational-industrial-orthopedic-center)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 63 Downing Street 10014
+
+### Oasis Orthopedic & Spine — score 70
+
+- **Handle:** [@null](https://oasismed.com/west-new-york/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 6000 John F. Kennedy Boulevard West New York NJ 07093
+
+### Oasis Orthopedic & Spine - Jersey City — score 70
+
+- **Handle:** [@null](https://oasismed.com/jersey-city/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 574 Summit Avenue Jersey City NJ 07306
+
+### Irene Hong — score 70
+
+- **Handle:** [@null](https://www.facebook.com/IreneHLAc/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 150 Flanagan Way Secaucus NJ 07094
+
+### JPS Health — score 70
+
+- **Handle:** [@null](https://www.drjosephsalamone.com/jpshealth)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 3200 John F. Kennedy Boulevard Jersey City NJ 07306
+
+### Maiden Lane Medical — score 50
+
+- **Handle:** [@null](https://maidenlanemedical.com/location-ny-new-york-soho-10012/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic
+
+### Alpine Medical Group — score 50
+
+- **Handle:** [@null](https://alpine-medical-group.edan.io)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 634 Summit Avenue Jersey City NJ 07306
