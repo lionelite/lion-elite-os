@@ -1,11 +1,11 @@
 # Every harvested lead
 
-_Generated 2026-11-07T23:32:16.811Z — 729 leads._
+_Generated 2026-11-08T04:56:32.751Z — 735 leads._
 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-## med-spa-b2b — 729
+## med-spa-b2b — 735
 
 ### Sports Performance & Wellness Center — score 50
 
@@ -5838,3 +5838,51 @@ any of them — reach out by hand from the post link if a lead is worth it.
 - **Why they matched:** clinic
 
 > clinic · 2995 North Dixie Highway Oakland Park FL 33334
+
+### Laser by Nicole — score 50
+
+- **Handle:** [@null](https://laserbynicole.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 660 9th Street North Naples FL 34102
+
+### Bella Facial Lounge — score 50
+
+- **Handle:** [@null](http://bellafaciallounge.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 660 9th Street North Naples FL 34102
+
+### European Medical Skincare - Theo Esthetique — score 50
+
+- **Handle:** [@null](https://theomedicalskincare.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 660 9th Street North Naples FL 34102
+
+### Aroma360 — score 50
+
+- **Handle:** [@null](https://aroma360.com/pages/retail-appt)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 300 5th Avenue South Naples FL 34102
+
+### Advanced Hypnotherapy of Naples — score 50
+
+- **Handle:** [@null](https://advancedhypnonaples.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 3960 Radio Rd, #207 Naples FL 34104
+
+### Harmony Health Clinic — score 70
+
+- **Handle:** [@null](https://www.flharmony.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 538 10th Street North Naples FL 34102

@@ -1,6 +1,6 @@
 # New leads from the last harvest
 
-_Generated 2026-11-07T23:32:16.811Z — 9 leads._
+_Generated 2026-11-08T04:56:32.750Z — 6 leads._
 
 | Searches run | Searches failed | Posts read | Matched | Dropped (do-not-engage) |
 |---:|---:|---:|---:|---:|
@@ -41,78 +41,54 @@ business-scaling: Bluesky search failed for "trying to scale my business": HTTP 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-**Sources this run:** bluesky: unreachable (23 failed) · openstreetmap: 38 businesses in fort-lauderdale-fl
+**Sources this run:** bluesky: unreachable (23 failed) · openstreetmap: 82 businesses in naples-fl
 
-## med-spa-b2b — 9
+## med-spa-b2b — 6
 
-### Fort Lauderdale Family Chiropractic — score 50
+### Laser by Nicole — score 50
 
-- **Handle:** [@null](https://www.ftlauderdalefamilychiropractic.com/)
+- **Handle:** [@null](https://laserbynicole.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 660 9th Street North Naples FL 34102
+
+### Bella Facial Lounge — score 50
+
+- **Handle:** [@null](http://bellafaciallounge.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 660 9th Street North Naples FL 34102
+
+### European Medical Skincare - Theo Esthetique — score 50
+
+- **Handle:** [@null](https://theomedicalskincare.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 660 9th Street North Naples FL 34102
+
+### Aroma360 — score 50
+
+- **Handle:** [@null](https://aroma360.com/pages/retail-appt)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** clinic
 
-> clinic · 3020 East Commercial Boulevard Fort Lauderdale FL 33308
+> clinic · 300 5th Avenue South Naples FL 34102
 
-### DoctorDocs Medical Transcription Services — score 50
+### Advanced Hypnotherapy of Naples — score 50
 
-- **Handle:** [@null](https://doctordocs.com/)
+- **Handle:** [@null](https://advancedhypnonaples.com)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** clinic
 
-> clinic · 100 Southeast 13th Street Pompano Beach FL 33060
+> clinic · 3960 Radio Rd, #207 Naples FL 34104
 
-### Foot Heaven Spa — score 50
+### Harmony Health Clinic — score 70
 
-- **Handle:** [@null](http://footheavenftl.com)
+- **Handle:** [@null](https://www.flharmony.com/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** clinic
 
-> clinic · 4820 North Federal Highway Fort Lauderdale FL 33308
-
-### ARC Plastic Surgery — score 50
-
-- **Handle:** [@null](https://www.arcplasticsurgeons.com/)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
-
-> clinic · 6550 North Federal Highway Fort Lauderdale FL 33308
-
-### New Life Chiropractic Center — score 70
-
-- **Handle:** [@null](https://www.topdocfl.com/)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
-
-> clinic · 820 South State Road 7 Plantation FL 33317
-
-### Healing Herbs and Acupuncture — score 70
-
-- **Handle:** [@null](https://healingherbs-108484.square.site)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
-
-> clinic · 3402 Griffin Road Fort Lauderdale FL 33312-5564
-
-### The Joint Chiropractic — score 70
-
-- **Handle:** [@null](https://www.thejoint.com/florida/fort-lauderdale/fort-lauderdale-27016)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
-
-> clinic · 1586 North Federal Highway 33304
-
-### Douglas Chiropractic — score 70
-
-- **Handle:** [@null](https://douglaschiropractic.com/)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
-
-> clinic · 4140 Northwest 12th Street Lauderhill FL
-
-### Nancy J. Cotterman Center — score 50
-
-- **Handle:** [@null](https://www.broward.org/nancyjcottermancenter)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
-
-> clinic · 2995 North Dixie Highway Oakland Park FL 33334
+> clinic · 538 10th Street North Naples FL 34102
