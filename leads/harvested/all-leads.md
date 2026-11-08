@@ -1,11 +1,11 @@
 # Every harvested lead
 
-_Generated 2026-11-08T18:43:55.129Z — 752 leads._
+_Generated 2026-11-08T23:29:20.913Z — 753 leads._
 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-## med-spa-b2b — 752
+## med-spa-b2b — 753
 
 ### Sports Performance & Wellness Center — score 50
 
@@ -6022,3 +6022,11 @@ any of them — reach out by hand from the post link if a lead is worth it.
 - **Why they matched:** physiotherapy
 
 > physiotherapy · 5969 Cattleridge Boulevard, Suite 100 Sarasota FL 34232
+
+### Vital Pilates — score 70
+
+- **Handle:** [@null](https://www.vitalpilatesstudio.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym
