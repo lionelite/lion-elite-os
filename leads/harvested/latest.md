@@ -1,6 +1,6 @@
 # New leads from the last harvest
 
-_Generated 2026-11-09T05:05:52.749Z — 1 lead._
+_Generated 2026-11-09T15:33:31.543Z — 9 leads._
 
 | Searches run | Searches failed | Posts read | Matched | Dropped (do-not-engage) |
 |---:|---:|---:|---:|---:|
@@ -41,14 +41,78 @@ business-scaling: Bluesky search failed for "trying to scale my business": HTTP 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-**Sources this run:** bluesky: unreachable (23 failed) · openstreetmap: 76 businesses in phoenix-az
+**Sources this run:** bluesky: unreachable (23 failed) · openstreetmap: 9 businesses in nashville-tn
 
-## med-spa-b2b — 1
+## med-spa-b2b — 9
 
-### GlamWright Medical Boutique — score 50
+### East Nashville Family Medicine — score 70
 
-- **Handle:** [@null](https://www.glamwright.com/)
+- **Handle:** [@null](https://www.eastnashvillefamilymed.com/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** clinic
 
-> med-spa · 707 East Palo Verde Drive Phoenix AZ 85014
+> clinic · 801 Woodland Street Nashville TN 37206
+
+### Nashville Weight Loss Solutions — score 50
+
+- **Handle:** [@null](https://www.nashvilleweightloss.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 2200 Murphy Avenue Nashville TN 37203
+
+### Robbins Plastic Surgery — score 50
+
+- **Handle:** [@null](https://www.robbinsplasticsurgery.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 2201 Murphy Avenue Nashville 37203
+
+### NSI — score 70
+
+- **Handle:** [@null](https://www.tolmanmedical.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 118 30th Avenue North Nashville TN 37203
+
+### Siragusa Vein and Laser — score 70
+
+- **Handle:** [@null](https://nashvilleveincenter.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 28 White Bridge Road Nashville TN 37205
+
+### Baptist Ambulatory Surgery Center — score 50
+
+- **Handle:** [@null](https://baptistasc.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 312 21st Avenue North Nashville 37236
+
+### O.liv Body Bar — score 50
+
+- **Handle:** [@null](https://olivbodybar.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** massage
+
+> massage · 1032 West Eastland Avenue 37206
+
+### Dube Orthopedics & Physical Threapy — score 50
+
+- **Handle:** [@null](https://dubeortho.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** physiotherapy
+
+> physiotherapy · 2041 Overhill Drive Nashville TN
+
+### Vanderbilt Rehabilitation Therapy 100 Oaks — score 50
+
+- **Handle:** [@null](null)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** physiotherapy
+
+> physiotherapy · 719 Thompson Lane 37204
