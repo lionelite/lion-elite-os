@@ -68,7 +68,10 @@ async function main() {
   let enqueued = 0;
   for (const prospect of selected) {
     const context = buildEmailJobContext(prospect);
-    await addJob(QUEUE_NAMES.email, 'generate-outreach-email', context, {
+    // addJob() takes the queue KEY ('email'), not its name ('email-generation').
+    // Passing QUEUE_NAMES.email threw "Unknown queue: email-generation" on every
+    // --confirm run, so this script had never enqueued anything.
+    await addJob('email', 'generate-outreach-email', context, {
       jobId: `reachout:${prospect.prospectId}`
     });
     enqueued += 1;

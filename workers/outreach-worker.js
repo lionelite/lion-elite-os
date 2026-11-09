@@ -4,7 +4,7 @@ const http = require('http');
 const { Worker } = require('bullmq');
 const { createRedisConnection, getRedis, ensureConnected, healthcheck, withLock, closeRedis } = require('../lib/redis');
 const { QUEUE_NAMES, addJob, moveToDeadLetter, queueMetrics } = require('../lib/job-queues');
-const { buildEmail: generateEmailDraft, scoreEmail: scoreEmailDraft } = require('../lib/email-generation');
+const { draftForContext } = require('../lib/outreach/draft-router');
 const { validateProspect, authorizeOutreach } = require('../lib/outreach-validation');
 const { sendEmail } = require('../lib/email-delivery');
 const { isHalted } = require('../lib/kill-switch');
@@ -50,8 +50,10 @@ function startWorker(queueName, processor) {
 
 startWorker(QUEUE_NAMES.email, async job => {
   const context = job.data || {};
-  const draft = generateEmailDraft(context);
-  const quality = scoreEmailDraft(draft, context);
+  // Route to the campaign's own builder: clinics get the research-supply
+  // sequence, not the Beauty partnership template (lib/outreach/draft-router.js).
+  const { draft, quality } = draftForContext(context);
+  if (draft.approved === false && !quality.blockers.length) quality.blockers.push('draft_not_approved');
   const minimumScore = Number(context.minimumPersonalizationScore || process.env.MINIMUM_PERSONALIZATION_SCORE || 56.25);
   if (quality.blockers.length || quality.score < minimumScore) {
     const error = new Error('Generated email did not meet quality requirements.');
