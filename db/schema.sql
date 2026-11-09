@@ -1373,3 +1373,22 @@ CREATE TABLE IF NOT EXISTS gtm_funnel_leads (
   UNIQUE (funnel_id, session_id)
 );
 CREATE INDEX IF NOT EXISTS gtm_funnel_leads_prospect_idx ON gtm_funnel_leads(prospect_id);
+
+
+-- Address/domain opt-out list for B2B outreach. Per-prospect `status =
+-- 'suppressed'` is not enough: the same inbox can sit on several prospect rows
+-- (chain locations, a clinic rediscovered under a new name), and an opt-out must
+-- bind every one of them, including records imported after the opt-out.
+-- Checked by lib/outreach/clinic-qualification.js before every send.
+CREATE TABLE IF NOT EXISTS outreach_suppressions (
+  suppression_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  address TEXT,
+  domain TEXT,
+  reason TEXT NOT NULL CHECK (reason IN ('opt_out','bounce','complaint','prior_contact','manual')),
+  source TEXT NOT NULL DEFAULT 'manual',
+  note TEXT NOT NULL DEFAULT '',
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  CHECK (address IS NOT NULL OR domain IS NOT NULL)
+);
+CREATE UNIQUE INDEX IF NOT EXISTS outreach_suppressions_address_idx ON outreach_suppressions(lower(address)) WHERE address IS NOT NULL;
+CREATE UNIQUE INDEX IF NOT EXISTS outreach_suppressions_domain_idx ON outreach_suppressions(lower(domain)) WHERE domain IS NOT NULL;

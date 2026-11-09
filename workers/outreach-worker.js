@@ -4,7 +4,8 @@ const http = require('http');
 const { Worker } = require('bullmq');
 const { createRedisConnection, getRedis, ensureConnected, healthcheck, withLock, closeRedis } = require('../lib/redis');
 const { QUEUE_NAMES, addJob, moveToDeadLetter, queueMetrics } = require('../lib/job-queues');
-const { draftForContext } = require('../lib/outreach/draft-router');
+const { draftForContext, isClinicSupply } = require('../lib/outreach/draft-router');
+const { qualifyClinicProspect } = require('../lib/outreach/clinic-qualification');
 const { validateProspect, authorizeOutreach } = require('../lib/outreach-validation');
 const { sendEmail } = require('../lib/email-delivery');
 const { isHalted } = require('../lib/kill-switch');
@@ -48,8 +49,48 @@ function startWorker(queueName, processor) {
   return worker;
 }
 
+/**
+ * Clinic prospects are qualified against live database facts (opt-out list,
+ * prior contact, other records at the same organisation) immediately before the
+ * draft goes to validation, so a status can never be stale by the time the
+ * 16 checks read it. A prospect that does not qualify is recorded with the
+ * reasons and the job completes without retrying: retrying cannot change the
+ * evidence, and a dead-lettered job would read as a fault when it is a decision.
+ */
+async function qualifyAndForward(job, context) {
+  const prospect = await store.get(context.prospect.prospectId);
+  if (!prospect) return { qualified: false, blockers: ['prospect not found'] };
+  const result = qualifyClinicProspect(prospect, await store.contactFacts(prospect));
+  await store.update(prospect.prospectId, {
+    validation: {
+      ...(prospect.validation || {}),
+      qualification: {
+        qualified: result.qualified,
+        tier: result.tier,
+        evaluatedAt: new Date().toISOString(),
+        checks: result.checks,
+        messageVersion: result.draft ? result.draft.messageVersion : null
+      }
+    }
+  }, 'clinic-qualification');
+  if (!result.qualified) {
+    log('info', 'qualification.blocked', { prospectId: prospect.prospectId, blockers: result.blockers });
+    return { qualified: false, blockers: result.blockers };
+  }
+  await addJob('validation', 'validate-outreach', {
+    ...context,
+    campaignId: result.campaignId,
+    prospect: result.view,
+    policy: result.policy,
+    draft: result.draft,
+    quality: result.draft.quality
+  }, { jobId: `validate:${prospect.prospectId}:step1` });
+  return { qualified: true, messageVersion: result.draft.messageVersion };
+}
+
 startWorker(QUEUE_NAMES.email, async job => {
   const context = job.data || {};
+  if (isClinicSupply(context) && context.prospect?.prospectId) return qualifyAndForward(job, context);
   // Route to the campaign's own builder: clinics get the research-supply
   // sequence, not the Beauty partnership template (lib/outreach/draft-router.js).
   const { draft, quality } = draftForContext(context);
@@ -159,11 +200,18 @@ startWorker(QUEUE_NAMES.dispatch, async job => {
   }
 });
 
+function deliveryConfigured() {
+  return Boolean(process.env.RESEND_API_KEY && process.env.OUTREACH_FROM_EMAIL && process.env.OUTREACH_POSTAL_ADDRESS
+    && String(process.env.OUTREACH_SEND_ENABLED).toLowerCase() === 'true');
+}
+
 async function heartbeat() {
   const redis = await ensureConnected(getRedis());
   const metrics = await queueMetrics();
   const waiting = Object.values(metrics).reduce((sum, queue) => sum + Number(queue.waiting || 0), 0);
-  const payload = { at: new Date().toISOString(), workers: workers.length, concurrency, waiting, ...runtimeMetrics() };
+  // deliveryConfigured is read by scripts/clinic-outreach-daily.js, so the cron
+  // can tell whether sending is set up without holding the Resend key itself.
+  const payload = { at: new Date().toISOString(), workers: workers.length, concurrency, waiting, deliveryConfigured: deliveryConfigured(), ...runtimeMetrics() };
   await redis.set(`heartbeat:${process.env.RENDER_SERVICE_NAME || 'lion-elite-outreach-worker'}`, JSON.stringify(payload), 'EX', heartbeatSeconds * 3);
   if (waiting >= queueLagWarning) log('warn', 'queue.lag_high', { waiting, threshold: queueLagWarning });
 }
@@ -180,14 +228,14 @@ const server = http.createServer(async (req, res) => {
   try {
     const redis = await healthcheck();
     const queues = req.url === '/metrics' ? await queueMetrics() : undefined;
-    const deliveryConfigured = Boolean(process.env.RESEND_API_KEY && process.env.OUTREACH_FROM_EMAIL && String(process.env.OUTREACH_SEND_ENABLED).toLowerCase() === 'true');
+    const delivery = deliveryConfigured();
     // A tripped kill switch is intentional, so it does not fail /ready —
     // but it is always visible here and in the operations monitor.
     const sendingHalted = await isHalted();
-    const ready = !shuttingDown && redis.ok && workers.length > 0 && deliveryConfigured;
+    const ready = !shuttingDown && redis.ok && workers.length > 0 && delivery;
     const statusCode = req.url === '/ready' && !ready ? 503 : 200;
     res.writeHead(statusCode, { 'content-type': 'application/json' });
-    res.end(JSON.stringify({ status: ready ? 'ok' : 'degraded', ready, deliveryConfigured, sendingHalted, service: 'lion-elite-outreach-worker', redis, queues, workers: workers.length, ...runtimeMetrics() }));
+    res.end(JSON.stringify({ status: ready ? 'ok' : 'degraded', ready, deliveryConfigured: delivery, sendingHalted, service: 'lion-elite-outreach-worker', redis, queues, workers: workers.length, ...runtimeMetrics() }));
   } catch (error) {
     res.writeHead(503, { 'content-type': 'application/json' });
     res.end(JSON.stringify({ status: 'degraded', ready: false, error: error.message }));

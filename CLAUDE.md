@@ -900,6 +900,24 @@ notes), not live infrastructure — don't treat them as configuration.
   calendar entry is not money. `test/funnel-meeting-stages.test.js` pins the order,
   the weighting gap, and reconciles prospect stages against funnel events so the
   drift cannot recur.
+- **The outreach pipeline could not have sent a single e-mail (fixed 2026-11-09).**
+  Found by running the worker end to end against Postgres + Redis: (1) every draft
+  was the Lion Elite *Beauty* coaching template, including for clinics; (2) BullMQ
+  rejects custom job ids with `:` unless they split into exactly 3 parts, so
+  `validate:<id>`, `executive:<id>`, `reachout:<id>` and dead-letter ids all threw;
+  (3) `scripts/cron-scheduler.js` and `scripts/enqueue-outreach.js` passed queue
+  *names* where `addJob()` took *keys*, so every scheduled task failed with
+  "Unknown queue"; (4) `authorizeOutreach()` hashed `prospect.id`, undefined on
+  stored prospects, so every prospect in a campaign shared one idempotency key;
+  (5) discovered clinics carried none of the status fields the 16 checks read.
+  `addJob()` now accepts keys or names and normalizes ids; clinics route to
+  `lib/outreach/clinic-supply-email.js` and are qualified from evidence by
+  `lib/outreach/clinic-qualification.js` (thresholds untouched); opt-outs bind by
+  address/domain in `outreach_suppressions`. **Message-version approval is an
+  owner env var (`OUTREACH_APPROVED_MESSAGE_VERSIONS`), deliberately not a code
+  constant** — an approval written into the repo by the template's author is not
+  an approval. Follow-ups (e-mails 2–3) are not automated: there is no reply
+  detection. Runbook: `docs/automated-outreach.md`.
 - **Known dropped job, needs an owner decision:** the daily `staleData` cron
   enqueues `refresh-stale-prospect-data` to the `enrichment` queue, which no
   worker consumes — it has been piling up unprocessed every day. Either write the
