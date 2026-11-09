@@ -27,3 +27,4 @@ leads/harvested/
 apps/buildpipeline/.next/
 apps/buildpipeline/tsconfig.tsbuildinfo
 apps/buildpipeline/package-lock.json
+dump.rdb
