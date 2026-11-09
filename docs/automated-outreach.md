@@ -127,3 +127,50 @@ Also confirm `EXECUTIVE_API_TOKEN` is set on `lion-elite-executive-api`
 
 Resend key: create new in Resend → update in Render → revoke old. Never
 commit, echo, or paste keys anywhere but the Render env tab.
+
+## Clinic campaign (med_spa_research_supply): qualification and the daily run
+
+Added 2026-11-09. Discovery stores clinics as `osm-business-discovery`
+prospects; the outreach worker now routes them to the clinic e-mail
+(`lib/outreach/clinic-supply-email.js`) instead of the Beauty partnership
+template, and qualifies each one immediately before validation
+(`lib/outreach/clinic-qualification.js`).
+
+Qualification derives every status the 16 checks read from evidence, and fails
+the status when the evidence is missing. It does not change any threshold:
+
+| Status | Passes only when |
+|---|---|
+| source | the record came from OpenStreetMap or the clinic's own website |
+| identity | the inbox domain matches the clinic's website (no Gmail/Yahoo/...) |
+| duplicate | no other record at the same organisation has been queued or sent |
+| eligibility | the targeting tier is **high**; medium-tier clinics need a person to check the site |
+| suppression | the address/domain is not on `outreach_suppressions` and the prospect is not suppressed |
+| freshness | the contact was confirmed within 30 days |
+| personalization / compliance | the draft passes its checklist and the RUO validator |
+| cadence | the prospect has never been queued (first touch only, see below) |
+| message version | the version id is in `OUTREACH_APPROVED_MESSAGE_VERSIONS` |
+
+**Approving the copy is the owner's step.** `npm run outreach:versions` prints the
+current version id and the text. Add the id to `OUTREACH_APPROVED_MESSAGE_VERSIONS`
+on the outreach worker. Any edit to the template produces a new id, which is
+unapproved until added.
+
+**Daily run.** The `lion-elite-clinic-outreach` cron (weekdays 14:07 UTC) runs
+`scripts/clinic-outreach-daily.js --confirm`: up to `OUTREACH_DAILY_NEW_CLINICS`
+(default 20) new clinics, never more than the remaining `DAILY_EMAIL_LIMIT`, one
+per organisation per day. It enqueues nothing unless the outreach worker's
+heartbeat reports sending is configured, so it holds no send credential and
+cannot mark clinics as contacted while nothing can be sent.
+`npm run outreach:clinics` is the dry run: who would go today and why others would not.
+
+**Opt-outs, bounces, earlier outreach.** `npm run outreach:suppress -- --email x --reason opt_out`
+(also `--domain`, and `--csv <file>` which takes every address in the file).
+Before the first live run, import the clinics already e-mailed by hand from Gmail
+(the Drive master sheet's Outreach History) with `--reason prior_contact`, so
+nobody receives a second, different introduction.
+
+**Not automated yet: follow-ups.** E-mails 2 and 3 of the sequence need reply
+detection, which does not exist. Without it an automated follow-up would reach
+people who already replied. Until it is built, replies go to `OUTREACH_REPLY_TO`
+and are handled by a person.

@@ -1322,3 +1322,73 @@ CREATE TABLE IF NOT EXISTS gtm_login_links (
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 CREATE INDEX IF NOT EXISTS gtm_login_links_user_idx ON gtm_login_links(user_id, expires_at DESC);
+
+
+-- BuildPipeline VSL funnels ----------------------------------------------------
+-- Traffic → VSL → Application → Booking → Confirmation → Follow-up
+-- (apps/buildpipeline/README.md). Taxonomy and rules: lib/platform/vsl-funnel.js.
+-- Store: lib/platform/funnel-store.js. Slugs are globally unique because the
+-- public route resolves a funnel by slug alone.
+CREATE TABLE IF NOT EXISTS gtm_funnels (
+  funnel_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  workspace_id UUID NOT NULL REFERENCES gtm_workspaces(workspace_id) ON DELETE CASCADE,
+  campaign_id UUID REFERENCES gtm_campaigns(campaign_id) ON DELETE SET NULL,
+  slug TEXT NOT NULL UNIQUE,
+  status TEXT NOT NULL DEFAULT 'draft' CHECK (status IN ('draft','published','archived')),
+  config JSONB NOT NULL DEFAULT '{}'::jsonb,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS gtm_funnels_workspace_idx ON gtm_funnels(workspace_id, status, updated_at DESC);
+
+-- Analytics events. No PII: identity lives in gtm_prospects, referenced by id.
+CREATE TABLE IF NOT EXISTS gtm_funnel_events (
+  funnel_event_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  workspace_id UUID NOT NULL REFERENCES gtm_workspaces(workspace_id) ON DELETE CASCADE,
+  funnel_id UUID NOT NULL REFERENCES gtm_funnels(funnel_id) ON DELETE CASCADE,
+  event_key TEXT NOT NULL,
+  event_type TEXT NOT NULL CHECK (event_type IN ('page_view','video_play','cta_revealed','cta_click','lead_qualified','booking_click','booking_confirmed','follow_up_planned')),
+  step TEXT NOT NULL CHECK (step IN ('traffic','vsl','application','booking','confirmation','follow_up')),
+  session_id TEXT NOT NULL,
+  prospect_id UUID REFERENCES gtm_prospects(prospect_id) ON DELETE SET NULL,
+  metadata JSONB NOT NULL DEFAULT '{}'::jsonb,
+  occurred_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  UNIQUE (funnel_id, event_key)
+);
+CREATE INDEX IF NOT EXISTS gtm_funnel_events_funnel_idx ON gtm_funnel_events(funnel_id, occurred_at DESC);
+
+-- One application per funnel session. Holds the SMS consent record (TCPA prior
+-- express written consent needs the wording the person agreed to and when).
+CREATE TABLE IF NOT EXISTS gtm_funnel_leads (
+  funnel_lead_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  workspace_id UUID NOT NULL REFERENCES gtm_workspaces(workspace_id) ON DELETE CASCADE,
+  funnel_id UUID NOT NULL REFERENCES gtm_funnels(funnel_id) ON DELETE CASCADE,
+  prospect_id UUID NOT NULL REFERENCES gtm_prospects(prospect_id) ON DELETE CASCADE,
+  session_id TEXT NOT NULL,
+  answers JSONB NOT NULL DEFAULT '[]'::jsonb,
+  sms_consent BOOLEAN NOT NULL DEFAULT false,
+  sms_consent_text TEXT NOT NULL DEFAULT '',
+  sms_consent_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  UNIQUE (funnel_id, session_id)
+);
+CREATE INDEX IF NOT EXISTS gtm_funnel_leads_prospect_idx ON gtm_funnel_leads(prospect_id);
+
+
+-- Address/domain opt-out list for B2B outreach. Per-prospect `status =
+-- 'suppressed'` is not enough: the same inbox can sit on several prospect rows
+-- (chain locations, a clinic rediscovered under a new name), and an opt-out must
+-- bind every one of them, including records imported after the opt-out.
+-- Checked by lib/outreach/clinic-qualification.js before every send.
+CREATE TABLE IF NOT EXISTS outreach_suppressions (
+  suppression_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  address TEXT,
+  domain TEXT,
+  reason TEXT NOT NULL CHECK (reason IN ('opt_out','bounce','complaint','prior_contact','manual')),
+  source TEXT NOT NULL DEFAULT 'manual',
+  note TEXT NOT NULL DEFAULT '',
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  CHECK (address IS NOT NULL OR domain IS NOT NULL)
+);
+CREATE UNIQUE INDEX IF NOT EXISTS outreach_suppressions_address_idx ON outreach_suppressions(lower(address)) WHERE address IS NOT NULL;
+CREATE UNIQUE INDEX IF NOT EXISTS outreach_suppressions_domain_idx ON outreach_suppressions(lower(domain)) WHERE domain IS NOT NULL;

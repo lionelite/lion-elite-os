@@ -10,7 +10,9 @@ test('Postgres prospect lifecycle executes against the real schema', { skip: !da
   const { PostgresProspectStore } = require('../lib/postgres-prospect-store');
   const { PostgresSubscriptionStore } = require('../lib/postgres-subscription-store');
 
-  t.after(async () => close());
+  const { holdExclusiveDb } = require('./helpers/db-exclusive');
+  const release = await holdExclusiveDb();
+  t.after(async () => { await release(); await close(); });
   await migrate();
   await query('TRUNCATE subscription_events, coaching_subscriptions, outreach_queue, prospect_events, prospects, daily_usage RESTART IDENTITY CASCADE');
 

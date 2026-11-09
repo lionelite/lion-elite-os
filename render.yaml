@@ -286,6 +286,18 @@ services:
     startCommand: node scripts/cron-scheduler.js staleData
     envVars: *cronEnv
 
+  # Daily clinic outreach (med_spa_research_supply). Picks up to
+  # OUTREACH_DAILY_NEW_CLINICS new high-tier clinics that pass qualification and
+  # enqueues their first e-mail. Does nothing until the outreach worker reports
+  # sending is set up (its Redis heartbeat), so it holds no send credential.
+  - type: cron
+    name: lion-elite-clinic-outreach
+    runtime: node
+    schedule: "7 14 * * 1-5"
+    buildCommand: npm install --no-audit --no-fund
+    startCommand: node scripts/clinic-outreach-daily.js --confirm
+    envVars: *cronEnv
+
   - type: cron
     name: lion-elite-followup-scheduler
     runtime: node

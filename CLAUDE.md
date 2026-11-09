@@ -564,6 +564,27 @@ Standalone modules that share the repo but not the architecture above:
   autonomously.
   `npm run agents:roster|knowledge|recall|plan|run`; docs
   `docs/ai-agent-roster.md`; 77 tests in the root `npm test`.
+- **BuildPipeline VSL funnels** (`apps/buildpipeline` + `routes/gtm-funnels.js`,
+  mounted at `/api/gtm-funnels` on `server.js`). The Next.js app is a thin front
+  end; config, analytics and CRM writes live here. `lib/platform/vsl-funnel.js`
+  holds the closed six-stage taxonomy (Traffic → VSL → Application → Booking →
+  Confirmation → Follow-up) and `lib/platform/funnel-store.js` writes into the
+  existing GTM tables: application → `gtm_prospects` + `gtm_evidence`, booking →
+  `gtm_meetings`/`gtm_opportunities`, follow-up → `gtm_agent_tasks`. Funnel tables
+  are `gtm_funnels`, `gtm_funnel_events` and `gtm_funnel_leads`. Four rules carry
+  it. Analytics events hold **no PII** (the prototype logged name/email/phone
+  inside the analytics event). **A calendar click is a `proposed` meeting**; only
+  a signed Calendly `invitee.created` webhook or an operator marks it `booked`,
+  and browsers are refused if they report `booking_confirmed` themselves.
+  **Follow-up is `draft_only` agent tasks**, so there is no new send path, and
+  SMS steps appear only with a stored, explicit consent record. **A funnel cannot
+  be published without a specific scheduling page.** Embedded videos do not
+  report `video_play`, because an iframe load is not a play. Hosting the app is an
+  owner decision (`buildpipeline.online` is on Base44). CI builds it as the
+  separate `buildpipeline` job. Docs: `apps/buildpipeline/README.md`.
+  `lib/database.js` `migrate()` now takes a Postgres advisory lock. Concurrent
+  migrations on a fresh DB raced on `CREATE EXTENSION`, and the Postgres
+  integration tests serialize on `test/helpers/db-exclusive.js`.
 - **`social-listening/`** — Bluesky firehose (Jetstream) monitor. The
   *listening* half is read-only. A *reply* path does exist and this file
   previously denied it: `social-listening/src/bluesky-delivery.js` has
@@ -879,6 +900,24 @@ notes), not live infrastructure — don't treat them as configuration.
   calendar entry is not money. `test/funnel-meeting-stages.test.js` pins the order,
   the weighting gap, and reconciles prospect stages against funnel events so the
   drift cannot recur.
+- **The outreach pipeline could not have sent a single e-mail (fixed 2026-11-09).**
+  Found by running the worker end to end against Postgres + Redis: (1) every draft
+  was the Lion Elite *Beauty* coaching template, including for clinics; (2) BullMQ
+  rejects custom job ids with `:` unless they split into exactly 3 parts, so
+  `validate:<id>`, `executive:<id>`, `reachout:<id>` and dead-letter ids all threw;
+  (3) `scripts/cron-scheduler.js` and `scripts/enqueue-outreach.js` passed queue
+  *names* where `addJob()` took *keys*, so every scheduled task failed with
+  "Unknown queue"; (4) `authorizeOutreach()` hashed `prospect.id`, undefined on
+  stored prospects, so every prospect in a campaign shared one idempotency key;
+  (5) discovered clinics carried none of the status fields the 16 checks read.
+  `addJob()` now accepts keys or names and normalizes ids; clinics route to
+  `lib/outreach/clinic-supply-email.js` and are qualified from evidence by
+  `lib/outreach/clinic-qualification.js` (thresholds untouched); opt-outs bind by
+  address/domain in `outreach_suppressions`. **Message-version approval is an
+  owner env var (`OUTREACH_APPROVED_MESSAGE_VERSIONS`), deliberately not a code
+  constant** — an approval written into the repo by the template's author is not
+  an approval. Follow-ups (e-mails 2–3) are not automated: there is no reply
+  detection. Runbook: `docs/automated-outreach.md`.
 - **Known dropped job, needs an owner decision:** the daily `staleData` cron
   enqueues `refresh-stale-prospect-data` to the `enrichment` queue, which no
   worker consumes — it has been piling up unprocessed every day. Either write the
