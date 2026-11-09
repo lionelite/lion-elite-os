@@ -1,6 +1,6 @@
 # New leads from the last harvest
 
-_Generated 2026-11-08T23:29:20.913Z — 1 lead._
+_Generated 2026-11-09T05:05:52.749Z — 1 lead._
 
 | Searches run | Searches failed | Posts read | Matched | Dropped (do-not-engage) |
 |---:|---:|---:|---:|---:|
@@ -41,14 +41,14 @@ business-scaling: Bluesky search failed for "trying to scale my business": HTTP 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-**Sources this run:** bluesky: unreachable (23 failed) · openstreetmap: 35 businesses in cleveland-oh
+**Sources this run:** bluesky: unreachable (23 failed) · openstreetmap: 76 businesses in phoenix-az
 
 ## med-spa-b2b — 1
 
-### Vital Pilates — score 70
+### GlamWright Medical Boutique — score 50
 
-- **Handle:** [@null](https://www.vitalpilatesstudio.com/)
+- **Handle:** [@null](https://www.glamwright.com/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
+- **Why they matched:** med-spa
 
-> gym
+> med-spa · 707 East Palo Verde Drive Phoenix AZ 85014

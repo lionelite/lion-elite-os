@@ -1,11 +1,11 @@
 # Every harvested lead
 
-_Generated 2026-11-08T23:29:20.913Z — 753 leads._
+_Generated 2026-11-09T05:05:52.749Z — 754 leads._
 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-## med-spa-b2b — 753
+## med-spa-b2b — 754
 
 ### Sports Performance & Wellness Center — score 50
 
@@ -6030,3 +6030,11 @@ any of them — reach out by hand from the post link if a lead is worth it.
 - **Why they matched:** gym
 
 > gym
+
+### GlamWright Medical Boutique — score 50
+
+- **Handle:** [@null](https://www.glamwright.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 707 East Palo Verde Drive Phoenix AZ 85014
