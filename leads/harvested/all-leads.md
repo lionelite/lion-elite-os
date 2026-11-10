@@ -1,11 +1,11 @@
 # Every harvested lead
 
-_Generated 2026-11-10T07:11:55.277Z — 813 leads._
+_Generated 2026-11-10T16:16:29.688Z — 818 leads._
 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-## med-spa-b2b — 813
+## med-spa-b2b — 818
 
 ### Sports Performance & Wellness Center — score 50
 
@@ -6510,3 +6510,43 @@ any of them — reach out by hand from the post link if a lead is worth it.
 - **Why they matched:** med-spa
 
 > med-spa · 2148 Broadway New York NY 10023
+
+### Gold Coast Holistic Medical Specialists — score 50
+
+- **Handle:** [@null](https://goldcoast-hms.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 7035 Beracasa Way, #104 Boca Raton FL 33433
+
+### Optimization Centre — score 50
+
+- **Handle:** [@null](https://www.optimizationcentre.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 3010 North Military Trail Boca Raton FL 33431
+
+### Impression Imaging — score 70
+
+- **Handle:** [@null](https://impressionimaging.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 6853 Southwest 18th Street Boca Raton FL 33433
+
+### Aesthetics by Yari — score 70
+
+- **Handle:** [@null](https://www.aestheticsbyyari.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 500 Northeast Spanish River Boulevard Boca Raton FL 33431
+
+### Dr. Landon Pryor — score 50
+
+- **Handle:** [@null](https://drlandonpryor.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 4800 N Federal Hwy, #300B Boca Raton FL 33431
