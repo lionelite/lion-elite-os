@@ -1,6 +1,6 @@
 # New leads from the last harvest
 
-_Generated 2026-11-09T15:33:31.543Z — 9 leads._
+_Generated 2026-11-10T00:04:56.665Z — 25 leads._
 
 | Searches run | Searches failed | Posts read | Matched | Dropped (do-not-engage) |
 |---:|---:|---:|---:|---:|
@@ -41,78 +41,206 @@ business-scaling: Bluesky search failed for "trying to scale my business": HTTP 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-**Sources this run:** bluesky: unreachable (23 failed) · openstreetmap: 9 businesses in nashville-tn
+**Sources this run:** bluesky: unreachable (23 failed) · openstreetmap: 39 businesses in los-angeles-ca
 
-## med-spa-b2b — 9
+## med-spa-b2b — 25
 
-### East Nashville Family Medicine — score 70
+### The Phoenix Effect — score 70
 
-- **Handle:** [@null](https://www.eastnashvillefamilymed.com/)
+- **Handle:** [@null](https://www.phoenixeffectla.com/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
+- **Why they matched:** gym
 
-> clinic · 801 Woodland Street Nashville TN 37206
+> gym
 
-### Nashville Weight Loss Solutions — score 50
+### Muscle Under Fitness — score 50
 
-- **Handle:** [@null](https://www.nashvilleweightloss.com/)
+- **Handle:** [@null](http://muscleunder.com)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
+- **Why they matched:** gym
 
-> clinic · 2200 Murphy Avenue Nashville TN 37203
+> gym · 9229 West Sunset Boulevard West Hollywood CA 90069
 
-### Robbins Plastic Surgery — score 50
+### Equinox — score 50
 
-- **Handle:** [@null](https://www.robbinsplasticsurgery.com/)
+- **Handle:** [@null](https://www.equinox.com/clubs/southern-california/los-angeles/westhollywood)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
+- **Why they matched:** gym
 
-> clinic · 2201 Murphy Avenue Nashville 37203
+> gym · 8590 West Sunset Boulevard West Hollywood CA 90069
 
-### NSI — score 70
+### SoulCycle — score 70
 
-- **Handle:** [@null](https://www.tolmanmedical.com/)
+- **Handle:** [@null](https://www.soul-cycle.com/studios/weho/14/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
+- **Why they matched:** gym
 
-> clinic · 118 30th Avenue North Nashville TN 37203
+> gym · 8570 West Sunset Boulevard West Hollywood CA 90069
 
-### Siragusa Vein and Laser — score 70
+### Leo Zen — score 70
 
-- **Handle:** [@null](https://nashvilleveincenter.com)
+- **Handle:** [@null](https://leozen.com/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
+- **Why they matched:** gym
 
-> clinic · 28 White Bridge Road Nashville TN 37205
+> gym · West Sunset Boulevard West Hollywood CA 90069
 
-### Baptist Ambulatory Surgery Center — score 50
+### Burn 60 — score 50
 
-- **Handle:** [@null](https://baptistasc.com/)
+- **Handle:** [@null](https://burn60.com/west-hollywood/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
+- **Why they matched:** gym
 
-> clinic · 312 21st Avenue North Nashville 37236
+> gym · 8969 Santa Monica Boulevard West Hollywood CA 90069
 
-### O.liv Body Bar — score 50
+### Basecamp Fitness — score 70
 
-- **Handle:** [@null](https://olivbodybar.com)
+- **Handle:** [@null](https://basecampfitness.co/locations/west-hollywood/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 8714 Santa Monica Boulevard West Hollywood CA 90069
+
+### Body By Simone — score 70
+
+- **Handle:** [@null](https://www.bodybysimone.com/locations/los-angeles/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 8625 Santa Monica Boulevard West Hollywood CA 90069
+
+### Harmony Studios — score 70
+
+- **Handle:** [@null](https://harmonystudiosla.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 8440 Santa Monica Boulevard West Hollywood CA 90069
+
+### LA Fitness — score 50
+
+- **Handle:** [@null](https://www.lafitness.com/Pages/clubhome.aspx?clubid=45)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 10921 Wilshire Boulevard Los Angeles CA 90024
+
+### Orangetheory Fitness — score 50
+
+- **Handle:** [@null](https://www.orangetheory.com/en-us/locations/los-angeles-california-0522)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 10250 Santa Monica Boulevard Los Angeles CA 90067
+
+### EōS Fitness — score 50
+
+- **Handle:** [@null](https://www.eosfitness.com/gym/hollywood-cole-ave-santa-monica-blvd)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 1016 Cole Avenue Los Angeles CA 90038
+
+### LA Fitness — score 50
+
+- **Handle:** [@null](https://www.lafitness.com/Pages/clubhome.aspx?clubid=27)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 5950 Wilshire Boulevard Los Angeles CA 90036
+
+### Reformacore — score 70
+
+- **Handle:** [@null](https://www.reformacore.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 10351 Santa Monica Boulevard Los Angeles CA 90025
+
+### Heimat — score 70
+
+- **Handle:** [@null](https://heimat.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 960 North La Brea Avenue 90038
+
+### Tribe Pilates — score 70
+
+- **Handle:** [@null](https://tribepilatesstudio.com/westwood-west-la-pilates-studio/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 1365 Westwood Boulevard Los Angeles CA 90024
+
+### Sorrel Studio — score 70
+
+- **Handle:** [@null](https://sorrel-studio.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 1021 South Fairfax Avenue 90019
+
+### Pacquiao Prime Boxing — score 70
+
+- **Handle:** [@null](https://pacquiaoprimeboxinggym.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 1724 North Highland Avenue Los Angeles CA 90028
+
+### LA Fitness — score 50
+
+- **Handle:** [@null](https://www.lafitness.com/Pages/clubhome.aspx?clubid=725)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 1628 El Centro Avenue Los Angeles CA 90028
+
+### Equinox — score 50
+
+- **Handle:** [@null](https://www.equinox.com/clubs/southern-california/westla)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 1835 Sepulveda Boulevard Los Angeles
+
+### 24 Hour Fitness — score 50
+
+- **Handle:** [@null](https://www.24hourfitness.com/Website/Club/00184)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 8612 Santa Monica Boulevard West Hollywood CA 90069
+
+### Equinox — score 50
+
+- **Handle:** [@null](https://www.equinox.com/clubs/southern-california/los-angeles/centurycity)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 10250 Santa Monica Boulevard Los Angeles CA 90067
+
+### Unity Holistic — score 50
+
+- **Handle:** [@null](http://unity-holistic.com)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** massage
 
-> massage · 1032 West Eastland Avenue 37206
+> massage · 8805 Santa Monica Boulevard West Hollywood CA 90069
 
-### Dube Orthopedics & Physical Threapy — score 50
+### Sparadise — score 50
 
-- **Handle:** [@null](https://dubeortho.com/)
+- **Handle:** [@null](https://sparadiseweho.com/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** physiotherapy
+- **Why they matched:** massage
 
-> physiotherapy · 2041 Overhill Drive Nashville TN
+> massage · 8505 Santa Monica Boulevard West Hollywood CA 90069
 
-### Vanderbilt Rehabilitation Therapy 100 Oaks — score 50
+### Massage in LA — score 70
 
-- **Handle:** [@null](null)
+- **Handle:** [@null](https://massageinla.com/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** physiotherapy
+- **Why they matched:** massage
 
-> physiotherapy · 719 Thompson Lane 37204
+> massage · 998 Robertson Boulevard Los Angeles 90035

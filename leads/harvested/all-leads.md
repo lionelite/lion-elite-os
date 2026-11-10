@@ -1,11 +1,11 @@
 # Every harvested lead
 
-_Generated 2026-11-09T15:33:31.543Z — 763 leads._
+_Generated 2026-11-10T00:04:56.665Z — 788 leads._
 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-## med-spa-b2b — 763
+## med-spa-b2b — 788
 
 ### Sports Performance & Wellness Center — score 50
 
@@ -6110,3 +6110,203 @@ any of them — reach out by hand from the post link if a lead is worth it.
 - **Why they matched:** physiotherapy
 
 > physiotherapy · 719 Thompson Lane 37204
+
+### The Phoenix Effect — score 70
+
+- **Handle:** [@null](https://www.phoenixeffectla.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym
+
+### Muscle Under Fitness — score 50
+
+- **Handle:** [@null](http://muscleunder.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 9229 West Sunset Boulevard West Hollywood CA 90069
+
+### Equinox — score 50
+
+- **Handle:** [@null](https://www.equinox.com/clubs/southern-california/los-angeles/westhollywood)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 8590 West Sunset Boulevard West Hollywood CA 90069
+
+### SoulCycle — score 70
+
+- **Handle:** [@null](https://www.soul-cycle.com/studios/weho/14/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 8570 West Sunset Boulevard West Hollywood CA 90069
+
+### Leo Zen — score 70
+
+- **Handle:** [@null](https://leozen.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · West Sunset Boulevard West Hollywood CA 90069
+
+### Burn 60 — score 50
+
+- **Handle:** [@null](https://burn60.com/west-hollywood/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 8969 Santa Monica Boulevard West Hollywood CA 90069
+
+### Basecamp Fitness — score 70
+
+- **Handle:** [@null](https://basecampfitness.co/locations/west-hollywood/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 8714 Santa Monica Boulevard West Hollywood CA 90069
+
+### Body By Simone — score 70
+
+- **Handle:** [@null](https://www.bodybysimone.com/locations/los-angeles/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 8625 Santa Monica Boulevard West Hollywood CA 90069
+
+### Harmony Studios — score 70
+
+- **Handle:** [@null](https://harmonystudiosla.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 8440 Santa Monica Boulevard West Hollywood CA 90069
+
+### LA Fitness — score 50
+
+- **Handle:** [@null](https://www.lafitness.com/Pages/clubhome.aspx?clubid=45)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 10921 Wilshire Boulevard Los Angeles CA 90024
+
+### Orangetheory Fitness — score 50
+
+- **Handle:** [@null](https://www.orangetheory.com/en-us/locations/los-angeles-california-0522)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 10250 Santa Monica Boulevard Los Angeles CA 90067
+
+### EōS Fitness — score 50
+
+- **Handle:** [@null](https://www.eosfitness.com/gym/hollywood-cole-ave-santa-monica-blvd)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 1016 Cole Avenue Los Angeles CA 90038
+
+### LA Fitness — score 50
+
+- **Handle:** [@null](https://www.lafitness.com/Pages/clubhome.aspx?clubid=27)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 5950 Wilshire Boulevard Los Angeles CA 90036
+
+### Reformacore — score 70
+
+- **Handle:** [@null](https://www.reformacore.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 10351 Santa Monica Boulevard Los Angeles CA 90025
+
+### Heimat — score 70
+
+- **Handle:** [@null](https://heimat.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 960 North La Brea Avenue 90038
+
+### Tribe Pilates — score 70
+
+- **Handle:** [@null](https://tribepilatesstudio.com/westwood-west-la-pilates-studio/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 1365 Westwood Boulevard Los Angeles CA 90024
+
+### Sorrel Studio — score 70
+
+- **Handle:** [@null](https://sorrel-studio.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 1021 South Fairfax Avenue 90019
+
+### Pacquiao Prime Boxing — score 70
+
+- **Handle:** [@null](https://pacquiaoprimeboxinggym.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 1724 North Highland Avenue Los Angeles CA 90028
+
+### LA Fitness — score 50
+
+- **Handle:** [@null](https://www.lafitness.com/Pages/clubhome.aspx?clubid=725)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 1628 El Centro Avenue Los Angeles CA 90028
+
+### Equinox — score 50
+
+- **Handle:** [@null](https://www.equinox.com/clubs/southern-california/westla)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 1835 Sepulveda Boulevard Los Angeles
+
+### 24 Hour Fitness — score 50
+
+- **Handle:** [@null](https://www.24hourfitness.com/Website/Club/00184)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 8612 Santa Monica Boulevard West Hollywood CA 90069
+
+### Equinox — score 50
+
+- **Handle:** [@null](https://www.equinox.com/clubs/southern-california/los-angeles/centurycity)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 10250 Santa Monica Boulevard Los Angeles CA 90067
+
+### Unity Holistic — score 50
+
+- **Handle:** [@null](http://unity-holistic.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** massage
+
+> massage · 8805 Santa Monica Boulevard West Hollywood CA 90069
+
+### Sparadise — score 50
+
+- **Handle:** [@null](https://sparadiseweho.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** massage
+
+> massage · 8505 Santa Monica Boulevard West Hollywood CA 90069
+
+### Massage in LA — score 70
+
+- **Handle:** [@null](https://massageinla.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** massage
+
+> massage · 998 Robertson Boulevard Los Angeles 90035
