@@ -1,6 +1,6 @@
 # New leads from the last harvest
 
-_Generated 2026-11-10T00:04:56.665Z — 25 leads._
+_Generated 2026-11-10T07:11:55.276Z — 25 leads._
 
 | Searches run | Searches failed | Posts read | Matched | Dropped (do-not-engage) |
 |---:|---:|---:|---:|---:|
@@ -41,206 +41,206 @@ business-scaling: Bluesky search failed for "trying to scale my business": HTTP 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-**Sources this run:** bluesky: unreachable (23 failed) · openstreetmap: 39 businesses in los-angeles-ca
+**Sources this run:** bluesky: unreachable (23 failed) · openstreetmap: 351 businesses in manhattan-ny
 
 ## med-spa-b2b — 25
 
-### The Phoenix Effect — score 70
+### Glowbar — score 50
 
-- **Handle:** [@null](https://www.phoenixeffectla.com/)
+- **Handle:** [@null](https://glowbar.com/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
+- **Why they matched:** med-spa
 
-> gym
+> med-spa · 805 Columbus Avenue New York NY 10025
 
-### Muscle Under Fitness — score 50
+### Lux 88 Nail Salon — score 50
 
-- **Handle:** [@null](http://muscleunder.com)
+- **Handle:** [@null](https://pedicuresnewyork.com)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
+- **Why they matched:** med-spa
 
-> gym · 9229 West Sunset Boulevard West Hollywood CA 90069
+> med-spa · 590 Columbus Avenue New York NY 10024
 
-### Equinox — score 50
+### Satori Laser — score 70
 
-- **Handle:** [@null](https://www.equinox.com/clubs/southern-california/los-angeles/westhollywood)
+- **Handle:** [@null](https://www.satorilaser.com/pages/upper-west-side-laser-hair-removal-696)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
+- **Why they matched:** med-spa
 
-> gym · 8590 West Sunset Boulevard West Hollywood CA 90069
+> med-spa · 696 Columbus Avenue New York NY 10025
 
-### SoulCycle — score 70
+### Salon Jatel — score 50
 
-- **Handle:** [@null](https://www.soul-cycle.com/studios/weho/14/)
+- **Handle:** [@null](https://www.salonjatel.com/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
+- **Why they matched:** med-spa
 
-> gym · 8570 West Sunset Boulevard West Hollywood CA 90069
+> med-spa · 13 West 17th Street New York 10011
 
-### Leo Zen — score 70
+### Great Many — score 70
 
-- **Handle:** [@null](https://leozen.com/)
+- **Handle:** [@null](https://greatmany.com)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
+- **Why they matched:** med-spa
 
-> gym · West Sunset Boulevard West Hollywood CA 90069
+> med-spa · 304 Mulberry Street 10012
 
-### Burn 60 — score 50
+### Madison Reed — score 50
 
-- **Handle:** [@null](https://burn60.com/west-hollywood/)
+- **Handle:** [@null](https://www.madison-reed.com/colorbar/locations/columbus)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
+- **Why they matched:** med-spa
 
-> gym · 8969 Santa Monica Boulevard West Hollywood CA 90069
+> med-spa · 252 Columbus Avenue New York NY 10023
 
-### Basecamp Fitness — score 70
+### Athena's Beauty — score 50
 
-- **Handle:** [@null](https://basecampfitness.co/locations/west-hollywood/)
+- **Handle:** [@null](https://athenasbeauty.com)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
+- **Why they matched:** med-spa
 
-> gym · 8714 Santa Monica Boulevard West Hollywood CA 90069
+> med-spa
 
-### Body By Simone — score 70
+### NYC Rejuvenation Clinic — score 70
 
-- **Handle:** [@null](https://www.bodybysimone.com/locations/los-angeles/)
+- **Handle:** [@null](https://rejuvenationny.com)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
+- **Why they matched:** med-spa
 
-> gym · 8625 Santa Monica Boulevard West Hollywood CA 90069
+> med-spa
 
-### Harmony Studios — score 70
+### Parlor West — score 50
 
-- **Handle:** [@null](https://harmonystudiosla.com/)
+- **Handle:** [@null](https://www.parlorhairsalon.com)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
+- **Why they matched:** med-spa
 
-> gym · 8440 Santa Monica Boulevard West Hollywood CA 90069
+> med-spa · 119 West 23rd Street 10011
 
-### LA Fitness — score 50
+### Cleo Spa & Salon — score 50
 
-- **Handle:** [@null](https://www.lafitness.com/Pages/clubhome.aspx?clubid=45)
+- **Handle:** [@null](https://cleospany.com)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
+- **Why they matched:** med-spa
 
-> gym · 10921 Wilshire Boulevard Los Angeles CA 90024
+> med-spa · 260 3rd Avenue 10010
 
-### Orangetheory Fitness — score 50
+### LEAPiA Nail Art Lounge — score 50
 
-- **Handle:** [@null](https://www.orangetheory.com/en-us/locations/los-angeles-california-0522)
+- **Handle:** [@null](https://leapia.nyc)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
+- **Why they matched:** med-spa
 
-> gym · 10250 Santa Monica Boulevard Los Angeles CA 90067
+> med-spa · 200 East 25th Street 10010
 
-### EōS Fitness — score 50
+### Glowbar — score 50
 
-- **Handle:** [@null](https://www.eosfitness.com/gym/hollywood-cole-ave-santa-monica-blvd)
+- **Handle:** [@null](https://www.glowbarnyc.com)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
+- **Why they matched:** med-spa
 
-> gym · 1016 Cole Avenue Los Angeles CA 90038
+> med-spa · 359 3rd Avenue 10016
 
-### LA Fitness — score 50
+### Heyday — score 70
 
-- **Handle:** [@null](https://www.lafitness.com/Pages/clubhome.aspx?clubid=27)
+- **Handle:** [@null](https://www.heydayskincare.com/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
+- **Why they matched:** med-spa
 
-> gym · 5950 Wilshire Boulevard Los Angeles CA 90036
+> med-spa · 1130 Broadway New York 10010
 
-### Reformacore — score 70
+### Hera Nails — score 50
 
-- **Handle:** [@null](https://www.reformacore.com/)
+- **Handle:** [@null](https://hera-nails.edan.io/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
+- **Why they matched:** med-spa
 
-> gym · 10351 Santa Monica Boulevard Los Angeles CA 90025
+> med-spa · 1389 6th Avenue 10019
 
-### Heimat — score 70
+### Milk & Cookies Kids Spa & Salon — score 50
 
-- **Handle:** [@null](https://heimat.com/)
+- **Handle:** [@null](https://milkandcookieskidsspa.com)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
+- **Why they matched:** med-spa
 
-> gym · 960 North La Brea Avenue 90038
+> med-spa · 233 East 33rd Street 10016
 
-### Tribe Pilates — score 70
+### 4ever Lash — score 50
 
-- **Handle:** [@null](https://tribepilatesstudio.com/westwood-west-la-pilates-studio/)
+- **Handle:** [@null](https://4everlash.nyc)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
+- **Why they matched:** med-spa
 
-> gym · 1365 Westwood Boulevard Los Angeles CA 90024
+> med-spa · 481 3rd Avenue 10016
 
-### Sorrel Studio — score 70
+### QQ Nails & Spa — score 50
 
-- **Handle:** [@null](https://sorrel-studio.com)
+- **Handle:** [@null](https://www.qqnailspa.com)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
+- **Why they matched:** med-spa
 
-> gym · 1021 South Fairfax Avenue 90019
+> med-spa · 479 3rd Avenue 10016
 
-### Pacquiao Prime Boxing — score 70
+### Allure Day Spa & Hair Design — score 70
 
-- **Handle:** [@null](https://pacquiaoprimeboxinggym.com)
+- **Handle:** [@null](https://alluredayspa.com)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
+- **Why they matched:** med-spa
 
-> gym · 1724 North Highland Avenue Los Angeles CA 90028
+> med-spa · 139 East 55th Street 10022
 
-### LA Fitness — score 50
+### Blossom Brows III — score 50
 
-- **Handle:** [@null](https://www.lafitness.com/Pages/clubhome.aspx?clubid=725)
+- **Handle:** [@null](https://www.blossombrows.com/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
+- **Why they matched:** med-spa
 
-> gym · 1628 El Centro Avenue Los Angeles CA 90028
+> med-spa · 1467 2nd Avenue 10021
 
-### Equinox — score 50
+### European Wax Center — score 50
 
-- **Handle:** [@null](https://www.equinox.com/clubs/southern-california/westla)
+- **Handle:** [@null](https://locations.waxcenter.com/ny/newyork/new-york-first-avenue-0160.html)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
+- **Why they matched:** med-spa
 
-> gym · 1835 Sepulveda Boulevard Los Angeles
+> med-spa · 1577 1st Avenue 10028
 
-### 24 Hour Fitness — score 50
+### QQ Nails & Spa — score 50
 
-- **Handle:** [@null](https://www.24hourfitness.com/Website/Club/00184)
+- **Handle:** [@null](https://www.qqnailspa.com/?selected=48261950)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
+- **Why they matched:** med-spa
 
-> gym · 8612 Santa Monica Boulevard West Hollywood CA 90069
+> med-spa · 1646 2nd Avenue 10028
 
-### Equinox — score 50
+### Diva Nails & Spa — score 50
 
-- **Handle:** [@null](https://www.equinox.com/clubs/southern-california/los-angeles/centurycity)
+- **Handle:** [@null](https://divanailspa-nailsalon.business.site)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
+- **Why they matched:** med-spa
 
-> gym · 10250 Santa Monica Boulevard Los Angeles CA 90067
+> med-spa · 1227 Lexington Avenue New York NY 10028
 
-### Unity Holistic — score 50
+### LaserAway — score 50
 
-- **Handle:** [@null](http://unity-holistic.com)
+- **Handle:** [@null](https://www.laseraway.com/locations/ny/manhattan-upper-west-side/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** massage
+- **Why they matched:** med-spa
 
-> massage · 8805 Santa Monica Boulevard West Hollywood CA 90069
+> med-spa · 147 Amsterdam Avenue New York NY 10023
 
-### Sparadise — score 50
+### European Wax Center — score 50
 
-- **Handle:** [@null](https://sparadiseweho.com/)
+- **Handle:** [@null](https://locations.waxcenter.com/ny/newyork/new-york-75th-on-columbus-0159.html)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** massage
+- **Why they matched:** med-spa
 
-> massage · 8505 Santa Monica Boulevard West Hollywood CA 90069
+> med-spa · 314 Columbus Avenue New York NY 10023
 
-### Massage in LA — score 70
+### Shobha — score 50
 
-- **Handle:** [@null](https://massageinla.com/)
+- **Handle:** [@null](https://www.myshobha.com/locations/shobha-west-side/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** massage
+- **Why they matched:** med-spa
 
-> massage · 998 Robertson Boulevard Los Angeles 90035
+> med-spa · 2148 Broadway New York NY 10023
