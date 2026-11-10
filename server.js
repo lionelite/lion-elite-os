@@ -15,6 +15,7 @@ const { createMcpRouter } = require('./routes/mcp');
 const { createGtmSalesRouter } = require('./routes/gtm-sales');
 const { createGtmFunnelsRouter } = require('./routes/gtm-funnels');
 const { createFunnelStore } = require('./lib/platform/funnel-store');
+const { createClinicOutreachCronRouter } = require('./routes/clinic-outreach-cron');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -47,6 +48,9 @@ app.use('/api/gtm-sales', createGtmSalesRouter());
 // prospect, booking confirmation. Called by apps/buildpipeline.
 app.use('/api/gtm-funnels', createGtmFunnelsRouter({ store: createFunnelStore(), authStore: gtmAuthStore }));
 if (gtmAuthStore) app.use('/api/mcp', createMcpRouter({ authStore: gtmAuthStore }));
+// Daily clinic outreach, triggered over HTTP by .github/workflows/daily-clinic-outreach.yml
+// (no Redis/workers on the free plan). Every route requires x-cron-secret.
+app.use('/api/cron', createClinicOutreachCronRouter());
 app.get('/.well-known/oauth-authorization-server', (_req, res) => {
   const origin = String(process.env.PUBLIC_BASE_URL || '').replace(/\/$/,'');
   res.json({

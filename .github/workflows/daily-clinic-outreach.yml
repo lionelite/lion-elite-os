@@ -1,0 +1,102 @@
+name: Daily clinic outreach
+
+# Triggers the in-process clinic outreach run on the free Render web service
+# (POST /api/cron/clinic-outreach, routes/clinic-outreach-cron.js). No Redis,
+# workers or Render cron are needed.
+#
+# 9:07 AM America/New_York, weekdays. GitHub cron only speaks UTC, so both
+# offsets are scheduled and the guard keeps whichever cron is 9:07 in New York
+# (13:07 UTC during EDT, 14:07 UTC during EST) — decided from WHICH cron fired,
+# not the wall clock, because scheduled runs often start late (see
+# daily-social-content.yml for the history). The server also refuses weekend
+# sends and a second completed run on the same New York day.
+on:
+  schedule:
+    - cron: '7 13 * * 1-5'
+    - cron: '7 14 * * 1-5'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Dry run: discover and qualify, but queue and send nothing'
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: daily-clinic-outreach
+  cancel-in-progress: false
+
+env:
+  SERVICE_URL: https://lion-elite-os.onrender.com
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - name: Keep only the 9:07 AM New York run
+        id: guard
+        run: |
+          if [ "${{ github.event_name }}" != "schedule" ]; then echo "Manual dispatch — running."; exit 0; fi
+          offset="$(TZ=America/New_York date +%z)"
+          case "$offset" in
+            -0400) want='7 13 * * 1-5' ;;
+            -0500) want='7 14 * * 1-5' ;;
+            *) echo "Unexpected offset $offset — running."; exit 0 ;;
+          esac
+          if [ '${{ github.event.schedule }}' != "$want" ]; then
+            echo "Cron '${{ github.event.schedule }}' is not the 9:07 New York cron for offset $offset. Skipping."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Check the secret is configured
+        if: steps.guard.outputs.skip != 'true'
+        env:
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          if [ -z "$CRON_SECRET" ]; then
+            echo "::error::Repository secret CRON_SECRET is not set (Settings → Secrets and variables → Actions)."
+            exit 1
+          fi
+
+      - name: Wake Render service
+        if: steps.guard.outputs.skip != 'true'
+        run: |
+          # Free instances sleep after 15 idle minutes; the first request wakes them.
+          for i in 1 2 3 4 5 6; do
+            if curl -fsS --max-time 60 "$SERVICE_URL/health" > /dev/null; then echo "Service is up."; exit 0; fi
+            echo "Not up yet (attempt $i); waiting 20s."; sleep 20
+          done
+          echo "::error::Service did not answer /health."; exit 1
+
+      - name: Trigger outreach run
+        if: steps.guard.outputs.skip != 'true'
+        env:
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+          DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run && '1' || '0' }}
+        run: |
+          set -o pipefail
+          url="$SERVICE_URL/api/cron/clinic-outreach"
+          if [ "$DRY_RUN" = "1" ]; then url="$url?dryRun=1"; fi
+          curl -fsS -X POST "$url" \
+            -H "x-cron-secret: $CRON_SECRET" \
+            -H "x-trigger: github-actions/${{ github.event_name }}" \
+            -H "content-type: application/json" \
+            --max-time 6900 > summary.json
+          jq . summary.json
+          status="$(jq -r .status summary.json)"
+          {
+            echo "## Clinic outreach run: $status"
+            echo
+            jq -r '"| discovered | qualified | sent | failed | skipped |\n|---|---|---|---|---|\n| \(.discovered) | \(.qualified) | \(.sent) | \(.failed) | \(.skipped) |"' summary.json
+            echo
+            echo '```json'
+            jq '{status, reason, dryRun, cap, skipReasons, notes, mirror, discovery}' summary.json
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+          case "$status" in
+            completed|paused|skipped) exit 0 ;;
+            *) echo "::error::Run status: $status"; exit 1 ;;
+          esac

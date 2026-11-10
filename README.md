@@ -47,6 +47,50 @@ The outreach service can:
 
 It does not guess email addresses, use people-search data, or send messages directly.
 
+## Daily clinic outreach (free tier, HTTP-triggered)
+
+Runs on the free `lion-elite-os` web service with no Redis, workers or Render
+crons. A GitHub Actions schedule calls `POST /api/cron/clinic-outreach` at 9:07 AM
+New York time on weekdays; the run discovers new clinics, qualifies them, sends
+first-touch e-mails and the one follow-up to clinics already contacted, writes an
+`outreach_runs` row and mirrors changes to the tracker sheet. Full runbook:
+[`docs/clinic-outreach-http.md`](docs/clinic-outreach-http.md).
+
+Setup:
+
+1. **Render → lion-elite-os → Environment**, add:
+   `CRON_SECRET` (long random string), `RESEND_API_KEY`, `OUTREACH_FROM_EMAIL`,
+   `OUTREACH_START_DATE` (first send day, `YYYY-MM-DD`), `DAILY_SEND_MAX=150`,
+   `DAILY_EMAIL_LIMIT=150` (the store's own quota; the default 100 would cap the
+   ramp), `GOOGLE_SERVICE_ACCOUNT_JSON`, and
+   `OUTREACH_APPROVED_MESSAGE_VERSIONS` (run `npm run outreach:versions` for the
+   ids; the follow-up id is new and needs your review). Leave
+   `OUTREACH_SEND_ENABLED` unset for now. `OUTREACH_POSTAL_ADDRESS` is already set.
+2. **GitHub → Settings → Secrets and variables → Actions**, add the same
+   `CRON_SECRET`.
+3. **Google Sheet**, share it with the service account's `client_email` as Editor.
+4. **Dry run**: Actions → *Daily clinic outreach* → Run workflow (dry run is
+   ticked by default). Read the JSON summary in the run log: who would be sent
+   what, and why everyone else was skipped.
+5. **Test e-mail**: send one to yourself and check the footer, the opt-out line
+   and DKIM=pass in the headers (`docs/automated-outreach.md`).
+6. **Turn sending on**: set `OUTREACH_SEND_ENABLED=true` on Render. The next
+   weekday 9:07 run sends.
+
+Stop it any time, no deploy needed:
+
+```bash
+curl -X POST https://lion-elite-os.onrender.com/api/cron/outreach-pause \
+  -H "x-cron-secret: $CRON_SECRET" -H 'content-type: application/json' -d '{"paused":true,"reason":"why"}'
+```
+
+Record a reply or an opt-out (stops the sequence for that address):
+
+```bash
+curl -X POST https://lion-elite-os.onrender.com/api/cron/outreach-reply \
+  -H "x-cron-secret: $CRON_SECRET" -H 'content-type: application/json' -d '{"email":"info@clinic.com","type":"reply"}'
+```
+
 ## Lion Elite Coaching PWA
 
 The main web service now includes an installable, mobile-first coaching portal at `/coaching/`. Coaches can create private client links, build video-backed workout plans, publish nutrition and supplement guidance, record clinician-confirmed peptide protocols, message clients in real time, and review check-ins. Clients can install the portal from their link without an App Store, follow exercise videos, log workouts, message their coach, and track progress.
