@@ -1,11 +1,11 @@
 # Every harvested lead
 
-_Generated 2026-11-10T16:16:29.688Z — 818 leads._
+_Generated 2026-11-10T23:01:01.111Z — 827 leads._
 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-## med-spa-b2b — 818
+## med-spa-b2b — 827
 
 ### Sports Performance & Wellness Center — score 50
 
@@ -6550,3 +6550,75 @@ any of them — reach out by hand from the post link if a lead is worth it.
 - **Why they matched:** clinic
 
 > clinic · 4800 N Federal Hwy, #300B Boca Raton FL 33431
+
+### The Modern Chiropractic — score 50
+
+- **Handle:** [@null](https://www.themodernchiropractic.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 4435 Edgewater Drive Orlando FL 32804
+
+### Dr Ortiz Health & Rehab Center Inc — score 50
+
+- **Handle:** [@null](http://ortizhealthandrehab.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 5301 Conroy Road Orlando FL 32811
+
+### University Diagnostic Institute — score 50
+
+- **Handle:** [@null](https://udiorlando.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 111 North Lakemont Avenue Winter Park FL 32792
+
+### Ageless Health & Aesthetics Orlando — score 70
+
+- **Handle:** [@null](https://ageless-orlando.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 4104 Millenia Blvd Orlando FL 32839
+
+### Surgery Consultants of Orlando — score 50
+
+- **Handle:** [@null](https://surgeryconsultantsofflorida.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 5334 South John Young Parkway Orlando FL 32839
+
+### Ayurbeauty Wellness Center — score 50
+
+- **Handle:** [@null](https://www.ayurbeauty.us/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 112 North Summerlin Ave Orlando FL 32801
+
+### SpinalMed Injury and Chiropractic — score 70
+
+- **Handle:** [@null](https://www.spinalmedchiro.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 631 Fairbanks Avenue Winter Park FL 32789
+
+### Luck Health Center — score 50
+
+- **Handle:** [@null](https://luckhealthcenter.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 5401 South Kirkman Road Orlando FL 32819
+
+### Prospine Orlando Chiropractor — score 70
+
+- **Handle:** [@null](https://www.prospineorlando.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 7121 Grand National Drive Orlando FL 32819

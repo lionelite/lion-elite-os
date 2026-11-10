@@ -1,6 +1,6 @@
 # New leads from the last harvest
 
-_Generated 2026-11-10T16:16:29.687Z — 5 leads._
+_Generated 2026-11-10T23:01:01.110Z — 9 leads._
 
 | Searches run | Searches failed | Posts read | Matched | Dropped (do-not-engage) |
 |---:|---:|---:|---:|---:|
@@ -41,46 +41,78 @@ business-scaling: Bluesky search failed for "trying to scale my business": HTTP 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-**Sources this run:** bluesky: unreachable (23 failed) · openstreetmap: 7 businesses in boca-raton-fl
+**Sources this run:** bluesky: unreachable (23 failed) · openstreetmap: 50 businesses in orlando-fl
 
-## med-spa-b2b — 5
+## med-spa-b2b — 9
 
-### Gold Coast Holistic Medical Specialists — score 50
+### The Modern Chiropractic — score 50
 
-- **Handle:** [@null](https://goldcoast-hms.com)
+- **Handle:** [@null](https://www.themodernchiropractic.com)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** clinic
 
-> clinic · 7035 Beracasa Way, #104 Boca Raton FL 33433
+> clinic · 4435 Edgewater Drive Orlando FL 32804
 
-### Optimization Centre — score 50
+### Dr Ortiz Health & Rehab Center Inc — score 50
 
-- **Handle:** [@null](https://www.optimizationcentre.com/)
+- **Handle:** [@null](http://ortizhealthandrehab.com/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** clinic
 
-> clinic · 3010 North Military Trail Boca Raton FL 33431
+> clinic · 5301 Conroy Road Orlando FL 32811
 
-### Impression Imaging — score 70
+### University Diagnostic Institute — score 50
 
-- **Handle:** [@null](https://impressionimaging.com)
+- **Handle:** [@null](https://udiorlando.com)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** clinic
 
-> clinic · 6853 Southwest 18th Street Boca Raton FL 33433
+> clinic · 111 North Lakemont Avenue Winter Park FL 32792
 
-### Aesthetics by Yari — score 70
+### Ageless Health & Aesthetics Orlando — score 70
 
-- **Handle:** [@null](https://www.aestheticsbyyari.com/)
+- **Handle:** [@null](https://ageless-orlando.com/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** clinic
 
-> clinic · 500 Northeast Spanish River Boulevard Boca Raton FL 33431
+> clinic · 4104 Millenia Blvd Orlando FL 32839
 
-### Dr. Landon Pryor — score 50
+### Surgery Consultants of Orlando — score 50
 
-- **Handle:** [@null](https://drlandonpryor.com/)
+- **Handle:** [@null](https://surgeryconsultantsofflorida.com)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** clinic
 
-> clinic · 4800 N Federal Hwy, #300B Boca Raton FL 33431
+> clinic · 5334 South John Young Parkway Orlando FL 32839
+
+### Ayurbeauty Wellness Center — score 50
+
+- **Handle:** [@null](https://www.ayurbeauty.us/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 112 North Summerlin Ave Orlando FL 32801
+
+### SpinalMed Injury and Chiropractic — score 70
+
+- **Handle:** [@null](https://www.spinalmedchiro.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 631 Fairbanks Avenue Winter Park FL 32789
+
+### Luck Health Center — score 50
+
+- **Handle:** [@null](https://luckhealthcenter.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 5401 South Kirkman Road Orlando FL 32819
+
+### Prospine Orlando Chiropractor — score 70
+
+- **Handle:** [@null](https://www.prospineorlando.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 7121 Grand National Drive Orlando FL 32819
