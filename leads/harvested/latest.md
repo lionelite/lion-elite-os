@@ -1,6 +1,6 @@
 # New leads from the last harvest
 
-_Generated 2026-11-11T05:10:00.530Z — 6 leads._
+_Generated 2026-11-11T13:47:34.344Z — 0 leads._
 
 | Searches run | Searches failed | Posts read | Matched | Dropped (do-not-engage) |
 |---:|---:|---:|---:|---:|
@@ -41,54 +41,6 @@ business-scaling: Bluesky search failed for "trying to scale my business": HTTP 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-**Sources this run:** bluesky: unreachable (23 failed) · openstreetmap: 8 businesses in fort-myers-fl
+**Sources this run:** bluesky: unreachable (23 failed) · openstreetmap: 9 businesses in cleveland-oh
 
-## med-spa-b2b — 6
-
-### Johns Hopkins All Children's Hospital — score 50
-
-- **Handle:** [@null](https://www.hopkinsmedicine.org/patient-care/locations/johns-hopkins-all-childrens-outpatient-ft-myers)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
-
-> clinic · 4550 Colonial Boulevard Fort Myers FL 33966
-
-### 360 Medical Centers — score 50
-
-- **Handle:** [@null](https://www.360medicalcenters.com/)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
-
-> clinic · 3677 Central Ave Suite B Fort Myers FL 33901
-
-### Olive Leaf Massage Therapy — score 50
-
-- **Handle:** [@null](https://www.massagebook.com/therapists/oliveleafmt)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
-
-> clinic · 1755 Boy Scout Drive Fort Myers FL 33907
-
-### Millennium Physicians Group — score 50
-
-- **Handle:** [@null](https://millenniumphysician.com/)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
-
-> clinic · 13774 Plantation Road 33912
-
-### Physicians Primary Care of SWFL — score 50
-
-- **Handle:** [@null](https://www.ppcswfl.com/)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
-
-> clinic · 13195 Metro Parkway 33966
-
-### DaVita Dialysis — score 50
-
-- **Handle:** [@null](https://www.davita.com)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
-
-> clinic · 8850 Gladiolus Drive Fort Myers FL 33908
+**No new leads, but a source did answer.** Bluesky was unreachable; the sources line above shows what did respond. Nothing new means that area is already fully harvested — widen the search areas rather than waiting for a different result.
