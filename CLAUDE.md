@@ -921,8 +921,7 @@ notes), not live infrastructure — don't treat them as configuration.
 - **Clinic outreach runs over HTTP on the free tier (2026-11-10).** Production is
   one free Render web service on Supabase. No Redis, workers or crons exist, so
   the BullMQ clinic pipeline never ran. `POST /api/cron/clinic-outreach`
-  (`routes/clinic-outreach-cron.js`, `x-cron-secret` = `CRON_SECRET`, 503 if
-  unset) runs discovery → qualification → first touch → one follow-up for
+  (`routes/clinic-outreach-cron.js`) runs discovery → qualification → first touch → one follow-up for
   `contacted` clinics → `outreach_runs` row → Google Sheet mirror, in-process,
   triggered by `.github/workflows/daily-clinic-outreach.yml` (9:07 AM New York,
   weekdays). The kill switch for this path is `app_settings.outreach_paused`
@@ -931,7 +930,13 @@ notes), not live infrastructure — don't treat them as configuration.
   per-step idempotency key is `sha256(prospect|campaign|step)`. The
   never-email list (`lib/outreach/never-email.js`: Level T, asim.hasnie) is a
   code constant that env can only extend. The live table uses stages
-  `contacted`/`replied`, now in `STAGES`. Runbook: `docs/clinic-outreach-http.md`.
+  `contacted`/`replied`, now in `STAGES`. Auth: the workflows send a GitHub
+  Actions OIDC token, verified in `lib/outreach/github-oidc.js` (repo, `main`,
+  `schedule`/`workflow_dispatch` events, and the two named workflow files only).
+  `x-cron-secret` = `CRON_SECRET` is optional, for manual curl. No configuration
+  leaves the routes open. Owner controls (status/pause/resume/record reply or
+  opt-out) are in `.github/workflows/outreach-control.yml`.
+  Runbook: `docs/clinic-outreach-http.md`.
 - **Known dropped job, needs an owner decision:** the daily `staleData` cron
   enqueues `refresh-stale-prospect-data` to the `enrichment` queue, which no
   worker consumes — it has been piling up unprocessed every day. Either write the

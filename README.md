@@ -58,38 +58,31 @@ first-touch e-mails and the one follow-up to clinics already contacted, writes a
 
 Setup:
 
+The workflows authenticate to the service with GitHub's own short-lived OIDC
+tokens, so no shared secret has to be created or copied anywhere.
+
 1. **Render → lion-elite-os → Environment**, add:
-   `CRON_SECRET` (long random string), `RESEND_API_KEY`, `OUTREACH_FROM_EMAIL`,
+   `RESEND_API_KEY`, `OUTREACH_FROM_EMAIL`,
    `OUTREACH_START_DATE` (first send day, `YYYY-MM-DD`), `DAILY_SEND_MAX=150`,
    `DAILY_EMAIL_LIMIT=150` (the store's own quota; the default 100 would cap the
    ramp), `GOOGLE_SERVICE_ACCOUNT_JSON`, and
    `OUTREACH_APPROVED_MESSAGE_VERSIONS` (run `npm run outreach:versions` for the
    ids; the follow-up id is new and needs your review). Leave
    `OUTREACH_SEND_ENABLED` unset for now. `OUTREACH_POSTAL_ADDRESS` is already set.
-2. **GitHub → Settings → Secrets and variables → Actions**, add the same
-   `CRON_SECRET`.
-3. **Google Sheet**, share it with the service account's `client_email` as Editor.
-4. **Dry run**: Actions → *Daily clinic outreach* → Run workflow (dry run is
+2. **Google Sheet**, share it with the service account's `client_email` as Editor.
+3. **Dry run**: Actions → *Daily clinic outreach* → Run workflow (dry run is
    ticked by default). Read the JSON summary in the run log: who would be sent
    what, and why everyone else was skipped.
-5. **Test e-mail**: send one to yourself and check the footer, the opt-out line
+4. **Test e-mail**: send one to yourself and check the footer, the opt-out line
    and DKIM=pass in the headers (`docs/automated-outreach.md`).
-6. **Turn sending on**: set `OUTREACH_SEND_ENABLED=true` on Render. The next
+5. **Turn sending on**: set `OUTREACH_SEND_ENABLED=true` on Render. The next
    weekday 9:07 run sends.
 
-Stop it any time, no deploy needed:
-
-```bash
-curl -X POST https://lion-elite-os.onrender.com/api/cron/outreach-pause \
-  -H "x-cron-secret: $CRON_SECRET" -H 'content-type: application/json' -d '{"paused":true,"reason":"why"}'
-```
-
-Record a reply or an opt-out (stops the sequence for that address):
-
-```bash
-curl -X POST https://lion-elite-os.onrender.com/api/cron/outreach-reply \
-  -H "x-cron-secret: $CRON_SECRET" -H 'content-type: application/json' -d '{"email":"info@clinic.com","type":"reply"}'
-```
+Controls, from **Actions → Outreach control → Run workflow** (no deploy, no secret):
+`status`, `pause` (stops sends from the next check, even mid-run), `resume`,
+`record_reply` and `record_opt_out` (stop the sequence for an address; opt-out
+also adds it to the suppression list). Optionally set `CRON_SECRET` on Render to
+use the same routes from `curl` with an `x-cron-secret` header.
 
 ## Lion Elite Coaching PWA
 

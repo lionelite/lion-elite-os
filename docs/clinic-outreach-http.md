@@ -21,8 +21,21 @@ works wherever Redis exists.
 
 ## What one run does
 
-All routes need the header `x-cron-secret` to equal `CRON_SECRET`. If
-`CRON_SECRET` is unset, every route answers 503.
+Every route needs one of two credentials:
+
+- `Authorization: Bearer <GitHub Actions OIDC token>`: what both workflows use.
+  `lib/outreach/github-oidc.js` verifies the RS256 signature against GitHub's
+  published keys. It accepts the token only if issuer, audience
+  (`lion-elite-os-cron`), expiry, repository (`lionelite/lion-elite-os`), branch
+  (`refs/heads/main`), event (`schedule`/`workflow_dispatch`) and workflow file
+  (`daily-clinic-outreach.yml` or `outreach-control.yml`) all match. Tokens live
+  about five minutes, and no long-lived secret exists to leak. The trust
+  boundary is write access to the protected `main` branch, the same as for a
+  repo secret.
+- `x-cron-secret` equal to `CRON_SECRET`: optional, for manual `curl`. If it is
+  unset, this path is unavailable.
+
+Anything else gets 401. No configuration leaves the routes open.
 
 `POST /api/cron/clinic-outreach` (`?dryRun=1` sends nothing):
 
@@ -88,7 +101,7 @@ HTTP code. The workflow does exactly that. A run stops sending after
 `OUTREACH_RUN_BUDGET_MINUTES` (default 100, inside the workflow's 115-minute
 curl limit). Anything left over is eligible on the next run.
 
-Other routes:
+Other routes (also available from **Actions → Outreach control**):
 
 - `GET /api/cron/clinic-outreach/status`: pause state, today's ramp, last 10 runs.
 - `POST /api/cron/outreach-pause` `{"paused": true|false, "reason": "..."}`.
