@@ -4,16 +4,11 @@ name: Daily clinic outreach
 # (POST /api/cron/clinic-outreach, routes/clinic-outreach-cron.js). No Redis,
 # workers or Render cron are needed.
 #
-# 9:07 AM America/New_York, weekdays. GitHub cron only speaks UTC, so both
-# offsets are scheduled and the guard keeps whichever cron is 9:07 in New York
-# (13:07 UTC during EDT, 14:07 UTC during EST) — decided from WHICH cron fired,
-# not the wall clock, because scheduled runs often start late (see
-# daily-social-content.yml for the history). The server also refuses weekend
-# sends and a second completed run on the same New York day.
+# Hourly 9 AM–3 PM New York, every day; offset guard selects DST schedule.
 on:
   schedule:
-    - cron: '7 13 * * 1-5'
-    - cron: '7 14 * * 1-5'
+    - cron: '7 13-19 * * *'
+    - cron: '7 14-20 * * *'
   workflow_dispatch:
     inputs:
       dry_run:
@@ -39,18 +34,18 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 120
     steps:
-      - name: Keep only the 9:07 AM New York run
+      - name: Keep only the New York daytime schedule
         id: guard
         run: |
           if [ "${{ github.event_name }}" != "schedule" ]; then echo "Manual dispatch — running."; exit 0; fi
           offset="$(TZ=America/New_York date +%z)"
           case "$offset" in
-            -0400) want='7 13 * * 1-5' ;;
-            -0500) want='7 14 * * 1-5' ;;
+            -0400) want='7 13-19 * * *' ;;
+            -0500) want='7 14-20 * * *' ;;
             *) echo "Unexpected offset $offset — running."; exit 0 ;;
           esac
           if [ '${{ github.event.schedule }}' != "$want" ]; then
-            echo "Cron '${{ github.event.schedule }}' is not the 9:07 New York cron for offset $offset. Skipping."
+            echo "Cron '${{ github.event.schedule }}' is not the daytime New York cron for offset $offset. Skipping."
             echo "skip=true" >> "$GITHUB_OUTPUT"
           fi
 
