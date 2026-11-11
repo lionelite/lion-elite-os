@@ -1392,3 +1392,32 @@ CREATE TABLE IF NOT EXISTS outreach_suppressions (
 );
 CREATE UNIQUE INDEX IF NOT EXISTS outreach_suppressions_address_idx ON outreach_suppressions(lower(address)) WHERE address IS NOT NULL;
 CREATE UNIQUE INDEX IF NOT EXISTS outreach_suppressions_domain_idx ON outreach_suppressions(lower(domain)) WHERE domain IS NOT NULL;
+
+-- HTTP-triggered clinic outreach (lib/outreach/clinic-outreach-run.js). Also
+-- created on demand by lib/outreach/outreach-control.js ensureSchema(), so the
+-- free Render web service works without running a migration first.
+--   app_settings.outreach_paused  the Postgres kill switch for that path (fails closed)
+--   outreach_runs                 one row per run: counts, skip reasons, summary
+CREATE TABLE IF NOT EXISTS app_settings (
+  key TEXT PRIMARY KEY,
+  value JSONB NOT NULL DEFAULT 'null'::jsonb,
+  updated_by TEXT NOT NULL DEFAULT 'system',
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE TABLE IF NOT EXISTS outreach_runs (
+  run_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  run_date DATE NOT NULL,
+  trigger TEXT NOT NULL DEFAULT 'http',
+  dry_run BOOLEAN NOT NULL DEFAULT false,
+  status TEXT NOT NULL DEFAULT 'running',
+  discovered INTEGER NOT NULL DEFAULT 0,
+  qualified INTEGER NOT NULL DEFAULT 0,
+  sent INTEGER NOT NULL DEFAULT 0,
+  failed INTEGER NOT NULL DEFAULT 0,
+  skipped INTEGER NOT NULL DEFAULT 0,
+  skip_reasons JSONB NOT NULL DEFAULT '{}'::jsonb,
+  summary JSONB NOT NULL DEFAULT '{}'::jsonb,
+  started_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  finished_at TIMESTAMPTZ
+);
+CREATE INDEX IF NOT EXISTS outreach_runs_date_idx ON outreach_runs(run_date, status);

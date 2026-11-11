@@ -918,6 +918,20 @@ notes), not live infrastructure — don't treat them as configuration.
   constant** — an approval written into the repo by the template's author is not
   an approval. Follow-ups (e-mails 2–3) are not automated: there is no reply
   detection. Runbook: `docs/automated-outreach.md`.
+- **Clinic outreach runs over HTTP on the free tier (2026-11-10).** Production is
+  one free Render web service on Supabase. No Redis, workers or crons exist, so
+  the BullMQ clinic pipeline never ran. `POST /api/cron/clinic-outreach`
+  (`routes/clinic-outreach-cron.js`, `x-cron-secret` = `CRON_SECRET`, 503 if
+  unset) runs discovery → qualification → first touch → one follow-up for
+  `contacted` clinics → `outreach_runs` row → Google Sheet mirror, in-process,
+  triggered by `.github/workflows/daily-clinic-outreach.yml` (9:07 AM New York,
+  weekdays). The kill switch for this path is `app_settings.outreach_paused`
+  (Postgres, fails closed; Redis still honoured if present). Sends still go
+  through `outreach_queue`, so `DAILY_EMAIL_LIMIT` and suppression apply. The
+  per-step idempotency key is `sha256(prospect|campaign|step)`. The
+  never-email list (`lib/outreach/never-email.js`: Level T, asim.hasnie) is a
+  code constant that env can only extend. The live table uses stages
+  `contacted`/`replied`, now in `STAGES`. Runbook: `docs/clinic-outreach-http.md`.
 - **Known dropped job, needs an owner decision:** the daily `staleData` cron
   enqueues `refresh-stale-prospect-data` to the `enrichment` queue, which no
   worker consumes — it has been piling up unprocessed every day. Either write the
