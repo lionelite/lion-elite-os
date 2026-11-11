@@ -169,6 +169,23 @@ test('clinic outreach run end to end', { skip: !databaseConfigured, timeout: 60_
   const saturday = await runner({ now: () => new Date('2026-11-14T14:07:00Z') }).run({ trigger: 'integration-test' });
   assert.equal(saturday.status, 'skipped');
 
+  // Overpass unreachable → Nominatim fallback still grows the pipeline (dry run, so no sends).
+  const fallback = await runner({
+    now: () => new Date(NOW.getTime() + 3 * 86_400_000),
+    discoveryFetch: async () => { throw new TypeError('fetch failed'); },
+    nominatimSleep: async () => {},
+    nominatimFetch: async url => ({ ok: true, status: 200, json: async () => (new URL(url).searchParams.get('q') === 'longevity'
+      ? [{ osm_type: 'node', osm_id: 77, name: `Nominatim Longevity Clinic ${tag}`, category: 'amenity', type: 'clinic',
+          extratags: { website: `https://${host('n')}`, email: `info@${host('n')}` } }] : []) }),
+  }).run({ dryRun: true, trigger: 'integration-test-fallback' });
+  assert.equal(fallback.status, 'completed');
+  assert.match(fallback.discovery.source, /nominatim/);
+  assert.ok(fallback.discovery.overpassError);
+  assert.equal(fallback.discovery.stored, 1);
+  const N = (await query(`SELECT * FROM prospects WHERE lower(contact->>'email') = $1`, [`info@${host('n')}`])).rows[0];
+  assert.ok(N, 'fallback clinic stored');
+  assert.equal(N.stage, 'qualified', 'and qualified in the same run');
+
   // Inbound recorder: an opt-out suppresses the address and every record holding it.
   const inbound = await runner().recordInbound({ email: `INFO@${host('b')}`, type: 'opt_out' });
   assert.equal(inbound.prospectsUpdated, 1);

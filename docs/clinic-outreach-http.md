@@ -49,9 +49,14 @@ Anything else gets 401. No configuration leaves the routes open.
 2. **Discovery.** One metro per run, rotating through the 31 areas in
    `lib/discovery/discovery-run.js`. It searches OpenStreetMap (Overpass) for the
    med-spa and clinic categories, then reads each clinic's own website for the
-   contact e-mail the clinic publishes. Both sources are free, and no paid API
-   is used (the summary's `discovery.source` says so). The repo has no paid
-   discovery agent, so no fallback was needed. Before enrichment, a business is
+   contact e-mail the clinic publishes. If every Overpass mirror is
+   unreachable, it falls back to OpenStreetMap's Nominatim search
+   (`lib/discovery/nominatim-source.js`): the same open data from different
+   servers, about ten bounded searches 1.1 s apart, within its usage policy. This
+   happened on the first production run, where one Overpass mirror refused the
+   connection and two timed out. Every source is free and no paid API is used.
+   `discovery.source` says which one served the run, and `discovery.overpassError`
+   says why Overpass didn't. Before enrichment, a business is
    skipped if its website domain is already in `prospects`, or if
    `lib/contacts/clinic-targeting.js` rates it `low`/`exclude`. Peptide, HRT/TRT,
    weight-loss, longevity, regenerative and aesthetic practices rate high.
