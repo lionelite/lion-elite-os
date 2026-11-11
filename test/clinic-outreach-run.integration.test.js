@@ -2,7 +2,7 @@
 
 // The whole HTTP-triggered clinic outreach run against the real schema:
 // discovery dedupe, first touch + follow-up sends, spacing, reply-stop,
-// suppression, the never-email list, per-step idempotency, one run per day,
+// suppression, the never-email list, per-step idempotency, repeated daily runs,
 // the Postgres pause switch, dry runs and the inbound reply/opt-out recorder.
 // Network (Overpass, websites, DNS, Resend, Google) is stubbed.
 // Runs in CI (Postgres is provisioned); skips locally without DATABASE_URL.
@@ -151,10 +151,13 @@ test('clinic outreach run end to end', { skip: !databaseConfigured, timeout: 60_
   assert.ok(summary.sent >= 3);
   assert.equal(summary.skipped, summary.examined - summary.sent - summary.failed);
 
-  // Same New York day: refused.
+  // Same New York day: resume without duplicate sends or a fresh daily allowance.
+  const beforeRepeat = sent.length;
+  const priorQuota = await store.getDailyEmailQuota();
   const again = await runner().run({ trigger: 'integration-test' });
-  assert.equal(again.status, 'skipped');
-  assert.match(again.reason, /already completed/);
+  assert.equal(again.status, 'completed');
+  assert.equal(sent.length, beforeRepeat, 'same-day repeat must not resend existing steps');
+  assert.equal(again.cap.effective, Math.max(0, Math.min(again.cap.ramp.cap - priorQuota.sent, priorQuota.remaining)));
 
   // Next day: nobody already e-mailed by this pipeline is e-mailed again.
   const before = sent.length;
@@ -170,9 +173,9 @@ test('clinic outreach run end to end', { skip: !databaseConfigured, timeout: 60_
   assert.equal(paused.status, 'paused');
   await control.setPaused(database, false, { by: 'test' });
 
-  // Weekend: refused for real sends.
+  // Weekend: allowed; existing cadence and duplicate protections still apply.
   const saturday = await runner({ now: () => new Date('2026-11-14T14:07:00Z') }).run({ trigger: 'integration-test' });
-  assert.equal(saturday.status, 'skipped');
+  assert.equal(saturday.status, 'completed');
 
   // Overpass unreachable → Nominatim fallback still grows the pipeline (dry run, so no sends).
   const fallback = await runner({
