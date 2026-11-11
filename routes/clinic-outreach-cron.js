@@ -3,9 +3,13 @@
 /**
  * HTTP trigger for the daily clinic outreach run (lib/outreach/clinic-outreach-run.js).
  *
- * Every route requires the header `x-cron-secret` to equal env CRON_SECRET,
- * compared in constant time. With CRON_SECRET unset every route answers 503:
- * an unconfigured secret must never mean an open endpoint.
+ * Every route requires ONE of:
+ *   - `Authorization: Bearer <GitHub Actions OIDC token>` from this repo's
+ *     daily-clinic-outreach.yml or outreach-control.yml on main
+ *     (lib/outreach/github-oidc.js) — what the workflows use, no secret needed;
+ *   - `x-cron-secret` equal to env CRON_SECRET, compared in constant time — for
+ *     manual curl. With CRON_SECRET unset this path is simply unavailable.
+ * Anything else is 401. There is no configuration in which the routes are open.
  *
  *   POST /api/cron/clinic-outreach        run now (?dryRun=1 or {"dryRun":true} to send nothing)
  *   GET  /api/cron/clinic-outreach/status pause state, today's cap, last 10 runs
@@ -24,6 +28,7 @@ const express = require('express');
 const { createClinicOutreachRunner } = require('../lib/outreach/clinic-outreach-run');
 const control = require('../lib/outreach/outreach-control');
 const { effectiveDailyCap } = require('../lib/outreach/send-cap');
+const { createGithubOidcVerifier } = require('../lib/outreach/github-oidc');
 
 function secretMatches(given, expected) {
   if (!expected || !given) return false;
@@ -32,16 +37,29 @@ function secretMatches(given, expected) {
   return crypto.timingSafeEqual(a, b);
 }
 
-function createClinicOutreachCronRouter({ runner, env = process.env, database, heartbeatMs = 20_000 } = {}) {
+function createClinicOutreachCronRouter({ runner, env = process.env, database, heartbeatMs = 20_000, oidcVerifier } = {}) {
   const router = express.Router();
   let activeRunner = runner || null;
   const getRunner = () => (activeRunner ||= createClinicOutreachRunner({ env }));
   const getDb = () => database || require('../lib/database');
 
-  router.use((req, res, next) => {
-    if (!env.CRON_SECRET) return res.status(503).json({ error: 'CRON_SECRET_NOT_CONFIGURED' });
-    if (!secretMatches(req.get('x-cron-secret'), env.CRON_SECRET)) return res.sendStatus(401);
-    return next();
+  const oidc = oidcVerifier || createGithubOidcVerifier({ env });
+
+  router.use(async (req, res, next) => {
+    const bearer = /^Bearer\s+(.+)$/i.exec(req.get('authorization') || '');
+    if (bearer) {
+      try {
+        req.caller = { kind: 'github-oidc', ...(await oidc.verify(bearer[1].trim())) };
+        return next();
+      } catch (error) {
+        return res.status(401).json({ error: 'OIDC_REJECTED', code: error.code || 'OIDC_INVALID' });
+      }
+    }
+    if (env.CRON_SECRET && secretMatches(req.get('x-cron-secret'), env.CRON_SECRET)) {
+      req.caller = { kind: 'cron-secret' };
+      return next();
+    }
+    return res.sendStatus(401);
   });
 
   router.post('/clinic-outreach', async (req, res) => {
@@ -51,7 +69,8 @@ function createClinicOutreachCronRouter({ runner, env = process.env, database, h
     res.writeHead(200, { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' });
     const beat = setInterval(() => res.write(' '), heartbeatMs);
     try {
-      const summary = await getRunner().run({ dryRun, trigger: String(req.get('x-trigger') || 'http').slice(0, 40) });
+      const trigger = req.caller.kind === 'github-oidc' ? `github/${req.caller.workflow}/${req.caller.event}` : String(req.get('x-trigger') || 'http');
+      const summary = await getRunner().run({ dryRun, trigger: trigger.slice(0, 60) });
       res.end(JSON.stringify(summary));
     } catch (error) {
       res.end(JSON.stringify({ status: 'error', error: error.message }));
@@ -80,7 +99,8 @@ function createClinicOutreachCronRouter({ runner, env = process.env, database, h
     try {
       const db = getDb();
       await control.ensureSchema(db);
-      const state = await control.setPaused(db, req.body.paused, { reason: String(req.body.reason || '').slice(0, 300), by: 'cron-endpoint' });
+      const by = req.caller.kind === 'github-oidc' ? `github:${req.caller.actor || 'actions'}` : 'cron-secret';
+      const state = await control.setPaused(db, req.body.paused, { reason: String(req.body.reason || '').slice(0, 300), by });
       res.json(state);
     } catch (error) {
       res.status(500).json({ error: error.message });

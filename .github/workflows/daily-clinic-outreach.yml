@@ -21,8 +21,11 @@ on:
         type: boolean
         default: true
 
+# id-token: write lets the job request a short-lived GitHub OIDC token, which
+# the service verifies (lib/outreach/github-oidc.js). No shared secret needed.
 permissions:
   contents: read
+  id-token: write
 
 concurrency:
   group: daily-clinic-outreach
@@ -51,16 +54,6 @@ jobs:
             echo "skip=true" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Check the secret is configured
-        if: steps.guard.outputs.skip != 'true'
-        env:
-          CRON_SECRET: ${{ secrets.CRON_SECRET }}
-        run: |
-          if [ -z "$CRON_SECRET" ]; then
-            echo "::error::Repository secret CRON_SECRET is not set (Settings → Secrets and variables → Actions)."
-            exit 1
-          fi
-
       - name: Wake Render service
         if: steps.guard.outputs.skip != 'true'
         run: |
@@ -71,18 +64,28 @@ jobs:
           done
           echo "::error::Service did not answer /health."; exit 1
 
+      # Fetched after the wake-up: the token lives about five minutes.
+      - name: Get GitHub identity token
+        if: steps.guard.outputs.skip != 'true'
+        id: oidc
+        run: |
+          token="$(curl -fsS -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
+            "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=lion-elite-os-cron" | jq -r .value)"
+          if [ -z "$token" ] || [ "$token" = "null" ]; then echo "::error::Could not get an OIDC token."; exit 1; fi
+          echo "::add-mask::$token"
+          echo "token=$token" >> "$GITHUB_OUTPUT"
+
       - name: Trigger outreach run
         if: steps.guard.outputs.skip != 'true'
         env:
-          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+          OIDC_TOKEN: ${{ steps.oidc.outputs.token }}
           DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run && '1' || '0' }}
         run: |
           set -o pipefail
           url="$SERVICE_URL/api/cron/clinic-outreach"
           if [ "$DRY_RUN" = "1" ]; then url="$url?dryRun=1"; fi
           curl -fsS -X POST "$url" \
-            -H "x-cron-secret: $CRON_SECRET" \
-            -H "x-trigger: github-actions/${{ github.event_name }}" \
+            -H "Authorization: Bearer $OIDC_TOKEN" \
             -H "content-type: application/json" \
             --max-time 6900 > summary.json
           jq . summary.json
