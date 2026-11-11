@@ -101,3 +101,13 @@ test('the daily clinic cron refuses to enqueue unless the worker reports it can 
   assert.match(src, /deliveryConfigured/);
   assert.doesNotMatch(src, /RESEND_API_KEY\b(?![^\n]*\))/, 'the cron must not read the Resend key itself');
 });
+
+test('OpenStreetMap ids as discovery stores them (node/123) count as a directory origin', () => {
+  for (const sourceRef of ['node/12187997366', 'osm:node/12187997366', 'way/5']) {
+    const q = qualifyClinicProspect(prospect({ business: { ...prospect().business, sourceRef, website: 'https://other.example/' } }), clean, { now: NOW, env: approvedEnv });
+    assert.equal(q.checks.source.passed, true, sourceRef);
+    assert.equal(q.checks.source.value, 'public_directory');
+  }
+  const bogus = qualifyClinicProspect(prospect({ business: { ...prospect().business, sourceRef: 'node/abc', website: 'https://other.example/' } }), clean, { now: NOW, env: approvedEnv });
+  assert.equal(bogus.checks.source.passed, false);
+});

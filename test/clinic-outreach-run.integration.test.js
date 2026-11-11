@@ -176,12 +176,17 @@ test('clinic outreach run end to end', { skip: !databaseConfigured, timeout: 60_
     nominatimSleep: async () => {},
     nominatimFetch: async url => ({ ok: true, status: 200, json: async () => (new URL(url).searchParams.get('q') === 'longevity'
       ? [{ osm_type: 'node', osm_id: 77, name: `Nominatim Longevity Clinic ${tag}`, category: 'amenity', type: 'clinic',
-          extratags: { website: `https://${host('n')}`, email: `info@${host('n')}` } }] : []) }),
+          extratags: { website: `https://${host('n')}`, email: `info@${host('n')}` } },
+         { osm_type: 'node', osm_id: 78, name: `Gmail Aesthetics ${tag}`, category: 'shop', type: 'beauty',
+          extratags: { website: `https://${host('p')}`, email: `owner${tag}@gmail.com` } }] : []) }),
   }).run({ dryRun: true, trigger: 'integration-test-fallback' });
   assert.equal(fallback.status, 'completed');
   assert.match(fallback.discovery.source, /nominatim/);
   assert.ok(fallback.discovery.overpassError);
-  assert.equal(fallback.discovery.stored, 1);
+  assert.equal(fallback.discovery.stored, 2);
+  assert.equal(fallback.discovery.personalEmailsRefused, 1);
+  const P = (await query(`SELECT * FROM prospects WHERE business->>'name' = $1`, [`Gmail Aesthetics ${tag}`])).rows[0];
+  assert.equal(P.contact.email, null, 'personal mailbox from a listing is not stored');
   const N = (await query(`SELECT * FROM prospects WHERE lower(contact->>'email') = $1`, [`info@${host('n')}`])).rows[0];
   assert.ok(N, 'fallback clinic stored');
   assert.equal(N.stage, 'qualified', 'and qualified in the same run');
