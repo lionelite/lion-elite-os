@@ -39,6 +39,11 @@ test('clinic outreach run end to end', { skip: !databaseConfigured, timeout: 60_
   const store = new PostgresProspectStore();
 
   const NOW = new Date('2026-11-10T14:07:00Z'); // Tuesday, 9:07 New York
+  // The clock moves, as it does in production: evidence gathered during a run
+  // (MX lookups, discovery) is newer than the run's start. A frozen clock hid a
+  // bug where every follow-up failed data_freshness on its first real run.
+  let tick = NOW.getTime();
+  const clock = () => new Date(tick += 1000);
   const host = l => `${l}-${tag}.example`;
   const mk = async (input, patch) => {
     const { prospect } = await store.create(input, 'test');
@@ -85,9 +90,9 @@ test('clinic outreach run end to end', { skip: !databaseConfigured, timeout: 60_
   const mirrored = [];
   const ours = id => [A, B, C, D, E, F, LT].some(p => p.prospectId === id) || sent.some(s => s.prospectId === id);
   const runner = (overrides = {}) => createClinicOutreachRunner({
-    env, store, now: () => NOW, sleep: async ms => { gaps.push(ms); }, random: () => 0.5,
+    env, store, now: clock, sleep: async ms => { gaps.push(ms); }, random: () => 0.5,
     discoveryFetch: overpass, enrichEmail: async () => null, enrichDelayMs: 0,
-    mxCheck: async () => ({ ok: true, checkedAt: NOW.toISOString() }),
+    mxCheck: async () => ({ ok: true, checkedAt: new Date(tick).toISOString() }),
     sendEmail: async ({ draft, prospect, authorization }) => { sent.push({ prospectId: prospect.prospectId, to: draft.recipient, version: draft.messageVersion, key: authorization.idempotencyKey }); return { providerId: `re_${sent.length}` }; },
     mirror: async rows => { mirrored.push(...rows); return { status: 'mirrored', rows: rows.length }; },
     logger: { log() {}, warn() {}, error() {} },
