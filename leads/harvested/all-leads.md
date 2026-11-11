@@ -1,11 +1,11 @@
 # Every harvested lead
 
-_Generated 2026-11-10T23:01:01.111Z — 827 leads._
+_Generated 2026-11-11T05:10:00.531Z — 833 leads._
 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-## med-spa-b2b — 827
+## med-spa-b2b — 833
 
 ### Sports Performance & Wellness Center — score 50
 
@@ -6622,3 +6622,51 @@ any of them — reach out by hand from the post link if a lead is worth it.
 - **Why they matched:** clinic
 
 > clinic · 7121 Grand National Drive Orlando FL 32819
+
+### Johns Hopkins All Children's Hospital — score 50
+
+- **Handle:** [@null](https://www.hopkinsmedicine.org/patient-care/locations/johns-hopkins-all-childrens-outpatient-ft-myers)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 4550 Colonial Boulevard Fort Myers FL 33966
+
+### 360 Medical Centers — score 50
+
+- **Handle:** [@null](https://www.360medicalcenters.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 3677 Central Ave Suite B Fort Myers FL 33901
+
+### Olive Leaf Massage Therapy — score 50
+
+- **Handle:** [@null](https://www.massagebook.com/therapists/oliveleafmt)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 1755 Boy Scout Drive Fort Myers FL 33907
+
+### Millennium Physicians Group — score 50
+
+- **Handle:** [@null](https://millenniumphysician.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 13774 Plantation Road 33912
+
+### Physicians Primary Care of SWFL — score 50
+
+- **Handle:** [@null](https://www.ppcswfl.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 13195 Metro Parkway 33966
+
+### DaVita Dialysis — score 50
+
+- **Handle:** [@null](https://www.davita.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 8850 Gladiolus Drive Fort Myers FL 33908

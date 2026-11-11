@@ -1,6 +1,6 @@
 # New leads from the last harvest
 
-_Generated 2026-11-10T23:01:01.110Z — 9 leads._
+_Generated 2026-11-11T05:10:00.530Z — 6 leads._
 
 | Searches run | Searches failed | Posts read | Matched | Dropped (do-not-engage) |
 |---:|---:|---:|---:|---:|
@@ -41,78 +41,54 @@ business-scaling: Bluesky search failed for "trying to scale my business": HTTP 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-**Sources this run:** bluesky: unreachable (23 failed) · openstreetmap: 50 businesses in orlando-fl
+**Sources this run:** bluesky: unreachable (23 failed) · openstreetmap: 8 businesses in fort-myers-fl
 
-## med-spa-b2b — 9
+## med-spa-b2b — 6
 
-### The Modern Chiropractic — score 50
+### Johns Hopkins All Children's Hospital — score 50
 
-- **Handle:** [@null](https://www.themodernchiropractic.com)
+- **Handle:** [@null](https://www.hopkinsmedicine.org/patient-care/locations/johns-hopkins-all-childrens-outpatient-ft-myers)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** clinic
 
-> clinic · 4435 Edgewater Drive Orlando FL 32804
+> clinic · 4550 Colonial Boulevard Fort Myers FL 33966
 
-### Dr Ortiz Health & Rehab Center Inc — score 50
+### 360 Medical Centers — score 50
 
-- **Handle:** [@null](http://ortizhealthandrehab.com/)
+- **Handle:** [@null](https://www.360medicalcenters.com/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** clinic
 
-> clinic · 5301 Conroy Road Orlando FL 32811
+> clinic · 3677 Central Ave Suite B Fort Myers FL 33901
 
-### University Diagnostic Institute — score 50
+### Olive Leaf Massage Therapy — score 50
 
-- **Handle:** [@null](https://udiorlando.com)
+- **Handle:** [@null](https://www.massagebook.com/therapists/oliveleafmt)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** clinic
 
-> clinic · 111 North Lakemont Avenue Winter Park FL 32792
+> clinic · 1755 Boy Scout Drive Fort Myers FL 33907
 
-### Ageless Health & Aesthetics Orlando — score 70
+### Millennium Physicians Group — score 50
 
-- **Handle:** [@null](https://ageless-orlando.com/)
+- **Handle:** [@null](https://millenniumphysician.com/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** clinic
 
-> clinic · 4104 Millenia Blvd Orlando FL 32839
+> clinic · 13774 Plantation Road 33912
 
-### Surgery Consultants of Orlando — score 50
+### Physicians Primary Care of SWFL — score 50
 
-- **Handle:** [@null](https://surgeryconsultantsofflorida.com)
+- **Handle:** [@null](https://www.ppcswfl.com/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** clinic
 
-> clinic · 5334 South John Young Parkway Orlando FL 32839
+> clinic · 13195 Metro Parkway 33966
 
-### Ayurbeauty Wellness Center — score 50
+### DaVita Dialysis — score 50
 
-- **Handle:** [@null](https://www.ayurbeauty.us/)
+- **Handle:** [@null](https://www.davita.com)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** clinic
 
-> clinic · 112 North Summerlin Ave Orlando FL 32801
-
-### SpinalMed Injury and Chiropractic — score 70
-
-- **Handle:** [@null](https://www.spinalmedchiro.com/)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
-
-> clinic · 631 Fairbanks Avenue Winter Park FL 32789
-
-### Luck Health Center — score 50
-
-- **Handle:** [@null](https://luckhealthcenter.com)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
-
-> clinic · 5401 South Kirkman Road Orlando FL 32819
-
-### Prospine Orlando Chiropractor — score 70
-
-- **Handle:** [@null](https://www.prospineorlando.com)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
-
-> clinic · 7121 Grand National Drive Orlando FL 32819
+> clinic · 8850 Gladiolus Drive Fort Myers FL 33908
