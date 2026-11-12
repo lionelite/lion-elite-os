@@ -1,11 +1,11 @@
 # Every harvested lead
 
-_Generated 2026-11-11T21:12:57.321Z — 858 leads._
+_Generated 2026-11-12T02:49:25.065Z — 883 leads._
 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-## med-spa-b2b — 858
+## med-spa-b2b — 883
 
 ### Sports Performance & Wellness Center — score 50
 
@@ -6870,3 +6870,203 @@ any of them — reach out by hand from the post link if a lead is worth it.
 - **Why they matched:** gym
 
 > gym · 3964 30th Street San Diego CA 92104
+
+### Beau Eyelash Studio — score 50
+
+- **Handle:** [@null](https://eyelashstudionyc.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 531 Amsterdam Avenue New York NY 10024
+
+### QQ Nails & Spa — score 50
+
+- **Handle:** [@null](https://www.qqnailspa.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 2466 Broadway New York NY 10025
+
+### European Wax Center — score 50
+
+- **Handle:** [@null](https://locations.waxcenter.com/ny/newyork/new-york-57th-street-0358.html)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 315 West 57th Street 10019
+
+### Perfect Brows — score 70
+
+- **Handle:** [@null](https://www.perfectbrowsnyc.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 880 9th Avenue New York NY 10019
+
+### European Wax Center — score 50
+
+- **Handle:** [@null](https://locations.waxcenter.com/ny/newyork/new-york-34th-street-0357.html)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa
+
+### Spa Ocean Nail — score 50
+
+- **Handle:** [@null](https://salons2.wixsite.com/oceannailstanton)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 164 Stanton Street New York NY 10002
+
+### European Wax Center — score 50
+
+- **Handle:** [@null](https://locations.waxcenter.com/ny/longislandcity/laser-hair-removal-long-island-city-0419.html)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 4545 Center Boulevard Long Island City NY 11109
+
+### Emily Salon & Spa — score 50
+
+- **Handle:** [@null](http://emilysalonspa.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 47-05 Center Boulevard Long Island City NY 11109
+
+### All Seasons Beauty Spa — score 50
+
+- **Handle:** [@null](https://fourseasonsbeautyspa.wixsite.com/locations/8thst-newyork)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa
+
+### Lash Loft — score 50
+
+- **Handle:** [@null](https://thelashloft.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 34 East 20th Street New York NY 10003
+
+### Azure Nails & Spa — score 50
+
+- **Handle:** [@null](https://salons-spa.wixsite.com/azurenailsandspa)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 1844 2nd Avenue 10128
+
+### Breeze Nail + Spa — score 50
+
+- **Handle:** [@null](https://www.breezenailspa.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 62 2nd Avenue 10003
+
+### Sia's — score 50
+
+- **Handle:** [@null](https://www.siasbeautynyc.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa
+
+### Ricky's NYC — score 50
+
+- **Handle:** [@null](http://www.rickysnyc.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 830 Broadway
+
+### Perfect Brows NYC — score 70
+
+- **Handle:** [@null](https://www.perfectbrowsnyc.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 1163 2nd Avenue 10065
+
+### Silver Mirror — score 70
+
+- **Handle:** [@null](https://www.silvermirror.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 862 Lexington Avenue
+
+### Beauty Box — score 70
+
+- **Handle:** [@null](https://www.beautyboxny.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 2091 Broadway New York NY 10023
+
+### Pink Lemon Park Nail Studio — score 50
+
+- **Handle:** [@null](https://pinklemonparknails.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 1335 Madison Avenue 10128
+
+### Dyanna Spa — score 50
+
+- **Handle:** [@null](https://dyannaspa.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa
+
+### Sola Salons — score 70
+
+- **Handle:** [@null](https://www.solasalonstudios.com/locations/manhattan-midtown-east)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa
+
+### European Wax Center — score 50
+
+- **Handle:** [@null](https://locations.waxcenter.com/ny/newyork/new-york-99th-on-columbus-0521.html)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 805 Columbus Avenue New York NY 10025
+
+### Koru — score 70
+
+- **Handle:** [@null](https://korunyc.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 341 East 78th Street
+
+### Pinky Threading Salon — score 50
+
+- **Handle:** [@null](http://www.pinkythreadingsalon.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 1474 3rd Avenue 10028
+
+### European Wax Center — score 50
+
+- **Handle:** [@null](https://locations.waxcenter.com/ny/newyork/new-york-grand-central-0689.html)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa
+
+### Perfect Brows NYC — score 70
+
+- **Handle:** [@null](https://www.perfectbrowsnyc.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 1709 2nd Avenue
