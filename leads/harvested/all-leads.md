@@ -1,11 +1,11 @@
 # Every harvested lead
 
-_Generated 2026-11-13T02:31:48.971Z — 933 leads._
+_Generated 2026-11-13T12:04:04.356Z — 958 leads._
 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-## med-spa-b2b — 933
+## med-spa-b2b — 958
 
 ### Sports Performance & Wellness Center — score 50
 
@@ -7470,3 +7470,203 @@ any of them — reach out by hand from the post link if a lead is worth it.
 - **Why they matched:** clinic
 
 > clinic · 17 Boudreau Rd, #10 St. Albert
+
+### Laboratorio Médico Polanco — score 50
+
+- **Handle:** [@null](https://lmpolanco.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic
+
+### Dermaclinic — score 50
+
+- **Handle:** [@null](http://www.dermaclinicmexico.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 560 Avenida Miguel Ángel de Quevedo
+
+### Grupo Médico Byo — score 50
+
+- **Handle:** [@null](https://www.google.com/url?sa=t&source=web&rct=j&url=https://m.facebook.com/pages/category/Doctor/Grupo-M%25C3%25A9dico-Byo-373808696058095/%3Flocale2%3Des_LA&ved=2ahUKEwifl5_vnOHkAhVHKawKHQIpBLwQFjALegQIAhAB&usg=AOvVaw2FUpEocdn796IFT9-gvDtM)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 03100
+
+### Quiropráctico Quiro Salud Cdmx — score 50
+
+- **Handle:** [@null](https://quirosaludcdmx.site/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 205 Ciudad de Mexico CDMX 07870
+
+### Ortoclínica del Norte — score 50
+
+- **Handle:** [@null](https://ortoclinicadelnorte.sistemasio.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 97 Avenida Congreso de la Unión Ciudad de México 07460
+
+### Neurólogo - Neurologist — score 50
+
+- **Handle:** [@null](https://neurologocdmx.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 208 Calle Agrarismo México DF 11800
+
+### Mujer Sana — score 50
+
+- **Handle:** [@null](https://www.mujersanaginecologas.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 40 Calle Burdeos 06600
+
+### Salud Digna — score 50
+
+- **Handle:** [@null](https://salud-digna.org)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 1338 Av Río Mixcoac Ciudad de México 04110
+
+### Clínica Universitaria Estado de México — score 50
+
+- **Handle:** [@null](https://www.zaragoza.unam.mx/clinica-universitaria-para-la-atencion-a-la-salud-estado-de-mexico/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · Avenida Cuauhtémoc Nezahualcoyotl
+
+### Clínica Universitaria Tamaulipas — score 50
+
+- **Handle:** [@null](https://www.zaragoza.unam.mx/clinica-universitaria-para-la-atencion-a-la-salud-tamaulipas/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · Nezahualcoyotl 57300
+
+### Ortoclínica del Norte — score 70
+
+- **Handle:** [@null](https://ortoclinicadelnorte.sistemasio.com/contacto/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 97 Avenida Congreso de la Unión Ciudad de México 07460
+
+### Centro de Salud T-III Lago Cardiel — score 50
+
+- **Handle:** [@null](https://www.salud.cdmx.gob.mx/unidades-medicas/centros-de-salud)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 61 Calle Lago Cardiel Miguel Hidalgo Cuidad de México 11270
+
+### Smart Fit — score 70
+
+- **Handle:** [@null](https://www.smartfit.com.mx/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 645 Avenida Universidad
+
+### Roma Gym — score 70
+
+- **Handle:** [@null](http://romagym.mx)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 289 Calle Puebla Ciudad de México
+
+### Smart Fit — score 70
+
+- **Handle:** [@null](https://www.smartfit.com.mx/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 1431 Amores 03100
+
+### Smart Fit - San Jerónimo — score 70
+
+- **Handle:** [@null](https://www.smartfit.com.mx/unidades/san-jeronimo)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 819 San Jeronimo Ciudad de México 10200
+
+### Sport City Carso — score 50
+
+- **Handle:** [@null](https://sportcity.com.mx)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 425 Calle Lago Zurich Ciudad de México 11529
+
+### Kings Gym — score 50
+
+- **Handle:** [@null](https://kingsgymmexico.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 270 Avenida Pacífico
+
+### Loop Climbing Center — score 50
+
+- **Handle:** [@null](https://loopclimbingcenter.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 37 Calle Lago Wenner 11490
+
+### Clinica De Terapia Fisica Neuro Cord — score 50
+
+- **Handle:** [@null](desiertoenerocorpl.com.mx)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · Camino al Desierto de los Leones 01729
+
+### Cardio Fitnass Santa Nfe — score 70
+
+- **Handle:** [@null](alcaldia.alvaro.obregon.gmail.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · Calle Bellavista 01210
+
+### Centro Integral De Movimiento Y Salud Cimos — score 70
+
+- **Handle:** [@null](www.cimos.com.mx)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · Avenida de las Torres 01840
+
+### Panobianco Gym — score 50
+
+- **Handle:** [@null](https://panobiancogym.mx/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 2714 Avenida de las Culturas
+
+### Commando Studio — score 50
+
+- **Handle:** [@null](https://commandostudio.com/mx/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym
+
+### Gimnasio Spider — score 50
+
+- **Handle:** [@null](https://www.facebook.com/gimnasiospider)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 7 Avenida Guanajuato Naucalpan de Juarez México 53570

@@ -1,6 +1,6 @@
 # New leads from the last harvest
 
-_Generated 2026-11-13T02:31:48.970Z — 25 leads._
+_Generated 2026-11-13T12:04:04.355Z — 25 leads._
 
 | Searches run | Searches failed | Posts read | Matched | Dropped (do-not-engage) |
 |---:|---:|---:|---:|---:|
@@ -41,206 +41,206 @@ business-scaling: Bluesky search failed for "trying to scale my business": HTTP 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-**Sources this run:** bluesky: unreachable (23 failed) · openstreetmap: 109 businesses in edmonton-ab-ca
+**Sources this run:** bluesky: unreachable (23 failed) · openstreetmap: 57 businesses in mexico-city-mx
 
 ## med-spa-b2b — 25
 
-### Rose's Nails — score 70
+### Laboratorio Médico Polanco — score 50
 
-- **Handle:** [@null](http://rosesnailsedmonton.com)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
-
-> med-spa · 15610 95 Ave NW Edmonton T5P 0A4
-
-### Hot Stones Spa — score 50
-
-- **Handle:** [@null](https://www.hotstonesspa.ca/)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
-
-> med-spa · 13075 156 Street NW
-
-### Dickinsfield Hairstyling — score 70
-
-- **Handle:** [@null](https://dickinsfieldhairstyling.ca)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
-
-> med-spa · 9228 144 Avenue, Unit 14 Edmonton T5E 6A3
-
-### The Skin Enhancement Centre — score 50
-
-- **Handle:** [@null](https://skinenhancement.ca)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
-
-> med-spa · 9670 142 Street NW Edmonton T5N 4B2
-
-### Binh's Nails — score 50
-
-- **Handle:** [@null](https://binhsnails.com)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
-
-> med-spa
-
-### District Studios — score 50
-
-- **Handle:** [@null](https://districtstudiospro.com)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
-
-> med-spa
-
-### ActivMD Derm Spa — score 70
-
-- **Handle:** [@null](https://activmdspa.com/)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
-
-> med-spa · 7609 109 Street NW Edmonton T6G1C3
-
-### Celegant Beauty — score 70
-
-- **Handle:** [@null](https://celegant.ca)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
-
-> med-spa · 8925 51 Avenue NW Edmonton T6E 5J3
-
-### Beauty Rewind — score 70
-
-- **Handle:** [@null](https://www.beautyrewind.ca/contact-us/edmonton/)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
-
-> med-spa · 10525 Jasper Avenue NW Edmonton T5J 1Z4
-
-### Mobile Queen Bee — score 70
-
-- **Handle:** [@null](https://www.mobilequeenbee.com/)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
-
-> med-spa · 9619 152 Street NW Edmonton T5P 1W7
-
-### Eye Q Laser — score 50
-
-- **Handle:** [@null](http://www.eyeqlaser.com)
+- **Handle:** [@null](https://lmpolanco.com/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** clinic
 
 > clinic
 
-### LASIK MD — score 70
+### Dermaclinic — score 50
 
-- **Handle:** [@null](http://www.lasikmd.com/edmonton)
+- **Handle:** [@null](http://www.dermaclinicmexico.com)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** clinic
 
-> clinic · 10200 102 Avenue NW Edmonton T5J 4B7
+> clinic · 560 Avenida Miguel Ángel de Quevedo
 
-### Cataract MD — score 50
+### Grupo Médico Byo — score 50
 
-- **Handle:** [@null](http://www.cataractmd.ca/)
+- **Handle:** [@null](https://www.google.com/url?sa=t&source=web&rct=j&url=https://m.facebook.com/pages/category/Doctor/Grupo-M%25C3%25A9dico-Byo-373808696058095/%3Flocale2%3Des_LA&ved=2ahUKEwifl5_vnOHkAhVHKawKHQIpBLwQFjALegQIAhAB&usg=AOvVaw2FUpEocdn796IFT9-gvDtM)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** clinic
 
-> clinic · 11208 104 Avenue NW Edmonton T5K 2X4
+> clinic · 03100
 
-### Bonnie Doon Medical Centre — score 50
+### Quiropráctico Quiro Salud Cdmx — score 50
 
-- **Handle:** [@null](https://mdmedicalhealthcentres.com/)
+- **Handle:** [@null](https://quirosaludcdmx.site/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** clinic
 
-> clinic · 8130 82 Ave NW Edmonton T6C 0Y4
+> clinic · 205 Ciudad de Mexico CDMX 07870
 
-### Capilano Medical Centre — score 50
+### Ortoclínica del Norte — score 50
 
-- **Handle:** [@null](https://medigroup.ca/)
+- **Handle:** [@null](https://ortoclinicadelnorte.sistemasio.com/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** clinic
 
-> clinic · 5818 Terrace Road NW Edmonton T6A 3Y8
+> clinic · 97 Avenida Congreso de la Unión Ciudad de México 07460
 
-### Pediatric Clinic Dr. J Brar — score 50
+### Neurólogo - Neurologist — score 50
 
-- **Handle:** [@null](https://business.facebook.com/www.edmontonpediatric.ca/)
+- **Handle:** [@null](https://neurologocdmx.com/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** clinic
 
-> clinic · 2603 Hewes Way NW
+> clinic · 208 Calle Agrarismo México DF 11800
 
-### MIC — score 70
+### Mujer Sana — score 50
 
-- **Handle:** [@null](https://www.mic.ca/)
+- **Handle:** [@null](https://www.mujersanaginecologas.com/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** clinic
 
-> clinic · 15961 97 Street NW Edmonton T5X 0C7
+> clinic · 40 Calle Burdeos 06600
 
-### The Genomic Clinic — score 70
+### Salud Digna — score 50
 
-- **Handle:** [@null](https://www.thegenomicclinic.com/)
+- **Handle:** [@null](https://salud-digna.org)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** clinic
 
-> clinic · 16923 125 Street NW Edmonton T6V 0T1
+> clinic · 1338 Av Río Mixcoac Ciudad de México 04110
 
-### Body Restoration - Riverbend Studio — score 50
+### Clínica Universitaria Estado de México — score 50
 
-- **Handle:** [@null](https://bodyrestoration.ca/riverbend-studio/)
+- **Handle:** [@null](https://www.zaragoza.unam.mx/clinica-universitaria-para-la-atencion-a-la-salud-estado-de-mexico/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** clinic
 
-> clinic · 5621 Riverbend Road NW
+> clinic · Avenida Cuauhtémoc Nezahualcoyotl
 
-### Glenwood Sport & Spine — score 70
+### Clínica Universitaria Tamaulipas — score 50
 
-- **Handle:** [@null](https://gsshealth.ca)
+- **Handle:** [@null](https://www.zaragoza.unam.mx/clinica-universitaria-para-la-atencion-a-la-salud-tamaulipas/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** clinic
 
-> clinic · 16416 100 Ave NW Edmonton T5P 4Y2
+> clinic · Nezahualcoyotl 57300
 
-### The Garden Acupuncture and Holistic Centre — score 50
+### Ortoclínica del Norte — score 70
 
-- **Handle:** [@null](https://www.thegardenholistic.com/)
+- **Handle:** [@null](https://ortoclinicadelnorte.sistemasio.com/contacto/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** clinic
 
-> clinic · 10977 127 Street NW
+> clinic · 97 Avenida Congreso de la Unión Ciudad de México 07460
 
-### Divine Spine Chiropractic — score 70
+### Centro de Salud T-III Lago Cardiel — score 50
 
-- **Handle:** [@null](https://millwoods-chiropractor.com/)
+- **Handle:** [@null](https://www.salud.cdmx.gob.mx/unidades-medicas/centros-de-salud)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** clinic
 
-> clinic · 7629 38 Avenue NW Edmonton T6K 3Y7
+> clinic · 61 Calle Lago Cardiel Miguel Hidalgo Cuidad de México 11270
 
-### DX Medical Centres — score 50
+### Smart Fit — score 70
 
-- **Handle:** [@null](https://dxmedical.ca/)
+- **Handle:** [@null](https://www.smartfit.com.mx/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
+- **Why they matched:** gym
 
-> clinic · 7629 38 Avenue NW Edmonton T6K 3Y7
+> gym · 645 Avenida Universidad
 
-### Millbourne Mall Medical Centre — score 70
+### Roma Gym — score 70
 
-- **Handle:** [@null](https://www.millbournemedicalcentre.ca/)
+- **Handle:** [@null](http://romagym.mx)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
+- **Why they matched:** gym
 
-> clinic · 38 Avenue NW Edmonton T6K 3L6
+> gym · 289 Calle Puebla Ciudad de México
 
-### Healthspring Wellness — score 70
+### Smart Fit — score 70
 
-- **Handle:** [@null](https://www.healthspring.ca)
+- **Handle:** [@null](https://www.smartfit.com.mx/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
+- **Why they matched:** gym
 
-> clinic · 17 Boudreau Rd, #10 St. Albert
+> gym · 1431 Amores 03100
+
+### Smart Fit - San Jerónimo — score 70
+
+- **Handle:** [@null](https://www.smartfit.com.mx/unidades/san-jeronimo)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 819 San Jeronimo Ciudad de México 10200
+
+### Sport City Carso — score 50
+
+- **Handle:** [@null](https://sportcity.com.mx)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 425 Calle Lago Zurich Ciudad de México 11529
+
+### Kings Gym — score 50
+
+- **Handle:** [@null](https://kingsgymmexico.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 270 Avenida Pacífico
+
+### Loop Climbing Center — score 50
+
+- **Handle:** [@null](https://loopclimbingcenter.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 37 Calle Lago Wenner 11490
+
+### Clinica De Terapia Fisica Neuro Cord — score 50
+
+- **Handle:** [@null](desiertoenerocorpl.com.mx)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · Camino al Desierto de los Leones 01729
+
+### Cardio Fitnass Santa Nfe — score 70
+
+- **Handle:** [@null](alcaldia.alvaro.obregon.gmail.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · Calle Bellavista 01210
+
+### Centro Integral De Movimiento Y Salud Cimos — score 70
+
+- **Handle:** [@null](www.cimos.com.mx)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · Avenida de las Torres 01840
+
+### Panobianco Gym — score 50
+
+- **Handle:** [@null](https://panobiancogym.mx/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 2714 Avenida de las Culturas
+
+### Commando Studio — score 50
+
+- **Handle:** [@null](https://commandostudio.com/mx/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym
+
+### Gimnasio Spider — score 50
+
+- **Handle:** [@null](https://www.facebook.com/gimnasiospider)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 7 Avenida Guanajuato Naucalpan de Juarez México 53570
