@@ -1,6 +1,6 @@
 # New leads from the last harvest
 
-_Generated 2026-11-12T21:28:58.217Z — 25 leads._
+_Generated 2026-11-13T02:31:48.970Z — 25 leads._
 
 | Searches run | Searches failed | Posts read | Matched | Dropped (do-not-engage) |
 |---:|---:|---:|---:|---:|
@@ -41,206 +41,206 @@ business-scaling: Bluesky search failed for "trying to scale my business": HTTP 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-**Sources this run:** bluesky: unreachable (23 failed) · openstreetmap: 303 businesses in vancouver-bc-ca
+**Sources this run:** bluesky: unreachable (23 failed) · openstreetmap: 109 businesses in edmonton-ab-ca
 
 ## med-spa-b2b — 25
 
-### Robert and Lily Lee Family Community Health Center — score 50
+### Rose's Nails — score 70
 
-- **Handle:** [@null](https://www.vch.ca/en/location/robert-and-lily-lee-family-community-health-centre)
+- **Handle:** [@null](http://rosesnailsedmonton.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 15610 95 Ave NW Edmonton T5P 0A4
+
+### Hot Stones Spa — score 50
+
+- **Handle:** [@null](https://www.hotstonesspa.ca/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 13075 156 Street NW
+
+### Dickinsfield Hairstyling — score 70
+
+- **Handle:** [@null](https://dickinsfieldhairstyling.ca)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 9228 144 Avenue, Unit 14 Edmonton T5E 6A3
+
+### The Skin Enhancement Centre — score 50
+
+- **Handle:** [@null](https://skinenhancement.ca)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 9670 142 Street NW Edmonton T5N 4B2
+
+### Binh's Nails — score 50
+
+- **Handle:** [@null](https://binhsnails.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa
+
+### District Studios — score 50
+
+- **Handle:** [@null](https://districtstudiospro.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa
+
+### ActivMD Derm Spa — score 70
+
+- **Handle:** [@null](https://activmdspa.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 7609 109 Street NW Edmonton T6G1C3
+
+### Celegant Beauty — score 70
+
+- **Handle:** [@null](https://celegant.ca)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 8925 51 Avenue NW Edmonton T6E 5J3
+
+### Beauty Rewind — score 70
+
+- **Handle:** [@null](https://www.beautyrewind.ca/contact-us/edmonton/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 10525 Jasper Avenue NW Edmonton T5J 1Z4
+
+### Mobile Queen Bee — score 70
+
+- **Handle:** [@null](https://www.mobilequeenbee.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 9619 152 Street NW Edmonton T5P 1W7
+
+### Eye Q Laser — score 50
+
+- **Handle:** [@null](http://www.eyeqlaser.com)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** clinic
 
-> clinic · 1669 East Broadway
+> clinic
 
-### Vancouver Chiropractor, Massage therapy clinic — score 70
+### LASIK MD — score 70
 
-- **Handle:** [@null](http://www.KilianChiropractic.com)
+- **Handle:** [@null](http://www.lasikmd.com/edmonton)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** clinic
 
-> clinic · Vancouver
+> clinic · 10200 102 Avenue NW Edmonton T5J 4B7
 
-### Springs Eternal Natural Health Clinic — score 50
+### Cataract MD — score 50
 
-- **Handle:** [@null](https://springseternal.com/)
+- **Handle:** [@null](http://www.cataractmd.ca/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** clinic
 
-> clinic · 1788 West Broadway
+> clinic · 11208 104 Avenue NW Edmonton T5K 2X4
 
-### Care Point Medical Clinic — score 50
+### Bonnie Doon Medical Centre — score 50
 
-- **Handle:** [@null](https://www.carepoint.ca/)
+- **Handle:** [@null](https://mdmedicalhealthcentres.com/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** clinic
 
-> clinic · 1123 Davie Street Vancouver
+> clinic · 8130 82 Ave NW Edmonton T6C 0Y4
 
-### Spine + Muscle — score 50
+### Capilano Medical Centre — score 50
 
-- **Handle:** [@null](https://www.spinemuscle.ca/)
+- **Handle:** [@null](https://medigroup.ca/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** clinic
 
-> clinic · 3632 Kingsway Vancouver V5R 5M2
+> clinic · 5818 Terrace Road NW Edmonton T6A 3Y8
 
-### Floathouse - Gastown — score 70
+### Pediatric Clinic Dr. J Brar — score 50
 
-- **Handle:** [@null](https://floathouse.ca/)
+- **Handle:** [@null](https://business.facebook.com/www.edmontonpediatric.ca/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** clinic
 
-> clinic · 70 West Cordova Street Vancouver V6J 1M6
+> clinic · 2603 Hewes Way NW
 
-### Northeast Urgent and Primary Care Centre — score 50
+### MIC — score 70
 
-- **Handle:** [@null](https://www.vch.ca/en/location/northeast-urgent-and-primary-care-centre-upcc)
+- **Handle:** [@null](https://www.mic.ca/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** clinic
 
-> clinic · 2778 East Hastings Street
+> clinic · 15961 97 Street NW Edmonton T5X 0C7
 
-### DermaPure — score 50
+### The Genomic Clinic — score 70
 
-- **Handle:** [@null](https://www.dermapure.com)
+- **Handle:** [@null](https://www.thegenomicclinic.com/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** clinic
 
-> clinic · 803 Davie Street Vancouver V6Z 1B7
+> clinic · 16923 125 Street NW Edmonton T6V 0T1
 
-### Alpine Sport + Spine — score 50
+### Body Restoration - Riverbend Studio — score 50
 
-- **Handle:** [@null](http://www.alpinesportandspine.com/)
+- **Handle:** [@null](https://bodyrestoration.ca/riverbend-studio/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** clinic
 
-> clinic · 1397 Commercial Drive
+> clinic · 5621 Riverbend Road NW
 
-### Yaletown Integrative — score 70
+### Glenwood Sport & Spine — score 70
 
-- **Handle:** [@null](https://www.yaletownintegrative.com/)
+- **Handle:** [@null](https://gsshealth.ca)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** clinic
 
-> clinic · 487 Davie Street Vancouver
+> clinic · 16416 100 Ave NW Edmonton T5P 4Y2
 
-### IV — score 70
+### The Garden Acupuncture and Holistic Centre — score 50
 
-- **Handle:** [@null](https://theiv.ca/)
+- **Handle:** [@null](https://www.thegardenholistic.com/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** clinic
 
-> clinic · 1060 Homer Street Vancouver V6B 2W9
+> clinic · 10977 127 Street NW
 
-### Pacific Oak Clinic — score 50
+### Divine Spine Chiropractic — score 70
 
-- **Handle:** [@null](https://www.theoakclinics.ca/pacific-oak-clinic.html)
+- **Handle:** [@null](https://millwoods-chiropractor.com/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** clinic
 
-> clinic · 418 Abbott Street
+> clinic · 7629 38 Avenue NW Edmonton T6K 3Y7
 
-### Providence Crosstown Clinic — score 50
+### DX Medical Centres — score 50
 
-- **Handle:** [@null](https://www.providencehealthcare.org/en/clinics/providence-crosstown-clinic/day-visit)
+- **Handle:** [@null](https://dxmedical.ca/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** clinic
 
-> clinic · 77 East Hastings Street Vancouver
+> clinic · 7629 38 Avenue NW Edmonton T6K 3Y7
 
-### Yaletown Medical Centre — score 50
+### Millbourne Mall Medical Centre — score 70
 
-- **Handle:** [@null](https://yalemedicalcentre.care/)
+- **Handle:** [@null](https://www.millbournemedicalcentre.ca/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** clinic
 
-> clinic · 1278 Granville Street Vancouver
+> clinic · 38 Avenue NW Edmonton T6K 3L6
 
-### The Neuro Lounge — score 50
+### Healthspring Wellness — score 70
 
-- **Handle:** [@null](https://theneurolounge.com/)
+- **Handle:** [@null](https://www.healthspring.ca)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** clinic
 
-> clinic · 1138 Richards Street Vancouver V6B 3E6
-
-### J.E.D Chinese Medical Clinic — score 50
-
-- **Handle:** [@null](https://www.jedclinic.com/)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
-
-> clinic · 88 Keefer Street Vancouver
-
-### Massage Works — score 70
-
-- **Handle:** [@null](https://www.massageworksclinic.ca/)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
-
-> clinic · 1525 West Broadway Vancouver
-
-### Pacific Chiropractic and Massage Therapy — score 50
-
-- **Handle:** [@null](https://thebackdoc.ca)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
-
-> clinic · 1065 Cambie Street Vancouver V6B 5L7
-
-### SnoreMD Sleep Apnea Clinic — score 50
-
-- **Handle:** [@null](https://www.snoremdcanada.ca/locations/vancouver-kitsilano-sleep-clinic/)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
-
-> clinic · 2192 West Broadway
-
-### Station Square Medical Clinic — score 50
-
-- **Handle:** [@null](https://stationsquare.cortico.ca/)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
-
-> clinic · 6200 McKay Avenue Burnaby
-
-### Metropolis Eyecare Centre — score 50
-
-- **Handle:** [@null](http://metropoliseyecare.com/)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
-
-> clinic · 4700 Kingsway
-
-### Old Orchard — score 50
-
-- **Handle:** [@null](https://burnabymedicalclinic.com)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
-
-> clinic · 4429 Kingsway Burnaby V5H2A1
-
-### Knead Foot and Body Massage Studio — score 70
-
-- **Handle:** [@null](https://www.theknead.ca/)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
-
-> clinic · 637 East 15th Avenue V5T 3K5
-
-### Evergreen Community Health Centre — score 50
-
-- **Handle:** [@null](https://www.vch.ca/Locations-Services/result?res_id=1361)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
-
-> clinic · 3425 Crowley Drive Vancouver
-
-### LifeLabs — score 50
-
-- **Handle:** [@null](https://www.lifelabs.com/psc-location/king-edward-psc/)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
-
-> clinic · 972 West King Edward Avenue Vancouver
+> clinic · 17 Boudreau Rd, #10 St. Albert

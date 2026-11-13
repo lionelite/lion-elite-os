@@ -1,11 +1,11 @@
 # Every harvested lead
 
-_Generated 2026-11-12T21:28:58.217Z — 908 leads._
+_Generated 2026-11-13T02:31:48.971Z — 933 leads._
 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-## med-spa-b2b — 908
+## med-spa-b2b — 933
 
 ### Sports Performance & Wellness Center — score 50
 
@@ -7270,3 +7270,203 @@ any of them — reach out by hand from the post link if a lead is worth it.
 - **Why they matched:** clinic
 
 > clinic · 972 West King Edward Avenue Vancouver
+
+### Rose's Nails — score 70
+
+- **Handle:** [@null](http://rosesnailsedmonton.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 15610 95 Ave NW Edmonton T5P 0A4
+
+### Hot Stones Spa — score 50
+
+- **Handle:** [@null](https://www.hotstonesspa.ca/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 13075 156 Street NW
+
+### Dickinsfield Hairstyling — score 70
+
+- **Handle:** [@null](https://dickinsfieldhairstyling.ca)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 9228 144 Avenue, Unit 14 Edmonton T5E 6A3
+
+### The Skin Enhancement Centre — score 50
+
+- **Handle:** [@null](https://skinenhancement.ca)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 9670 142 Street NW Edmonton T5N 4B2
+
+### Binh's Nails — score 50
+
+- **Handle:** [@null](https://binhsnails.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa
+
+### District Studios — score 50
+
+- **Handle:** [@null](https://districtstudiospro.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa
+
+### ActivMD Derm Spa — score 70
+
+- **Handle:** [@null](https://activmdspa.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 7609 109 Street NW Edmonton T6G1C3
+
+### Celegant Beauty — score 70
+
+- **Handle:** [@null](https://celegant.ca)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 8925 51 Avenue NW Edmonton T6E 5J3
+
+### Beauty Rewind — score 70
+
+- **Handle:** [@null](https://www.beautyrewind.ca/contact-us/edmonton/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 10525 Jasper Avenue NW Edmonton T5J 1Z4
+
+### Mobile Queen Bee — score 70
+
+- **Handle:** [@null](https://www.mobilequeenbee.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 9619 152 Street NW Edmonton T5P 1W7
+
+### Eye Q Laser — score 50
+
+- **Handle:** [@null](http://www.eyeqlaser.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic
+
+### LASIK MD — score 70
+
+- **Handle:** [@null](http://www.lasikmd.com/edmonton)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 10200 102 Avenue NW Edmonton T5J 4B7
+
+### Cataract MD — score 50
+
+- **Handle:** [@null](http://www.cataractmd.ca/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 11208 104 Avenue NW Edmonton T5K 2X4
+
+### Bonnie Doon Medical Centre — score 50
+
+- **Handle:** [@null](https://mdmedicalhealthcentres.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 8130 82 Ave NW Edmonton T6C 0Y4
+
+### Capilano Medical Centre — score 50
+
+- **Handle:** [@null](https://medigroup.ca/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 5818 Terrace Road NW Edmonton T6A 3Y8
+
+### Pediatric Clinic Dr. J Brar — score 50
+
+- **Handle:** [@null](https://business.facebook.com/www.edmontonpediatric.ca/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 2603 Hewes Way NW
+
+### MIC — score 70
+
+- **Handle:** [@null](https://www.mic.ca/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 15961 97 Street NW Edmonton T5X 0C7
+
+### The Genomic Clinic — score 70
+
+- **Handle:** [@null](https://www.thegenomicclinic.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 16923 125 Street NW Edmonton T6V 0T1
+
+### Body Restoration - Riverbend Studio — score 50
+
+- **Handle:** [@null](https://bodyrestoration.ca/riverbend-studio/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 5621 Riverbend Road NW
+
+### Glenwood Sport & Spine — score 70
+
+- **Handle:** [@null](https://gsshealth.ca)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 16416 100 Ave NW Edmonton T5P 4Y2
+
+### The Garden Acupuncture and Holistic Centre — score 50
+
+- **Handle:** [@null](https://www.thegardenholistic.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 10977 127 Street NW
+
+### Divine Spine Chiropractic — score 70
+
+- **Handle:** [@null](https://millwoods-chiropractor.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 7629 38 Avenue NW Edmonton T6K 3Y7
+
+### DX Medical Centres — score 50
+
+- **Handle:** [@null](https://dxmedical.ca/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 7629 38 Avenue NW Edmonton T6K 3Y7
+
+### Millbourne Mall Medical Centre — score 70
+
+- **Handle:** [@null](https://www.millbournemedicalcentre.ca/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 38 Avenue NW Edmonton T6K 3L6
+
+### Healthspring Wellness — score 70
+
+- **Handle:** [@null](https://www.healthspring.ca)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 17 Boudreau Rd, #10 St. Albert
