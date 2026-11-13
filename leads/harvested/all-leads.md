@@ -1,11 +1,11 @@
 # Every harvested lead
 
-_Generated 2026-11-13T12:04:04.356Z — 958 leads._
+_Generated 2026-11-13T19:26:51.334Z — 960 leads._
 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-## med-spa-b2b — 958
+## med-spa-b2b — 960
 
 ### Sports Performance & Wellness Center — score 50
 
@@ -7670,3 +7670,19 @@ any of them — reach out by hand from the post link if a lead is worth it.
 - **Why they matched:** gym
 
 > gym · 7 Avenida Guanajuato Naucalpan de Juarez México 53570
+
+### Island Yoga and Pilates — score 50
+
+- **Handle:** [@null](https://www.islandyogapilates.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · Punta Arena, Col Caribena Isla Mujeres QR 77400
+
+### Five Elements Wellness Clinic — score 50
+
+- **Handle:** [@null](null)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** massage
+
+> massage · Boulevard Cumbres
