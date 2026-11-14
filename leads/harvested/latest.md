@@ -1,6 +1,6 @@
 # New leads from the last harvest
 
-_Generated 2026-11-14T08:45:39.498Z — 25 leads._
+_Generated 2026-11-14T16:28:46.059Z — 20 leads._
 
 | Searches run | Searches failed | Posts read | Matched | Dropped (do-not-engage) |
 |---:|---:|---:|---:|---:|
@@ -41,163 +41,123 @@ business-scaling: Bluesky search failed for "trying to scale my business": HTTP 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-**Sources this run:** bluesky: unreachable (23 failed) · openstreetmap: 63 businesses in orlando-fl
+**Sources this run:** bluesky: unreachable (23 failed) · openstreetmap: 24 businesses in st-petersburg-fl
 
-## med-spa-b2b — 25
+## med-spa-b2b — 20
 
-### Oppenheimer Plastic Surgery — score 50
+### Get Nailed — score 50
 
-- **Handle:** [@null](https://oppenheimermd.com)
+- **Handle:** [@null](www.getnailedstpete.com)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
+- **Why they matched:** med-spa
 
-> clinic · 3872 Oakwater Circle Orlando FL 32806
+> med-spa · 3185 4th Street North Saint Petersburg FL 33704
 
-### Family Medical Center — score 50
+### McMahan Salon — score 50
 
-- **Handle:** [@null](https://familymc.com/)
+- **Handle:** [@null](http://mcmahansalon.com)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
+- **Why they matched:** med-spa
 
-> clinic · 2863 Delaney Avenue 32806
+> med-spa · 10464 Roosevelt Boulevard North Saint Petersburg FL 33716
 
-### Cancer Institute — score 50
+### Saint Pete Salt Works — score 50
 
-- **Handle:** [@null](https://www.orlandohealth.com/facilities/uf-health-cancer-center-at-orlando-health)
+- **Handle:** [@null](https://stpetesaltworks.com/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
+- **Why they matched:** med-spa
 
-> clinic · 1400 South Orange Avenue Orlando FL 32806
+> med-spa · 517 Doctor Martin Luther King Junior Street North Saint Petersburg FL 33701
 
-### Medical Center Radiology Group — score 50
+### Florida Float Spa — score 70
 
-- **Handle:** [@null](http://www.mcrg.com/)
+- **Handle:** [@null](https://floridafloatspa.com/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
+- **Why they matched:** med-spa
 
-> clinic · 20 Kaley Street Orlando FL
+> med-spa · 517 Doctor Martin Luther King Junior Street North Saint Petersburg FL 33701
 
-### Stand-Up MRI of Orlando — score 50
+### The Bronze Lily — score 70
 
-- **Handle:** [@null](https://www.standupmrioforlando.com/)
+- **Handle:** [@null](https://www.thebronzelily.com)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
+- **Why they matched:** med-spa
 
-> clinic · 2010 South Orange Avenue Orlando FL 32806
+> med-spa · 2851 1st Avenue North Saint Petersburg FL 33713-8603
 
-### Orlando Regional Medical Center – Lucerne Pavilion — score 50
+### City Gym Saint Pete — score 50
 
-- **Handle:** [@null](http://orlandohealth.com/OrlandoRegionalMedicalCenter/LucerneHospital/LucerneHospital.aspx)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
-
-> clinic · 818 Main Lane Orlando 32801
-
-### Schauder Chiropractic & Wellness — score 70
-
-- **Handle:** [@null](https://orlando-chiropractic.com/)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
-
-> clinic · 501 South Goldenrod Road Orlando FL 32822
-
-### HCA Florida Millenia Emergency — score 50
-
-- **Handle:** [@null](https://hcafloridahealthcare.com)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
-
-> clinic · 4056 Millennia Boulevard Orlando FL 32839
-
-### Curaleaf — score 50
-
-- **Handle:** [@null](https://curaleaf.com/)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
-
-> clinic · 775 North Semoran Boulevard Orlando FL 32807
-
-### Women's Care — score 50
-
-- **Handle:** [@null](https://www.womenscareobgyn.com/locations/1551-clay-st-winter-park-fl-32789#locations)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
-
-> clinic · 1551 Clay Street Winter Park FL 32789
-
-### First Aid and Family Care Center — score 50
-
-- **Handle:** [@null](https://www.universalorlando.com/web/en/us/plan-your-visit/hours-information/theme-park-services#first-aid)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
-
-> clinic
-
-### FLUENT Cannabis Dispensary — score 50
-
-- **Handle:** [@null](https://getfluent.com/dispensaries/orlando/)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
-
-> clinic · 1901 North Orange Avenue Orlando FL 32804
-
-### Lake Baldwin Outpatient Clinic — score 50
-
-- **Handle:** [@null](https://www.orlando.va.gov/locations/lakebaldwin.asp)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
-
-> clinic · 5201 Raymond Street Orlando 32812
-
-### Orlando Brazilian Jiu-Jitsu — score 50
-
-- **Handle:** [@null](https://www.orlandobjj.com/)
+- **Handle:** [@null](https://www.citygymstpete.com/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** gym
 
-> gym · 28 Michigan Street 32806
+> gym · Saint Petersburg
 
-### Ashtanga Orlando — score 70
+### The Annex Training Studio — score 50
 
-- **Handle:** [@null](https://ashtangaorlando.square.site)
+- **Handle:** [@null](https://theannextrainingstudio.com/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** gym
 
-> gym · 1700 South Bumby Avenue Orlando FL 32806-3202
+> gym · Doctor Martin Luther King Junior Street South Saint Petersburg FL 33705
 
-### Devotion Yoga — score 50
+### Apple Jelly Studios Pole Dance Fitness — score 50
 
-- **Handle:** [@null](https://devotion-yoga.com/)
+- **Handle:** [@null](https://www.applejellystudios.com/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** gym
 
-> gym · 426 East Central Boulevard 32801
+> gym
 
 ### Crunch Fitness — score 50
 
-- **Handle:** [@null](https://www.crunch.com/locations/belle-isle)
+- **Handle:** [@null](https://crunch.com/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** gym
 
-> gym · 4400 Hoffner Avenue Orlando FL 32812
+> gym · 218 37th Avenue North 33704
 
-### Wellness Rituals-Orlando — score 50
+### Lifestyle Family Fitness — score 50
 
-- **Handle:** [@null](https://www.myrituals.me/)
+- **Handle:** [@null](https://www.lafitness.com/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** massage
+- **Why they matched:** gym
 
-> massage · 665 Harold Avenue Winter Park FL 32789
+> gym · 5900 4th Street North Saint Petersburg 33703
 
-### Orlando Float & Massage — score 50
+### Spa Olimpia — score 50
 
-- **Handle:** [@null](https://www.orlandofloatmassage.com)
+- **Handle:** [@null](null)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** massage
+- **Why they matched:** med-spa
 
-> massage · 5380 S Kirkman Road Orlando FL 32819
+> med-spa · 333 1st Street Southeast Saint Petersburg FL
 
-### Vista Nails & Spa — score 50
+### Ermira's Nail & Spa — score 50
+
+- **Handle:** [@null](null)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 4th Street North Saint Petersburg FL 33703
+
+### Aqua Salon — score 50
+
+- **Handle:** [@null](null)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 3183 4th Street North Saint Petersburg FL 33704
+
+### MY SALON Suite® — score 50
+
+- **Handle:** [@null](null)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 415 3rd Street South Saint Petersburg FL 33701
+
+### Blush Beauty Studio — score 50
 
 - **Handle:** [@null](null)
 - **Said this:** [view the post](null) · unknown UTC
@@ -205,42 +165,42 @@ any of them — reach out by hand from the post link if a lead is worth it.
 
 > med-spa
 
-### Elizabeth Arden — score 50
+### City Hair and Nails II — score 50
 
 - **Handle:** [@null](null)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** med-spa
 
-> med-spa · International Drive Orlando FL 32819
+> med-spa · 854 3rd Avenue South Saint Petersburg FL 33701
 
-### Laser Centers of Florida or Accent on You — score 50
-
-- **Handle:** [@null](null)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
-
-> med-spa · 4550 Palmetto Avenue 32792
-
-### MJ Nail & Spa — score 50
+### The Lash and Beauty Bar — score 50
 
 - **Handle:** [@null](null)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** med-spa
 
-> med-spa · 4900 s Kirkman Road Orlando FL 32811
+> med-spa · 32nd Ave 22nd Avenue North St. Petersburg FL 33713
 
-### Orlando Health Outpatient Rehabilitation — score 50
-
-- **Handle:** [@null](null)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
-
-> clinic · 104 Gore Street Orlando 32801
-
-### Chinese American Acupuncture Center — score 50
+### Orangetheory Fitness — score 50
 
 - **Handle:** [@null](null)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
+- **Why they matched:** gym
 
-> clinic · 5385 Conroy Road Orlando FL 32811
+> gym · 5032 4th Street North Saint Petersburg FL 33703
+
+### Peace of Yoga — score 50
+
+- **Handle:** [@null](null)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 15 Doctor Martin Luther King Junior Street South Saint Petersburg FL 33705
+
+### Orangetheory Fitness — score 50
+
+- **Handle:** [@null](null)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 640 1st Avenue South Saint Petersburg - Downtown FL 33701
