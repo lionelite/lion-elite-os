@@ -1,6 +1,6 @@
 # New leads from the last harvest
 
-_Generated 2026-11-13T19:26:51.334Z — 2 leads._
+_Generated 2026-11-14T00:48:25.600Z — 2 leads._
 
 | Searches run | Searches failed | Posts read | Matched | Dropped (do-not-engage) |
 |---:|---:|---:|---:|---:|
@@ -41,22 +41,22 @@ business-scaling: Bluesky search failed for "trying to scale my business": HTTP 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-**Sources this run:** bluesky: unreachable (23 failed) · openstreetmap: 2 businesses in cancun-mx
+**Sources this run:** bluesky: unreachable (23 failed) · openstreetmap: 19 businesses in west-palm-beach-fl
 
 ## med-spa-b2b — 2
 
-### Island Yoga and Pilates — score 50
+### Abundant Living Chiropractic Center — score 50
 
-- **Handle:** [@null](https://www.islandyogapilates.com)
+- **Handle:** [@null](https://abundantlivingchiropractic.com)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
+- **Why they matched:** clinic
 
-> gym · Punta Arena, Col Caribena Isla Mujeres QR 77400
+> clinic · 705 Park Avenue Lake Park FL 33403
 
-### Five Elements Wellness Clinic — score 50
+### Quartell Chiropractic — score 70
 
-- **Handle:** [@null](null)
+- **Handle:** [@null](https://palmbeachgardens-chiropractor.com)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** massage
+- **Why they matched:** clinic
 
-> massage · Boulevard Cumbres
+> clinic · 10625 North Military Trail Palm Beach Gardens FL 33410-6552

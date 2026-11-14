@@ -1,11 +1,11 @@
 # Every harvested lead
 
-_Generated 2026-11-13T19:26:51.334Z — 960 leads._
+_Generated 2026-11-14T00:48:25.601Z — 962 leads._
 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-## med-spa-b2b — 960
+## med-spa-b2b — 962
 
 ### Sports Performance & Wellness Center — score 50
 
@@ -7686,3 +7686,19 @@ any of them — reach out by hand from the post link if a lead is worth it.
 - **Why they matched:** massage
 
 > massage · Boulevard Cumbres
+
+### Abundant Living Chiropractic Center — score 50
+
+- **Handle:** [@null](https://abundantlivingchiropractic.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 705 Park Avenue Lake Park FL 33403
+
+### Quartell Chiropractic — score 70
+
+- **Handle:** [@null](https://palmbeachgardens-chiropractor.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 10625 North Military Trail Palm Beach Gardens FL 33410-6552
