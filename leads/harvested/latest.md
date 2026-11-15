@@ -1,6 +1,6 @@
 # New leads from the last harvest
 
-_Generated 2026-11-15T05:28:37.496Z — 25 leads._
+_Generated 2026-11-15T13:42:37.750Z — 25 leads._
 
 | Searches run | Searches failed | Posts read | Matched | Dropped (do-not-engage) |
 |---:|---:|---:|---:|---:|
@@ -41,206 +41,206 @@ business-scaling: Bluesky search failed for "trying to scale my business": HTTP 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-**Sources this run:** bluesky: unreachable (23 failed) · openstreetmap: 25 businesses in phoenix-az
+**Sources this run:** bluesky: unreachable (23 failed) · openstreetmap: 45 businesses in atlanta-ga
 
 ## med-spa-b2b — 25
 
-### EōS Fitness — score 50
+### LA Fitness — score 50
 
-- **Handle:** [@null](https://www.eosfitness.com/gym/downtown-phoenix)
+- **Handle:** [@null](https://www.lafitness.com/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** gym
 
 > gym
 
+### Sati Yoga & Wellness — score 70
+
+- **Handle:** [@null](https://www.satiyogawellness.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 1996 Hosea L Williams Dr NE Atlanta GA 30317
+
+### Energy Lab — score 50
+
+- **Handle:** [@null](https://energylabatl.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 1167 Zonolite Place Northeast Atlanta GA 30306
+
+### Project Body ATL — score 70
+
+- **Handle:** [@null](https://projectbodyatl.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 1 Moreland Avenue Southeast Atlanta GA 30316
+
+### Yonder Yoga — score 70
+
+- **Handle:** [@null](https://yonderyoga.com/midtown/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 931 Monroe Drive Northeast
+
+### City of Atlanta Wellness Center — score 50
+
+- **Handle:** [@null](https://wellnesscenter.atlantaga.gov/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 235 Central Avenue Southwest Atlanta GA 30303
+
+### Anytime Fitness — score 50
+
+- **Handle:** [@null](https://www.anytimefitness.com/gyms/3848/atlanta-ga-30342/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 4920 Roswell Road Northeast Atlanta GA 30342
+
+### RPM Fitness — score 70
+
+- **Handle:** [@null](https://www.rpmboap.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 600 Peachtree Street Northeast
+
+### Pure Barre — score 50
+
+- **Handle:** [@null](https://purebarre.com/ga-westside)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 1100 Howell Mill Road
+
 ### Orangetheory Fitness — score 50
 
-- **Handle:** [@null](https://www.orangetheory.com/en-us/locations/phoenix-arizona-0232)
+- **Handle:** [@null](https://www.orangetheory.com/en-us/locations/atlanta-georgia-1422)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** gym
 
-> gym · 50 West Jefferson Street
-
-### F45 Training — score 50
-
-- **Handle:** [@null](https://f45training.com/studio/midtownphoenix/)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
-
-> gym · 3427 North 7th Avenue Phoenix AZ 85013
-
-### CorePower Yoga — score 70
-
-- **Handle:** [@null](https://www.corepoweryoga.com/yoga-studios/arizona/phoenix/central-phoenix)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
-
-> gym · 5539 North 7th Street Phoenix AZ 85014
-
-### Fit Phoenix — score 70
-
-- **Handle:** [@null](https://fitphx.com/)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
-
-> gym · 902 East McKinley Street Phoenix AZ 85006
-
-### Track Club Fitness — score 50
-
-- **Handle:** [@null](https://trackfitnessclub.com/)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
-
-> gym · 915 North Central Avenue Phoenix AZ 85004
-
-### F45 Training — score 50
-
-- **Handle:** [@null](https://f45training.com/studio/biltmore/)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
-
-> gym · 3147 East Lincoln Drive Phoenix AZ 85016
-
-### F45 Training — score 50
-
-- **Handle:** [@null](https://f45training.com/studio/uptownphoenix/)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
-
-> gym · 6210 North 7th Street Phoenix AZ 85014
-
-### F45 Training — score 50
-
-- **Handle:** [@null](https://f45training.com/studio/eastphoenix/)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
-
-> gym · 3844 North 32nd Street Phoenix AZ 85018
-
-### F45 Training — score 50
-
-- **Handle:** [@null](https://f45training.com/studio/downtownphoenix/)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
-
-> gym · 400 North 2nd Avenue Phoenix AZ 85003
-
-### Black Swan Yoga - Phoenix — score 70
-
-- **Handle:** [@null](https://www.blackswanyoga.com/studios/7th-street)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
-
-> gym · 4530 North 7th Street Phoenix AZ 85014
-
-### Urban Yoga — score 70
-
-- **Handle:** [@null](https://urbanyogaphx.com/)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
-
-> gym · 3800 North Central Avenue
-
-### EKAM Yoga Studio — score 70
-
-- **Handle:** [@null](https://ekamyoga-phoenix.com/)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
-
-> gym · 1219 East Glendale Avenue Phoenix AZ 85020
-
-### EōS Fitness — score 50
-
-- **Handle:** [@null](https://www.eosfitness.com/gym/phoenix-n-central-ave-w-osborn-rd)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
-
-> gym · North Central Avenue 85012
-
-### Trifit Wellness — score 50
-
-- **Handle:** [@null](https://www.trifitwellness.com/)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
-
-> gym · 505 East Camelback Road 85012
-
-### Trifit Wellness — score 50
-
-- **Handle:** [@null](https://www.trifitwellness.com/)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
-
-> gym · 505 East Camelback Road 85012
-
-### CrossFit Full Strength — score 70
-
-- **Handle:** [@null](http://www.crossfitfullstrength.com/)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
-
-> gym · 4633 East Thomas Road Phoenix AZ 85018
-
-### Metta Yoga — score 70
-
-- **Handle:** [@null](http://www.newmettayoga.com/)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
-
-> gym · 4041 East Thomas Road Phoenix AZ 85018
+> gym · 980 Howell Mill Road Atlanta GA 30318
 
 ### Planet Fitness — score 50
 
-- **Handle:** [@null](https://www.planetfitness.com/gyms/phoenix-arcadia-az-958)
+- **Handle:** [@null](https://www.planetfitness.com/gyms/atlanta-midtown-tower-square-ga)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** gym
 
-> gym · 3975 East Thomas Road Phoenix AZ 85018
+> gym · 675 West Peachtree Street Northwest
 
-### Sutra Studios — score 50
+### Carepower Yoga — score 70
 
-- **Handle:** [@null](https://www.sutrastudios.com/)
+- **Handle:** [@null](https://www.corepoweryoga.com/yoga-studios/ga/atlanta/atlanta-midtown)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** gym
 
-> gym · 1029 North 1st Street Phoenix AZ
+> gym · 860 Peachtree Street Northeast
 
-### Life Time — score 50
+### BODYROK — score 70
 
-- **Handle:** [@null](https://www.lifetime.life/life-time-locations/az-biltmore.html)
+- **Handle:** [@null](https://bodyrok.com/studio/atlanta/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** gym
 
-> gym
+> gym · 1221 Peachtree Street Northeast
 
-### Octane Crossfit — score 70
+### onlYoga — score 70
 
-- **Handle:** [@null](http://octanecf.com/)
+- **Handle:** [@null](http://www.onlyoga.com/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** gym
 
-> gym · 2936 East Thomas Road Phoenix AZ 85016
+> gym · 1201 Peachtree Street Northeast
 
-### Streamliner 16th — score 50
+### Highland Yoga — score 70
 
-- **Handle:** [@null](https://www.streamliner16th.com/)
+- **Handle:** [@null](https://www.highland-yoga.com/westside)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** gym
 
-> gym · 1616 West Polk Street Phoenix AZ 85006
+> gym · 857 Collier Road Northwest
 
-### Crunch Fitness — score 70
+### Crossfit Midtown — score 70
 
-- **Handle:** [@null](https://www.crunch.com/locations/arcadia)
+- **Handle:** [@null](https://crossfitmidtown.com)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** gym
 
-> gym · 4533 East Thomas Road Phoenix AZ 85018
+> gym · 1210 Spring Street Northwest Atlanta 30309
+
+### Exhale — score 70
+
+- **Handle:** [@null](https://exhalespa.com/midtown-atlanta/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 1065 Peachtree Street Northeast
+
+### Solidcore — score 70
+
+- **Handle:** [@null](https://www.solidcore.co/ga/atlanta/midtown/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 33 Peachtree Place Northeast
+
+### Lion's Den Fitness — score 70
+
+- **Handle:** [@null](https://www.lionsdenfitnessatl.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 900 Peachtree Street Northeast
 
 ### Orangetheory Fitness — score 50
 
-- **Handle:** [@null](null)
+- **Handle:** [@null](https://www.orangetheory.com/en-us/locations/atlanta-georgia-0137)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** gym
 
-> gym · 3320 North 7th Avenue Phoenix AZ 85013
+> gym · 933 Peachtree Street
+
+### Workout Anytime — score 50
+
+- **Handle:** [@null](https://workoutanytime.com/location/buckhead/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 1715 Howell Mill Road Northwest
+
+### Platesculpt — score 70
+
+- **Handle:** [@null](https://platesculpt.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 1985 Howell Mill Road Northwest
+
+### Team Octopus Midtown — score 50
+
+- **Handle:** [@null](https://mmaatl.com/midtown-location/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 503 Amsterdam Avenue Northeast
+
+### Urban Body Fitness — score 70
+
+- **Handle:** [@null](https://urbanbodyfitness.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 500 Amsterdam Avenue Northeast
+
+### Carriage House — score 70
+
+- **Handle:** [@null](https://carriagehouseatl.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 414 Bill Kennedy Way Atlanta GA 30316
