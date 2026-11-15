@@ -1,6 +1,6 @@
 # New leads from the last harvest
 
-_Generated 2026-11-15T19:43:46.074Z — 21 leads._
+_Generated 2026-11-15T23:54:01.909Z — 25 leads._
 
 | Searches run | Searches failed | Posts read | Matched | Dropped (do-not-engage) |
 |---:|---:|---:|---:|---:|
@@ -41,174 +41,206 @@ business-scaling: Bluesky search failed for "trying to scale my business": HTTP 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-**Sources this run:** bluesky: unreachable (23 failed) · openstreetmap: 21 businesses in las-vegas-nv
+**Sources this run:** bluesky: unreachable (23 failed) · openstreetmap: 97 businesses in los-angeles-ca
 
-## med-spa-b2b — 21
+## med-spa-b2b — 25
 
-### nail story — score 70
+### Wynn Nail Spa — score 50
 
-- **Handle:** [@null](http://www.nailstorylv.com)
+- **Handle:** [@null](http://www.wynnnailspa.com)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** med-spa
 
-> med-spa · 8000 West Sahara Avenue Las Vegas 89117
+> med-spa · Wilshire Boulevard Los Angeles 90036
 
-### Get Nailed — score 50
+### Wynn Nail Spa — score 50
 
-- **Handle:** [@null](https://getnailed247.com)
+- **Handle:** [@null](http://www.wynnnailspa.com)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** med-spa
 
-> med-spa · 4983 West Flamingo Road Las Vegas NV 89103
+> med-spa · Vine Street Los Angeles 90028
 
-### Grey Cosmotology — score 50
+### Nailnation — score 50
 
-- **Handle:** [@null](https://greyartistry.com)
+- **Handle:** [@null](https://www.nailnationspa.com/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** med-spa
 
-> med-spa
+> med-spa · 7380 Melrose Avenue Los Angeles 90046
 
-### Eye Tactics Lash Lift Studio — score 70
+### Your Spa — score 50
 
-- **Handle:** [@null](https://www.eyetactics.com/)
+- **Handle:** [@null](http://www.yourspaonmelrose.com/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** med-spa
 
-> med-spa
+> med-spa · 7260 Melrose Avenue Los Angeles CA 90046
 
-### Reiwatakiya — score 70
+### Cosmetic Rejuvenation Medical Center — score 50
 
-- **Handle:** [@null](https://reiwatakiyausa.com)
+- **Handle:** [@null](http://crmclaser.com)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** med-spa
 
-> med-spa · 89102
+> med-spa · 7901 Santa Monica Boulevard West Hollywood CA 90046
 
-### Borgata Nails & Spa — score 50
+### Voda Spa — score 70
 
-- **Handle:** [@null](https://www.yelp.com/biz_redir?url=https%3A%2F%2Fborgatanailsspa.com&cachebuster=1732638550&website_link_type=website&src_bizid=9sseC9KddCvJSNAfGO7Vaw&s=77d9490ff60526e776045c174984a8f1f370200d1e4025779f17d62f178c4ebd)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
-
-> med-spa · 1366 West Cheyenne Avenue North Las Vegas NV 89030
-
-### Evolve Body Wellness — score 50
-
-- **Handle:** [@null](https://evolvebodywellness.com/)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
-
-> med-spa · 2835 South Jones Boulevard Las Vegas NV 89146-5307
-
-### A Harmony Nail Spa & Harmony Hollow Gifts — score 70
-
-- **Handle:** [@null](https://aharmonynailspa.com)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
-
-> med-spa · 953 East Sahara Avenue Las Vegas NV 89104
-
-### NAB Nail Bar — score 50
-
-- **Handle:** [@null](https://nabnailbar.com)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
-
-> med-spa · 8891 West Flamingo Road Las Vegas NV 89147
-
-### Nursie Cosmetics & Aesthetics Wellness Center — score 70
-
-- **Handle:** [@null](https://nursiecosmeticsbeauty-spa.com)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
-
-> med-spa · 8360 West Sahara Avenue Las Vegas NV 89117
-
-### Sharp Shop Vegas — score 50
-
-- **Handle:** [@null](https://www.sharpshopvegas.com)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
-
-> med-spa · 5950 West Charleston Boulevard Las Vegas NV 89146
-
-### Reiwatakiya — score 70
-
-- **Handle:** [@null](https://reiwatakiyausa.com)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
-
-> med-spa · 89109
-
-### Mayweather Boxing Club — score 50
-
-- **Handle:** [@null](https://mayweatherpromotions.com/)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
-
-> gym · 4020 Schiff Drive
-
-### EōS Fitness — score 50
-
-- **Handle:** [@null](https://www.eosfitness.com/gym/las-vegas-northwest)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
-
-> gym · 7501 West Lake Mead Boulevard 89128
-
-### Las Vegas Athletic Clubs - West — score 50
-
-- **Handle:** [@null](https://www.lvac.com/)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
-
-> gym · 5200 West Sahara Avenue 89146
-
-### EōS Fitness — score 50
-
-- **Handle:** [@null](https://www.eosfitness.com/gym/las-vegas-rainbow-alta)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
-
-> gym · 601 South Rainbow Boulevard NV 89145
-
-### Tere Beauty Salon — score 50
-
-- **Handle:** [@null](null)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
-
-> med-spa · 1201 South Jones Boulevard Las Vegas NV 89146
-
-### Chiic Salon — score 50
-
-- **Handle:** [@null](null)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
-
-> med-spa · 101A South Rainbow Boulevard Las Vegas NV 89145
-
-### Bella Vu Lashes — score 50
-
-- **Handle:** [@null](null)
+- **Handle:** [@null](https://www.vodaspa.com/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** med-spa
 
 > med-spa
 
-### Envy Nails & Spa — score 50
+### Top Nail Spa — score 50
 
-- **Handle:** [@null](null)
+- **Handle:** [@null](https://www.topnailspa.net/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** med-spa
 
-> med-spa · 9130 W Sahara Ave Las Vegas NV 89117
+> med-spa · 9669 South Santa Monica Boulevard Beverly Hills CA 90210
 
-### City Athletic Club — score 50
+### Heather Airbrush Tanning — score 50
 
-- **Handle:** [@null](null)
+- **Handle:** [@null](http://www.airbrushbyheather.com/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
+- **Why they matched:** med-spa
 
-> gym · 3401 Sammy Davis Junior Drive Las Vegas NV 89109
+> med-spa · 8969 West Sunset Boulevard West Hollywood CA 90069
+
+### Nails by Design and Spa — score 70
+
+- **Handle:** [@null](https://www.nailsbydesignspa.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 8961 West Sunset Boulevard West Hollywood CA 90069
+
+### LaserAway — score 50
+
+- **Handle:** [@null](https://locations.laseraway.com/ca/westhollywood/laser-hair-removal-westhollywood-ca-13.html)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 8953 West Sunset Boulevard West Hollywood CA 90069
+
+### Ole Henriksen Spa — score 50
+
+- **Handle:** [@null](https://www.olehenriksen.com/spa.html)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 8622A West Sunset Boulevard West Hollywood CA 90069
+
+### Blushington — score 70
+
+- **Handle:** [@null](https://www.blushington.com/store-locations/west-hollywood/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 8591 West Sunset Boulevard West Hollywood CA 90069
+
+### MiniLuxe — score 50
+
+- **Handle:** [@null](https://www.miniluxe.com/studios/LAX)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 8570 West Sunset Boulevard West Hollywood CA 90069
+
+### Sunset Tan — score 50
+
+- **Handle:** [@null](http://www.sunsettan.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 8539 West Sunset Boulevard West Hollywood CA 90069
+
+### SalonCentric — score 50
+
+- **Handle:** [@null](http://stores.saloncentric.com/ca/w-hollywood/6002/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 8539 West Sunset Boulevard West Hollywood CA 90069
+
+### Jhrana Beauty and Threading — score 50
+
+- **Handle:** [@null](http://www.jharanabeauty.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 8539 West Sunset Boulevard West Hollywood CA 90069
+
+### Beauty Bar Medical Clinic — score 50
+
+- **Handle:** [@null](https://www.beautybarclinics.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 8527 West Sunset Boulevard West Hollywood CA 90069
+
+### Cure Salon & Spa — score 50
+
+- **Handle:** [@null](https://www.sunsettowerhotel.com/salon-spa/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 8358 West Sunset Boulevard West Hollywood CA 90069
+
+### Beauty Collection — score 50
+
+- **Handle:** [@null](https://www.beautycollection.com/West-Hollywood)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 8951 Santa Monica Boulevard West Hollywood CA 90069
+
+### Isle of Serenity Nail Spa — score 50
+
+- **Handle:** [@null](https://www.isleofserenity.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 8929 Santa Monica Boulevard West Hollywood CA 90069
+
+### Maus's — score 70
+
+- **Handle:** [@null](https://maudsofbeverlyhills.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 624 North Doheny Drive West Hollywood CA 90069
+
+### B2V Salon — score 50
+
+- **Handle:** [@null](https://b2vsalon.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 646 North Doheny Drive West Hollywood CA 90069
+
+### Palm Bench Tan — score 50
+
+- **Handle:** [@null](https://palmbeachtan.com/locations/CA/Hollywood-Santa-Monica-Boulevard/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 8715 Santa Monica Boulevard West Hollywood CA 90069
+
+### Face Place — score 70
+
+- **Handle:** [@null](https://faceplace.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 8701 Santa Monica Boulevard West Hollywood CA 90069
+
+### Bleu Nail Spa — score 50
+
+- **Handle:** [@null](https://www.bleunailspa.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 8584 Santa Monica Boulevard West Hollywood CA 90069
