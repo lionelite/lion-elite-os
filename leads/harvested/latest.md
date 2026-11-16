@@ -1,6 +1,6 @@
 # New leads from the last harvest
 
-_Generated 2026-11-16T05:22:25.585Z — 25 leads._
+_Generated 2026-11-16T15:12:07.084Z — 25 leads._
 
 | Searches run | Searches failed | Posts read | Matched | Dropped (do-not-engage) |
 |---:|---:|---:|---:|---:|
@@ -41,206 +41,206 @@ business-scaling: Bluesky search failed for "trying to scale my business": HTTP 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-**Sources this run:** bluesky: unreachable (23 failed) · openstreetmap: 194 businesses in chicago-il
+**Sources this run:** bluesky: unreachable (23 failed) · openstreetmap: 50 businesses in philadelphia-pa
 
 ## med-spa-b2b — 25
 
-### Wicker Park Health Center — score 50
+### Lacquer Lounge — score 70
 
-- **Handle:** [@null](https://www.primecarehealth.org/wicker-park-health-center)
+- **Handle:** [@null](https://lacquerlounge.com/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
+- **Why they matched:** med-spa
 
-> clinic · 1127 North Oakley Boulevard Chicago IL 60622
+> med-spa · 38 North 3rd Street Philadelphia PA 19106
 
-### Family Planning Associates — score 50
+### Mingle Nail Lounge — score 50
 
-- **Handle:** [@null](https://www.fpachicago.com)
+- **Handle:** [@null](https://www.minglenaillounge.com/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
+- **Why they matched:** med-spa
 
-> clinic · 659 West Washington Street
+> med-spa · 4237 Main Street Philadelphia PA 19127
 
-### Physicians Immediate Care — score 50
+### Just Hair — score 50
 
-- **Handle:** [@null](https://physiciansimmediatecare.com/clinics/old-town/)
+- **Handle:** [@null](http://justhairnj.com)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
+- **Why they matched:** med-spa
 
-> clinic · 121 West North Avenue Chicago 60610
+> med-spa · 429 W Cuthbert Blvd Haddon Township NJ 08108
 
-### Michigan Avenue Immediate/Primary Care (MAICOH) — score 50
+### Bounc'n & Behaving Hair Studio — score 50
 
-- **Handle:** [@null](https://www.michiganavenueprimarycare.com/)
+- **Handle:** [@null](https://www.bouncedolls.com/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
+- **Why they matched:** med-spa
 
-> clinic · 60601
+> med-spa · 5535 Market Street Philadelphia PA 19139
 
-### Linda Marino PhD — score 50
+### Luxe Nail Bar — score 50
 
-- **Handle:** [@null](http://lindamarinophd.com)
+- **Handle:** [@null](https://luxephilly.com/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
+- **Why they matched:** med-spa
 
-> clinic · 122 South Michigan Avenue Chicago IL 60603
+> med-spa · 212 South 40th Street Philadelphia PA 19104
 
-### Endeavor Health Orthopaedic & Spine Center - Chicago in Bucktown — score 50
+### Cure Nails & Spa — score 50
 
-- **Handle:** [@null](https://www.endeavorhealth.org/locations/orthopaedic-spine-immediate-care-chicago-bucktown)
+- **Handle:** [@null](https://cure-nails-spa.edan.io/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
+- **Why they matched:** med-spa
 
-> clinic · 1942 West Fullerton Avenue Chicago IL 60647
+> med-spa · 412 South 2nd Street Philadelphia PA 19147
 
-### Chicago Lakeside VA Clinic — score 50
+### Julius Scissor Hair Designer — score 50
 
-- **Handle:** [@null](https://www.chicago.va.gov/locations/Lakeside.asp)
+- **Handle:** [@null](https://juliusscissorhair.wixsite.com/mysite)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
+- **Why they matched:** med-spa
 
-> clinic · 211 East Ontario Street Chicago IL 60611
+> med-spa · 2045 Locust Street Philadelphia PA 19103
 
-### APS Ketamine — score 50
+### Judy's Hair and Wig Salon — score 50
 
-- **Handle:** [@null](https://apsketamine.com)
+- **Handle:** [@null](https://judyshairandwigsalon.com)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
+- **Why they matched:** med-spa
 
-> clinic · 8 South Michigan Avenue Chicago IL 60603
+> med-spa · 2649 Orthodox Street Philadelphia PA 19137
 
-### Lakeview Healing Oasis — score 70
+### Sola Salons — score 70
 
-- **Handle:** [@null](https://lakeviewhealingoasis.com/reikichicago/)
+- **Handle:** [@null](https://www.solasalonstudios.com/locations/wynnewood)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
+- **Why they matched:** med-spa
 
-> clinic · 722 West Diversey Parkway Chicago IL 60614
+> med-spa · 80 East Wynnewood Road Wynnewood PA 19096
 
-### The Joint Chiropractic — score 70
+### Lash Palette — score 50
 
-- **Handle:** [@null](https://www.thejoint.com)
+- **Handle:** [@null](https://www.lash-palette.com/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
+- **Why they matched:** med-spa
 
-> clinic · 2711 North Elston Avenue Chicago IL 60647
+> med-spa · 80 East Wynnewood Road
 
-### Back To Natural Health — score 70
+### Liz Beauty Salon — score 50
 
-- **Handle:** [@null](https://backtonaturalhealth.com)
+- **Handle:** [@null](https://lizbeautysalon.net)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
+- **Why they matched:** med-spa
 
-> clinic · 1937 West Diversey Parkway Chicago IL 60614
+> med-spa · 2307 Federal Street Camden NJ 08105
 
-### Specialized Forensic Unit PC — score 70
+### European Wax Center — score 50
 
-- **Handle:** [@null](http://sfunit.com/)
+- **Handle:** [@null](https://locations.waxcenter.com/pa/wynnewood/wynnewood-wynnewood-shopping-center-1147.html)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
+- **Why they matched:** med-spa
 
-> clinic · 1005 North Western Avenue Chicago IL 60622
+> med-spa · 50 East Wynnewood Road Wynnewood
 
-### Lakeview Chiropractic — score 50
+### K Louise Boutique Salon — score 70
 
-- **Handle:** [@null](https://lakeviewchiropractic.com/)
+- **Handle:** [@null](https://klouisesalon.com/index.html)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
+- **Why they matched:** med-spa
 
-> clinic · 3832 North Broadway Chicago IL 60613
+> med-spa · 6072 Ridge Avenue Philadelphia 19128
 
-### Chicago Family Asthma & Allergy — score 50
+### Euphoria Nail Bar — score 50
 
-- **Handle:** [@null](https://www.chicagofamilyasthma.com/)
+- **Handle:** [@null](https://euphorianailbar.com/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
+- **Why they matched:** med-spa
 
-> clinic · 2551 North Clark Street Chicago IL 60614
+> med-spa
 
-### Optimal Health Chiropractic — score 50
+### Citrine Glow — score 70
 
-- **Handle:** [@null](https://www.optimalchiroltd.com/)
+- **Handle:** [@null](https://www.citrineglowmedispa.com/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
+- **Why they matched:** med-spa
 
-> clinic · 905 West Irving Park Road Chicago IL 60613
+> med-spa
 
-### Specialty Care Center — score 50
+### Redwood Beauty and Wellness Spa — score 50
 
-- **Handle:** [@null](https://cookcountyhealth.org/locations/specialty-care-center/)
+- **Handle:** [@null](https://redwoodwellness.life/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
+- **Why they matched:** med-spa
 
-> clinic · 1901 West Harrison Street Chicago IL 60612
+> med-spa
 
-### Vesper — score 50
+### Rocket Tan — score 50
 
-- **Handle:** [@null](https://vesperchi.com)
+- **Handle:** [@null](https://www.rockettans.com/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
+- **Why they matched:** med-spa
 
-> clinic · 3916 North Broadway Chicago IL 60613
+> med-spa · 3629 Lancaster Avenue Philadelphia PA 19104
 
-### Learning Through Play Center for Child Development — score 70
+### Viva Care Solutions — score 50
 
-- **Handle:** [@null](https://www.pediatricresources.org/)
+- **Handle:** [@null](https://vivacaresolutions.com/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
+- **Why they matched:** med-spa
 
-> clinic · 633 West Addison Street Chicago IL 60657
+> med-spa · 1613 Germantown Avenue Philadelphia PA 19122
 
-### One Medical — score 50
+### Browsin Boutique — score 50
 
-- **Handle:** [@null](https://www.onemedical.com/locations/chi/lincolnpark/)
+- **Handle:** [@null](https://browsinboutique.com)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
+- **Why they matched:** med-spa
 
-> clinic · 1931 North Halsted Street Chicago IL 60614
+> med-spa · 133 Heather Road Bala Cynwyd PA 19004
 
-### Compass Health Centers — score 70
+### European Wax Center — score 50
 
-- **Handle:** [@null](https://compasshealthcenter.net/locations/chicago)
+- **Handle:** [@null](https://locations.waxcenter.com/pa/philadelphia/philadelphia-university-city-0902.html)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
+- **Why they matched:** med-spa
 
-> clinic · 2500 West Bradley Place Chicago IL 60618
+> med-spa · 3435 Walnut Street Philadelphia PA 19104
 
-### RUSH Pediatric Primary Care — score 50
+### Sugaring NYC — score 50
 
-- **Handle:** [@null](https://www.rush.edu/kids/services/pediatric-primary-care)
+- **Handle:** [@null](https://www.sugaringnyc.com/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
+- **Why they matched:** med-spa
 
-> clinic · 1645 West Jackson Boulevard Chicago IL 60612
+> med-spa · 1909 Chestnut Street Philadelphia PA 19103
 
-### Autism Assessment, Research, Treatment & Services Center — score 50
+### Tip Top Toe Nails — score 50
 
-- **Handle:** [@null](https://www.rush.edu/locations/autism-assessment-research-treatment-services-aarts-center)
+- **Handle:** [@null](null)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
+- **Why they matched:** med-spa
 
-> clinic · 1645 West Jackson Boulevard Chicago IL 60612
+> med-spa
 
-### RUSH Adult and Pediatric Primary Care — score 50
+### Red Lotus Spa & Nails — score 50
 
-- **Handle:** [@null](https://www.rush.edu/locations/rush-adult-and-pediatric-primary-care)
+- **Handle:** [@null](null)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
+- **Why they matched:** med-spa
 
-> clinic · 1645 West Jackson Boulevard Chicago IL 60612
+> med-spa · 4610-12 Cedar Avenue Philadelphia PA 19143
 
-### RUSH Behavioral Medicine — score 50
+### Diamond Nails — score 50
 
-- **Handle:** [@null](https://www.rush.edu/locations/rush-behavioral-medicine-westgate-building)
+- **Handle:** [@null](null)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
+- **Why they matched:** med-spa
 
-> clinic · 1645 West Jackson Boulevard Chicago IL 60612
+> med-spa
 
-### RUSH Behavioral Medicine — score 50
+### Heritage Nails — score 50
 
-- **Handle:** [@null](https://www.rush.edu/locations/rush-behavioral-medicine-suite-600)
+- **Handle:** [@null](null)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
+- **Why they matched:** med-spa
 
-> clinic · 1645 West Jackson Boulevard Chicago IL 60612
+> med-spa · 2000 Hamilton Street Philadelphia PA
