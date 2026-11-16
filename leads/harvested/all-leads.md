@@ -1,11 +1,11 @@
 # Every harvested lead
 
-_Generated 2026-11-15T23:54:01.910Z — 1103 leads._
+_Generated 2026-11-16T05:22:25.585Z — 1128 leads._
 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-## med-spa-b2b — 1103
+## med-spa-b2b — 1128
 
 ### Sports Performance & Wellness Center — score 50
 
@@ -8830,3 +8830,203 @@ any of them — reach out by hand from the post link if a lead is worth it.
 - **Why they matched:** med-spa
 
 > med-spa · 8584 Santa Monica Boulevard West Hollywood CA 90069
+
+### Wicker Park Health Center — score 50
+
+- **Handle:** [@null](https://www.primecarehealth.org/wicker-park-health-center)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 1127 North Oakley Boulevard Chicago IL 60622
+
+### Family Planning Associates — score 50
+
+- **Handle:** [@null](https://www.fpachicago.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 659 West Washington Street
+
+### Physicians Immediate Care — score 50
+
+- **Handle:** [@null](https://physiciansimmediatecare.com/clinics/old-town/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 121 West North Avenue Chicago 60610
+
+### Michigan Avenue Immediate/Primary Care (MAICOH) — score 50
+
+- **Handle:** [@null](https://www.michiganavenueprimarycare.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 60601
+
+### Linda Marino PhD — score 50
+
+- **Handle:** [@null](http://lindamarinophd.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 122 South Michigan Avenue Chicago IL 60603
+
+### Endeavor Health Orthopaedic & Spine Center - Chicago in Bucktown — score 50
+
+- **Handle:** [@null](https://www.endeavorhealth.org/locations/orthopaedic-spine-immediate-care-chicago-bucktown)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 1942 West Fullerton Avenue Chicago IL 60647
+
+### Chicago Lakeside VA Clinic — score 50
+
+- **Handle:** [@null](https://www.chicago.va.gov/locations/Lakeside.asp)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 211 East Ontario Street Chicago IL 60611
+
+### APS Ketamine — score 50
+
+- **Handle:** [@null](https://apsketamine.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 8 South Michigan Avenue Chicago IL 60603
+
+### Lakeview Healing Oasis — score 70
+
+- **Handle:** [@null](https://lakeviewhealingoasis.com/reikichicago/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 722 West Diversey Parkway Chicago IL 60614
+
+### The Joint Chiropractic — score 70
+
+- **Handle:** [@null](https://www.thejoint.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 2711 North Elston Avenue Chicago IL 60647
+
+### Back To Natural Health — score 70
+
+- **Handle:** [@null](https://backtonaturalhealth.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 1937 West Diversey Parkway Chicago IL 60614
+
+### Specialized Forensic Unit PC — score 70
+
+- **Handle:** [@null](http://sfunit.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 1005 North Western Avenue Chicago IL 60622
+
+### Lakeview Chiropractic — score 50
+
+- **Handle:** [@null](https://lakeviewchiropractic.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 3832 North Broadway Chicago IL 60613
+
+### Chicago Family Asthma & Allergy — score 50
+
+- **Handle:** [@null](https://www.chicagofamilyasthma.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 2551 North Clark Street Chicago IL 60614
+
+### Optimal Health Chiropractic — score 50
+
+- **Handle:** [@null](https://www.optimalchiroltd.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 905 West Irving Park Road Chicago IL 60613
+
+### Specialty Care Center — score 50
+
+- **Handle:** [@null](https://cookcountyhealth.org/locations/specialty-care-center/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 1901 West Harrison Street Chicago IL 60612
+
+### Vesper — score 50
+
+- **Handle:** [@null](https://vesperchi.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 3916 North Broadway Chicago IL 60613
+
+### Learning Through Play Center for Child Development — score 70
+
+- **Handle:** [@null](https://www.pediatricresources.org/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 633 West Addison Street Chicago IL 60657
+
+### One Medical — score 50
+
+- **Handle:** [@null](https://www.onemedical.com/locations/chi/lincolnpark/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 1931 North Halsted Street Chicago IL 60614
+
+### Compass Health Centers — score 70
+
+- **Handle:** [@null](https://compasshealthcenter.net/locations/chicago)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 2500 West Bradley Place Chicago IL 60618
+
+### RUSH Pediatric Primary Care — score 50
+
+- **Handle:** [@null](https://www.rush.edu/kids/services/pediatric-primary-care)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 1645 West Jackson Boulevard Chicago IL 60612
+
+### Autism Assessment, Research, Treatment & Services Center — score 50
+
+- **Handle:** [@null](https://www.rush.edu/locations/autism-assessment-research-treatment-services-aarts-center)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 1645 West Jackson Boulevard Chicago IL 60612
+
+### RUSH Adult and Pediatric Primary Care — score 50
+
+- **Handle:** [@null](https://www.rush.edu/locations/rush-adult-and-pediatric-primary-care)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 1645 West Jackson Boulevard Chicago IL 60612
+
+### RUSH Behavioral Medicine — score 50
+
+- **Handle:** [@null](https://www.rush.edu/locations/rush-behavioral-medicine-westgate-building)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 1645 West Jackson Boulevard Chicago IL 60612
+
+### RUSH Behavioral Medicine — score 50
+
+- **Handle:** [@null](https://www.rush.edu/locations/rush-behavioral-medicine-suite-600)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 1645 West Jackson Boulevard Chicago IL 60612

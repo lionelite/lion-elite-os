@@ -1,6 +1,6 @@
 # New leads from the last harvest
 
-_Generated 2026-11-15T23:54:01.909Z — 25 leads._
+_Generated 2026-11-16T05:22:25.585Z — 25 leads._
 
 | Searches run | Searches failed | Posts read | Matched | Dropped (do-not-engage) |
 |---:|---:|---:|---:|---:|
@@ -41,206 +41,206 @@ business-scaling: Bluesky search failed for "trying to scale my business": HTTP 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-**Sources this run:** bluesky: unreachable (23 failed) · openstreetmap: 97 businesses in los-angeles-ca
+**Sources this run:** bluesky: unreachable (23 failed) · openstreetmap: 194 businesses in chicago-il
 
 ## med-spa-b2b — 25
 
-### Wynn Nail Spa — score 50
+### Wicker Park Health Center — score 50
 
-- **Handle:** [@null](http://www.wynnnailspa.com)
+- **Handle:** [@null](https://www.primecarehealth.org/wicker-park-health-center)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** clinic
 
-> med-spa · Wilshire Boulevard Los Angeles 90036
+> clinic · 1127 North Oakley Boulevard Chicago IL 60622
 
-### Wynn Nail Spa — score 50
+### Family Planning Associates — score 50
 
-- **Handle:** [@null](http://www.wynnnailspa.com)
+- **Handle:** [@null](https://www.fpachicago.com)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** clinic
 
-> med-spa · Vine Street Los Angeles 90028
+> clinic · 659 West Washington Street
 
-### Nailnation — score 50
+### Physicians Immediate Care — score 50
 
-- **Handle:** [@null](https://www.nailnationspa.com/)
+- **Handle:** [@null](https://physiciansimmediatecare.com/clinics/old-town/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** clinic
 
-> med-spa · 7380 Melrose Avenue Los Angeles 90046
+> clinic · 121 West North Avenue Chicago 60610
 
-### Your Spa — score 50
+### Michigan Avenue Immediate/Primary Care (MAICOH) — score 50
 
-- **Handle:** [@null](http://www.yourspaonmelrose.com/)
+- **Handle:** [@null](https://www.michiganavenueprimarycare.com/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** clinic
 
-> med-spa · 7260 Melrose Avenue Los Angeles CA 90046
+> clinic · 60601
 
-### Cosmetic Rejuvenation Medical Center — score 50
+### Linda Marino PhD — score 50
 
-- **Handle:** [@null](http://crmclaser.com)
+- **Handle:** [@null](http://lindamarinophd.com)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** clinic
 
-> med-spa · 7901 Santa Monica Boulevard West Hollywood CA 90046
+> clinic · 122 South Michigan Avenue Chicago IL 60603
 
-### Voda Spa — score 70
+### Endeavor Health Orthopaedic & Spine Center - Chicago in Bucktown — score 50
 
-- **Handle:** [@null](https://www.vodaspa.com/)
+- **Handle:** [@null](https://www.endeavorhealth.org/locations/orthopaedic-spine-immediate-care-chicago-bucktown)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** clinic
 
-> med-spa
+> clinic · 1942 West Fullerton Avenue Chicago IL 60647
 
-### Top Nail Spa — score 50
+### Chicago Lakeside VA Clinic — score 50
 
-- **Handle:** [@null](https://www.topnailspa.net/)
+- **Handle:** [@null](https://www.chicago.va.gov/locations/Lakeside.asp)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** clinic
 
-> med-spa · 9669 South Santa Monica Boulevard Beverly Hills CA 90210
+> clinic · 211 East Ontario Street Chicago IL 60611
 
-### Heather Airbrush Tanning — score 50
+### APS Ketamine — score 50
 
-- **Handle:** [@null](http://www.airbrushbyheather.com/)
+- **Handle:** [@null](https://apsketamine.com)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** clinic
 
-> med-spa · 8969 West Sunset Boulevard West Hollywood CA 90069
+> clinic · 8 South Michigan Avenue Chicago IL 60603
 
-### Nails by Design and Spa — score 70
+### Lakeview Healing Oasis — score 70
 
-- **Handle:** [@null](https://www.nailsbydesignspa.com/)
+- **Handle:** [@null](https://lakeviewhealingoasis.com/reikichicago/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** clinic
 
-> med-spa · 8961 West Sunset Boulevard West Hollywood CA 90069
+> clinic · 722 West Diversey Parkway Chicago IL 60614
 
-### LaserAway — score 50
+### The Joint Chiropractic — score 70
 
-- **Handle:** [@null](https://locations.laseraway.com/ca/westhollywood/laser-hair-removal-westhollywood-ca-13.html)
+- **Handle:** [@null](https://www.thejoint.com)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** clinic
 
-> med-spa · 8953 West Sunset Boulevard West Hollywood CA 90069
+> clinic · 2711 North Elston Avenue Chicago IL 60647
 
-### Ole Henriksen Spa — score 50
+### Back To Natural Health — score 70
 
-- **Handle:** [@null](https://www.olehenriksen.com/spa.html)
+- **Handle:** [@null](https://backtonaturalhealth.com)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** clinic
 
-> med-spa · 8622A West Sunset Boulevard West Hollywood CA 90069
+> clinic · 1937 West Diversey Parkway Chicago IL 60614
 
-### Blushington — score 70
+### Specialized Forensic Unit PC — score 70
 
-- **Handle:** [@null](https://www.blushington.com/store-locations/west-hollywood/)
+- **Handle:** [@null](http://sfunit.com/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** clinic
 
-> med-spa · 8591 West Sunset Boulevard West Hollywood CA 90069
+> clinic · 1005 North Western Avenue Chicago IL 60622
 
-### MiniLuxe — score 50
+### Lakeview Chiropractic — score 50
 
-- **Handle:** [@null](https://www.miniluxe.com/studios/LAX)
+- **Handle:** [@null](https://lakeviewchiropractic.com/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** clinic
 
-> med-spa · 8570 West Sunset Boulevard West Hollywood CA 90069
+> clinic · 3832 North Broadway Chicago IL 60613
 
-### Sunset Tan — score 50
+### Chicago Family Asthma & Allergy — score 50
 
-- **Handle:** [@null](http://www.sunsettan.com)
+- **Handle:** [@null](https://www.chicagofamilyasthma.com/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** clinic
 
-> med-spa · 8539 West Sunset Boulevard West Hollywood CA 90069
+> clinic · 2551 North Clark Street Chicago IL 60614
 
-### SalonCentric — score 50
+### Optimal Health Chiropractic — score 50
 
-- **Handle:** [@null](http://stores.saloncentric.com/ca/w-hollywood/6002/)
+- **Handle:** [@null](https://www.optimalchiroltd.com/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** clinic
 
-> med-spa · 8539 West Sunset Boulevard West Hollywood CA 90069
+> clinic · 905 West Irving Park Road Chicago IL 60613
 
-### Jhrana Beauty and Threading — score 50
+### Specialty Care Center — score 50
 
-- **Handle:** [@null](http://www.jharanabeauty.com)
+- **Handle:** [@null](https://cookcountyhealth.org/locations/specialty-care-center/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** clinic
 
-> med-spa · 8539 West Sunset Boulevard West Hollywood CA 90069
+> clinic · 1901 West Harrison Street Chicago IL 60612
 
-### Beauty Bar Medical Clinic — score 50
+### Vesper — score 50
 
-- **Handle:** [@null](https://www.beautybarclinics.com/)
+- **Handle:** [@null](https://vesperchi.com)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** clinic
 
-> med-spa · 8527 West Sunset Boulevard West Hollywood CA 90069
+> clinic · 3916 North Broadway Chicago IL 60613
 
-### Cure Salon & Spa — score 50
+### Learning Through Play Center for Child Development — score 70
 
-- **Handle:** [@null](https://www.sunsettowerhotel.com/salon-spa/)
+- **Handle:** [@null](https://www.pediatricresources.org/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** clinic
 
-> med-spa · 8358 West Sunset Boulevard West Hollywood CA 90069
+> clinic · 633 West Addison Street Chicago IL 60657
 
-### Beauty Collection — score 50
+### One Medical — score 50
 
-- **Handle:** [@null](https://www.beautycollection.com/West-Hollywood)
+- **Handle:** [@null](https://www.onemedical.com/locations/chi/lincolnpark/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** clinic
 
-> med-spa · 8951 Santa Monica Boulevard West Hollywood CA 90069
+> clinic · 1931 North Halsted Street Chicago IL 60614
 
-### Isle of Serenity Nail Spa — score 50
+### Compass Health Centers — score 70
 
-- **Handle:** [@null](https://www.isleofserenity.com/)
+- **Handle:** [@null](https://compasshealthcenter.net/locations/chicago)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** clinic
 
-> med-spa · 8929 Santa Monica Boulevard West Hollywood CA 90069
+> clinic · 2500 West Bradley Place Chicago IL 60618
 
-### Maus's — score 70
+### RUSH Pediatric Primary Care — score 50
 
-- **Handle:** [@null](https://maudsofbeverlyhills.com/)
+- **Handle:** [@null](https://www.rush.edu/kids/services/pediatric-primary-care)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** clinic
 
-> med-spa · 624 North Doheny Drive West Hollywood CA 90069
+> clinic · 1645 West Jackson Boulevard Chicago IL 60612
 
-### B2V Salon — score 50
+### Autism Assessment, Research, Treatment & Services Center — score 50
 
-- **Handle:** [@null](https://b2vsalon.com/)
+- **Handle:** [@null](https://www.rush.edu/locations/autism-assessment-research-treatment-services-aarts-center)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** clinic
 
-> med-spa · 646 North Doheny Drive West Hollywood CA 90069
+> clinic · 1645 West Jackson Boulevard Chicago IL 60612
 
-### Palm Bench Tan — score 50
+### RUSH Adult and Pediatric Primary Care — score 50
 
-- **Handle:** [@null](https://palmbeachtan.com/locations/CA/Hollywood-Santa-Monica-Boulevard/)
+- **Handle:** [@null](https://www.rush.edu/locations/rush-adult-and-pediatric-primary-care)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** clinic
 
-> med-spa · 8715 Santa Monica Boulevard West Hollywood CA 90069
+> clinic · 1645 West Jackson Boulevard Chicago IL 60612
 
-### Face Place — score 70
+### RUSH Behavioral Medicine — score 50
 
-- **Handle:** [@null](https://faceplace.com/)
+- **Handle:** [@null](https://www.rush.edu/locations/rush-behavioral-medicine-westgate-building)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** clinic
 
-> med-spa · 8701 Santa Monica Boulevard West Hollywood CA 90069
+> clinic · 1645 West Jackson Boulevard Chicago IL 60612
 
-### Bleu Nail Spa — score 50
+### RUSH Behavioral Medicine — score 50
 
-- **Handle:** [@null](https://www.bleunailspa.com)
+- **Handle:** [@null](https://www.rush.edu/locations/rush-behavioral-medicine-suite-600)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** clinic
 
-> med-spa · 8584 Santa Monica Boulevard West Hollywood CA 90069
+> clinic · 1645 West Jackson Boulevard Chicago IL 60612
