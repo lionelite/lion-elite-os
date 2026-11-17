@@ -1,11 +1,11 @@
 # Every harvested lead
 
-_Generated 2026-11-16T15:12:07.084Z — 1153 leads._
+_Generated 2026-11-17T00:07:14.630Z — 1178 leads._
 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-## med-spa-b2b — 1153
+## med-spa-b2b — 1178
 
 ### Sports Performance & Wellness Center — score 50
 
@@ -9230,3 +9230,203 @@ any of them — reach out by hand from the post link if a lead is worth it.
 - **Why they matched:** med-spa
 
 > med-spa · 2000 Hamilton Street Philadelphia PA
+
+### Miraj Hammam Spa — score 70
+
+- **Handle:** [@null](https://www.mirajhammam.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 1495 West 6th Avenue
+
+### Butterfly Studio and Spa — score 70
+
+- **Handle:** [@null](https://butterflystudiovancouver.ca/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 3252 West Broadway
+
+### Line Spa and Polish — score 70
+
+- **Handle:** [@null](https://www.linespaandpolish.ca/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 1828 West Broadway
+
+### Crescent Nail & Spa — score 50
+
+- **Handle:** [@null](https://www.crescentnailspa.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 1066 West Broadway Vancouver
+
+### CüR Laser and Skin — score 50
+
+- **Handle:** [@null](https://www.curlaser.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 1062 West Broadway Vancouver
+
+### Bare Wax Sugaring Bar — score 70
+
+- **Handle:** [@null](https://www.barewax.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 1828 West 1st Avenue Vancouver V6J 1G5
+
+### Pinky Beauty Bar — score 50
+
+- **Handle:** [@null](https://www.pinkybeautybar.ca/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 3238 Main Street Vancouver
+
+### Stanley Nail's Spa — score 50
+
+- **Handle:** [@null](https://www.stanleynails.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 1181 Commercial Drive
+
+### Fantasy Nail Lounge — score 50
+
+- **Handle:** [@null](https://fantasynaillounge.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 1229 Burrard Street Vancouver
+
+### Mink Lash Boutique — score 70
+
+- **Handle:** [@null](https://www.minklashboutique.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 1237 Burrard Street Vancouver
+
+### Panache Brow House — score 50
+
+- **Handle:** [@null](https://www.panachebrowhouse.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 104 West Hastings Street Vancouver
+
+### Onyx Aesthetics Studio — score 70
+
+- **Handle:** [@null](https://www.onyxstudio.ca)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 425 Carrall Street Vancouver V6B 6E3
+
+### N.BAR Nail & Beauty Salon Downtown — score 50
+
+- **Handle:** [@null](https://nbar.com/canada/location/west-pender-vancouver/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 715 West Pender Street Vancouver
+
+### La Lotus Nails Spa — score 70
+
+- **Handle:** [@null](https://www.lalotusnailspa.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 625 Davie Street Vancouver V6B 3N3
+
+### The Nails Wall Centre — score 70
+
+- **Handle:** [@null](https://www.thenails.ca/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 1001 Hornby Street Vancouver V6Z 2R9
+
+### MOCa Eyelash & Nail — score 50
+
+- **Handle:** [@null](https://mocabeauty.love)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 1062 Hornby Street Vancouver
+
+### Chenille Lash n Brow — score 50
+
+- **Handle:** [@null](https://chenillelashnbrow.com/contact)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 1288 Howe Street Vancouver
+
+### Elle Boutique Salon — score 50
+
+- **Handle:** [@null](https://www.elleboutiquesalon.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 1236 Richards Street Vancouver
+
+### Bling Nail Studio — score 50
+
+- **Handle:** [@null](https://kubiti.wordpress.com/nail-trends/?bling+nail+studio)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 98 Keefer Street Vancouver
+
+### Sage Natural Wellness — score 50
+
+- **Handle:** [@null](https://www.saje.ca/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 2252 West 4th Avenue Vancouver V6K 1N8
+
+### Life Story Beauty — score 50
+
+- **Handle:** [@null](https://www.lifestorybeauty.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 2137 West 4th Avenue Vancouver
+
+### Glossé Nails — score 70
+
+- **Handle:** [@null](https://www.glossenails.ca/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 1196 Davie Street Vancouver V6E 1N1
+
+### Shifeon — score 50
+
+- **Handle:** [@null](https://shifeon.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 1291 Robson Street Vancouver
+
+### Top Knot — score 70
+
+- **Handle:** [@null](https://www.topknotbeautyroom.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 1243 Hamilton Street Vancouver
+
+### Yaletown Nails Spa — score 50
+
+- **Handle:** [@null](https://yaletownnailsspa.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 1260 Hamilton Street Vancouver V6B 2S8

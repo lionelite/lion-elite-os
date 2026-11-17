@@ -1,6 +1,6 @@
 # New leads from the last harvest
 
-_Generated 2026-11-16T15:12:07.084Z — 25 leads._
+_Generated 2026-11-17T00:07:14.626Z — 25 leads._
 
 | Searches run | Searches failed | Posts read | Matched | Dropped (do-not-engage) |
 |---:|---:|---:|---:|---:|
@@ -41,206 +41,206 @@ business-scaling: Bluesky search failed for "trying to scale my business": HTTP 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-**Sources this run:** bluesky: unreachable (23 failed) · openstreetmap: 50 businesses in philadelphia-pa
+**Sources this run:** bluesky: unreachable (23 failed) · openstreetmap: 391 businesses in vancouver-bc-ca
 
 ## med-spa-b2b — 25
 
-### Lacquer Lounge — score 70
+### Miraj Hammam Spa — score 70
 
-- **Handle:** [@null](https://lacquerlounge.com/)
+- **Handle:** [@null](https://www.mirajhammam.com/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** med-spa
 
-> med-spa · 38 North 3rd Street Philadelphia PA 19106
+> med-spa · 1495 West 6th Avenue
 
-### Mingle Nail Lounge — score 50
+### Butterfly Studio and Spa — score 70
 
-- **Handle:** [@null](https://www.minglenaillounge.com/)
+- **Handle:** [@null](https://butterflystudiovancouver.ca/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** med-spa
 
-> med-spa · 4237 Main Street Philadelphia PA 19127
+> med-spa · 3252 West Broadway
 
-### Just Hair — score 50
+### Line Spa and Polish — score 70
 
-- **Handle:** [@null](http://justhairnj.com)
+- **Handle:** [@null](https://www.linespaandpolish.ca/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** med-spa
 
-> med-spa · 429 W Cuthbert Blvd Haddon Township NJ 08108
+> med-spa · 1828 West Broadway
 
-### Bounc'n & Behaving Hair Studio — score 50
+### Crescent Nail & Spa — score 50
 
-- **Handle:** [@null](https://www.bouncedolls.com/)
+- **Handle:** [@null](https://www.crescentnailspa.com/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** med-spa
 
-> med-spa · 5535 Market Street Philadelphia PA 19139
+> med-spa · 1066 West Broadway Vancouver
 
-### Luxe Nail Bar — score 50
+### CüR Laser and Skin — score 50
 
-- **Handle:** [@null](https://luxephilly.com/)
+- **Handle:** [@null](https://www.curlaser.com/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** med-spa
 
-> med-spa · 212 South 40th Street Philadelphia PA 19104
+> med-spa · 1062 West Broadway Vancouver
 
-### Cure Nails & Spa — score 50
+### Bare Wax Sugaring Bar — score 70
 
-- **Handle:** [@null](https://cure-nails-spa.edan.io/)
+- **Handle:** [@null](https://www.barewax.com/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** med-spa
 
-> med-spa · 412 South 2nd Street Philadelphia PA 19147
+> med-spa · 1828 West 1st Avenue Vancouver V6J 1G5
 
-### Julius Scissor Hair Designer — score 50
+### Pinky Beauty Bar — score 50
 
-- **Handle:** [@null](https://juliusscissorhair.wixsite.com/mysite)
+- **Handle:** [@null](https://www.pinkybeautybar.ca/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** med-spa
 
-> med-spa · 2045 Locust Street Philadelphia PA 19103
+> med-spa · 3238 Main Street Vancouver
 
-### Judy's Hair and Wig Salon — score 50
+### Stanley Nail's Spa — score 50
 
-- **Handle:** [@null](https://judyshairandwigsalon.com)
+- **Handle:** [@null](https://www.stanleynails.com/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** med-spa
 
-> med-spa · 2649 Orthodox Street Philadelphia PA 19137
+> med-spa · 1181 Commercial Drive
 
-### Sola Salons — score 70
+### Fantasy Nail Lounge — score 50
 
-- **Handle:** [@null](https://www.solasalonstudios.com/locations/wynnewood)
+- **Handle:** [@null](https://fantasynaillounge.com/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** med-spa
 
-> med-spa · 80 East Wynnewood Road Wynnewood PA 19096
+> med-spa · 1229 Burrard Street Vancouver
 
-### Lash Palette — score 50
+### Mink Lash Boutique — score 70
 
-- **Handle:** [@null](https://www.lash-palette.com/)
+- **Handle:** [@null](https://www.minklashboutique.com/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** med-spa
 
-> med-spa · 80 East Wynnewood Road
+> med-spa · 1237 Burrard Street Vancouver
 
-### Liz Beauty Salon — score 50
+### Panache Brow House — score 50
 
-- **Handle:** [@null](https://lizbeautysalon.net)
+- **Handle:** [@null](https://www.panachebrowhouse.com/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** med-spa
 
-> med-spa · 2307 Federal Street Camden NJ 08105
+> med-spa · 104 West Hastings Street Vancouver
 
-### European Wax Center — score 50
+### Onyx Aesthetics Studio — score 70
 
-- **Handle:** [@null](https://locations.waxcenter.com/pa/wynnewood/wynnewood-wynnewood-shopping-center-1147.html)
+- **Handle:** [@null](https://www.onyxstudio.ca)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** med-spa
 
-> med-spa · 50 East Wynnewood Road Wynnewood
+> med-spa · 425 Carrall Street Vancouver V6B 6E3
 
-### K Louise Boutique Salon — score 70
+### N.BAR Nail & Beauty Salon Downtown — score 50
 
-- **Handle:** [@null](https://klouisesalon.com/index.html)
+- **Handle:** [@null](https://nbar.com/canada/location/west-pender-vancouver/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** med-spa
 
-> med-spa · 6072 Ridge Avenue Philadelphia 19128
+> med-spa · 715 West Pender Street Vancouver
 
-### Euphoria Nail Bar — score 50
+### La Lotus Nails Spa — score 70
 
-- **Handle:** [@null](https://euphorianailbar.com/)
+- **Handle:** [@null](https://www.lalotusnailspa.com/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** med-spa
 
-> med-spa
+> med-spa · 625 Davie Street Vancouver V6B 3N3
 
-### Citrine Glow — score 70
+### The Nails Wall Centre — score 70
 
-- **Handle:** [@null](https://www.citrineglowmedispa.com/)
+- **Handle:** [@null](https://www.thenails.ca/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** med-spa
 
-> med-spa
+> med-spa · 1001 Hornby Street Vancouver V6Z 2R9
 
-### Redwood Beauty and Wellness Spa — score 50
+### MOCa Eyelash & Nail — score 50
 
-- **Handle:** [@null](https://redwoodwellness.life/)
+- **Handle:** [@null](https://mocabeauty.love)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** med-spa
 
-> med-spa
+> med-spa · 1062 Hornby Street Vancouver
 
-### Rocket Tan — score 50
+### Chenille Lash n Brow — score 50
 
-- **Handle:** [@null](https://www.rockettans.com/)
+- **Handle:** [@null](https://chenillelashnbrow.com/contact)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** med-spa
 
-> med-spa · 3629 Lancaster Avenue Philadelphia PA 19104
+> med-spa · 1288 Howe Street Vancouver
 
-### Viva Care Solutions — score 50
+### Elle Boutique Salon — score 50
 
-- **Handle:** [@null](https://vivacaresolutions.com/)
+- **Handle:** [@null](https://www.elleboutiquesalon.com)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** med-spa
 
-> med-spa · 1613 Germantown Avenue Philadelphia PA 19122
+> med-spa · 1236 Richards Street Vancouver
 
-### Browsin Boutique — score 50
+### Bling Nail Studio — score 50
 
-- **Handle:** [@null](https://browsinboutique.com)
+- **Handle:** [@null](https://kubiti.wordpress.com/nail-trends/?bling+nail+studio)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** med-spa
 
-> med-spa · 133 Heather Road Bala Cynwyd PA 19004
+> med-spa · 98 Keefer Street Vancouver
 
-### European Wax Center — score 50
+### Sage Natural Wellness — score 50
 
-- **Handle:** [@null](https://locations.waxcenter.com/pa/philadelphia/philadelphia-university-city-0902.html)
+- **Handle:** [@null](https://www.saje.ca/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** med-spa
 
-> med-spa · 3435 Walnut Street Philadelphia PA 19104
+> med-spa · 2252 West 4th Avenue Vancouver V6K 1N8
 
-### Sugaring NYC — score 50
+### Life Story Beauty — score 50
 
-- **Handle:** [@null](https://www.sugaringnyc.com/)
+- **Handle:** [@null](https://www.lifestorybeauty.com/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** med-spa
 
-> med-spa · 1909 Chestnut Street Philadelphia PA 19103
+> med-spa · 2137 West 4th Avenue Vancouver
 
-### Tip Top Toe Nails — score 50
+### Glossé Nails — score 70
 
-- **Handle:** [@null](null)
+- **Handle:** [@null](https://www.glossenails.ca/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** med-spa
 
-> med-spa
+> med-spa · 1196 Davie Street Vancouver V6E 1N1
 
-### Red Lotus Spa & Nails — score 50
+### Shifeon — score 50
 
-- **Handle:** [@null](null)
+- **Handle:** [@null](https://shifeon.com/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** med-spa
 
-> med-spa · 4610-12 Cedar Avenue Philadelphia PA 19143
+> med-spa · 1291 Robson Street Vancouver
 
-### Diamond Nails — score 50
+### Top Knot — score 70
 
-- **Handle:** [@null](null)
+- **Handle:** [@null](https://www.topknotbeautyroom.com/)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** med-spa
 
-> med-spa
+> med-spa · 1243 Hamilton Street Vancouver
 
-### Heritage Nails — score 50
+### Yaletown Nails Spa — score 50
 
-- **Handle:** [@null](null)
+- **Handle:** [@null](https://yaletownnailsspa.com)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** med-spa
 
-> med-spa · 2000 Hamilton Street Philadelphia PA
+> med-spa · 1260 Hamilton Street Vancouver V6B 2S8
