@@ -1,6 +1,6 @@
 # New leads from the last harvest
 
-_Generated 2026-11-17T00:07:14.626Z — 25 leads._
+_Generated 2026-11-17T10:24:24.570Z — 25 leads._
 
 | Searches run | Searches failed | Posts read | Matched | Dropped (do-not-engage) |
 |---:|---:|---:|---:|---:|
@@ -41,206 +41,206 @@ business-scaling: Bluesky search failed for "trying to scale my business": HTTP 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-**Sources this run:** bluesky: unreachable (23 failed) · openstreetmap: 391 businesses in vancouver-bc-ca
+**Sources this run:** bluesky: unreachable (23 failed) · openstreetmap: 33 businesses in winnipeg-mb-ca
 
 ## med-spa-b2b — 25
 
-### Miraj Hammam Spa — score 70
+### Crossfit Roborean — score 50
 
-- **Handle:** [@null](https://www.mirajhammam.com/)
+- **Handle:** [@null](http://www.crossfitroborean.com)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** gym
 
-> med-spa · 1495 West 6th Avenue
+> gym
 
-### Butterfly Studio and Spa — score 70
+### Brickhouse Gym — score 50
 
-- **Handle:** [@null](https://butterflystudiovancouver.ca/)
+- **Handle:** [@null](https://brickhousegym.ca/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** gym
 
-> med-spa · 3252 West Broadway
+> gym · 511 Madison Street Winnipeg
 
-### Line Spa and Polish — score 70
+### Peguis Trail Fitness Centre — score 50
 
-- **Handle:** [@null](https://www.linespaandpolish.ca/)
+- **Handle:** [@null](https://www.winnipeg.ca/cms/recreation/facilities/leisurecentres/peguistrail.stm)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** gym
 
-> med-spa · 1828 West Broadway
+> gym
 
-### Crescent Nail & Spa — score 50
+### GoodLife Fitness — score 70
 
-- **Handle:** [@null](https://www.crescentnailspa.com/)
+- **Handle:** [@null](https://www.goodlifefitness.com/clubs/club.220.html)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** gym
 
-> med-spa · 1066 West Broadway Vancouver
+> gym · 330 Main Street R3C 4L5
 
-### CüR Laser and Skin — score 50
+### Vivacity Fitness — score 70
 
-- **Handle:** [@null](https://www.curlaser.com/)
+- **Handle:** [@null](https://vivacityfitness.ca/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** gym
 
-> med-spa · 1062 West Broadway Vancouver
+> gym · 561 Saint Anne's Road Winnipeg R2M 3G5
 
-### Bare Wax Sugaring Bar — score 70
+### Wheelhouse Cycle Club — score 70
 
-- **Handle:** [@null](https://www.barewax.com/)
+- **Handle:** [@null](https://www.wheelhousecycleclub.com/winnipeg-studio)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** gym
 
-> med-spa · 1828 West 1st Avenue Vancouver V6J 1G5
+> gym · 655 Sterling Lyon Parkway R3P 1J9
 
-### Pinky Beauty Bar — score 50
+### F45 Training — score 70
 
-- **Handle:** [@null](https://www.pinkybeautybar.ca/)
+- **Handle:** [@null](https://f45training.ca/tuxedo/home)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** gym
 
-> med-spa · 3238 Main Street Vancouver
+> gym · 515 Sterling Lyon Parkway R3P 2S8
 
-### Stanley Nail's Spa — score 50
+### The Fitual — score 70
 
-- **Handle:** [@null](https://www.stanleynails.com/)
+- **Handle:** [@null](https://thefitual.com/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** gym
 
-> med-spa · 1181 Commercial Drive
+> gym · 1800 Corydon Avenue R3N 0K3
 
-### Fantasy Nail Lounge — score 50
+### Planet Fitness — score 50
 
-- **Handle:** [@null](https://fantasynaillounge.com/)
+- **Handle:** [@null](https://www.planetfitness.ca/gyms/winnipeg-garden-city-mb)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** gym
 
-> med-spa · 1229 Burrard Street Vancouver
+> gym · 783 Leila Avenue
 
-### Mink Lash Boutique — score 70
+### Assiniboine Athletic Club — score 50
 
-- **Handle:** [@null](https://www.minklashboutique.com/)
+- **Handle:** [@null](http://assiniboineathleticclub.ca/index2.html)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** gym
 
-> med-spa · 1237 Burrard Street Vancouver
+> gym · 83 Garry Street
 
-### Panache Brow House — score 50
+### Iron Age Winnipeg — score 70
 
-- **Handle:** [@null](https://www.panachebrowhouse.com/)
+- **Handle:** [@null](https://www.ironagestrength.ca/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** gym
 
-> med-spa · 104 West Hastings Street Vancouver
+> gym · 49 Heaton Avenue R3B 0J4
 
-### Onyx Aesthetics Studio — score 70
+### The Gang Fitness — score 50
 
-- **Handle:** [@null](https://www.onyxstudio.ca)
+- **Handle:** [@null](https://www.thegangfitness.com/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** gym
 
-> med-spa · 425 Carrall Street Vancouver V6B 6E3
+> gym · 51 Heaton Avenue
 
-### N.BAR Nail & Beauty Salon Downtown — score 50
+### Planet Fitness — score 50
 
-- **Handle:** [@null](https://nbar.com/canada/location/west-pender-vancouver/)
+- **Handle:** [@null](https://www.planetfitness.ca/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** gym
 
-> med-spa · 715 West Pender Street Vancouver
+> gym · 1320 Ellice Avenue R3G0E9
 
-### La Lotus Nails Spa — score 70
+### Awesome Hot Yoga — score 50
 
-- **Handle:** [@null](https://www.lalotusnailspa.com/)
+- **Handle:** [@null](https://www.awesomehotyoga.ca)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** gym
 
-> med-spa · 625 Davie Street Vancouver V6B 3N3
+> gym · 663 Stafford Street Winnipeg R3M 2X7
 
-### The Nails Wall Centre — score 70
+### Reh-Fit Centre — score 50
 
-- **Handle:** [@null](https://www.thenails.ca/)
+- **Handle:** [@null](https://www.reh-fit.com/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** gym
 
-> med-spa · 1001 Hornby Street Vancouver V6Z 2R9
+> gym · 1390 Taylor Avenue Winnipeg R3M 3V8
 
-### MOCa Eyelash & Nail — score 50
+### Anytime Fitness — score 50
 
-- **Handle:** [@null](https://mocabeauty.love)
+- **Handle:** [@null](https://www.anytimefitness.com/gyms/3607/Winnipeg-MB-R2V-4Z5/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** gym
 
-> med-spa · 1062 Hornby Street Vancouver
+> gym · 2415 Main Street Winnipeg R2V 4Z5
 
-### Chenille Lash n Brow — score 50
+### Prana Yoga Studio — score 70
 
-- **Handle:** [@null](https://chenillelashnbrow.com/contact)
+- **Handle:** [@null](https://www.pranayogawinnipeg.ca/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** gym
 
-> med-spa · 1288 Howe Street Vancouver
+> gym · 894 Westminster Avenue Winnipeg R3G1B5
 
-### Elle Boutique Salon — score 50
+### Shapes — score 50
 
-- **Handle:** [@null](https://www.elleboutiquesalon.com)
+- **Handle:** [@null](https://www.shapes.ca/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** gym
 
-> med-spa · 1236 Richards Street Vancouver
+> gym · 1325 Henderson Highway Winnipeg R2G1M5
 
-### Bling Nail Studio — score 50
+### South Osborne Massage Therapy Clinic — score 50
 
-- **Handle:** [@null](https://kubiti.wordpress.com/nail-trends/?bling+nail+studio)
+- **Handle:** [@null](https://www.facebook.com/South-Osborne-Massage-Therapy-Clinic-477121445769929/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** massage
 
-> med-spa · 98 Keefer Street Vancouver
+> massage · 684 Osborne Street Winnipeg R3L 2B9
 
-### Sage Natural Wellness — score 50
+### Equilibrium — score 70
 
-- **Handle:** [@null](https://www.saje.ca/)
+- **Handle:** [@null](https://www.eqwellness.ca/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** massage
 
-> med-spa · 2252 West 4th Avenue Vancouver V6K 1N8
+> massage · 584 Pembina Highway
 
-### Life Story Beauty — score 50
+### Pure Escape Massage — score 70
 
-- **Handle:** [@null](https://www.lifestorybeauty.com/)
+- **Handle:** [@null](https://www.thepureescape.ca)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** massage
 
-> med-spa · 2137 West 4th Avenue Vancouver
+> massage · 698 Corydon Avenue
 
-### Glossé Nails — score 70
+### Turtle Island Massage — score 70
 
-- **Handle:** [@null](https://www.glossenails.ca/)
+- **Handle:** [@null](https://turtleislandmassage.ca/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** massage
 
-> med-spa · 1196 Davie Street Vancouver V6E 1N1
+> massage · 900 Harrow Street East
 
-### Shifeon — score 50
+### Unity Massage — score 70
 
-- **Handle:** [@null](https://shifeon.com/)
+- **Handle:** [@null](https://www.unitymassage.net/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** massage
 
-> med-spa · 1291 Robson Street Vancouver
+> massage · 1026 Saint Mary’s Road R2M 3S6
 
-### Top Knot — score 70
+### Back In Motion Therapeutic Massage — score 70
 
-- **Handle:** [@null](https://www.topknotbeautyroom.com/)
+- **Handle:** [@null](https://www.backinmotionwellness.ca/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** massage
 
-> med-spa · 1243 Hamilton Street Vancouver
+> massage · 1088 Pembina Highway
 
-### Yaletown Nails Spa — score 50
+### Urban Massage — score 50
 
-- **Handle:** [@null](https://yaletownnailsspa.com)
+- **Handle:** [@null](https://winnipegmassagetherapy.ca)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** massage
 
-> med-spa · 1260 Hamilton Street Vancouver V6B 2S8
+> massage · 900 Westminster Avenue Winnipeg R3G1B5

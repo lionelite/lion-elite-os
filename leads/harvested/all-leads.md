@@ -1,11 +1,11 @@
 # Every harvested lead
 
-_Generated 2026-11-17T00:07:14.630Z — 1178 leads._
+_Generated 2026-11-17T10:24:24.571Z — 1203 leads._
 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-## med-spa-b2b — 1178
+## med-spa-b2b — 1203
 
 ### Sports Performance & Wellness Center — score 50
 
@@ -9430,3 +9430,203 @@ any of them — reach out by hand from the post link if a lead is worth it.
 - **Why they matched:** med-spa
 
 > med-spa · 1260 Hamilton Street Vancouver V6B 2S8
+
+### Crossfit Roborean — score 50
+
+- **Handle:** [@null](http://www.crossfitroborean.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym
+
+### Brickhouse Gym — score 50
+
+- **Handle:** [@null](https://brickhousegym.ca/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 511 Madison Street Winnipeg
+
+### Peguis Trail Fitness Centre — score 50
+
+- **Handle:** [@null](https://www.winnipeg.ca/cms/recreation/facilities/leisurecentres/peguistrail.stm)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym
+
+### GoodLife Fitness — score 70
+
+- **Handle:** [@null](https://www.goodlifefitness.com/clubs/club.220.html)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 330 Main Street R3C 4L5
+
+### Vivacity Fitness — score 70
+
+- **Handle:** [@null](https://vivacityfitness.ca/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 561 Saint Anne's Road Winnipeg R2M 3G5
+
+### Wheelhouse Cycle Club — score 70
+
+- **Handle:** [@null](https://www.wheelhousecycleclub.com/winnipeg-studio)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 655 Sterling Lyon Parkway R3P 1J9
+
+### F45 Training — score 70
+
+- **Handle:** [@null](https://f45training.ca/tuxedo/home)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 515 Sterling Lyon Parkway R3P 2S8
+
+### The Fitual — score 70
+
+- **Handle:** [@null](https://thefitual.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 1800 Corydon Avenue R3N 0K3
+
+### Planet Fitness — score 50
+
+- **Handle:** [@null](https://www.planetfitness.ca/gyms/winnipeg-garden-city-mb)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 783 Leila Avenue
+
+### Assiniboine Athletic Club — score 50
+
+- **Handle:** [@null](http://assiniboineathleticclub.ca/index2.html)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 83 Garry Street
+
+### Iron Age Winnipeg — score 70
+
+- **Handle:** [@null](https://www.ironagestrength.ca/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 49 Heaton Avenue R3B 0J4
+
+### The Gang Fitness — score 50
+
+- **Handle:** [@null](https://www.thegangfitness.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 51 Heaton Avenue
+
+### Planet Fitness — score 50
+
+- **Handle:** [@null](https://www.planetfitness.ca/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 1320 Ellice Avenue R3G0E9
+
+### Awesome Hot Yoga — score 50
+
+- **Handle:** [@null](https://www.awesomehotyoga.ca)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 663 Stafford Street Winnipeg R3M 2X7
+
+### Reh-Fit Centre — score 50
+
+- **Handle:** [@null](https://www.reh-fit.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 1390 Taylor Avenue Winnipeg R3M 3V8
+
+### Anytime Fitness — score 50
+
+- **Handle:** [@null](https://www.anytimefitness.com/gyms/3607/Winnipeg-MB-R2V-4Z5/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 2415 Main Street Winnipeg R2V 4Z5
+
+### Prana Yoga Studio — score 70
+
+- **Handle:** [@null](https://www.pranayogawinnipeg.ca/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 894 Westminster Avenue Winnipeg R3G1B5
+
+### Shapes — score 50
+
+- **Handle:** [@null](https://www.shapes.ca/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 1325 Henderson Highway Winnipeg R2G1M5
+
+### South Osborne Massage Therapy Clinic — score 50
+
+- **Handle:** [@null](https://www.facebook.com/South-Osborne-Massage-Therapy-Clinic-477121445769929/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** massage
+
+> massage · 684 Osborne Street Winnipeg R3L 2B9
+
+### Equilibrium — score 70
+
+- **Handle:** [@null](https://www.eqwellness.ca/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** massage
+
+> massage · 584 Pembina Highway
+
+### Pure Escape Massage — score 70
+
+- **Handle:** [@null](https://www.thepureescape.ca)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** massage
+
+> massage · 698 Corydon Avenue
+
+### Turtle Island Massage — score 70
+
+- **Handle:** [@null](https://turtleislandmassage.ca/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** massage
+
+> massage · 900 Harrow Street East
+
+### Unity Massage — score 70
+
+- **Handle:** [@null](https://www.unitymassage.net/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** massage
+
+> massage · 1026 Saint Mary’s Road R2M 3S6
+
+### Back In Motion Therapeutic Massage — score 70
+
+- **Handle:** [@null](https://www.backinmotionwellness.ca/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** massage
+
+> massage · 1088 Pembina Highway
+
+### Urban Massage — score 50
+
+- **Handle:** [@null](https://winnipegmassagetherapy.ca)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** massage
+
+> massage · 900 Westminster Avenue Winnipeg R3G1B5
