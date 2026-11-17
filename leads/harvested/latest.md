@@ -1,6 +1,6 @@
 # New leads from the last harvest
 
-_Generated 2026-11-17T10:24:24.570Z — 25 leads._
+_Generated 2026-11-17T20:40:18.627Z — 16 leads._
 
 | Searches run | Searches failed | Posts read | Matched | Dropped (do-not-engage) |
 |---:|---:|---:|---:|---:|
@@ -41,206 +41,134 @@ business-scaling: Bluesky search failed for "trying to scale my business": HTTP 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-**Sources this run:** bluesky: unreachable (23 failed) · openstreetmap: 33 businesses in winnipeg-mb-ca
+**Sources this run:** bluesky: unreachable (23 failed) · openstreetmap: 16 businesses in tijuana-mx
 
-## med-spa-b2b — 25
+## med-spa-b2b — 16
 
-### Crossfit Roborean — score 50
+### Palazzo Di Glamour — score 50
 
-- **Handle:** [@null](http://www.crossfitroborean.com)
+- **Handle:** [@null](www.facebook.com/salonplayas12)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
+- **Why they matched:** med-spa
 
-> gym
+> med-spa · 2420 Avenida Paseo a Playas de Tijuana Tijuana
 
-### Brickhouse Gym — score 50
+### Scents — score 50
 
-- **Handle:** [@null](https://brickhousegym.ca/)
+- **Handle:** [@null](https://outletsattheborder.com/store/scents/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
+- **Why they matched:** med-spa
 
-> gym · 511 Madison Street Winnipeg
+> med-spa
 
-### Peguis Trail Fitness Centre — score 50
+### Steps Pedicure — score 50
 
-- **Handle:** [@null](https://www.winnipeg.ca/cms/recreation/facilities/leisurecentres/peguistrail.stm)
+- **Handle:** [@null](https://www.stepspedicure.com/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
+- **Why they matched:** med-spa
 
-> gym
+> med-spa · 4080 Avenida Margaritas Tijuana 22105
 
-### GoodLife Fitness — score 70
+### Chop Shop Salon de Belleza — score 70
 
-- **Handle:** [@null](https://www.goodlifefitness.com/clubs/club.220.html)
+- **Handle:** [@null](https://chopshoptijuana.com)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
+- **Why they matched:** med-spa
 
-> gym · 330 Main Street R3C 4L5
+> med-spa · 2841 Abelardo L. Rodríguez Tijuana Baja California 22044
 
-### Vivacity Fitness — score 70
+### Dr. Jaime Caloca — score 50
 
-- **Handle:** [@null](https://vivacityfitness.ca/)
+- **Handle:** [@null](http://www.drcaloca.com/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
+- **Why they matched:** clinic
 
-> gym · 561 Saint Anne's Road Winnipeg R2M 3G5
+> clinic
 
-### Wheelhouse Cycle Club — score 70
+### AFH México:  AIDS Healthcare Foundation — score 50
 
-- **Handle:** [@null](https://www.wheelhousecycleclub.com/winnipeg-studio)
+- **Handle:** [@null](https://ahfmexico.org.mx/tijuana/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
+- **Why they matched:** clinic
 
-> gym · 655 Sterling Lyon Parkway R3P 1J9
+> clinic · 8202, Altos 1 Andador Puente México
 
-### F45 Training — score 70
+### AFH México:  AIDS Healthcare Foundation — score 50
 
-- **Handle:** [@null](https://f45training.ca/tuxedo/home)
+- **Handle:** [@null](https://ahfmexico.org.mx/tijuana/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
+- **Why they matched:** clinic
 
-> gym · 515 Sterling Lyon Parkway R3P 2S8
+> clinic · 8202, Altos 1 Andador Puente México
 
-### The Fitual — score 70
+### Prevencasa A.C. — score 50
 
-- **Handle:** [@null](https://thefitual.com/)
+- **Handle:** [@null](https://sites.google.com/view/www-prevencasa-com-mx/inicio)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
+- **Why they matched:** clinic
 
-> gym · 1800 Corydon Avenue R3N 0K3
+> clinic · 7580 Calle Baja California 22000
 
-### Planet Fitness — score 50
+### RHA:  Resistencia en Salud — score 50
 
-- **Handle:** [@null](https://www.planetfitness.ca/gyms/winnipeg-garden-city-mb)
+- **Handle:** [@null](https://www.refugeehealthalliance.org/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
+- **Why they matched:** clinic
 
-> gym · 783 Leila Avenue
+> clinic · 8350 Avenida Miguel Negrete 22000
 
-### Assiniboine Athletic Club — score 50
+### RHA:  Dignidad en Salud — score 50
 
-- **Handle:** [@null](http://assiniboineathleticclub.ca/index2.html)
+- **Handle:** [@null](https://www.refugeehealthalliance.org/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
+- **Why they matched:** clinic
 
-> gym · 83 Garry Street
+> clinic
 
-### Iron Age Winnipeg — score 70
+### Centro32 — score 70
 
-- **Handle:** [@null](https://www.ironagestrength.ca/)
+- **Handle:** [@null](https://www.centro32.org/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
+- **Why they matched:** clinic
 
-> gym · 49 Heaton Avenue R3B 0J4
+> clinic · 102 Calle Evaristo Molina 22406
 
-### The Gang Fitness — score 50
+### San Ysidro Health Center — score 50
 
-- **Handle:** [@null](https://www.thegangfitness.com/)
+- **Handle:** [@null](https://www.syhc.org/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
+- **Why they matched:** clinic
 
-> gym · 51 Heaton Avenue
+> clinic · 4004 Beyer Boulevard San Diego CA 92173
 
-### Planet Fitness — score 50
+### San Ysidro Health Maternal & Child Health Center — score 50
 
-- **Handle:** [@null](https://www.planetfitness.ca/)
+- **Handle:** [@null](https://www.syhc.org/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
+- **Why they matched:** clinic
 
-> gym · 1320 Ellice Avenue R3G0E9
+> clinic · 4050 Beyer Boulevard San Diego CA 92173
 
-### Awesome Hot Yoga — score 50
+### Marbella — score 50
 
-- **Handle:** [@null](https://www.awesomehotyoga.ca)
+- **Handle:** [@null](null)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
+- **Why they matched:** med-spa
 
-> gym · 663 Stafford Street Winnipeg R3M 2X7
+> med-spa · Brasil Tijuana
 
-### Reh-Fit Centre — score 50
+### Clínica Santa Martha — score 50
 
-- **Handle:** [@null](https://www.reh-fit.com/)
+- **Handle:** [@null](null)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
+- **Why they matched:** clinic
 
-> gym · 1390 Taylor Avenue Winnipeg R3M 3V8
+> clinic · Calle Carillo Puerto
 
-### Anytime Fitness — score 50
+### Prevencasa A.C. — score 70
 
-- **Handle:** [@null](https://www.anytimefitness.com/gyms/3607/Winnipeg-MB-R2V-4Z5/)
+- **Handle:** [@null](null)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
+- **Why they matched:** clinic
 
-> gym · 2415 Main Street Winnipeg R2V 4Z5
-
-### Prana Yoga Studio — score 70
-
-- **Handle:** [@null](https://www.pranayogawinnipeg.ca/)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
-
-> gym · 894 Westminster Avenue Winnipeg R3G1B5
-
-### Shapes — score 50
-
-- **Handle:** [@null](https://www.shapes.ca/)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
-
-> gym · 1325 Henderson Highway Winnipeg R2G1M5
-
-### South Osborne Massage Therapy Clinic — score 50
-
-- **Handle:** [@null](https://www.facebook.com/South-Osborne-Massage-Therapy-Clinic-477121445769929/)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** massage
-
-> massage · 684 Osborne Street Winnipeg R3L 2B9
-
-### Equilibrium — score 70
-
-- **Handle:** [@null](https://www.eqwellness.ca/)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** massage
-
-> massage · 584 Pembina Highway
-
-### Pure Escape Massage — score 70
-
-- **Handle:** [@null](https://www.thepureescape.ca)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** massage
-
-> massage · 698 Corydon Avenue
-
-### Turtle Island Massage — score 70
-
-- **Handle:** [@null](https://turtleislandmassage.ca/)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** massage
-
-> massage · 900 Harrow Street East
-
-### Unity Massage — score 70
-
-- **Handle:** [@null](https://www.unitymassage.net/)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** massage
-
-> massage · 1026 Saint Mary’s Road R2M 3S6
-
-### Back In Motion Therapeutic Massage — score 70
-
-- **Handle:** [@null](https://www.backinmotionwellness.ca/)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** massage
-
-> massage · 1088 Pembina Highway
-
-### Urban Massage — score 50
-
-- **Handle:** [@null](https://winnipegmassagetherapy.ca)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** massage
-
-> massage · 900 Westminster Avenue Winnipeg R3G1B5
+> clinic · 7580 Calle Baja California 22000

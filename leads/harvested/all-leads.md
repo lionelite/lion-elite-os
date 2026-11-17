@@ -1,11 +1,11 @@
 # Every harvested lead
 
-_Generated 2026-11-17T10:24:24.571Z — 1203 leads._
+_Generated 2026-11-17T20:40:18.631Z — 1219 leads._
 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-## med-spa-b2b — 1203
+## med-spa-b2b — 1219
 
 ### Sports Performance & Wellness Center — score 50
 
@@ -9630,3 +9630,131 @@ any of them — reach out by hand from the post link if a lead is worth it.
 - **Why they matched:** massage
 
 > massage · 900 Westminster Avenue Winnipeg R3G1B5
+
+### Palazzo Di Glamour — score 50
+
+- **Handle:** [@null](www.facebook.com/salonplayas12)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 2420 Avenida Paseo a Playas de Tijuana Tijuana
+
+### Scents — score 50
+
+- **Handle:** [@null](https://outletsattheborder.com/store/scents/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa
+
+### Steps Pedicure — score 50
+
+- **Handle:** [@null](https://www.stepspedicure.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 4080 Avenida Margaritas Tijuana 22105
+
+### Chop Shop Salon de Belleza — score 70
+
+- **Handle:** [@null](https://chopshoptijuana.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 2841 Abelardo L. Rodríguez Tijuana Baja California 22044
+
+### Dr. Jaime Caloca — score 50
+
+- **Handle:** [@null](http://www.drcaloca.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic
+
+### AFH México:  AIDS Healthcare Foundation — score 50
+
+- **Handle:** [@null](https://ahfmexico.org.mx/tijuana/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 8202, Altos 1 Andador Puente México
+
+### AFH México:  AIDS Healthcare Foundation — score 50
+
+- **Handle:** [@null](https://ahfmexico.org.mx/tijuana/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 8202, Altos 1 Andador Puente México
+
+### Prevencasa A.C. — score 50
+
+- **Handle:** [@null](https://sites.google.com/view/www-prevencasa-com-mx/inicio)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 7580 Calle Baja California 22000
+
+### RHA:  Resistencia en Salud — score 50
+
+- **Handle:** [@null](https://www.refugeehealthalliance.org/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 8350 Avenida Miguel Negrete 22000
+
+### RHA:  Dignidad en Salud — score 50
+
+- **Handle:** [@null](https://www.refugeehealthalliance.org/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic
+
+### Centro32 — score 70
+
+- **Handle:** [@null](https://www.centro32.org/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 102 Calle Evaristo Molina 22406
+
+### San Ysidro Health Center — score 50
+
+- **Handle:** [@null](https://www.syhc.org/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 4004 Beyer Boulevard San Diego CA 92173
+
+### San Ysidro Health Maternal & Child Health Center — score 50
+
+- **Handle:** [@null](https://www.syhc.org/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 4050 Beyer Boulevard San Diego CA 92173
+
+### Marbella — score 50
+
+- **Handle:** [@null](null)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · Brasil Tijuana
+
+### Clínica Santa Martha — score 50
+
+- **Handle:** [@null](null)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · Calle Carillo Puerto
+
+### Prevencasa A.C. — score 70
+
+- **Handle:** [@null](null)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 7580 Calle Baja California 22000
