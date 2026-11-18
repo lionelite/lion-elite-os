@@ -1,11 +1,11 @@
 # Every harvested lead
 
-_Generated 2026-11-18T03:27:48.391Z — 1221 leads._
+_Generated 2026-11-18T12:47:41.004Z — 1223 leads._
 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-## med-spa-b2b — 1221
+## med-spa-b2b — 1223
 
 ### Sports Performance & Wellness Center — score 50
 
@@ -9774,3 +9774,19 @@ any of them — reach out by hand from the post link if a lead is worth it.
 - **Why they matched:** clinic
 
 > clinic · 1820 East Commercial Boulevard Fort Lauderdale FL 33308
+
+### College Park Yoga — score 50
+
+- **Handle:** [@null](null)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 1837 Edgewater Drive Orlando FL 32804
+
+### Iron Religion Gym — score 50
+
+- **Handle:** [@null](null)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · International Drive Orlando FL 32819
