@@ -1,11 +1,11 @@
 # Every harvested lead
 
-_Generated 2026-11-17T20:40:18.631Z — 1219 leads._
+_Generated 2026-11-18T03:27:48.391Z — 1221 leads._
 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-## med-spa-b2b — 1219
+## med-spa-b2b — 1221
 
 ### Sports Performance & Wellness Center — score 50
 
@@ -9758,3 +9758,19 @@ any of them — reach out by hand from the post link if a lead is worth it.
 - **Why they matched:** clinic
 
 > clinic · 7580 Calle Baja California 22000
+
+### Margate Barbell — score 50
+
+- **Handle:** [@null](https://margatebb.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 4900 W Atlantic Blvd Margate FL 33063
+
+### Lexington Plastic Surgeons — score 50
+
+- **Handle:** [@null](null)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 1820 East Commercial Boulevard Fort Lauderdale FL 33308
