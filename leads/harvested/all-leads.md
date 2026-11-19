@@ -1,11 +1,11 @@
 # Every harvested lead
 
-_Generated 2026-11-19T12:40:19.350Z — 1272 leads._
+_Generated 2026-11-19T22:07:45.580Z — 1297 leads._
 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-## med-spa-b2b — 1272
+## med-spa-b2b — 1297
 
 ### Sports Performance & Wellness Center — score 50
 
@@ -10182,3 +10182,203 @@ any of them — reach out by hand from the post link if a lead is worth it.
 - **Why they matched:** med-spa
 
 > med-spa · 3909 North Interstate 35 Austin TX 78722
+
+### Top Tiger Team Boxing — score 50
+
+- **Handle:** [@null](https://toptigerteamboxing.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 2417 North Tryon Street Charlotte NC 28206
+
+### YVY Fitness — score 50
+
+- **Handle:** [@null](https://yvyclt.squarespace.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 1701 North Graham Street Charlotte NC 28206
+
+### Alternative Fitness Pilates — score 50
+
+- **Handle:** [@null](https://altfitpilates.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 200 North Sharon Amity Road Charlotte NC 28211
+
+### M3lleo — score 50
+
+- **Handle:** [@null](https://m3lleo.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 200 East Cama Street Charlotte NC 28217
+
+### Eat The Frog Fitness — score 50
+
+- **Handle:** [@null](https://eatthefrogcharlotte.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 1111 Metropolitan Avenue Charlotte NC 28204
+
+### Fit Atelier — score 50
+
+- **Handle:** [@null](https://fitatelier.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym
+
+### F45 Training — score 50
+
+- **Handle:** [@null](https://www.f45training.com/southendcharlotte)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 141 New Bern Street Charlotte NC 28209
+
+### Kika Strech — score 50
+
+- **Handle:** [@null](https://kikastretchstudios.com/stretch-studio/north-carolina/charlotte)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 1425 Winnifred Street Charlotte NC 28203
+
+### Pilates Body Shaping — score 70
+
+- **Handle:** [@null](https://www.pilatesbodyshaping.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 1940 East 8th Street Charlotte NC 28204
+
+### Burn Boot Camp — score 50
+
+- **Handle:** [@null](https://burnbootcamp.com/locations/elizabeth-nc/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 1306 The Plaza Charlotte NC 28205
+
+### Functional Fit — score 50
+
+- **Handle:** [@null](https://www.ffclt.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym
+
+### Anytime Fitness — score 50
+
+- **Handle:** [@null](https://www.anytimefitness.com/gyms/4408/charlotte-nc-28209/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 3609 South Boulevard Charlotte NC 28209
+
+### Core 704 — score 70
+
+- **Handle:** [@null](https://www.core704.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 2729 South Boulevard Charlotte NC 28209
+
+### ISI Elite Training — score 50
+
+- **Handle:** [@null](https://www.isielitetraining.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym
+
+### Y2 Yoga — score 50
+
+- **Handle:** [@null](https://y2yoga.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym
+
+### Body Fit Training — score 50
+
+- **Handle:** [@null](https://www.bodyfittraining.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 3216 South Boulevard Charlotte NC 28203
+
+### Sweat Method — score 70
+
+- **Handle:** [@null](https://www.sweatmethod.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 3700 South Boulevard Charlotte NC 28217
+
+### Gritbox — score 50
+
+- **Handle:** [@null](https://gritboxfitness.com/location/charlotte)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 2151 Hawkins Street Charlotte NC 28203
+
+### Solidcore — score 50
+
+- **Handle:** [@null](https://solidcore.co1)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym
+
+### Yonder Yoga — score 70
+
+- **Handle:** [@null](https://yonderyoga.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym
+
+### Aerial CLT — score 70
+
+- **Handle:** [@null](https://www.aerialclt.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 801 North Tryon Street Charlotte NC 28202
+
+### Casa Gaia Studio — score 70
+
+- **Handle:** [@null](https://casagaiastudio.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 1511 Central Avenue Charlotte NC 28205
+
+### MADabolic — score 50
+
+- **Handle:** [@null](http://www.madabolic.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 2315 North Davidson Street Charlotte NC 28205
+
+### Moon Wolf — score 70
+
+- **Handle:** [@null](https://www.themoonwolf.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 1912 Commonwealth Avenue Charlotte NC 28205
+
+### MADabolic — score 50
+
+- **Handle:** [@null](https://madabolic.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** gym
+
+> gym · 2610 South Boulevard Charlotte NC 28209

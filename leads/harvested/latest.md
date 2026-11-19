@@ -1,6 +1,6 @@
 # New leads from the last harvest
 
-_Generated 2026-11-19T12:40:19.349Z — 25 leads._
+_Generated 2026-11-19T22:07:45.579Z — 25 leads._
 
 | Searches run | Searches failed | Posts read | Matched | Dropped (do-not-engage) |
 |---:|---:|---:|---:|---:|
@@ -41,206 +41,206 @@ business-scaling: Bluesky search failed for "trying to scale my business": HTTP 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-**Sources this run:** bluesky: unreachable (23 failed) · openstreetmap: 54 businesses in austin-tx
+**Sources this run:** bluesky: unreachable (23 failed) · openstreetmap: 37 businesses in charlotte-nc
 
 ## med-spa-b2b — 25
 
-### Nonye Hair Braiding — score 70
+### Top Tiger Team Boxing — score 50
 
-- **Handle:** [@null](https://nonyehairbraiding.com/)
+- **Handle:** [@null](https://toptigerteamboxing.com/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** gym
 
-> med-spa
+> gym · 2417 North Tryon Street Charlotte NC 28206
 
-### Embellish Nails & Boutique — score 70
+### YVY Fitness — score 50
 
-- **Handle:** [@null](https://www.embellishnails.com)
+- **Handle:** [@null](https://yvyclt.squarespace.com/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** gym
 
-> med-spa · 3663 Bee Caves Road West Lake Hills TX 78746
+> gym · 1701 North Graham Street Charlotte NC 28206
 
-### The Lash Lounge — score 50
+### Alternative Fitness Pilates — score 50
 
-- **Handle:** [@null](https://www.thelashlounge.com)
+- **Handle:** [@null](https://altfitpilates.com)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** gym
 
-> med-spa · 3300 Bee Caves Road Austin TX 78746
+> gym · 200 North Sharon Amity Road Charlotte NC 28211
 
-### Skinspirit — score 70
+### M3lleo — score 50
 
-- **Handle:** [@null](https://www.skinspirit.com)
+- **Handle:** [@null](https://m3lleo.com)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** gym
 
-> med-spa · 3300 Bee Caves Road Austin TX 78746
+> gym · 200 East Cama Street Charlotte NC 28217
 
-### Palm Beach Tan — score 50
+### Eat The Frog Fitness — score 50
 
-- **Handle:** [@null](https://palmbeachtan.com/locations/TX/Austin-South-Lamar-Boulevard)
+- **Handle:** [@null](https://eatthefrogcharlotte.com/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** gym
 
-> med-spa · 1509 South Lamar Boulevard Austin TX 78704
+> gym · 1111 Metropolitan Avenue Charlotte NC 28204
 
-### Texas Laser and Aesthetics — score 70
+### Fit Atelier — score 50
 
-- **Handle:** [@null](https://www.texaslasermedspa.com/)
+- **Handle:** [@null](https://fitatelier.com)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** gym
 
-> med-spa · 4534 West Gate Boulevard Austin TX 78745
+> gym
 
-### Parlor Beauty Bar — score 50
+### F45 Training — score 50
 
-- **Handle:** [@null](https://www.parlorbeautybar.com)
+- **Handle:** [@null](https://www.f45training.com/southendcharlotte)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** gym
 
-> med-spa
+> gym · 141 New Bern Street Charlotte NC 28209
 
-### Venetian 360 — score 50
+### Kika Strech — score 50
 
-- **Handle:** [@null](https://v360austin.com/)
+- **Handle:** [@null](https://kikastretchstudios.com/stretch-studio/north-carolina/charlotte)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** gym
 
-> med-spa
+> gym · 1425 Winnifred Street Charlotte NC 28203
 
-### Blink Beauty — score 70
+### Pilates Body Shaping — score 70
 
-- **Handle:** [@null](https://www.blinkbeautyatx.com/)
+- **Handle:** [@null](https://www.pilatesbodyshaping.com/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** gym
 
-> med-spa · 1601 East 5th Street Austin TX 78702
+> gym · 1940 East 8th Street Charlotte NC 28204
 
-### Cøntrast — score 70
+### Burn Boot Camp — score 50
 
-- **Handle:** [@null](https://www.contrastatx.com/)
+- **Handle:** [@null](https://burnbootcamp.com/locations/elizabeth-nc/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** gym
 
-> med-spa · 1915 East Martin Luther King Jr Boulevard Austin TX 78722
+> gym · 1306 The Plaza Charlotte NC 28205
 
-### Love Thy Waxer — score 70
+### Functional Fit — score 50
 
-- **Handle:** [@null](https://love-thy-waxer.square.site)
+- **Handle:** [@null](https://www.ffclt.com)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** gym
 
-> med-spa · 1107 South 8th Street Austin TX 78704-2373
+> gym
 
-### Bamford Wellness Spa — score 50
+### Anytime Fitness — score 50
 
-- **Handle:** [@null](https://www.1hotels.com/austin/do/bamford-wellness-spa)
+- **Handle:** [@null](https://www.anytimefitness.com/gyms/4408/charlotte-nc-28209/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** gym
 
-> med-spa · 96 Red River Street Austin TX 78701
+> gym · 3609 South Boulevard Charlotte NC 28209
 
-### 360 Tans — score 70
+### Core 704 — score 70
 
-- **Handle:** [@null](https://www.austin360tans.com/)
+- **Handle:** [@null](https://www.core704.com/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** gym
 
-> med-spa · 6203 North Capital of Texas Highway Austin TX 78731
+> gym · 2729 South Boulevard Charlotte NC 28209
 
-### TouchWorks Massage Therapy — score 50
+### ISI Elite Training — score 50
 
-- **Handle:** [@null](https://touchworksaustin.com/)
+- **Handle:** [@null](https://www.isielitetraining.com)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** massage
+- **Why they matched:** gym
 
-> massage · 11740 Jollyville Road Austin TX 78759
+> gym
 
-### Ocio Massage — score 50
+### Y2 Yoga — score 50
 
-- **Handle:** [@null](https://www.ociomassage.com)
+- **Handle:** [@null](https://y2yoga.com/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** massage
+- **Why they matched:** gym
 
-> massage · 1621 East 6th Street Austin TX 78702
+> gym
 
-### Positive Pressure — score 50
+### Body Fit Training — score 50
 
-- **Handle:** [@null](https://www.healingaustinmassage.com/)
+- **Handle:** [@null](https://www.bodyfittraining.com)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** massage
+- **Why they matched:** gym
 
-> massage · 4301 Russell Drive Austin TX 78704
+> gym · 3216 South Boulevard Charlotte NC 28203
 
-### The NOW: A Massage Boutique — score 70
+### Sweat Method — score 70
 
-- **Handle:** [@null](https://thenowmassage.com/south-lamar)
+- **Handle:** [@null](https://www.sweatmethod.com)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** massage
+- **Why they matched:** gym
 
-> massage · 1500 South Lamar Boulevard Austin TX 78704
+> gym · 3700 South Boulevard Charlotte NC 28217
 
-### Austin Deep Massage — score 50
+### Gritbox — score 50
 
-- **Handle:** [@null](https://austindeep.com/contact/)
+- **Handle:** [@null](https://gritboxfitness.com/location/charlotte)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** massage
+- **Why they matched:** gym
 
-> massage · 2300 Lake Austin Boulevard 78703
+> gym · 2151 Hawkins Street Charlotte NC 28203
 
-### Massage Envy — score 50
+### Solidcore — score 50
 
-- **Handle:** [@null](https://locations.massageenvy.com/texas/austin/507-pressler-street.html)
+- **Handle:** [@null](https://solidcore.co1)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** massage
+- **Why they matched:** gym
 
-> massage · 507 STE 800 Pressler Street 78703
+> gym
 
-### Noe Cortes — score 50
+### Yonder Yoga — score 70
 
-- **Handle:** [@null](https://book.squareup.com/appointments/0h2s1k50xkaqwo/location/LPSP2R79P153W/services)
+- **Handle:** [@null](https://yonderyoga.com)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** massage
+- **Why they matched:** gym
 
-> massage · 1209 Parkway Austin TX 78703-4132
+> gym
 
-### Myo Massage, Acupuncture, and Movement — score 50
+### Aerial CLT — score 70
 
-- **Handle:** [@null](http://myoaustin.com)
+- **Handle:** [@null](https://www.aerialclt.com/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** massage
+- **Why they matched:** gym
 
-> massage · 4616 Triangle Avenue 78751
+> gym · 801 North Tryon Street Charlotte NC 28202
 
-### Pure Peace Massage — score 50
+### Casa Gaia Studio — score 70
 
-- **Handle:** [@null](purepeacemassage.wix.com/78756)
+- **Handle:** [@null](https://casagaiastudio.com)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** massage
+- **Why they matched:** gym
 
-> massage · 3906 North Lamar Boulevard
+> gym · 1511 Central Avenue Charlotte NC 28205
 
-### Texas Physical Therapy Specialists — score 50
+### MADabolic — score 50
 
-- **Handle:** [@null](https://www.texpts.com/)
+- **Handle:** [@null](http://www.madabolic.com/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** physiotherapy
+- **Why they matched:** gym
 
-> physiotherapy · 1212 West Parmer Lane Austin TX 78753
+> gym · 2315 North Davidson Street Charlotte NC 28205
 
-### Spero Rehab — score 70
+### Moon Wolf — score 70
 
-- **Handle:** [@null](https://www.sperorehab.com/)
+- **Handle:** [@null](https://www.themoonwolf.com/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** physiotherapy
+- **Why they matched:** gym
 
-> physiotherapy · 4225 Guadalupe Street 78751
+> gym · 1912 Commonwealth Avenue Charlotte NC 28205
 
-### UT Nails — score 50
+### MADabolic — score 50
 
-- **Handle:** [@null](null)
+- **Handle:** [@null](https://madabolic.com)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** gym
 
-> med-spa · 3909 North Interstate 35 Austin TX 78722
+> gym · 2610 South Boulevard Charlotte NC 28209
