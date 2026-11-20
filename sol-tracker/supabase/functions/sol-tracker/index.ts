@@ -552,7 +552,10 @@ async function analyze(wallet: string, limit: number) {
 // live monitor uses. Step 3 computes realized 30/60/90-day results in lib.ts.
 // Work is saved after every step, so a timeout or restart resumes where it stopped.
 const RESEARCH_DAYS = 90;
-async function heliusSwapPage(wallet: string, cutoff: number, before: string | null) {
+// A wallet with more swaps than this in 90 days trades too often to copy by hand or by alert;
+// stop listing there (the coverage check then fails and says why) instead of burning credits.
+const RESEARCH_SWAP_CAP = 2500;
+async function heliusSwapPage(wallet: string, cutoff: number, before: string | null): Promise<{ txs: any[]; continueFrom?: string }> {
   const u = new URL(`https://mainnet.helius-rpc.com/v0/addresses/${wallet}/transactions`);
   u.searchParams.set("api-key", HELIUS_KEY);
   u.searchParams.set("type", "SWAP");
@@ -565,50 +568,58 @@ async function heliusSwapPage(wallet: string, cutoff: number, before: string | n
       const r = await fetch(u);
       if (r.status === 429 || r.status >= 500) throw new Error(`Helius HTTP ${r.status}`);
       const j = await r.json();
-      if (!Array.isArray(j)) throw new Error(`Helius: ${JSON.stringify(j).slice(0, 300)}`);
-      return j;
+      if (Array.isArray(j)) return { txs: j };
+      // With a type filter, Helius scans a fixed slice of history per call. A slice with no swaps
+      // returns an error naming the signature to continue from, which is not a failure.
+      const m = /before-signature` parameter set to ([1-9A-HJ-NP-Za-km-z]{60,100})/.exec(String(j?.error ?? ""));
+      if (m) return { txs: [], continueFrom: m[1] };
+      throw new Error(`Helius: ${JSON.stringify(j).slice(0, 300)}`);
     } catch (e) {
       if (i === 3) throw new Error(clean(e));
       await sleep(delay); delay *= 2;
     }
   }
-  return [];
+  return { txs: [] };
 }
 
 async function researchStep() {
   if (!HELIUS_KEY) return { skipped: "HELIUS_API_KEY not set" };
   const { data: r } = await db.from("sol_research").select("*").in("status", ["queued", "collecting", "parsing"])
-    .order("requested_at").limit(1).maybeSingle();
+    .order("requested_at").order("wallet").limit(1).maybeSingle();
   if (!r) return { idle: true };
   const started = Date.now();
   try {
     if (r.status !== "parsing") {
       const cutoff = Math.floor(Date.parse(r.requested_at) / 1000) - RESEARCH_DAYS * 86400;
       let cursor: string | null = r.sig_cursor;
-      let pages = 0, done = false, listed = 0;
-      while (pages < 4 && Date.now() - started < 25_000) {
+      let pages = 0, done = false, listed = 0, capped = false;
+      while (pages < 8 && Date.now() - started < 30_000) {
         const page = await heliusSwapPage(r.wallet, cutoff, cursor);
         pages++;
-        if (!page.length) { done = true; break; }
-        const rows = page.filter((t: any) => t?.signature).map((t: any) => ({
+        if (page.continueFrom) { cursor = page.continueFrom; continue; }
+        if (!page.txs.length) { done = true; break; }
+        const rows = page.txs.filter((t: any) => t?.signature).map((t: any) => ({
           wallet: r.wallet, signature: t.signature,
           block_time: typeof t.timestamp === "number" ? new Date(t.timestamp * 1000).toISOString() : null,
         }));
         listed += rows.length;
         await db.from("sol_research_swaps").upsert(rows, { onConflict: "wallet,signature", ignoreDuplicates: true });
-        cursor = page[page.length - 1].signature;
+        cursor = page.txs[page.txs.length - 1].signature;
       }
+      const { count: have } = await db.from("sol_research_swaps").select("*", { count: "exact", head: true }).eq("wallet", r.wallet);
+      if (!done && (have ?? 0) >= RESEARCH_SWAP_CAP) { done = true; capped = true; }
+      if (!done && (r.pages_fetched ?? 0) + pages >= 400) done = true; // hard stop on runaway paging
       await db.from("sol_research").update({
         status: done ? "parsing" : "collecting", sig_cursor: cursor, pages_fetched: (r.pages_fetched ?? 0) + pages,
-        updated_at: new Date().toISOString(), error: null,
+        updated_at: new Date().toISOString(), error: null, ...(capped ? { capped: true } : {}),
       }).eq("wallet", r.wallet);
-      return { wallet: r.label, phase: "collecting", listed, done };
+      return { wallet: r.label, phase: "collecting", listed, done, capped };
     }
     const { data: todo } = await db.from("sol_research_swaps").select("signature")
-      .eq("wallet", r.wallet).eq("parsed", false).limit(80);
+      .eq("wallet", r.wallet).eq("parsed", false).limit(240);
     let parsedN = 0;
-    for (let i = 0; i < (todo ?? []).length && Date.now() - started < 35_000; i += 5) {
-      const chunk = todo!.slice(i, i + 5);
+    for (let i = 0; i < (todo ?? []).length && Date.now() - started < 40_000; i += 8) {
+      const chunk = todo!.slice(i, i + 8);
       const txs = await Promise.all(chunk.map((c: any) => getTx(c.signature).catch(() => null)));
       const rows = chunk.map((c: any, j: number) => {
         const p = txs[j] ? parseSwap(txs[j], r.wallet) : { kind: "fetch_failed" };
@@ -640,7 +651,7 @@ async function researchStep() {
     const metrics = researchMetrics(all, Math.floor(Date.parse(r.requested_at) / 1000), RESEARCH_DAYS);
     const failed = all.filter((x) => x.kind === "fetch_failed").length;
     await db.from("sol_research").update({
-      status: "done", metrics: { ...metrics, swaps_listed: all.length, fetch_failed: failed, stablecoin_trades_excluded: all.filter((x) => (x.kind === "buy" || x.kind === "sell") && x.sol_delta == null).length },
+      status: "done", metrics: { ...metrics, capped_at_swaps: r.capped ? RESEARCH_SWAP_CAP : null, swaps_listed: all.length, fetch_failed: failed, stablecoin_trades_excluded: all.filter((x) => (x.kind === "buy" || x.kind === "sell") && x.sol_delta == null).length },
       completed_at: new Date().toISOString(), updated_at: new Date().toISOString(), error: null,
     }).eq("wallet", r.wallet);
     await logEvent("research", `${r.label}: ${metrics.assessment.passed}/${metrics.assessment.total} checks passed`, "info", r.wallet);
