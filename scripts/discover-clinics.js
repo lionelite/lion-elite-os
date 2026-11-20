@@ -28,7 +28,7 @@
 const fs = require('fs');
 const { DEFAULT_AREAS } = require('../lib/discovery/discovery-run');
 const { fetchClinicListings } = require('../lib/discovery/clinic-overpass');
-const { crawlClinicSite, judgeEmail, mapPool } = require('../lib/discovery/clinic-site-crawl');
+const { safeCrawlClinicSite, judgeEmail, mapPool } = require('../lib/discovery/clinic-site-crawl');
 const { clinicRelevance } = require('../lib/contacts/clinic-targeting');
 const { normalizeDomain } = require('../lib/email-enrichment');
 const { discoveryUserAgent } = require('../lib/discovery/osm-source');
@@ -139,7 +139,7 @@ async function main() {
     m.known = bySite.size - [...bySite.keys()].filter(d => !skipSet.has(d)).length;
     totals.alreadyKnown += m.known;
 
-    const crawled = await mapPool(toCrawl, CONCURRENCY, async listing => ({ listing, site: await crawlClinicSite({ website: listing.website, userAgent: state.userAgent }) }));
+    const crawled = await mapPool(toCrawl, CONCURRENCY, async listing => ({ listing, site: await safeCrawlClinicSite({ website: listing.website, userAgent: state.userAgent }) }));
     const candidates = [];
     const noEmailDomains = [];
     for (const { listing, site } of crawled) {
