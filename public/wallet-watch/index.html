@@ -1,0 +1,380 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wallet Watch</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EEF1F4; --surface:#FFFFFF; --ink:#16202B; --muted:#5B6875; --line:#D5DCE3;
+  --buy:#0E7656; --buy-bg:#E3F3EC; --sell:#B4233C; --sell-bg:#F8E4E8;
+  --warn:#9A5800; --warn-bg:#FBEFDC; --accent:#2B55C9; --sim:#6B4FB8; --sim-bg:#EEE9FA;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0E151D; --surface:#16202B; --ink:#E5EAF0; --muted:#97A3B0; --line:#2A3846;
+    --buy:#4CC79C; --buy-bg:#123227; --sell:#F07A8C; --sell-bg:#3A1820;
+    --warn:#F0B35A; --warn-bg:#3A2A10; --accent:#8AA8FF; --sim:#B9A4F2; --sim-bg:#261E3D;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0E151D; --surface:#16202B; --ink:#E5EAF0; --muted:#97A3B0; --line:#2A3846;
+  --buy:#4CC79C; --buy-bg:#123227; --sell:#F07A8C; --sell-bg:#3A1820;
+  --warn:#F0B35A; --warn-bg:#3A2A10; --accent:#8AA8FF; --sim:#B9A4F2; --sim-bg:#261E3D;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 "Instrument Sans",system-ui,sans-serif}
+.mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px}
+a{color:var(--accent)}
+main{max-width:1180px;margin:0 auto;padding:20px 16px 60px}
+header.top{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:8px 20px;margin-bottom:14px}
+h1{font-size:28px;line-height:1.1;margin:0;letter-spacing:-.01em}
+h2{font-size:18px;margin:0 0 10px}
+.sub{color:var(--muted);margin:2px 0 0}
+/* The signature element: the pulse strip says whether the monitor is alive. */
+.pulse{display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin-bottom:18px}
+.dot{width:16px;height:16px;border-radius:50%;background:var(--buy);box-shadow:0 0 0 0 var(--buy);animation:beat 2s infinite}
+.dot.bad{background:var(--sell);animation:none}
+@keyframes beat{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--buy) 60%,transparent)}70%{box-shadow:0 0 0 12px transparent}100%{box-shadow:0 0 0 0 transparent}}
+@media (prefers-reduced-motion:reduce){.dot{animation:none}}
+.pulse-text strong{font-size:17px}
+.pulse-facts{display:flex;flex-wrap:wrap;gap:4px 18px;color:var(--muted);font-size:14px;margin-top:2px}
+.grid{display:grid;grid-template-columns:1fr;gap:18px}
+@media (min-width:980px){.grid{grid-template-columns:3fr 2fr}}
+section.panel{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px;min-width:0}
+.scroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{text-align:left;color:var(--muted);font-weight:500;padding:6px 8px;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:8px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:0}
+.side{display:inline-block;font-weight:700;font-size:12px;padding:2px 8px;border-radius:999px}
+.side.buy{color:var(--buy);background:var(--buy-bg)}
+.side.sell{color:var(--sell);background:var(--sell-bg)}
+.chip{white-space:nowrap;display:inline-block;font-size:12px;padding:1px 7px;border-radius:999px;background:var(--bg);color:var(--muted);border:1px solid var(--line);margin:1px 2px 1px 0}
+.chip.warn{background:var(--warn-bg);color:var(--warn);border-color:transparent}
+.chip.ok{background:var(--buy-bg);color:var(--buy);border-color:transparent}
+.chip.bad{background:var(--sell-bg);color:var(--sell);border-color:transparent}
+.sim{border-left:4px solid var(--sim)}
+.sim-tag{background:var(--sim-bg);color:var(--sim);font-weight:600;font-size:12px;padding:2px 8px;border-radius:6px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:10px 0 14px}
+.stat b{display:block;font-size:22px;font-variant-numeric:tabular-nums}
+.stat span{color:var(--muted);font-size:13px}
+.num{font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
+.pos{color:var(--buy)} .neg{color:var(--sell)}
+form.inline{display:flex;flex-wrap:wrap;gap:8px;align-items:end;margin-top:10px}
+label{display:flex;flex-direction:column;font-size:13px;color:var(--muted);gap:3px}
+input,select{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:7px;padding:7px 9px;min-width:0}
+input:focus-visible,button:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+button{font:inherit;font-weight:600;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:7px;padding:7px 12px;cursor:pointer}
+button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+button.small{padding:3px 9px;font-size:13px;font-weight:500}
+.muted{color:var(--muted)}
+.steps{margin:6px 0 0;padding-left:20px}
+.steps li{margin:4px 0}
+.notice{background:var(--warn-bg);color:var(--warn);border-radius:8px;padding:10px 12px;margin:0 0 14px}
+#login{max-width:420px;margin:12vh auto;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:22px}
+#login p{color:var(--muted)}
+.evidence{font-size:13px;color:var(--muted);max-width:340px}
+#toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--ink);color:var(--surface);padding:9px 14px;border-radius:8px;display:none;max-width:90vw}
+.events li{margin:3px 0;font-size:13px}
+.events{padding-left:18px;margin:0}
+</style>
+</head>
+<body>
+<div id="login" hidden>
+  <h1>Wallet Watch</h1>
+  <p>Enter the dashboard password Claude gave you. It's saved in this browser only.</p>
+  <form id="loginForm" class="inline">
+    <label style="flex:1">Dashboard password<input id="tokenIn" autocomplete="current-password" required></label>
+    <button class="primary">Open dashboard</button>
+  </form>
+  <p id="loginErr" class="neg" hidden></p>
+</div>
+
+<main id="app" hidden>
+  <header class="top">
+    <div>
+      <h1>Wallet Watch</h1>
+      <p class="sub">Solana trader monitor · alerts and paper trading only, no live trades</p>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button id="pauseBtn"></button>
+      <button id="tickBtn">Check now</button>
+      <button id="logoutBtn" class="small">Sign out</button>
+    </div>
+  </header>
+
+  <div class="pulse" id="pulse"></div>
+  <div id="tgSetup"></div>
+
+  <div class="grid">
+    <div style="display:grid;gap:18px;min-width:0">
+      <section class="panel">
+        <h2>Tracked wallets</h2>
+        <div class="scroll"><table id="walletTable"></table></div>
+        <form class="inline" id="walletForm">
+          <label style="flex:2;min-width:220px">Wallet address<input name="address" required placeholder="Solana address"></label>
+          <label style="flex:1;min-width:120px">Name<input name="label" placeholder="Trader name"></label>
+          <label style="flex:1;min-width:140px">Replace<select name="replace"><option value="">Add new</option></select></label>
+          <button class="primary">Save wallet</button>
+        </form>
+      </section>
+
+      <section class="panel">
+        <h2>Trader research <span class="muted" style="font-weight:400;font-size:13px">90 days of on-chain swaps</span></h2>
+        <div id="researchNote"></div>
+        <div class="scroll"><table id="researchTable"></table></div>
+      </section>
+
+      <section class="panel">
+        <h2>Recent buys and sells</h2>
+        <div class="scroll"><table id="tradeTable"></table></div>
+      </section>
+    </div>
+
+    <div style="display:grid;gap:18px;align-content:start;min-width:0">
+      <section class="panel sim">
+        <h2>Paper portfolio <span class="sim-tag">Simulated</span></h2>
+        <p class="muted" style="margin:0">Nothing here is a real trade. It shows what copying would have done under the assumptions below.</p>
+        <div class="stats" id="paperStats"></div>
+        <div class="scroll"><table id="posTable"></table></div>
+        <details style="margin-top:12px">
+          <summary>Assumptions and limits</summary>
+          <form class="inline" id="paperForm"></form>
+          <p class="muted" style="font-size:13px">Fills use the DexScreener price when the monitor detects the trade (usually 1–2 minutes after the trader), adjusted for slippage, GMGN's 1% fee and a priority fee. Real fills on fast meme coins are often worse.</p>
+          <button id="resetBtn" class="small">Reset simulation</button>
+        </details>
+        <h2 style="margin-top:16px">Simulated activity</h2>
+        <ul class="events" id="ledger"></ul>
+      </section>
+
+      <section class="panel">
+        <h2>Alert rules</h2>
+        <form class="inline" id="settingsForm">
+          <label>Minimum buy to alert (SOL)<input name="min_buy_sol" type="number" step="0.1" min="0" style="width:120px"></label>
+          <button class="primary">Save</button>
+        </form>
+        <p class="muted" style="font-size:13px;margin-bottom:0">Every sell from a tracked wallet alerts, with full or partial exit shown.</p>
+      </section>
+
+      <section class="panel">
+        <h2>System log</h2>
+        <ul class="events" id="events"></ul>
+      </section>
+    </div>
+  </div>
+</main>
+<div id="toast" role="status"></div>
+
+<script>
+const API = "https://jovytlxkbxwgqhnirbiq.supabase.co/functions/v1/sol-tracker";
+let token = null;
+try { token = localStorage.getItem("ww_token"); } catch (e) {}
+const $ = (s) => document.querySelector(s);
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const short = (a) => a ? a.slice(0, 4) + "…" + a.slice(-4) : "";
+const usd = (n) => n == null ? "—" : (n < 0 ? "−$" : "$") + Math.abs(n).toLocaleString("en-US", {maximumFractionDigits: Math.abs(n) < 1 ? 4 : 2});
+const sol = (n) => n == null ? "—" : Number(n).toLocaleString("en-US", {maximumFractionDigits: 3}) + " SOL";
+const ago = (iso) => {
+  if (!iso) return "never";
+  const s = (Date.now() - Date.parse(iso)) / 1000;
+  if (s < 90) return Math.round(s) + "s ago";
+  if (s < 5400) return Math.round(s / 60) + " min ago";
+  if (s < 172800) return Math.round(s / 3600) + " h ago";
+  return Math.round(s / 86400) + " days ago";
+};
+const when = (iso) => iso ? new Date(iso).toLocaleString("en-US", {month:"short", day:"numeric", hour:"numeric", minute:"2-digit"}) : "—";
+function toast(msg) { const t = $("#toast"); t.textContent = msg; t.style.display = "block"; clearTimeout(toast.h); toast.h = setTimeout(() => t.style.display = "none", 4000); }
+
+async function api(path, opts = {}) {
+  const r = await fetch(API + path, {
+    method: opts.method || "GET",
+    headers: {"content-type": "application/json", "x-dashboard-token": token || ""},
+    body: opts.body ? JSON.stringify(opts.body) : undefined,
+  });
+  const j = await r.json().catch(() => ({}));
+  if (r.status === 401) { showLogin("That password didn't work."); throw new Error("unauthorized"); }
+  if (!r.ok) throw new Error(j.error || ("Request failed: " + r.status));
+  return j;
+}
+
+function showLogin(err) {
+  $("#app").hidden = true; $("#login").hidden = false;
+  if (err) { $("#loginErr").textContent = err; $("#loginErr").hidden = false; }
+}
+$("#loginForm").onsubmit = (e) => {
+  e.preventDefault(); token = $("#tokenIn").value.trim();
+  try { localStorage.setItem("ww_token", token); } catch (e) {}
+  load();
+};
+$("#logoutBtn").onclick = () => { try { localStorage.removeItem("ww_token"); } catch (e) {} token = null; showLogin(); };
+
+let state = null;
+async function load() {
+  if (!token) return showLogin();
+  try { state = await api("/state"); } catch (e) { if (e.message !== "unauthorized") toast(e.message); return; }
+  $("#login").hidden = true; $("#app").hidden = false;
+  render();
+}
+
+function render() {
+  const s = state, h = s.health || {};
+  const failing = (s.wallets || []).filter((w) => w.status === "active" && w.consecutive_errors > 0);
+  const bad = h.stale || h.last_tick_ok === false;
+  const headline = bad ? (h.last_tick_at ? "Monitor has not checked in for " + ago(h.last_tick_at).replace(" ago", "") : "Monitor has not run yet")
+    : s.config.alerts_paused ? "Watching, alerts paused" : "Watching " + s.wallets.filter((w) => w.status === "active").length + " wallets";
+  $("#pulse").innerHTML = `<div class="dot ${bad ? "bad" : ""}" aria-hidden="true"></div>
+    <div class="pulse-text"><strong>${esc(headline)}</strong>
+      <div class="pulse-facts">
+        <span>Last check ${esc(ago(h.last_tick_at))}${h.last_tick_ms ? " (" + (h.last_tick_ms / 1000).toFixed(1) + "s)" : ""}</span>
+        <span>Telegram ${s.telegram.bot_token_set && s.telegram.chat_linked ? "connected" : "not connected"}</span>
+        <span>Alerts at ${esc(s.config.min_buy_sol)} SOL and up</span>
+        ${failing.length ? `<span class="neg">${failing.length} wallet(s) erroring</span>` : ""}
+        ${h.last_tick_error ? `<span class="neg">${esc(h.last_tick_error)}</span>` : ""}
+      </div></div>`;
+  $("#pauseBtn").textContent = s.config.alerts_paused ? "Resume alerts" : "Pause alerts";
+
+  const tg = s.telegram;
+  $("#tgSetup").innerHTML = tg.bot_token_set && tg.chat_linked ? "" : `<div class="notice">
+    <strong>Telegram alerts aren't connected yet.</strong>
+    <ol class="steps">
+      <li ${tg.bot_token_set ? 'style="text-decoration:line-through"' : ""}>In Telegram, message @BotFather, send /newbot, and copy the token it gives you.</li>
+      <li ${tg.bot_token_set ? 'style="text-decoration:line-through"' : ""}>In Supabase → Edge Functions → Secrets, add <span class="mono">TELEGRAM_BOT_TOKEN</span> with that token.</li>
+      <li>Open your new bot in Telegram and send <span class="mono">/start</span>.</li>
+      <li><button class="small" id="linkBtn">Link my Telegram chat</button> then <button class="small" id="testBtn">Send a test alert</button></li>
+    </ol></div>`;
+  const lb = $("#linkBtn"); if (lb) lb.onclick = () => act("/telegram/link", {}, "Telegram linked");
+  const tb = $("#testBtn"); if (tb) tb.onclick = () => act("/telegram/test", {}, "Test alert sent");
+
+  const wt = $("#walletTable");
+  wt.innerHTML = `<tr><th>Trader</th><th>Evidence</th><th>Status</th><th>Last check</th><th></th></tr>` +
+    (s.wallets.length ? s.wallets.map((w) => {
+      const ev = w.evidence || {};
+      const evText = ev.summary || ev.note || "No evidence recorded";
+      const st = w.status !== "active" ? `<span class="chip">${esc(w.status)}</span>`
+        : w.consecutive_errors ? `<span class="chip bad" title="${esc(w.last_error)}">error ×${w.consecutive_errors}</span>` : `<span class="chip ok">watching</span>`;
+      return `<tr><td><strong>${esc(w.label)}</strong><br><a class="mono" href="https://gmgn.ai/sol/address/${esc(w.address)}" target="_blank" rel="noopener">${esc(short(w.address))}</a></td>
+        <td class="evidence">${esc(evText)}${w.source ? `<br>Source: ${esc(w.source)}` : ""}</td>
+        <td>${st}</td><td>${esc(ago(w.last_checked_at))}</td>
+        <td><button class="small" data-w="${esc(w.address)}" data-s="${w.status === "active" ? "paused" : "active"}">${w.status === "active" ? "Pause" : "Resume"}</button>
+            <button class="small" data-w="${esc(w.address)}" data-s="removed">Remove</button></td></tr>`;
+    }).join("") : `<tr><td colspan="5" class="muted">No wallets yet. Add up to five below.</td></tr>`);
+  wt.querySelectorAll("button[data-w]").forEach((b) => b.onclick = () => {
+    if (b.dataset.s === "removed" && !confirm("Stop tracking this wallet?")) return;
+    act("/wallets/status", {address: b.dataset.w, status: b.dataset.s}, "Wallet updated");
+  });
+  const rep = document.querySelector('#walletForm select[name=replace]');
+  rep.innerHTML = `<option value="">Add new</option>` + s.wallets.map((w) => `<option value="${esc(w.address)}">${esc(w.label)}</option>`).join("");
+
+  const dp = s.data_provider || {};
+  $("#researchNote").innerHTML = dp.helius_key_set ? "" : `<div class="notice"><strong>Research is waiting for a data key.</strong>
+    The free public Solana endpoint rate-limits too hard to read 90 days of history. Create a free account at helius.dev,
+    copy the API key, and add it in Supabase → Edge Functions → Secrets as <span class="mono">HELIUS_API_KEY</span>.
+    Research starts on its own within a minute, and live monitoring switches to the faster endpoint too.</div>`;
+  const tracked = new Set(s.wallets.filter((w) => w.status !== "removed").map((w) => w.address));
+  const solv = (n) => n == null ? "—" : (n > 0 ? "+" : "") + Number(n).toFixed(2);
+  $("#researchTable").innerHTML = `<tr><th>Candidate</th><th>Status</th><th class="num">30d</th><th class="num">60d</th><th class="num">90d</th><th class="num">Win %</th><th class="num">Median buy</th><th>Checks</th><th></th></tr>` +
+    ((s.research || []).length ? s.research.map((r) => {
+      const m = r.metrics || {}, a = m.assessment;
+      const st = r.status === "done" ? (a.qualifies ? '<span class="chip ok">qualifies</span>' : '<span class="chip">does not qualify</span>')
+        : r.status === "error" ? `<span class="chip bad" title="${esc(r.error)}">error</span>`
+        : `<span class="chip warn"${r.error ? ` title="${esc(r.error)}"` : ""}>${esc(r.status)}</span>`;
+      const rules = a ? `<details><summary>${a.passed}/${a.total}</summary><ul class="events">${a.rules.map((x) =>
+        `<li class="${x.pass ? "pos" : "neg"}">${x.pass ? "✓" : "✗"} ${esc(x.rule)} <span class="muted">${esc(x.detail)}</span></li>`).join("")}</ul></details>` : "—";
+      const btn = r.status === "done" && !tracked.has(r.wallet)
+        ? `<button class="small" data-track="${esc(r.wallet)}">${a.qualifies ? "Track" : "Track anyway"}</button>` : (tracked.has(r.wallet) ? '<span class="muted">tracked</span>' : "");
+      return `<tr><td><strong>${esc(r.label)}</strong><br><a class="mono" href="https://gmgn.ai/sol/address/${esc(r.wallet)}" target="_blank" rel="noopener">${esc(short(r.wallet))}</a>
+          <div class="evidence">${esc(r.source_snapshot?.views || "")}</div></td>
+        <td>${st}</td>
+        <td class="num">${solv(m.d30?.realized_sol)}</td><td class="num">${solv(m.d60?.realized_sol)}</td><td class="num">${solv(m.d90?.realized_sol)}</td>
+        <td class="num">${m.d90?.win_rate_pct ?? "—"}</td><td class="num">${m.median_buy_sol == null ? "—" : sol(m.median_buy_sol)}</td>
+        <td>${rules}</td><td>${btn}</td></tr>`;
+    }).join("") : `<tr><td colspan="9" class="muted">No candidates queued.</td></tr>`);
+  $("#researchTable").querySelectorAll("button[data-track]").forEach((b) => b.onclick = () => {
+    const r = s.research.find((x) => x.wallet === b.dataset.track), m = r.metrics, a = m.assessment;
+    const active = s.wallets.filter((w) => w.status === "active");
+    let replace;
+    if (active.length >= 5) {
+      replace = prompt("You're tracking 5 wallets. Type the name of the one to replace:\n" + active.map((w) => w.label).join(", "));
+      const hit = active.find((w) => w.label === replace);
+      if (!hit) return toast("No wallet with that name");
+      replace = hit.address;
+    } else if (!a.qualifies && !confirm(`${r.label} passed ${a.passed} of ${a.total} checks. Track anyway?`)) return;
+    act("/wallets", {address: r.wallet, label: r.label, replace, source: r.source, evidence: {
+      summary: `${a.passed}/${a.total} checks · 30d ${solv(m.d30.realized_sol)} · 60d ${solv(m.d60.realized_sol)} · 90d ${solv(m.d90.realized_sol)} SOL realized · win ${m.d90.win_rate_pct}% · median buy ${m.median_buy_sol} SOL`,
+      researched_at: r.completed_at, source: r.source, source_snapshot: r.source_snapshot, metrics: m}}, "Now tracking " + r.label);
+  });
+
+  const labels = Object.fromEntries(s.wallets.map((w) => [w.address, w.label]));
+  const alertChip = (t) => ({sent:'<span class="chip ok">sent</span>', pending:`<span class="chip warn" title="${esc(t.alert_error)}">waiting</span>`,
+    failed:`<span class="chip bad" title="${esc(t.alert_error)}">failed</span>`, below_threshold:'<span class="chip">below minimum</span>',
+    paused:'<span class="chip">paused</span>', expired:'<span class="chip">expired</span>'}[t.alert_status] || esc(t.alert_status));
+  $("#tradeTable").innerHTML = `<tr><th>Side</th><th>Trader</th><th>Token</th><th class="num">Size</th><th>Exit</th><th>Market</th><th>When</th><th>Alert</th></tr>` +
+    (s.trades.length ? s.trades.map((t) => {
+      const mk = t.market || {};
+      return `<tr><td><span class="side ${t.kind}">${t.kind.toUpperCase()}</span></td>
+        <td>${esc(labels[t.wallet] || short(t.wallet))}</td>
+        <td><a href="https://gmgn.ai/sol/token/${esc(t.mint)}" target="_blank" rel="noopener">${esc(t.token_symbol || t.token_name || short(t.mint))}</a></td>
+        <td class="num">${sol(t.sol_value)}</td>
+        <td>${t.kind === "sell" ? esc(t.exit_type === "PARTIAL" ? "Partial " + Math.round(t.exit_pct) + "%" : t.exit_type || "") : ""}</td>
+        <td>Liq ${usd(mk.liquidityUsd)}${(t.risk || []).map((r) => `<br><span class="chip warn">${esc(r)}</span>`).join("")}</td>
+        <td><a href="https://solscan.io/tx/${esc(t.signature)}" target="_blank" rel="noopener">${esc(when(t.block_time))}</a></td>
+        <td>${alertChip(t)}</td></tr>`;
+    }).join("") : `<tr><td colspan="8" class="muted">No buys or sells detected since tracking started. New trades show up within about a minute.</td></tr>`);
+
+  const p = s.paper, pnl = p.equity - p.starting;
+  $("#paperStats").innerHTML = `
+    <div class="stat"><b>${usd(p.equity)}</b><span>Simulated value</span></div>
+    <div class="stat"><b class="${pnl >= 0 ? "pos" : "neg"}">${usd(pnl)}</b><span>vs ${usd(p.starting)} start</span></div>
+    <div class="stat"><b>${usd(p.cash)}</b><span>Simulated cash</span></div>`;
+  $("#posTable").innerHTML = p.positions.length ? `<tr><th>Token</th><th>Copied from</th><th class="num">Cost</th><th class="num">Now</th></tr>` +
+    p.positions.map((o) => `<tr><td>${esc(o.symbol || short(o.mint))}</td><td>${esc(labels[o.wallet] || short(o.wallet))}</td>
+      <td class="num">${usd(o.cost_usd * o.qty_open / o.qty)}</td>
+      <td class="num ${o.unrealized_usd >= 0 ? "pos" : "neg"}">${usd(o.value_usd)}</td></tr>`).join("")
+    : `<tr><td class="muted">No simulated positions open.</td></tr>`;
+  $("#ledger").innerHTML = p.ledger.length ? p.ledger.slice(0, 15).map((l) =>
+    `<li><span class="muted">${esc(when(l.at))}</span> ${esc(l.note || l.type)}</li>`).join("") : `<li class="muted">Nothing simulated yet.</li>`;
+
+  const pc = s.config.paper;
+  const pf = $("#paperForm");
+  if (!pf.dataset.ready) {
+    const f = (k, l, step) => `<label>${l}<input name="${k}" type="number" step="${step}" value="${esc(pc[k])}" style="width:110px"></label>`;
+    pf.innerHTML = f("starting_usd","Starting $","1") + f("position_pct","Per trade % of equity","1") + f("max_position_usd","Max per trade $","1") +
+      f("max_open_positions","Max open positions","1") + f("slippage_pct","Slippage %","0.5") + f("fee_pct","Platform fee %","0.1") +
+      f("priority_fee_sol","Priority fee SOL","0.0005") + f("exec_delay_seconds","Execution delay (s)","5") +
+      `<label>Copy their sells<select name="copy_sells"><option value="true" ${pc.copy_sells ? "selected" : ""}>Yes</option><option value="false" ${pc.copy_sells ? "" : "selected"}>No</option></select></label>
+       <button class="primary">Save assumptions</button>`;
+    pf.dataset.ready = "1";
+  }
+  const sf = document.querySelector("#settingsForm input[name=min_buy_sol]");
+  if (document.activeElement !== sf) sf.value = s.config.min_buy_sol;
+
+  $("#events").innerHTML = s.events.slice(0, 12).map((e) =>
+    `<li class="${e.level === "error" ? "neg" : ""}"><span class="muted">${esc(when(e.at))}</span> ${esc(labels[e.wallet] ? labels[e.wallet] + ": " : "")}${esc(e.message)}</li>`).join("");
+}
+
+async function act(path, body, ok) {
+  try { const r = await api(path, {method: "POST", body}); toast(ok); await load(); return r; } catch (e) { if (e.message !== "unauthorized") toast(e.message); }
+}
+$("#pauseBtn").onclick = () => act("/settings", {alerts_paused: !state.config.alerts_paused}, state.config.alerts_paused ? "Alerts resumed" : "Alerts paused");
+$("#tickBtn").onclick = async () => { $("#tickBtn").disabled = true; await act("/tick-now", {}, "Checked all wallets"); $("#tickBtn").disabled = false; };
+$("#settingsForm").onsubmit = (e) => { e.preventDefault(); act("/settings", {min_buy_sol: Number(e.target.min_buy_sol.value)}, "Minimum saved"); };
+$("#walletForm").onsubmit = (e) => {
+  e.preventDefault(); const f = e.target;
+  act("/wallets", {address: f.address.value, label: f.label.value, replace: f.replace.value || undefined, source: "dashboard"}, "Wallet saved").then((r) => { if (r) f.reset(); });
+};
+$("#paperForm").onsubmit = (e) => {
+  e.preventDefault(); const f = new FormData(e.target); const paper = {};
+  for (const [k, v] of f) paper[k] = k === "copy_sells" ? v === "true" : Number(v);
+  act("/settings", {paper}, "Assumptions saved");
+};
+$("#resetBtn").onclick = () => { if (confirm("Reset the simulated portfolio to its starting cash?")) act("/paper/reset", {}, "Simulation reset"); };
+
+load();
+setInterval(() => { if (token && !document.hidden) load(); }, 30000);
+</script>
+</body>
+</html>
