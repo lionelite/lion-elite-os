@@ -34,6 +34,12 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 120
     steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
       - name: Keep only the New York daytime schedule
         id: guard
         run: |
@@ -58,6 +64,10 @@ jobs:
             echo "Not up yet (attempt $i); waiting 20s."; sleep 20
           done
           echo "::error::Service did not answer /health."; exit 1
+
+      # Discovery is its own job (clinic-discovery.yml, every 2 h). This run only
+      # qualifies and sends what that job stored; the old metro prefetch fed an
+      # in-process search the send run no longer does.
 
       # Fetched after the wake-up: the token lives about five minutes.
       - name: Get GitHub identity token

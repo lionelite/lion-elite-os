@@ -63,7 +63,8 @@ test('stored clinic prospects route to the clinic sequence, gyms keep the Beauty
   assert.equal(isClinicSupply(ctx), true);
   const routed = draftForContext(ctx);
   assert.equal(routed.route, 'clinic_supply');
-  assert.match(routed.draft.body, /Lion Elite Wellness/);
+  assert.match(routed.draft.body, /Lion Elite Clinical/);
+  assert.doesNotMatch(routed.draft.body, /Lion Elite Wellness/);
   assert.doesNotMatch(routed.draft.body, /Lion Elite Beauty|coaching/);
   assert.match(routed.draft.body, /in Miami/);
 
