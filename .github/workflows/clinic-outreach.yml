@@ -1,9 +1,9 @@
 name: Clinic outreach
 
 # Calls POST /run/clinic-outreach on the free Render web service several times a
-# day (routes/outreach-run.js). Each call runs ONE batch: discovery across several
-# metros, qualification, then sends up to the shared daily cap (DAILY_SEND_CAP,
-# default 150). Re-runs are safe: the server holds a run lock, the cap is shared
+# day (routes/outreach-run.js). Each call runs ONE batch: qualification of the
+# prospects clinic-discovery.yml stored, then sends up to the shared daily cap
+# (DAILY_SEND_CAP, default 150). Discovery is a separate job. Re-runs are safe: the server holds a run lock, the cap is shared
 # across runs, and every send has a once-ever idempotency key in Supabase.
 #
 # Auth: the `x-outreach-secret` header from the OUTREACH_SECRET Actions secret.
@@ -56,21 +56,6 @@ jobs:
             echo "Not up yet (attempt $i); waiting 20s."; sleep 20
           done
           echo "::error::Service did not answer /health."; exit 1
-
-      # Render's shared IPs are refused by Overpass and rate-limited by Nominatim,
-      # so the map search runs here and is uploaded into the service's day cache.
-      - name: Prefetch metros from Overpass (runner network)
-        if: ${{ !(github.event_name == 'workflow_dispatch' && inputs.test_send) }}
-        env:
-          OUTREACH_SECRET: ${{ secrets.OUTREACH_SECRET }}
-          PREFETCH_AREAS: '6'
-        run: |
-          if [ -z "$OUTREACH_SECRET" ]; then
-            export OIDC_TOKEN="$(curl -fsS -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
-              "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=lion-elite-os-cron" | jq -r .value)"
-            echo "::add-mask::$OIDC_TOKEN"
-          fi
-          node scripts/prefetch-clinic-areas.js
 
       - name: Run one clinic outreach batch
         env:

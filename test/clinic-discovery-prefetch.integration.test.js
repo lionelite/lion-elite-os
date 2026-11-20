@@ -4,8 +4,10 @@
 //   - plan → upload → the run reads the uploaded metro from the day cache
 //     and never touches the network for it;
 //   - unknown metros are refused;
-//   - when neither Overpass nor Nominatim answers, the run stops after one
-//     metro, asks Nominatim once, and does not advance past the unsearched metro.
+//   - when Overpass does not answer, the run stops after one metro, makes no
+//     Nominatim request (Nominatim is out of bulk search), and does not
+//     advance past the unsearched metro.
+// This is the legacy in-process path, enabled by CLINIC_SEND_RUN_DISCOVERY=true.
 // Skips without DATABASE_URL (CI provisions Postgres).
 
 const test = require('node:test');
@@ -19,7 +21,6 @@ test('discovery prefetch + circuit breakers', { skip: !databaseConfigured, timeo
   const { PostgresProspectStore } = require('../lib/postgres-prospect-store');
   const { createClinicOutreachRunner } = require('../lib/outreach/clinic-outreach-run');
   const { DEFAULT_AREAS } = require('../lib/discovery/discovery-run');
-  const { resetThrottle } = require('../lib/discovery/nominatim-source');
   const control = require('../lib/outreach/outreach-control');
   const { query } = database;
 
@@ -45,10 +46,9 @@ test('discovery prefetch + circuit breakers', { skip: !databaseConfigured, timeo
   const quiet = { log() {}, warn() {}, error() {} };
   const networkCalls = [];
   const runner = (over = {}) => createClinicOutreachRunner({
-    env: { OSM_CONTACT_EMAIL: 'ops@example.com', DISCOVERY_MAX_AREAS_PER_RUN: '1' }, store, now: () => NOW, logger: quiet,
-    sleep: async () => {}, discoverySleep: async () => {}, nominatimSleep: async () => {}, enrichDelayMs: 0,
+    env: { OSM_CONTACT_EMAIL: 'ops@example.com', DISCOVERY_MAX_AREAS_PER_RUN: '1', CLINIC_SEND_RUN_DISCOVERY: 'true' }, store, now: () => NOW, logger: quiet,
+    sleep: async () => {}, discoverySleep: async () => {}, enrichDelayMs: 0,
     discoveryFetch: async url => { networkCalls.push(String(url)); throw new TypeError('fetch failed'); },
-    nominatimFetch: async url => { networkCalls.push(String(url)); return { ok: false, status: 429, json: async () => ({}) }; },
     enrichEmail: async b => (b.website.includes('withmail') ? { email: `info@${new URL(b.website).hostname}` } : null),
     mirror: async () => ({ status: 'skipped' }),
     ...over,
@@ -76,7 +76,6 @@ test('discovery prefetch + circuit breakers', { skip: !databaseConfigured, timeo
 
   // Run: the cached metro is worked without any network call; the clinic with an
   // e-mail is stored, the one without is skipped and remembered.
-  resetThrottle();
   const dry = await runner().run({ dryRun: true, trigger: 'prefetch-test' });
   assert.equal(dry.status, 'completed', JSON.stringify(dry.error || dry.notes));
   assert.deepEqual(dry.discovery.cachedAreas, [first]);
@@ -85,14 +84,14 @@ test('discovery prefetch + circuit breakers', { skip: !databaseConfigured, timeo
   assert.equal(networkCalls.length, 0, 'no map request for a cached metro');
   assert.ok((await query(`SELECT 1 FROM discovery_site_checks WHERE domain = $1 AND email_found = false`, [`nomail-${tag}.example`])).rowCount);
 
-  // Circuit breaker: next metro is uncached, Overpass refuses, Nominatim 429s.
-  // The run asks Nominatim ONCE, stops, and leaves rotation on the unsearched metro.
+  // Circuit breaker: next metro is uncached and Overpass refuses. The run stops,
+  // asks Nominatim nothing, and leaves rotation on the unsearched metro.
   const rotationBefore = Number(await control.getSetting(database, control.ROTATION_KEY, 0));
-  const blocked = await runner({ env: { OSM_CONTACT_EMAIL: 'ops@example.com', DISCOVERY_MAX_AREAS_PER_RUN: '6' } })
+  const blocked = await runner({ env: { OSM_CONTACT_EMAIL: 'ops@example.com', DISCOVERY_MAX_AREAS_PER_RUN: '6', CLINIC_SEND_RUN_DISCOVERY: 'true' } })
     .run({ dryRun: true, trigger: 'prefetch-test-blocked' });
   assert.equal(blocked.status, 'completed');
   assert.match(blocked.discovery.stoppedEarly, /no map service reachable/);
-  assert.ok(blocked.discovery.nominatimBlocked);
-  assert.equal(networkCalls.filter(u => u.includes('nominatim')).length, 1, 'one Nominatim request, then stop');
+  assert.ok(blocked.discovery.overpassBlocked);
+  assert.equal(networkCalls.filter(u => u.includes('nominatim')).length, 0, 'Nominatim is not used for bulk search');
   assert.equal(Number(await control.getSetting(database, control.ROTATION_KEY, 0)), rotationBefore, 'unsearched metro not skipped');
 });

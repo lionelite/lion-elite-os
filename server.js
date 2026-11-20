@@ -521,7 +521,8 @@ app.get('/health', (req, res) => {
     // Booleans only — never the credential values themselves. Answers "is the
     // listener running and are its leads being kept" without a dashboard.
     bluesky: {
-      listenerEnabled: String(process.env.BLUESKY_LISTENER_ENABLED || 'true').toLowerCase() !== 'false',
+      // start.js no longer starts the listener (see the note there).
+      listenerEnabled: false,
       durableLeadStorage: Boolean(process.env.DATABASE_URL),
       replyWorkerEnabled: String(process.env.BLUESKY_OUTREACH_ENABLED || '').toLowerCase() === 'true'
         && Boolean(process.env.BLUESKY_HANDLE && process.env.BLUESKY_APP_PASSWORD)

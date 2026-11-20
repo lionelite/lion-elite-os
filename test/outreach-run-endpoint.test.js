@@ -12,7 +12,6 @@ const { createOutreachRunRouter } = require('../routes/outreach-run');
 const { effectiveDailyCap } = require('../lib/outreach/send-cap');
 const { formatRunLine, deliveryConfigured } = require('../lib/outreach/clinic-outreach-run');
 const { buildQuery, discoveryUserAgent } = require('../lib/discovery/osm-source');
-const { fetchBusinessesNominatim, resetThrottle } = require('../lib/discovery/nominatim-source');
 
 const quiet = { log() {}, warn() {}, error() {} };
 
@@ -144,30 +143,3 @@ test('OSM User-Agent identifies us with a contact e-mail from configuration', ()
   assert.doesNotMatch(discoveryUserAgent({}), /@/);
 });
 
-test('Nominatim: stops at the first 429 instead of firing the remaining searches, spaced ≥1 s, with our User-Agent', async () => {
-  resetThrottle();
-  const urls = [];
-  const agents = [];
-  const sleeps = [];
-  const area = { label: 'x', south: 41.4, west: -81.85, north: 41.6, east: -81.55 };
-  await assert.rejects(
-    fetchBusinessesNominatim({
-      area, logger: quiet, userAgent: 'UA-test (ops@example.com)', sleepImpl: async ms => { sleeps.push(ms); },
-      fetchImpl: async (url, opts) => { urls.push(url); agents.push(opts.headers['user-agent']); return { ok: false, status: 429, json: async () => ({}) }; },
-    }),
-    err => err.code === 'NOMINATIM_RATE_LIMITED',
-  );
-  assert.equal(urls.length, 1, 'one request, then stop');
-  assert.equal(agents[0], 'UA-test (ops@example.com)');
-
-  // Healthy: every request after the first waits for the 1.1 s floor.
-  resetThrottle();
-  let clock = 1_000_000;
-  const ok = await fetchBusinessesNominatim({
-    area, logger: quiet, terms: ['med spa', 'aesthetics', 'longevity'], nowImpl: () => clock,
-    sleepImpl: async ms => { sleeps.push(ms); clock += ms; },
-    fetchImpl: async () => ({ ok: true, status: 200, json: async () => [] }),
-  });
-  assert.deepEqual(ok.businesses, []);
-  assert.ok(sleeps.slice(-2).every(ms => ms >= 1000), `spacing ${sleeps}`);
-});

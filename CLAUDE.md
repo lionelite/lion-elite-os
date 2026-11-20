@@ -937,6 +937,22 @@ notes), not live infrastructure — don't treat them as configuration.
   leaves the routes open. Owner controls (status/pause/resume/record reply or
   opt-out) are in `.github/workflows/outreach-control.yml`.
   Runbook: `docs/clinic-outreach-http.md`.
+- **Clinic discovery is its own job (2026-11-20).** The send run no longer
+  searches (`CLINIC_SEND_RUN_DISCOVERY=true` restores it). Nominatim is out of
+  bulk search: it answered every bulk run 429, and `nominatim-source.js` is
+  deleted. `.github/workflows/clinic-discovery.yml` runs every 2 h on the GitHub
+  runner. `scripts/discover-clinics.js` sends one Overpass query per metro
+  (`lib/discovery/clinic-overpass.js`: 90 s, rotating mirrors, backoff). It then
+  crawls home, contact, about and team pages (`lib/discovery/clinic-site-crawl.js`)
+  for a business e-mail on the clinic's own domain (webmail refused), the phone,
+  and the owner or medical director's name. It posts the results to
+  `/run/clinic-discovery/*` on the service, and
+  `lib/discovery/clinic-discovery-store.js` dedupes them and stores them as
+  `lion-elite-clinical` (now in `FIRST_TOUCH_CAMPAIGNS` and `isClinicSupply`).
+  The runner holds no DB credential. Each pass stops at 200 stored per New York
+  day. Each pass is logged to `clinic_discovery_runs`. The Bluesky listener is
+  no longer started, and its leads are not written to `prospects`.
+  `lead-harvest.yml` is manual-only. Docs: `docs/clinic-discovery.md`.
 - **Known dropped job, needs an owner decision:** the daily `staleData` cron
   enqueues `refresh-stale-prospect-data` to the `enrichment` queue, which no
   worker consumes — it has been piling up unprocessed every day. Either write the
