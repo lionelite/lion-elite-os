@@ -19,7 +19,10 @@ const RPC_URL = Deno.env.get("SOLANA_RPC_URL") ||
 const TG_TOKEN = Deno.env.get("TELEGRAM_BOT_TOKEN") ?? "";
 
 // The public RPC rate-limits hard (HTTP 429); a keyed provider gets a much larger per-minute budget.
-const MAX_TX_PER_TICK = HELIUS_KEY || Deno.env.get("SOLANA_RPC_URL") ? 150 : 40;
+const KEYED_RPC = !!(HELIUS_KEY || Deno.env.get("SOLANA_RPC_URL"));
+const MAX_TX_PER_TICK = KEYED_RPC ? 150 : 40;
+// Large signature pages are throttled on the public endpoint; keep them small there.
+const SIG_PAGE = KEYED_RPC ? 1000 : 100;
 const ALERT_MAX_AGE_MIN = 120;
 
 const CORS = {
@@ -286,11 +289,11 @@ async function processWallet(w: any, cfg: any, budget: { left: number }) {
   let before: string | undefined;
   let reachedCursor = false;
   for (let page = 0; page < 10; page++) {
-    const opts: any = { limit: 1000, until: w.last_signature, commitment: "confirmed" };
+    const opts: any = { limit: SIG_PAGE, until: w.last_signature, commitment: "confirmed" };
     if (before) opts.before = before;
     const sigs = await rpc("getSignaturesForAddress", [w.address, opts]);
     all = all.concat(sigs ?? []);
-    if (!sigs || sigs.length < 1000) { reachedCursor = true; break; }
+    if (!sigs || sigs.length < SIG_PAGE) { reachedCursor = true; break; }
     before = sigs[sigs.length - 1].signature;
   }
   if (!reachedCursor) {
