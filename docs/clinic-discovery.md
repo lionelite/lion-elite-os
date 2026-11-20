@@ -101,7 +101,7 @@ GROUP BY 1;
 | Render service | `CLINIC_DISCOVERY_DAILY_TARGET` | 200 stored per New York day |
 | Workflow env | `DISCOVERY_BUDGET_MINUTES` | 100 |
 | Workflow env | `DISCOVERY_MAX_CRAWLS_PER_METRO` | 150 |
-| Workflow env | `DISCOVERY_CRAWL_CONCURRENCY` | 10 |
+| Workflow env | `DISCOVERY_CRAWL_CONCURRENCY` | 20 (script default 10); one page at a time per site, 30 s per site |
 | Manual dispatch | `max_metros` | all 50 |
 | Render service | `CLINIC_SEND_RUN_DISCOVERY=true` | off. Restores the old in-process search in the send run. |
 

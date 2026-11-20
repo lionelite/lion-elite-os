@@ -57,5 +57,6 @@ jobs:
         env:
           OUTREACH_SECRET: ${{ secrets.OUTREACH_SECRET }}
           DISCOVERY_BUDGET_MINUTES: '100'
+          DISCOVERY_CRAWL_CONCURRENCY: '20'
           DISCOVERY_MAX_METROS: ${{ github.event.inputs.max_metros }}
         run: node scripts/discover-clinics.js
