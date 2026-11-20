@@ -13,6 +13,11 @@
  *              provider message id.
  *        With OUTREACH_SECRET unset the secret path is unavailable (never open).
  *
+ *   POST /run/clinic-outreach/plan    the next metros to search + the OSM User-Agent
+ *   POST /run/clinic-outreach/areas   upload map answers for those metros into
+ *        today's discovery cache (same auth). Used by clinic-outreach.yml, whose
+ *        runner can reach Overpass when Render's shared IPs cannot.
+ *
  *   GET  /health/outreach       public, no PII: last run time/status, sends today,
  *                               today's cap, last error.
  *
@@ -88,6 +93,24 @@ function createOutreachRunRouter({ runner, env = process.env, database, heartbea
       res.end(JSON.stringify({ status: 'error', error: error.message }));
     } finally {
       clearInterval(beat);
+    }
+  });
+
+  // Discovery prefetch, for a client with working map access (the GitHub runner;
+  // Render's shared IPs are refused by Overpass and rate-limited by Nominatim).
+  router.post('/run/clinic-outreach/plan', authorize, async (req, res) => {
+    try {
+      res.json(await getRunner().discoveryPlan({ count: Number(req.body?.count || req.query.count || 6) }));
+    } catch (error) {
+      res.status(500).json({ status: 'error', error: redact(error.message) });
+    }
+  });
+
+  router.post('/run/clinic-outreach/areas', authorize, async (req, res) => {
+    try {
+      res.json(await getRunner().storeAreaResults({ areas: req.body?.areas }));
+    } catch (error) {
+      res.status(500).json({ status: 'error', error: redact(error.message) });
     }
   });
 

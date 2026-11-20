@@ -42,6 +42,12 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 120
     steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
       - name: Wake Render service
         run: |
           # Free instances sleep after 15 idle minutes; the first request wakes them.
@@ -51,36 +57,41 @@ jobs:
           done
           echo "::error::Service did not answer /health."; exit 1
 
-      - name: Build auth headers
-        id: auth
+      # Render's shared IPs are refused by Overpass and rate-limited by Nominatim,
+      # so the map search runs here and is uploaded into the service's day cache.
+      - name: Prefetch metros from Overpass (runner network)
+        if: ${{ !(github.event_name == 'workflow_dispatch' && inputs.test_send) }}
         env:
           OUTREACH_SECRET: ${{ secrets.OUTREACH_SECRET }}
+          PREFETCH_AREAS: '6'
         run: |
-          if [ -n "$OUTREACH_SECRET" ]; then
-            echo "Using the OUTREACH_SECRET header."
-            echo "mode=secret" >> "$GITHUB_OUTPUT"
-            exit 0
+          if [ -z "$OUTREACH_SECRET" ]; then
+            export OIDC_TOKEN="$(curl -fsS -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
+              "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=lion-elite-os-cron" | jq -r .value)"
+            echo "::add-mask::$OIDC_TOKEN"
           fi
-          echo "::warning::OUTREACH_SECRET is not set as an Actions secret; using the GitHub OIDC identity token instead."
-          token="$(curl -fsS -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
-            "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=lion-elite-os-cron" | jq -r .value)"
-          if [ -z "$token" ] || [ "$token" = "null" ]; then echo "::error::Could not get an OIDC token."; exit 1; fi
-          echo "::add-mask::$token"
-          echo "token=$token" >> "$GITHUB_OUTPUT"
-          echo "mode=oidc" >> "$GITHUB_OUTPUT"
+          node scripts/prefetch-clinic-areas.js
 
       - name: Run one clinic outreach batch
         env:
           OUTREACH_SECRET: ${{ secrets.OUTREACH_SECRET }}
-          OIDC_TOKEN: ${{ steps.auth.outputs.token }}
-          AUTH_MODE: ${{ steps.auth.outputs.mode }}
           DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run && '1' || '0' }}
           TEST_SEND: ${{ github.event_name == 'workflow_dispatch' && inputs.test_send && '1' || '0' }}
         run: |
           set -o pipefail
           url="$SERVICE_URL/run/clinic-outreach"
           if [ "$TEST_SEND" = "1" ]; then url="$url?test=1"; elif [ "$DRY_RUN" = "1" ]; then url="$url?dryRun=1"; fi
-          if [ "$AUTH_MODE" = "secret" ]; then auth=(-H "x-outreach-secret: $OUTREACH_SECRET"); else auth=(-H "Authorization: Bearer $OIDC_TOKEN"); fi
+          if [ -n "$OUTREACH_SECRET" ]; then
+            echo "Using the OUTREACH_SECRET header."
+            auth=(-H "x-outreach-secret: $OUTREACH_SECRET")
+          else
+            echo "::warning::OUTREACH_SECRET is not set as an Actions secret; using the GitHub OIDC identity token instead."
+            token="$(curl -fsS -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
+              "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=lion-elite-os-cron" | jq -r .value)"
+            if [ -z "$token" ] || [ "$token" = "null" ]; then echo "::error::Could not get an OIDC token."; exit 1; fi
+            echo "::add-mask::$token"
+            auth=(-H "Authorization: Bearer $token")
+          fi
           code="$(curl -sS -o summary.json -w '%{http_code}' -X POST "$url" "${auth[@]}" \
             -H "content-type: application/json" -H "x-trigger: github-actions" --max-time 6900)"
           jq . summary.json || cat summary.json

@@ -178,3 +178,13 @@ right before each send.
 - Every e-mail gets an unsubscribe line and the postal address, appended in
   `lib/email-delivery.js` after the approved, versioned body. Approvals are not
   invalidated.
+- **Why the map search runs on the GitHub runner.** Render's logs show that from
+  the free service's shared IPs, `overpass-api.de` refuses the connection, the
+  other two mirrors time out, and Nominatim answers 429 to every search. So
+  `clinic-outreach.yml` runs `scripts/prefetch-clinic-areas.js` before each batch.
+  It asks the service which metros are next (`POST /run/clinic-outreach/plan`),
+  queries Overpass from the runner, and uploads each metro
+  (`POST /run/clinic-outreach/areas`) into `discovery_area_cache`. The run then
+  works those metros from the cache. If no service answers for a metro, the run
+  stops discovery without advancing the rotation past it, and still sends to
+  whoever already qualifies.
