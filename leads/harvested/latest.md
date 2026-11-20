@@ -1,6 +1,6 @@
 # New leads from the last harvest
 
-_Generated 2026-11-20T03:05:25.928Z — 25 leads._
+_Generated 2026-11-20T12:40:07.507Z — 22 leads._
 
 | Searches run | Searches failed | Posts read | Matched | Dropped (do-not-engage) |
 |---:|---:|---:|---:|---:|
@@ -41,206 +41,182 @@ business-scaling: Bluesky search failed for "trying to scale my business": HTTP 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-**Sources this run:** bluesky: unreachable (23 failed) · openstreetmap: 146 businesses in los-angeles-ca
+**Sources this run:** bluesky: unreachable (23 failed) · openstreetmap: 48 businesses in northern-nj
 
-## med-spa-b2b — 25
+## med-spa-b2b — 22
 
-### Total Tan — score 50
+### Iyengar Yoga Institute of New York — score 70
 
-- **Handle:** [@null](https://totaltanla.com/)
+- **Handle:** [@null](https://iyengarnyc.org)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** gym
 
-> med-spa · 8505 Santa Monica Boulevard West Hollywood CA 90069
+> gym · 227 West 13th Street
 
-### Estate Beauty — score 50
+### Core Culture Pilates — score 70
 
-- **Handle:** [@null](http://estatebeautyla.com)
+- **Handle:** [@null](https://www.coreculturepilates.com)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** gym
 
-> med-spa · 8515 Santa Monica Boulevard West Hollywood CA 90069
+> gym · 146 Sullivan Street New York NY 10012
 
-### Smooth Cheeks — score 50
+### Village Gyrotonic — score 70
 
-- **Handle:** [@null](https://smoothcheeks.com/)
+- **Handle:** [@null](https://www.villagegyrotonic.com)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** gym
 
-> med-spa · 8543 Santa Monica Boulevard West Hollywood CA 90069
+> gym
 
-### Lunch Box Wax — score 50
+### Body Sculptors — score 50
 
-- **Handle:** [@null](https://www.lunchboxwax.com/west-hollywood/)
+- **Handle:** [@null](https://bodysculptorsnj.com/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** gym
 
-> med-spa · 8621 Santa Monica Boulevard West Hollywood CA 90069
+> gym · 23 Park Avenue Rutherford NJ 07070
 
-### Fabulicious — score 50
+### Fire Shaper — score 50
 
-- **Handle:** [@null](https://fabulicious.us)
+- **Handle:** [@null](https://www.fireshaper.com/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** gym
 
-> med-spa · 9119 West Olympic Boulevard 90212
+> gym · 42 Park Avenue Rutherford NJ 07070
 
-### European Wax Center — score 50
+### Club Pilates — score 70
 
-- **Handle:** [@null](https://locations.waxcenter.com/ca/losangeles/los-angeles-westwood-0375.html)
+- **Handle:** [@null](https://www.clubpilates.com/rutherford/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** gym
 
-> med-spa
+> gym · 1 Orient Way Rutherford NJ 07070
 
-### European Wax Center — score 50
+### Be Fit JC — score 70
 
-- **Handle:** [@null](https://locations.waxcenter.com/ca/losangeles/hollywood-sunset-vine-0471.html)
+- **Handle:** [@null](https://www.befitjc.com/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** gym
 
-> med-spa
+> gym · 150 Bay Street Jersey City NJ 07302
 
-### Olympic Spa — score 70
+### King Spa and Sauna — score 70
 
-- **Handle:** [@null](https://olympicspala.com/)
+- **Handle:** [@null](https://thekingspanj.com/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** gym
 
-> med-spa · 3915 West Olympic Boulevard Los Angeles CA 90019
+> gym · 321 Commercial Avenue 07650
 
-### Heavena Spa — score 50
+### Pure Barre — score 70
 
-- **Handle:** [@null](https://heavenaspala.com/)
+- **Handle:** [@null](https://www.purebarre.com/location/hoboken-nj)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** gym
 
-> med-spa · 11053 Santa Monica Boulevard Los Angeles CA 90025
+> gym · 70 Hudson Street Hoboken NJ 07030
 
-### Sugar Nails — score 50
+### Orangetheory Fitness — score 50
 
-- **Handle:** [@null](https://mysugarnail.com/pages/westfield-century-city)
+- **Handle:** [@null](https://www.orangetheory.com/en-us/locations/new-york/new-york/391-6th-ave)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** gym
 
-> med-spa · 10250 Santa Monica Boulevard Los Angeles CA 90067
+> gym · 391 6th Avenue New York NY 10014
 
-### Robert H. Cohen, MD — score 50
+### SW3AT Wellness — score 50
 
-- **Handle:** [@null](https://roberthcohenmd.com)
+- **Handle:** [@null](https://sw3at.com/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** gym
 
-> med-spa · 450 North Bedford Drive Beverly Hills CA 90210
+> gym · 317 Central Avenue Jersey City NJ 07307
 
-### Sabrena Smith Electrology Clinic — score 50
+### Orangetheory Fitness — score 50
 
-- **Handle:** [@null](https://www.sabrenasmith.com)
+- **Handle:** [@null](https://orangetheory.com/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** gym
 
-> med-spa · 1350 North Highland Avenue Hollywood CA 90028
+> gym · 475 Washington Boulevard Jersey City NJ 07310
 
-### BeautyMarcd Lash — score 70
+### SportsCare Physical Therapy — score 70
 
-- **Handle:** [@null](https://www.beautymarcd.com)
+- **Handle:** [@null](https://sportscare1.com/locations/nj/physical-therapy-hoboken/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** physiotherapy
 
-> med-spa · 10817 Santa Monica Boulevard Los Angeles CA 90025-4688
+> physiotherapy · 70 Hudson Street Hoboken NJ 07030
 
-### Wynn Nail Spa — score 70
+### Pursue Physical Therapy & Performance Training — score 70
 
-- **Handle:** [@null](https://www.wynnnailspa.com/)
+- **Handle:** [@null](https://pursueptnow.com)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** physiotherapy
 
-> med-spa · 5600 Wilshire Boulevard Los Angeles CA 90036
+> physiotherapy · 80 River Street Hoboken NJ 07030
 
-### Pixi Beauty Boutique — score 50
+### Dynamic Peak Physical Therapy — score 50
 
-- **Handle:** [@null](https://www.pixibeauty.com/)
+- **Handle:** [@null](https://www.dynamicpeakptr.com/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** physiotherapy
 
-> med-spa · 10250 Santa Monica Boulevard Los Angeles CA 90067
+> physiotherapy · 75 Orient Way Rutherford NJ 07070
 
-### Oxynergy2 Hyperbaric Oxygen & Longevity Center — score 70
+### Spear Physical Therapy — score 70
 
-- **Handle:** [@null](https://oxynergy2.com)
+- **Handle:** [@null](https://spearcenter.com)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
+- **Why they matched:** physiotherapy
 
-> med-spa · 113 North San Vicente Boulevard
+> physiotherapy · 111 Washington Street Hoboken NJ 07030
 
-### Beverly Hills Rejuvenation Center — score 70
+### Dr. Michael J. Marco Chiropractor — score 50
 
-- **Handle:** [@null](https://bhrcenter.com/)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
-
-> med-spa
-
-### Spray La Vie — score 70
-
-- **Handle:** [@null](http://spraylavie.com)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** med-spa
-
-> med-spa · 8912 West Sunset Boulevard West Hollywood CA 90069
-
-### Leif Rogers MD — score 50
-
-- **Handle:** [@null](https://leifrogersmd.com/)
+- **Handle:** [@null](null)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** clinic
 
-> clinic · 9735 Wilshire Boulevard Beverly Hills CA 90210
+> clinic
 
-### Elite body sculpture — score 50
+### Grove Medical Associates — score 50
 
-- **Handle:** [@null](https://www.elitebodysculpture.com/)
+- **Handle:** [@null](null)
 - **Said this:** [view the post](null) · unknown UTC
 - **Why they matched:** clinic
 
-> clinic · 436 North Bedford Drive
+> clinic · 129 Newark Avenue Jersey City NJ 07302
 
-### Ryan A. Stanton, MD — score 70
+### Body Logic — score 50
 
-- **Handle:** [@null](https://drryanstanton.com/)
+- **Handle:** [@null](null)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
+- **Why they matched:** gym
 
-> clinic · 9090 Burton Way Beverly Hills CA 90211
+> gym · 132 Perry Street
 
-### Southern California Reproductive Center — score 50
+### The FIlm — score 50
 
-- **Handle:** [@null](https://www.scrcivf.com/locations/los-angeles/)
+- **Handle:** [@null](null)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
+- **Why they matched:** gym
 
-> clinic · 450 North Roxbury Drive Beverly Hills 90210
+> gym
 
-### Dr. Gary Motykie Plastic Surgery — score 70
+### UFC gym — score 50
 
-- **Handle:** [@null](https://www.drmotykie.com/)
+- **Handle:** [@null](null)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
+- **Why they matched:** gym
 
-> clinic · 9201 West Sunset Boulevard West Hollywood CA 90069
+> gym · 85 NJ 17 East Rutherford NJ 07073
 
-### Meta Clinic — score 50
+### Barry's — score 50
 
-- **Handle:** [@null](http://metaclinicwesthollywood.com)
+- **Handle:** [@null](null)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
+- **Why they matched:** gym
 
-> clinic · 8600A West Sunset Boulevard West Hollywood CA 90069
-
-### Relax Holistic — score 50
-
-- **Handle:** [@null](https://www.relaxholistic.com/)
-- **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** clinic
-
-> clinic · 8730E Santa Monica Boulevard West Hollywood CA 90069
+> gym · 1 York Street New York NY 10013
