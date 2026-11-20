@@ -34,6 +34,12 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 120
     steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
       - name: Keep only the New York daytime schedule
         id: guard
         run: |
@@ -59,7 +65,31 @@ jobs:
           done
           echo "::error::Service did not answer /health."; exit 1
 
-      # Fetched after the wake-up: the token lives about five minutes.
+      # Render's shared egress IP is blocked/rate-limited by Overpass and Nominatim.
+      # Fetch the next metro listings from the GitHub runner, then cache in Supabase
+      # through the authenticated service endpoint BEFORE the normal send run.
+      # Discovery failure never disables already-qualified outreach.
+      - name: Prefetch clinic metros from runner network
+        if: steps.guard.outputs.skip != 'true'
+        env:
+          PREFETCH_AREAS: '6'
+          OUTREACH_SECRET: ${{ secrets.OUTREACH_SECRET }}
+        run: |
+          if [ -z "$OUTREACH_SECRET" ]; then
+            token="$(curl -fsS -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \\
+              "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=lion-elite-os-cron" | jq -r .value)"
+            if [ -z "$token" ] || [ "$token" = "null" ]; then
+              echo "::warning::Could not acquire prefetch token; sending with existing leads."
+            else
+              echo "::add-mask::$token"
+              export OIDC_TOKEN="$token"
+              node scripts/prefetch-clinic-areas.js
+            fi
+          else
+            node scripts/prefetch-clinic-areas.js
+          fi
+
+      # Renew GitHub identity token after prefetch (short-lived OIDC token).
       - name: Get GitHub identity token
         if: steps.guard.outputs.skip != 'true'
         id: oidc
