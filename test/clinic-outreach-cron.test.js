@@ -185,7 +185,7 @@ test('sheets mirror: skips without credentials, writes a header to an empty tab,
   ], { env: { GOOGLE_SERVICE_ACCOUNT_JSON: JSON.stringify(account) }, fetchImpl });
   assert.equal(result.status, 'mirrored');
   const append = calls.find(c2 => c2.opts.method === 'POST' && c2.url.includes(':append'));
-  assert.match(append.url, /1Dwv2gD0BHsHmCgPKHBUR_qeC8msKWjiwL-o7OMAdPoE/);
+  assert.match(append.url, /1lDNCJ2FuBJkvmVw70-8cBahTKfQzfXt9tjYnQVQpvEU/);
   assert.match(decodeURIComponent(append.url), /Pipeline!A1/);
   const values = JSON.parse(append.opts.body).values;
   assert.deepEqual(values[0], [...HEADER]);
