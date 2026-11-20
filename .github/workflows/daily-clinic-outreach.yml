@@ -4,14 +4,14 @@ name: Daily clinic outreach
 # (POST /api/cron/clinic-outreach, routes/clinic-outreach-cron.js). No Redis,
 # workers or Render cron are needed.
 #
-# Every 30 minutes 9 AM–10:59 PM New York, every day. The local-time guard
+# Every 10 minutes 9 AM–10:59 PM New York, every day. The local-time guard
 # handles DST; the HTTP sender is bounded to 8 minutes per call on Render.
 # Re-runs are safe: advisory lock + daily cap + org/step idempotency.
 on:
   schedule:
     # UTC hours overlap both EST and EDT local daytime; guard below narrows it.
-    - cron: '7,37 13-23 * * *'
-    - cron: '7,37 0-3 * * *'
+    - cron: '7,17,27,37,47,57 13-23 * * *'
+    - cron: '7,17,27,37,47,57 0-3 * * *'
   workflow_dispatch:
     inputs:
       dry_run:
