@@ -151,3 +151,40 @@ right before each send.
   message-version approvals are owner actions.
 - **Dry runs still discover and record qualification.** They write discovery
   rows and the qualification evidence on each prospect. They never queue or send.
+
+## Owner endpoint, health, and discovery (2026-11-20)
+
+- `POST /run/clinic-outreach` (`routes/outreach-run.js`) runs one batch. Auth:
+  `x-outreach-secret: $OUTREACH_SECRET`, or a GitHub OIDC token from
+  `clinic-outreach.yml` on `main`. `?dryRun=1` sends nothing; `?test=1` sends one
+  sample e-mail to `OUTREACH_TEST_RECIPIENT` (else `OUTREACH_REPLY_TO`) and
+  returns the Resend message id. Called by `.github/workflows/clinic-outreach.yml`
+  five times a day; the older `daily-clinic-outreach.yml` still works, and the
+  server's run lock and shared daily cap make overlapping triggers harmless.
+- `GET /health/outreach` is public and carries no PII: last run, sends today
+  (New York day), cap, and the latest error, with addresses redacted.
+- Every run writes a single log line,
+  `[clinic-outreach] run COMPLETED ... clinicsFound= newClinics= contactsFound=
+  eligibleLeads= emailsSent= failed= errors=`, and every send writes
+  `[clinic-outreach] SENT ... messageId=<resend id>`.
+- Discovery works up to `DISCOVERY_MAX_AREAS_PER_RUN` metros per run (it was
+  one). Overpass is asked only for clinic/med-spa listings carrying a `website`
+  tag. Nominatim is the fallback, at most one request per second, and is dropped
+  for the rest of the run at its first 429. Both services get a User-Agent with a
+  contact e-mail (`OSM_CONTACT_EMAIL`). Each metro's answer is cached in
+  `discovery_area_cache` for the New York day. A clinic whose home, contact and
+  about pages publish no business e-mail is not stored, and its domain is
+  remembered in `discovery_site_checks` for 30 days.
+- Every e-mail gets an unsubscribe line and the postal address, appended in
+  `lib/email-delivery.js` after the approved, versioned body. Approvals are not
+  invalidated.
+- **Why the map search runs on the GitHub runner.** Render's logs show that from
+  the free service's shared IPs, `overpass-api.de` refuses the connection, the
+  other two mirrors time out, and Nominatim answers 429 to every search. So
+  `clinic-outreach.yml` runs `scripts/prefetch-clinic-areas.js` before each batch.
+  It asks the service which metros are next (`POST /run/clinic-outreach/plan`),
+  queries Overpass from the runner, and uploads each metro
+  (`POST /run/clinic-outreach/areas`) into `discovery_area_cache`. The run then
+  works those metros from the cache. If no service answers for a metro, the run
+  stops discovery without advancing the rotation past it, and still sends to
+  whoever already qualifies.

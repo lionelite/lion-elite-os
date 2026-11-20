@@ -100,7 +100,20 @@ test('postal footer lands in both text and html bodies', () => {
   const withFooter = appendPostalFooter(message, '123 Lion Way, Miami, FL 33101');
   assert.match(withFooter.text, /123 Lion Way, Miami, FL 33101$/);
   assert.match(withFooter.html, /123 Lion Way, Miami, FL 33101/);
-  // No address configured → message unchanged.
-  const untouched = appendPostalFooter(message, '');
-  assert.equal(untouched.text, message.text);
+  // No address configured → the default mailing address is still included:
+  // a commercial e-mail without one is never sent.
+  const fallback = appendPostalFooter(message, '');
+  assert.match(fallback.text, /28396 Detroit Road, Westlake, OH 44145/);
+  assert.match(fallback.html, /28396 Detroit Road, Westlake, OH 44145/);
+});
+
+test('every e-mail carries an unsubscribe line exactly once', () => {
+  const message = normalizeDraft({ subject: 'Hi', body: 'Short note.' }, { contact: { email: 'a@b.co' } });
+  const footed = appendPostalFooter(message, '', { OUTREACH_UNSUBSCRIBE_EMAIL: 'optout@example.com' });
+  assert.match(footed.text, /To unsubscribe, reply "unsubscribe" or email optout@example\.com/);
+  assert.match(footed.html, /To unsubscribe/);
+  // Already present → not duplicated; address already present → not duplicated.
+  const again = appendPostalFooter(footed, '', {});
+  assert.equal(again.text.match(/unsubscribe/gi).length, footed.text.match(/unsubscribe/gi).length);
+  assert.equal(again.text.match(/28396 Detroit Road/g).length, 1);
 });

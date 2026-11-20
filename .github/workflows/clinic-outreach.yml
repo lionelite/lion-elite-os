@@ -1,0 +1,123 @@
+name: Clinic outreach
+
+# Calls POST /run/clinic-outreach on the free Render web service several times a
+# day (routes/outreach-run.js). Each call runs ONE batch: discovery across several
+# metros, qualification, then sends up to the shared daily cap (DAILY_SEND_CAP,
+# default 150). Re-runs are safe: the server holds a run lock, the cap is shared
+# across runs, and every send has a once-ever idempotency key in Supabase.
+#
+# Auth: the `x-outreach-secret` header from the OUTREACH_SECRET Actions secret.
+# Until that secret exists the job falls back to a GitHub OIDC identity token,
+# which the service also accepts for this workflow file on main.
+#
+# Times are UTC: 13:17, 15:17, 17:17, 19:17, 21:17 ≈ 8–9 AM to 4–5 PM New York.
+# GitHub may delay or drop scheduled runs at busy times; five slots leave margin.
+on:
+  schedule:
+    - cron: '17 13,15,17,19,21 * * *'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Dry run: discover and qualify, but send nothing'
+        type: boolean
+        default: true
+      test_send:
+        description: 'Send ONE sample e-mail to the owner address set on the server (OUTREACH_TEST_RECIPIENT), then stop'
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: clinic-outreach
+  cancel-in-progress: false
+
+env:
+  SERVICE_URL: https://lion-elite-os.onrender.com
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Wake Render service
+        run: |
+          # Free instances sleep after 15 idle minutes; the first request wakes them.
+          for i in 1 2 3 4 5 6 7 8; do
+            if curl -fsS --max-time 60 "$SERVICE_URL/health" > /dev/null; then echo "Service is up."; exit 0; fi
+            echo "Not up yet (attempt $i); waiting 20s."; sleep 20
+          done
+          echo "::error::Service did not answer /health."; exit 1
+
+      # Render's shared IPs are refused by Overpass and rate-limited by Nominatim,
+      # so the map search runs here and is uploaded into the service's day cache.
+      - name: Prefetch metros from Overpass (runner network)
+        if: ${{ !(github.event_name == 'workflow_dispatch' && inputs.test_send) }}
+        env:
+          OUTREACH_SECRET: ${{ secrets.OUTREACH_SECRET }}
+          PREFETCH_AREAS: '6'
+        run: |
+          if [ -z "$OUTREACH_SECRET" ]; then
+            export OIDC_TOKEN="$(curl -fsS -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
+              "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=lion-elite-os-cron" | jq -r .value)"
+            echo "::add-mask::$OIDC_TOKEN"
+          fi
+          node scripts/prefetch-clinic-areas.js
+
+      - name: Run one clinic outreach batch
+        env:
+          OUTREACH_SECRET: ${{ secrets.OUTREACH_SECRET }}
+          DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run && '1' || '0' }}
+          TEST_SEND: ${{ github.event_name == 'workflow_dispatch' && inputs.test_send && '1' || '0' }}
+        run: |
+          set -o pipefail
+          url="$SERVICE_URL/run/clinic-outreach"
+          if [ "$TEST_SEND" = "1" ]; then url="$url?test=1"; elif [ "$DRY_RUN" = "1" ]; then url="$url?dryRun=1"; fi
+          if [ -n "$OUTREACH_SECRET" ]; then
+            echo "Using the OUTREACH_SECRET header."
+            auth=(-H "x-outreach-secret: $OUTREACH_SECRET")
+          else
+            echo "::warning::OUTREACH_SECRET is not set as an Actions secret; using the GitHub OIDC identity token instead."
+            token="$(curl -fsS -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
+              "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=lion-elite-os-cron" | jq -r .value)"
+            if [ -z "$token" ] || [ "$token" = "null" ]; then echo "::error::Could not get an OIDC token."; exit 1; fi
+            echo "::add-mask::$token"
+            auth=(-H "Authorization: Bearer $token")
+          fi
+          code="$(curl -sS -o summary.json -w '%{http_code}' -X POST "$url" "${auth[@]}" \
+            -H "content-type: application/json" -H "x-trigger: github-actions" --max-time 6900)"
+          jq . summary.json || cat summary.json
+          if [ "$code" != "200" ]; then echo "::error::HTTP $code from $url"; exit 1; fi
+          status="$(jq -r .status summary.json)"
+          {
+            echo "## Clinic outreach: $status"
+            echo
+            if [ "$TEST_SEND" = "1" ]; then
+              jq -r '"Test e-mail sent via \(.provider), message id `\(.providerMessageId)`"' summary.json
+            else
+              jq -r '"| areas | clinics found | new clinics | contacts found | qualified | sent | failed |\n|---|---|---|---|---|---|---|\n| \(.discovery.area // "-") | \(.discovery.found // 0) | \(.discovery.stored // 0) | \(.discovery.emailsFound // 0) | \(.qualified // 0) | \(.sent // 0) | \(.failed // 0) |"' summary.json
+              echo
+              echo "Provider message ids:"
+              jq -r '[.sends[]? | select(.providerMessageId) | "- `\(.providerMessageId)`"] | if length == 0 then "- (none)" else .[] end' summary.json
+              echo
+              echo '```json'
+              jq '{status, reason, error, dryRun, cap, skipReasons, notes}' summary.json
+              echo '```'
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+          case "$status" in
+            completed|paused|skipped|test_sent) exit 0 ;;
+            *) echo "::error::Run status: $status"; exit 1 ;;
+          esac
+
+      - name: Outreach health
+        if: always()
+        run: curl -fsS --max-time 60 "$SERVICE_URL/health/outreach" | jq . || true

@@ -53,6 +53,10 @@ function formatMatch(post, match) {
   return lines.join('\n');
 }
 
+function universalLeadsEnabled(env = process.env) {
+  return String(env.BLUESKY_UNIVERSAL_LEADS_ENABLED || '').trim().toLowerCase() === 'true';
+}
+
 function universalMatch(lead) {
   return {
     audience: 'universal-lead',
@@ -84,7 +88,14 @@ async function main() {
     console.log('[listen] Model refinement disabled (--no-model).');
   }
   console.log(`[listen] Brand audiences: ${args.audiences.join(', ')} (min score ${args.minScore})`);
-  console.log('[listen] Universal lead intelligence: ON — broad buying/hiring/help-seeking intent is categorized and scored across niches.');
+  // The universal lane scores any post with broad buying intent ("buy", "hire",
+  // ...) across every niche. On the free web service it flooded the logs and the
+  // prospects table (2,000+ rows, none contactable) while clinic outreach is the
+  // pipeline that sends. Kept intact, but off unless explicitly enabled.
+  const universalEnabled = universalLeadsEnabled();
+  console.log(universalEnabled
+    ? '[listen] Universal lead intelligence: ON (BLUESKY_UNIVERSAL_LEADS_ENABLED=true).'
+    : '[listen] Universal lead intelligence: OFF (set BLUESKY_UNIVERSAL_LEADS_ENABLED=true to enable).');
   console.log(`[listen] Local match mirror: ${DATA_DIR}`);
   console.log(`[listen] Durable lead storage: ${process.env.DATABASE_URL ? 'PostgreSQL ON' : 'PostgreSQL unavailable; local mirror only'}`);
 
@@ -112,7 +123,7 @@ async function main() {
     if (seen.size > 50000) seen.clear();
 
     // Universal lane: capture lead intent regardless of the existing Lion Elite niche.
-    const lead = detectUniversalLead(post.text);
+    const lead = universalEnabled ? detectUniversalLead(post.text) : null;
     if (lead) {
       stats.universalLeads += 1;
       const match = universalMatch(lead);
