@@ -4,11 +4,14 @@ name: Daily clinic outreach
 # (POST /api/cron/clinic-outreach, routes/clinic-outreach-cron.js). No Redis,
 # workers or Render cron are needed.
 #
-# Hourly 9 AM–3 PM New York, every day; offset guard selects DST schedule.
+# Every 10 minutes 9 AM–10:59 PM New York, every day. The local-time guard
+# handles DST; the HTTP sender is bounded to 8 minutes per call on Render.
+# Re-runs are safe: advisory lock + daily cap + org/step idempotency.
 on:
   schedule:
-    - cron: '7 13-19 * * *'
-    - cron: '7 14-20 * * *'
+    # UTC hours overlap both EST and EDT local daytime; guard below narrows it.
+    - cron: '7,17,27,37,47,57 13-23 * * *'
+    - cron: '7,17,27,37,47,57 0-3 * * *'
   workflow_dispatch:
     inputs:
       dry_run:
@@ -40,18 +43,13 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Keep only the New York daytime schedule
+      - name: Keep only New York 9 AM–10:59 PM
         id: guard
         run: |
           if [ "${{ github.event_name }}" != "schedule" ]; then echo "Manual dispatch — running."; exit 0; fi
-          offset="$(TZ=America/New_York date +%z)"
-          case "$offset" in
-            -0400) want='7 13-19 * * *' ;;
-            -0500) want='7 14-20 * * *' ;;
-            *) echo "Unexpected offset $offset — running."; exit 0 ;;
-          esac
-          if [ '${{ github.event.schedule }}' != "$want" ]; then
-            echo "Cron '${{ github.event.schedule }}' is not the daytime New York cron for offset $offset. Skipping."
+          hour="$(TZ=America/New_York date +%H)"
+          if [ "$((10#$hour))" -lt 9 ] || [ "$((10#$hour))" -gt 22 ]; then
+            echo "New York hour $hour is outside permitted send window. Skipping."
             echo "skip=true" >> "$GITHUB_OUTPUT"
           fi
 
