@@ -655,7 +655,10 @@ async function researchStep() {
       completed_at: new Date().toISOString(), updated_at: new Date().toISOString(), error: null,
     }).eq("wallet", r.wallet);
     await logEvent("research", `${r.label}: ${metrics.assessment.passed}/${metrics.assessment.total} checks passed`, "info", r.wallet);
-    return { wallet: r.label, phase: "done", qualifies: metrics.assessment.qualifies };
+    let tracked = false;
+    if (metrics.assessment.qualifies) tracked = await autoTrack(r, metrics);
+    await researchSummaryIfFinished();
+    return { wallet: r.label, phase: "done", qualifies: metrics.assessment.qualifies, tracked };
   } catch (e) {
     const attempts = (r.attempts ?? 0) + 1;
     await db.from("sol_research").update({
@@ -663,6 +666,63 @@ async function researchStep() {
     }).eq("wallet", r.wallet);
     return { wallet: r.label, error: clean(e) };
   }
+}
+
+// A trader that passes every research check goes straight onto the watch list (max 5 active),
+// with its evidence stored on the wallet row, and the owner is told in Telegram.
+const solStr = (n: number | null | undefined) => (n == null ? "n/a" : `${n > 0 ? "+" : ""}${Number(n).toFixed(2)} SOL`);
+async function autoTrack(r: any, m: any): Promise<boolean> {
+  const cfg = await getRow("config");
+  const { data: existing } = await db.from("sol_wallets").select("address,status").eq("address", r.wallet).maybeSingle();
+  if (existing && existing.status === "active") return false;
+  const { count } = await db.from("sol_wallets").select("*", { count: "exact", head: true }).eq("status", "active");
+  const summary = `${m.assessment.passed}/${m.assessment.total} checks · 30d ${solStr(m.d30.realized_sol)} · 60d ${solStr(m.d60.realized_sol)} · 90d ${solStr(m.d90.realized_sol)} realized · win ${m.d90.win_rate_pct}% · median buy ${m.median_buy_sol} SOL`;
+  if ((count ?? 0) >= 5) {
+    await logEvent("research", `${r.label} qualifies but 5 wallets are already tracked`, "info", r.wallet);
+    if (TG_TOKEN && cfg.telegram_chat_id) await tgSend(cfg.telegram_chat_id, `✅ <b>${esc(r.label)}</b> passed research but you already track 5 wallets. Swap it in from the dashboard if you want it.\n${esc(summary)}`).catch(() => {});
+    return false;
+  }
+  await db.from("sol_wallets").upsert({
+    address: r.wallet, label: r.label, status: "active", source: r.source ?? "research",
+    evidence: { summary, researched_at: new Date().toISOString(), source: r.source, source_snapshot: r.source_snapshot, metrics: m },
+    last_signature: null, consecutive_errors: 0, last_error: null,
+  });
+  await logEvent("wallet", `Auto-tracked ${r.label} after passing all research checks`, "info", r.wallet);
+  if (TG_TOKEN && cfg.telegram_chat_id) {
+    await tgSend(cfg.telegram_chat_id, [
+      `👀 <b>Now tracking ${esc(r.label)}</b>`,
+      `<code>${esc(r.wallet)}</code>`,
+      esc(summary),
+      `Max drawdown ${solStr(m.max_drawdown_sol)} · median hold ${m.median_hold_seconds ?? "n/a"}s · ${m.round_trips_under_60s_pct ?? "n/a"}% flips under 60s`,
+      `<a href="https://gmgn.ai/sol/address/${esc(r.wallet)}">GMGN wallet</a>`,
+      "<i>Alerts on its buys (0.5 SOL+) and sells start now. Monitoring only.</i>",
+    ].join("\n")).catch(() => {});
+  }
+  return true;
+}
+async function researchSummaryIfFinished() {
+  const { count } = await db.from("sol_research").select("*", { count: "exact", head: true }).in("status", ["queued", "collecting", "parsing"]);
+  if ((count ?? 0) > 0) return;
+  const { data: all } = await db.from("sol_research").select("wallet,label,status,metrics,requested_at").order("requested_at");
+  if (!all?.length) return;
+  const batch = all.map((x: any) => x.requested_at).sort().at(-1);
+  const sent = await getRow("research_summary");
+  if (sent.batch === batch) return;
+  const cfg = await getRow("config");
+  const passed = all.filter((x: any) => x.metrics?.assessment?.qualifies);
+  const { data: active } = await db.from("sol_wallets").select("label").eq("status", "active");
+  const lines = [
+    `📋 <b>Trader research finished</b> — ${all.length} wallets checked on 90 days of on-chain swaps`,
+    passed.length ? `Passed all checks: ${passed.map((x: any) => esc(x.label)).join(", ")}` : "No wallet passed every check, so none were added. I'd rather track nobody than an unproven trader.",
+    `Now tracking: ${(active ?? []).map((w: any) => esc(w.label)).join(", ") || "none"}`,
+    ...all.filter((x: any) => !x.metrics?.assessment?.qualifies).map((x: any) => {
+      const a = x.metrics?.assessment;
+      const firstFail = a?.rules?.find((rr: any) => !rr.pass);
+      return `• ${esc(x.label)}: ${a ? `${a.passed}/${a.total}` : x.status}${firstFail ? ` — failed “${esc(firstFail.rule)}” (${esc(firstFail.detail)})` : ""}`;
+    }),
+  ];
+  if (TG_TOKEN && cfg.telegram_chat_id) await tgSend(cfg.telegram_chat_id, lines.join("\n").slice(0, 3900)).catch(() => {});
+  await setRow("research_summary", { batch, sent_at: new Date().toISOString(), passed: passed.map((x: any) => x.label) });
 }
 
 // ---------- HTTP ----------
