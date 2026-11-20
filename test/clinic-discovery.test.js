@@ -202,3 +202,23 @@ test('safe crawl: an unexpected parser exception fails this site closed without 
   assert.equal(sites[0].email, null);
   assert.equal(sites[1].email, 'info@healthy.example');
 });
+
+test('crawl parsing stays fast on pages with huge inline images (regression: 2026-11-20 run stalled 30+ min on one site)', () => {
+  const { scrubPage, extractAddresses, emailsOnPage, leaderOnPage, phonesOnPage } = require('../lib/discovery/clinic-site-crawl');
+  const blob = 'QUJDREVGR0hJSktMTU5PUFFSU1RVVldYWVo'.repeat(45000); // ~1.6 MB, no "@"
+  const page = `<img src="data:image/png;base64,${blob}"> <script>var x="${blob}"</script> <p>${'abcdefghij '.repeat(20000)}</p>
+    <a href="mailto:info@glowclinic.com">x</a> <p>Medical Director: Dr. Ana Ruiz, MD</p> <a href="tel:3055550199">c</a>`;
+  const started = Date.now();
+  const scrubbed = scrubPage(page);
+  const emails = emailsOnPage(scrubbed);
+  leaderOnPage(scrubbed);
+  phonesOnPage(scrubbed);
+  // The raw unbounded pattern on the same blob, unscrubbed, must also be linear.
+  extractAddresses(blob);
+  const ms = Date.now() - started;
+  assert.ok(ms < 2000, `parsing took ${ms} ms`);
+  assert.ok(scrubbed.length <= 600_000);
+  assert.deepEqual(extractAddresses('write to Info@GlowClinic.com. or x@y'), ['info@glowclinic.com']);
+  assert.ok(emails.includes('info@glowclinic.com'), 'contact details after a huge inline image survive the scrub');
+  assert.deepEqual(leaderOnPage(scrubbed), { name: 'Ana Ruiz', role: 'Medical Director', credential: 'MD' });
+});
