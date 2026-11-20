@@ -24,16 +24,28 @@ const { fetchBusinessesByCategory } = require('../lib/discovery/osm-source');
 const SERVICE_URL = String(process.env.SERVICE_URL || '').replace(/\/$/, '');
 const COUNT = Number(process.env.PREFETCH_AREAS || 6);
 
-function authHeaders() {
+// Refresh GitHub OIDC for EACH plan/cache request. The previous fixed token
+// expired after ~5 minutes when six metros needed slow Overpass fallbacks.
+async function authHeaders() {
   if (process.env.OUTREACH_SECRET) return { 'x-outreach-secret': process.env.OUTREACH_SECRET };
+  if (process.env.ACTIONS_ID_TOKEN_REQUEST_TOKEN && process.env.ACTIONS_ID_TOKEN_REQUEST_URL) {
+    const response = await fetch(`${process.env.ACTIONS_ID_TOKEN_REQUEST_URL}&audience=lion-elite-os-cron`, {
+      headers: { Authorization: `bearer ${process.env.ACTIONS_ID_TOKEN_REQUEST_TOKEN}` },
+      signal: AbortSignal.timeout(15000),
+    });
+    if (!response.ok) throw new Error(`GitHub OIDC token request failed (HTTP ${response.status})`);
+    const data = await response.json();
+    if (!data.value) throw new Error('GitHub OIDC response did not contain a token');
+    return { authorization: `Bearer ${data.value}` };
+  }
   if (process.env.OIDC_TOKEN) return { authorization: `Bearer ${process.env.OIDC_TOKEN}` };
-  throw new Error('Set OUTREACH_SECRET or OIDC_TOKEN.');
+  throw new Error('Set OUTREACH_SECRET or run under GitHub Actions with id-token: write.');
 }
 
 async function post(path, body) {
   const response = await fetch(`${SERVICE_URL}${path}`, {
     method: 'POST',
-    headers: { ...authHeaders(), 'content-type': 'application/json' },
+    headers: { ...(await authHeaders()), 'content-type': 'application/json' },
     body: JSON.stringify(body),
     signal: AbortSignal.timeout(120_000),
   });
