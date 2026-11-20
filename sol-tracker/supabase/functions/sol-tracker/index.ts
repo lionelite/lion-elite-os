@@ -13,16 +13,23 @@ if (!SB_KEY) {
   } catch { /* ignore */ }
 }
 const db = createClient(SB_URL, SB_KEY, { auth: { persistSession: false } });
-const HELIUS_KEY = Deno.env.get("HELIUS_API_KEY") ?? "";
-const RPC_URL = Deno.env.get("SOLANA_RPC_URL") ||
-  (HELIUS_KEY ? `https://mainnet.helius-rpc.com/?api-key=${HELIUS_KEY}` : "https://api.mainnet-beta.solana.com");
-const TG_TOKEN = Deno.env.get("TELEGRAM_BOT_TOKEN") ?? "";
-
-// The public RPC rate-limits hard (HTTP 429); a keyed provider gets a much larger per-minute budget.
-const KEYED_RPC = !!(HELIUS_KEY || Deno.env.get("SOLANA_RPC_URL"));
-const MAX_TX_PER_TICK = KEYED_RPC ? 150 : 40;
-// Large signature pages are throttled on the public endpoint; keep them small there.
-const SIG_PAGE = KEYED_RPC ? 1000 : 100;
+// Keys come from Edge Function secrets, or from the locked sol_settings 'secrets' row
+// (RLS on, no policies: only this function's service role can read it). Env wins if both exist.
+let HELIUS_KEY = Deno.env.get("HELIUS_API_KEY") ?? "";
+let TG_TOKEN = Deno.env.get("TELEGRAM_BOT_TOKEN") ?? "";
+let RPC_URL = "", KEYED_RPC = false, MAX_TX_PER_TICK = 40, SIG_PAGE = 100;
+function applyKeys(secrets: any = {}) {
+  HELIUS_KEY = Deno.env.get("HELIUS_API_KEY") || secrets.helius_api_key || "";
+  TG_TOKEN = Deno.env.get("TELEGRAM_BOT_TOKEN") || secrets.telegram_bot_token || "";
+  RPC_URL = Deno.env.get("SOLANA_RPC_URL") ||
+    (HELIUS_KEY ? `https://mainnet.helius-rpc.com/?api-key=${HELIUS_KEY}` : "https://api.mainnet-beta.solana.com");
+  // The public RPC rate-limits hard (HTTP 429); a keyed provider gets a much larger per-minute budget.
+  KEYED_RPC = !!(HELIUS_KEY || Deno.env.get("SOLANA_RPC_URL"));
+  MAX_TX_PER_TICK = KEYED_RPC ? 150 : 40;
+  // Large signature pages are throttled on the public endpoint; keep them small there.
+  SIG_PAGE = KEYED_RPC ? 1000 : 100;
+}
+applyKeys();
 const ALERT_MAX_AGE_MIN = 120;
 
 const CORS = {
@@ -654,6 +661,7 @@ Deno.serve(async (req) => {
   const path = url.pathname.replace(/^\/sol-tracker/, "") || "/";
   try {
     const secrets = await getRow("secrets");
+    applyKeys(secrets);
     if (path === "/research/step") {
       if (req.headers.get("x-cron-secret") !== secrets.cron_secret) return json({ error: "unauthorized" }, 401);
       return json(await researchStep());
@@ -689,7 +697,7 @@ Deno.serve(async (req) => {
       const { telegram_chat_id, ...pub } = cfg;
       return json({
         now: new Date().toISOString(), config: pub, telegram: { bot_token_set: !!TG_TOKEN, chat_linked: !!telegram_chat_id },
-        data_provider: { helius_key_set: !!HELIUS_KEY, keyed_rpc: !!(HELIUS_KEY || Deno.env.get("SOLANA_RPC_URL")) },
+        data_provider: { helius_key_set: !!HELIUS_KEY, keyed_rpc: KEYED_RPC },
         research: (await db.from("sol_research").select("wallet,label,source,source_snapshot,status,metrics,error,requested_at,completed_at,pages_fetched").order("requested_at")).data ?? [],
         health: { ...health, stale }, wallets, trades, events,
         paper: { cash, equity: cash + openValue, realized, starting: cfg.paper.starting_usd, positions, ledger },
