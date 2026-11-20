@@ -280,15 +280,21 @@ async function processWallet(w: any, cfg: any, budget: { left: number }) {
     await logEvent("baseline", `Baseline set; history before now is not alerted`, "info", w.address);
     return { processed: 0, backlog: 0 };
   }
+  // Signatures come newest-first back to the cursor. If the wallet produced more than we can page
+  // through in one tick, the oldest ones would be skipped silently — so detect and report that gap.
   let all: any[] = [];
   let before: string | undefined;
-  for (let page = 0; page < 3; page++) {
-    const opts: any = { limit: 100, until: w.last_signature, commitment: "confirmed" };
+  let reachedCursor = false;
+  for (let page = 0; page < 10; page++) {
+    const opts: any = { limit: 1000, until: w.last_signature, commitment: "confirmed" };
     if (before) opts.before = before;
     const sigs = await rpc("getSignaturesForAddress", [w.address, opts]);
     all = all.concat(sigs ?? []);
-    if (!sigs || sigs.length < 100) break;
+    if (!sigs || sigs.length < 1000) { reachedCursor = true; break; }
     before = sigs[sigs.length - 1].signature;
+  }
+  if (!reachedCursor) {
+    await logEvent("gap", `More than ${all.length} new transactions since the last check; older ones in between were not read. This wallet trades too often to monitor completely.`, "error", w.address);
   }
   all.reverse();
   let processed = 0;
@@ -302,13 +308,17 @@ async function processWallet(w: any, cfg: any, budget: { left: number }) {
       const p = parseSwap(tx, w.address);
       if (p.kind !== "failed" && p.kind !== "unrelated" && p.kind !== "no_token_change") {
         await recordTrade(w, s.signature, p, cfg);
+        // Save the cursor after every recorded trade; between trades it is saved in batches.
+        // Re-reading a few signatures after a crash is harmless: trades are unique per (signature, wallet).
+        await db.from("sol_wallets").update({ last_signature: s.signature }).eq("address", w.address);
       }
     }
     cursor = s.signature;
     processed++;
-    await db.from("sol_wallets").update({ last_signature: cursor }).eq("address", w.address);
+    if (processed % 50 === 0) await db.from("sol_wallets").update({ last_signature: cursor }).eq("address", w.address);
   }
   await db.from("sol_wallets").update({
+    last_signature: cursor,
     last_checked_at: new Date().toISOString(), consecutive_errors: 0, last_error: null, health_alerted: false,
     ...(processed ? { last_activity_at: new Date().toISOString() } : {}),
   }).eq("address", w.address);
