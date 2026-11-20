@@ -11,7 +11,7 @@ const {
   MIRRORS, buildClinicQuery, parseClinicListings, fetchClinicListings, categoryFor
 } = require('../lib/discovery/clinic-overpass');
 const {
-  crawlClinicSite, judgeEmail, leaderOnPage, emailsOnPage, phonesOnPage, normalisePhone, mapPool
+  crawlClinicSite, safeCrawlClinicSite, judgeEmail, leaderOnPage, emailsOnPage, phonesOnPage, normalisePhone, mapPool
 } = require('../lib/discovery/clinic-site-crawl');
 
 const quiet = { warn() {}, log() {} };
@@ -166,4 +166,39 @@ test('mapPool: bounded concurrency, results in order', async () => {
   });
   assert.deepEqual(out, [2, 4, 6, 8, 10, 12, 14]);
   assert.equal(peak, 3);
+});
+
+
+test('safe crawl: a malformed clinic site cannot block later clinics in same metro batch', async () => {
+  const fetchImpl = async url => {
+    if (url.includes('bad.example')) throw Object.assign(new Error('unexpected provider failure'), { name: 'TypeError' });
+    return {
+      ok: true, status: 200, url,
+      headers: { get: () => 'text/html' },
+      text: async () => '<a href="mailto:info@goodclinic.example">Contact</a>'
+    };
+  };
+  const sites = await mapPool(['https://bad.example/', 'https://goodclinic.example/'], 2,
+    website => safeCrawlClinicSite({ website, fetchImpl, pageDelayMs: 0, maxPages: 1 }));
+  assert.equal(sites.length, 2);
+  assert.equal(sites[0].ok, false);
+  assert.equal(sites[0].email, null);
+  assert.equal(sites[1].ok, true);
+  assert.equal(sites[1].email, 'info@goodclinic.example');
+});
+
+test('safe crawl: an unexpected parser exception fails this site closed without rejecting pool', async () => {
+  const sites = await mapPool(['https://broken.example/', 'https://healthy.example/'], 2,
+    website => safeCrawlClinicSite({
+      website, maxPages: 1, pageDelayMs: 0,
+      fetchImpl: async url => website.includes('broken')
+        ? { ok: true, status: 200, url, headers: { get: () => 'text/html' },
+            text: async () => { throw new Error('unexpected HTML stream exception'); } }
+        : { ok: true, status: 200, url, headers: { get: () => 'text/html' },
+            text: async () => '<a href="mailto:info@healthy.example">Email</a>' }
+    }));
+  assert.equal(sites[0].ok, false);
+  assert.match(sites[0].error, /unexpected HTML stream exception/);
+  assert.equal(sites[0].email, null);
+  assert.equal(sites[1].email, 'info@healthy.example');
 });
