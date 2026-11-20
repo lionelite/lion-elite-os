@@ -151,3 +151,30 @@ right before each send.
   message-version approvals are owner actions.
 - **Dry runs still discover and record qualification.** They write discovery
   rows and the qualification evidence on each prospect. They never queue or send.
+
+## Owner endpoint, health, and discovery (2026-11-20)
+
+- `POST /run/clinic-outreach` (`routes/outreach-run.js`) runs one batch. Auth:
+  `x-outreach-secret: $OUTREACH_SECRET`, or a GitHub OIDC token from
+  `clinic-outreach.yml` on `main`. `?dryRun=1` sends nothing; `?test=1` sends one
+  sample e-mail to `OUTREACH_TEST_RECIPIENT` (else `OUTREACH_REPLY_TO`) and
+  returns the Resend message id. Called by `.github/workflows/clinic-outreach.yml`
+  five times a day; the older `daily-clinic-outreach.yml` still works, and the
+  server's run lock and shared daily cap make overlapping triggers harmless.
+- `GET /health/outreach` is public and carries no PII: last run, sends today
+  (New York day), cap, and the latest error, with addresses redacted.
+- Every run writes a single log line,
+  `[clinic-outreach] run COMPLETED ... clinicsFound= newClinics= contactsFound=
+  eligibleLeads= emailsSent= failed= errors=`, and every send writes
+  `[clinic-outreach] SENT ... messageId=<resend id>`.
+- Discovery works up to `DISCOVERY_MAX_AREAS_PER_RUN` metros per run (it was
+  one). Overpass is asked only for clinic/med-spa listings carrying a `website`
+  tag. Nominatim is the fallback, at most one request per second, and is dropped
+  for the rest of the run at its first 429. Both services get a User-Agent with a
+  contact e-mail (`OSM_CONTACT_EMAIL`). Each metro's answer is cached in
+  `discovery_area_cache` for the New York day. A clinic whose home, contact and
+  about pages publish no business e-mail is not stored, and its domain is
+  remembered in `discovery_site_checks` for 30 days.
+- Every e-mail gets an unsubscribe line and the postal address, appended in
+  `lib/email-delivery.js` after the approved, versioned body. Approvals are not
+  invalidated.

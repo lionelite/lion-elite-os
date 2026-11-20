@@ -28,11 +28,17 @@ test('clinic outreach run end to end', { skip: !databaseConfigured, timeout: 60_
     await query(`DELETE FROM prospects WHERE business->>'name' LIKE $1 OR lower(contact->>'email') LIKE $2`, [`%${tag}%`, `%${tag}%`]).catch(() => {});
     await query(`DELETE FROM outreach_suppressions WHERE lower(address) LIKE $1`, [`%${tag}%`]).catch(() => {});
     await query(`DELETE FROM outreach_runs WHERE trigger LIKE 'integration-test%'`).catch(() => {});
+    await query(`DELETE FROM discovery_area_cache WHERE run_date BETWEEN '2026-11-09' AND '2026-11-16'`).catch(() => {});
+    await query(`DELETE FROM discovery_site_checks WHERE domain LIKE $1`, [`%${tag}%`]).catch(() => {});
     await query(`DELETE FROM app_settings WHERE key IN ($1,$2)`, [control.PAUSE_KEY, control.ROTATION_KEY]).catch(() => {});
     await release();
     await database.close();
   });
   await database.migrate();
+  await control.ensureSchema(database);
+  // This test's clock runs on fixed November dates; clear those days' map cache
+  // so a previous local run of this test cannot answer for this one.
+  await query(`DELETE FROM discovery_area_cache WHERE run_date BETWEEN '2026-11-09' AND '2026-11-16'`);
   await query(`DELETE FROM outreach_runs WHERE trigger LIKE 'integration-test%'`);
   await query(`DELETE FROM app_settings WHERE key IN ($1,$2)`, [control.PAUSE_KEY, control.ROTATION_KEY]);
   // Only this test's clinics should be sendable; park anything another test left behind.
@@ -91,7 +97,7 @@ test('clinic outreach run end to end', { skip: !databaseConfigured, timeout: 60_
   const ours = id => [A, B, C, D, E, F, LT].some(p => p.prospectId === id) || sent.some(s => s.prospectId === id);
   const runner = (overrides = {}) => createClinicOutreachRunner({
     env, store, now: clock, sleep: async ms => { gaps.push(ms); }, random: () => 0.5,
-    discoveryFetch: overpass, enrichEmail: async () => null, enrichDelayMs: 0,
+    discoveryFetch: overpass, enrichEmail: async () => null, enrichDelayMs: 0, discoverySleep: async () => {},
     mxCheck: async () => ({ ok: true, checkedAt: new Date(tick).toISOString() }),
     sendEmail: async ({ draft, prospect, authorization }) => { sent.push({ prospectId: prospect.prospectId, to: draft.recipient, version: draft.messageVersion, key: authorization.idempotencyKey }); return { providerId: `re_${sent.length}` }; },
     mirror: async rows => { mirrored.push(...rows); return { status: 'mirrored', rows: rows.length }; },
@@ -191,10 +197,13 @@ test('clinic outreach run end to end', { skip: !databaseConfigured, timeout: 60_
   assert.equal(fallback.status, 'completed');
   assert.match(fallback.discovery.source, /nominatim/);
   assert.ok(fallback.discovery.overpassError);
-  assert.equal(fallback.discovery.stored, 2);
+  // Only the clinic with a business e-mail is stored; the one whose only address
+  // was a personal mailbox has nothing to send to, so it is skipped entirely.
+  assert.equal(fallback.discovery.stored, 1);
   assert.equal(fallback.discovery.personalEmailsRefused, 1);
+  assert.ok(fallback.discovery.skippedNoEmail >= 1);
   const P = (await query(`SELECT * FROM prospects WHERE business->>'name' = $1`, [`Gmail Aesthetics ${tag}`])).rows[0];
-  assert.equal(P.contact.email, null, 'personal mailbox from a listing is not stored');
+  assert.equal(P, undefined, 'a clinic with no business e-mail is not stored');
   const N = (await query(`SELECT * FROM prospects WHERE lower(contact->>'email') = $1`, [`info@${host('n')}`])).rows[0];
   assert.ok(N, 'fallback clinic stored');
   assert.equal(N.stage, 'qualified', 'and qualified in the same run');
