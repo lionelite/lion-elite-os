@@ -78,6 +78,8 @@ test('clinic outreach run end to end', { skip: !databaseConfigured, timeout: 60_
   const env = {
     OUTREACH_SEND_ENABLED: 'true', RESEND_API_KEY: 'stub', OUTREACH_FROM_EMAIL: 'stub@example.com', OUTREACH_POSTAL_ADDRESS: '1 Test St',
     OUTREACH_START_DATE: '2026-01-05', DAILY_SEND_MAX: '150',
+    // This test exercises the legacy in-process discovery path.
+    CLINIC_SEND_RUN_DISCOVERY: 'true',
     OUTREACH_APPROVED_MESSAGE_VERSIONS: [templateVersion(1), followUpVersion()].join(','),
   };
 
@@ -183,30 +185,22 @@ test('clinic outreach run end to end', { skip: !databaseConfigured, timeout: 60_
   const saturday = await runner({ now: () => new Date('2026-11-14T14:07:00Z') }).run({ trigger: 'integration-test' });
   assert.equal(saturday.status, 'completed');
 
-  // Overpass unreachable → Nominatim fallback still grows the pipeline (dry run, so no sends).
+  // Overpass unreachable → no Nominatim fallback any more: nothing is stored,
+  // and the summary says the map service was unreachable (dry run, so no sends).
   const fallback = await runner({
     now: () => new Date(NOW.getTime() + 3 * 86_400_000),
     discoveryFetch: async () => { throw new TypeError('fetch failed'); },
-    nominatimSleep: async () => {},
-    nominatimFetch: async url => ({ ok: true, status: 200, json: async () => (new URL(url).searchParams.get('q') === 'longevity'
-      ? [{ osm_type: 'node', osm_id: 77, name: `Nominatim Longevity Clinic ${tag}`, category: 'amenity', type: 'clinic',
-          extratags: { website: `https://${host('n')}`, email: `info@${host('n')}` } },
-         { osm_type: 'node', osm_id: 78, name: `Gmail Aesthetics ${tag}`, category: 'shop', type: 'beauty',
-          extratags: { website: `https://${host('p')}`, email: `owner${tag}@gmail.com` } }] : []) }),
   }).run({ dryRun: true, trigger: 'integration-test-fallback' });
   assert.equal(fallback.status, 'completed');
-  assert.match(fallback.discovery.source, /nominatim/);
   assert.ok(fallback.discovery.overpassError);
-  // Only the clinic with a business e-mail is stored; the one whose only address
-  // was a personal mailbox has nothing to send to, so it is skipped entirely.
-  assert.equal(fallback.discovery.stored, 1);
-  assert.equal(fallback.discovery.personalEmailsRefused, 1);
-  assert.ok(fallback.discovery.skippedNoEmail >= 1);
-  const P = (await query(`SELECT * FROM prospects WHERE business->>'name' = $1`, [`Gmail Aesthetics ${tag}`])).rows[0];
-  assert.equal(P, undefined, 'a clinic with no business e-mail is not stored');
-  const N = (await query(`SELECT * FROM prospects WHERE lower(contact->>'email') = $1`, [`info@${host('n')}`])).rows[0];
-  assert.ok(N, 'fallback clinic stored');
-  assert.equal(N.stage, 'qualified', 'and qualified in the same run');
+  assert.equal(fallback.discovery.stored, 0);
+  assert.match(fallback.discovery.stoppedEarly, /no map service reachable/);
+
+  // Without CLINIC_SEND_RUN_DISCOVERY the send run does not search at all.
+  const sendOnly = await runner({ env: { ...env, CLINIC_SEND_RUN_DISCOVERY: '' }, discoveryFetch: async () => { throw new Error('must not be called'); } })
+    .run({ dryRun: true, trigger: 'integration-test-send-only' });
+  assert.equal(sendOnly.status, 'completed');
+  assert.match(sendOnly.discovery.skipped, /clinic-discovery\.yml/);
 
   // Inbound recorder: an opt-out suppresses the address and every record holding it.
   const inbound = await runner().recordInbound({ email: `INFO@${host('b')}`, type: 'opt_out' });

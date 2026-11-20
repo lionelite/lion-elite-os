@@ -57,6 +57,14 @@ function universalLeadsEnabled(env = process.env) {
   return String(env.BLUESKY_UNIVERSAL_LEADS_ENABLED || '').trim().toLowerCase() === 'true';
 }
 
+// Bluesky leads are not written to the prospects table any more: the universal
+// and audience lanes stored 2,227 rows with zero e-mail addresses, all noise in
+// the outreach pipeline. A manual run still writes its local JSONL log.
+// BLUESKY_LEAD_STORAGE_ENABLED=true restores the database writes.
+function leadStorageEnabled(env = process.env) {
+  return String(env.BLUESKY_LEAD_STORAGE_ENABLED || '').trim().toLowerCase() === 'true';
+}
+
 function universalMatch(lead) {
   return {
     audience: 'universal-lead',
@@ -141,7 +149,7 @@ async function main() {
         match
       });
       console.log(formatMatch(post, match));
-      try {
+      if (leadStorageEnabled()) try {
         const stored = await persistUniversalLead(post, lead);
         if (stored.stored) stats.durableLeads += 1;
       } catch (error) {
@@ -179,7 +187,7 @@ async function main() {
       // segments the business actually wants — people seeking a coach, and
       // coaches scaling their own business — existed only in a JSONL file
       // inside an ephemeral container and vanished on every restart.
-      try {
+      if (leadStorageEnabled()) try {
         const stored = await persistAudienceMatch(post, match);
         if (stored.stored) stats.durableLeads += 1;
       } catch (error) {

@@ -34,13 +34,16 @@ const control = require('../lib/outreach/outreach-control');
 const { effectiveDailyCap } = require('../lib/outreach/send-cap');
 const { createGithubOidcVerifier } = require('../lib/outreach/github-oidc');
 const { secretMatches } = require('./clinic-outreach-cron');
+const { createClinicDiscoveryStore } = require('../lib/discovery/clinic-discovery-store');
 
 const EMAIL_RE = /[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi;
 const redact = text => String(text || '').replace(EMAIL_RE, '<email>').slice(0, 500);
 const truthy = v => ['1', 'true', 'yes'].includes(String(v ?? '').toLowerCase());
 
-function createOutreachRunRouter({ runner, env = process.env, database, heartbeatMs = 20_000, oidcVerifier, logger = console } = {}) {
+function createOutreachRunRouter({ runner, discoveryStore, env = process.env, database, heartbeatMs = 20_000, oidcVerifier, logger = console } = {}) {
   const router = express.Router();
+  let activeDiscovery = discoveryStore || null;
+  const getDiscovery = () => (activeDiscovery ||= createClinicDiscoveryStore({ env }));
   let activeRunner = runner || null;
   const getRunner = () => (activeRunner ||= createClinicOutreachRunner({ env }));
   const getDb = () => database || require('../lib/database');
@@ -113,6 +116,27 @@ function createOutreachRunRouter({ runner, env = process.env, database, heartbea
       res.status(500).json({ status: 'error', error: redact(error.message) });
     }
   });
+
+  // Clinic discovery (scripts/discover-clinics.js on the GitHub runner). The
+  // runner does the map search and the website crawl; these endpoints decide
+  // what is new and write it, so the runner never holds a database credential.
+  const discoveryRoute = (path, handler) => router.post(path, authorize, async (req, res) => {
+    try {
+      res.json(await handler(req.body || {}, req));
+    } catch (error) {
+      res.status(error.code === 'UNKNOWN_AREA' ? 400 : 500).json({ status: 'error', code: error.code, error: redact(error.message) });
+    }
+  });
+  discoveryRoute('/run/clinic-discovery/state', () => getDiscovery().state());
+  discoveryRoute('/run/clinic-discovery/known', body => getDiscovery().known({ domains: body.domains }));
+  discoveryRoute('/run/clinic-discovery/store', body => getDiscovery().storeBatch({
+    area: body.area, areaIndex: Number.isInteger(body.areaIndex) ? body.areaIndex : undefined,
+    candidates: body.candidates, noEmailDomains: body.noEmailDomains,
+  }));
+  discoveryRoute('/run/clinic-discovery/log', (body, req) => getDiscovery().logRun({
+    trigger: req.caller.kind === 'github-oidc' ? `github/${req.caller.workflow}/${req.caller.event}` : 'secret',
+    totals: body.totals, metros: body.metros, startedAt: body.startedAt,
+  }));
 
   router.get('/health/outreach', async (_req, res) => {
     const cap = effectiveDailyCap({ env });

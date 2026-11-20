@@ -58,24 +58,13 @@ function startManaged(name, script, args = []) {
 
 const stopHandlers = [];
 
-// Lead discovery needs no Bluesky account. The listener consumes Bluesky's
-// PUBLIC Jetstream firehose and reads no credential anywhere in monitor.js,
-// jetstream.js, store.js, classifier.js or universal-lead-store.js — only the
-// reply path authenticates (com.atproto.server.createSession). Gating discovery
-// behind hasBlueskyCredentials() therefore blocked it on something it never
-// used, which is why no lead had ever been found. It now runs by default and
-// can be turned off with BLUESKY_LISTENER_ENABLED=false.
-//
-// Posting keeps both explicit switches and additionally needs credentials, so
-// nothing here can put a reply on anyone's post.
-const listenerEnabled = String(process.env.BLUESKY_LISTENER_ENABLED || 'true').toLowerCase() !== 'false';
-
-if (listenerEnabled) {
-  console.log('[bootstrap] Starting read-only Bluesky listener (public firehose; no account required).');
-  stopHandlers.push(startManaged('bluesky-listener', 'social-listening/src/monitor.js', ['--no-model', '--quiet']));
-} else {
-  console.log('[bootstrap] Bluesky listener disabled by BLUESKY_LISTENER_ENABLED=false.');
-}
+// The Bluesky listener (universal-lead and audience scanners) is off. Over its
+// lifetime it stored 2,227 prospects and not one had an e-mail address, so it
+// only diluted the outreach pipeline. It is no longer started here at all;
+// `npm run listen:bluesky` still runs it by hand (local JSONL only unless
+// BLUESKY_LEAD_STORAGE_ENABLED=true). Clinic prospects come from
+// .github/workflows/clinic-discovery.yml.
+console.log('[bootstrap] Bluesky listener disabled (universal-lead and audience scanners are off).');
 
 if (!hasBlueskyCredentials()) {
   console.log('[bootstrap] No Bluesky credentials; reply worker not started (discovery is unaffected).');

@@ -9,11 +9,11 @@ name: Lead Harvest
 #
 # Read-only: it searches public posts and commits notes. It sends nothing,
 # follows nobody, and likes nothing. Reaching out stays a manual human action.
+# Manual only. The schedule (every two hours) was removed on 2026-11-20: the
+# Bluesky lanes produced no contactable leads, and its OpenStreetMap business
+# pass competed for Overpass with clinic-discovery.yml, which now owns that
+# search.
 on:
-  schedule:
-    # Every two hours. Bluesky search reaches posts that already exist, so a
-    # gap between runs loses nothing the way a dropped firehose connection does.
-    - cron: '0 */2 * * *'
   workflow_dispatch:
     inputs:
       audience:
