@@ -1,11 +1,11 @@
 # Every harvested lead
 
-_Generated 2026-11-19T22:07:45.580Z — 1297 leads._
+_Generated 2026-11-20T03:05:25.931Z — 1322 leads._
 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-## med-spa-b2b — 1297
+## med-spa-b2b — 1322
 
 ### Sports Performance & Wellness Center — score 50
 
@@ -10382,3 +10382,203 @@ any of them — reach out by hand from the post link if a lead is worth it.
 - **Why they matched:** gym
 
 > gym · 2610 South Boulevard Charlotte NC 28209
+
+### Total Tan — score 50
+
+- **Handle:** [@null](https://totaltanla.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 8505 Santa Monica Boulevard West Hollywood CA 90069
+
+### Estate Beauty — score 50
+
+- **Handle:** [@null](http://estatebeautyla.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 8515 Santa Monica Boulevard West Hollywood CA 90069
+
+### Smooth Cheeks — score 50
+
+- **Handle:** [@null](https://smoothcheeks.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 8543 Santa Monica Boulevard West Hollywood CA 90069
+
+### Lunch Box Wax — score 50
+
+- **Handle:** [@null](https://www.lunchboxwax.com/west-hollywood/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 8621 Santa Monica Boulevard West Hollywood CA 90069
+
+### Fabulicious — score 50
+
+- **Handle:** [@null](https://fabulicious.us)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 9119 West Olympic Boulevard 90212
+
+### European Wax Center — score 50
+
+- **Handle:** [@null](https://locations.waxcenter.com/ca/losangeles/los-angeles-westwood-0375.html)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa
+
+### European Wax Center — score 50
+
+- **Handle:** [@null](https://locations.waxcenter.com/ca/losangeles/hollywood-sunset-vine-0471.html)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa
+
+### Olympic Spa — score 70
+
+- **Handle:** [@null](https://olympicspala.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 3915 West Olympic Boulevard Los Angeles CA 90019
+
+### Heavena Spa — score 50
+
+- **Handle:** [@null](https://heavenaspala.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 11053 Santa Monica Boulevard Los Angeles CA 90025
+
+### Sugar Nails — score 50
+
+- **Handle:** [@null](https://mysugarnail.com/pages/westfield-century-city)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 10250 Santa Monica Boulevard Los Angeles CA 90067
+
+### Robert H. Cohen, MD — score 50
+
+- **Handle:** [@null](https://roberthcohenmd.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 450 North Bedford Drive Beverly Hills CA 90210
+
+### Sabrena Smith Electrology Clinic — score 50
+
+- **Handle:** [@null](https://www.sabrenasmith.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 1350 North Highland Avenue Hollywood CA 90028
+
+### BeautyMarcd Lash — score 70
+
+- **Handle:** [@null](https://www.beautymarcd.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 10817 Santa Monica Boulevard Los Angeles CA 90025-4688
+
+### Wynn Nail Spa — score 70
+
+- **Handle:** [@null](https://www.wynnnailspa.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 5600 Wilshire Boulevard Los Angeles CA 90036
+
+### Pixi Beauty Boutique — score 50
+
+- **Handle:** [@null](https://www.pixibeauty.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 10250 Santa Monica Boulevard Los Angeles CA 90067
+
+### Oxynergy2 Hyperbaric Oxygen & Longevity Center — score 70
+
+- **Handle:** [@null](https://oxynergy2.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 113 North San Vicente Boulevard
+
+### Beverly Hills Rejuvenation Center — score 70
+
+- **Handle:** [@null](https://bhrcenter.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa
+
+### Spray La Vie — score 70
+
+- **Handle:** [@null](http://spraylavie.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** med-spa
+
+> med-spa · 8912 West Sunset Boulevard West Hollywood CA 90069
+
+### Leif Rogers MD — score 50
+
+- **Handle:** [@null](https://leifrogersmd.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 9735 Wilshire Boulevard Beverly Hills CA 90210
+
+### Elite body sculpture — score 50
+
+- **Handle:** [@null](https://www.elitebodysculpture.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 436 North Bedford Drive
+
+### Ryan A. Stanton, MD — score 70
+
+- **Handle:** [@null](https://drryanstanton.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 9090 Burton Way Beverly Hills CA 90211
+
+### Southern California Reproductive Center — score 50
+
+- **Handle:** [@null](https://www.scrcivf.com/locations/los-angeles/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 450 North Roxbury Drive Beverly Hills 90210
+
+### Dr. Gary Motykie Plastic Surgery — score 70
+
+- **Handle:** [@null](https://www.drmotykie.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 9201 West Sunset Boulevard West Hollywood CA 90069
+
+### Meta Clinic — score 50
+
+- **Handle:** [@null](http://metaclinicwesthollywood.com)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 8600A West Sunset Boulevard West Hollywood CA 90069
+
+### Relax Holistic — score 50
+
+- **Handle:** [@null](https://www.relaxholistic.com/)
+- **Said this:** [view the post](null) · unknown UTC
+- **Why they matched:** clinic
+
+> clinic · 8730E Santa Monica Boulevard West Hollywood CA 90069

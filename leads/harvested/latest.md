@@ -1,6 +1,6 @@
 # New leads from the last harvest
 
-_Generated 2026-11-19T22:07:45.579Z — 25 leads._
+_Generated 2026-11-20T03:05:25.928Z — 25 leads._
 
 | Searches run | Searches failed | Posts read | Matched | Dropped (do-not-engage) |
 |---:|---:|---:|---:|---:|
@@ -41,206 +41,206 @@ business-scaling: Bluesky search failed for "trying to scale my business": HTTP 
 These are people who posted publicly on Bluesky. Nothing has been sent to
 any of them — reach out by hand from the post link if a lead is worth it.
 
-**Sources this run:** bluesky: unreachable (23 failed) · openstreetmap: 37 businesses in charlotte-nc
+**Sources this run:** bluesky: unreachable (23 failed) · openstreetmap: 146 businesses in los-angeles-ca
 
 ## med-spa-b2b — 25
 
-### Top Tiger Team Boxing — score 50
+### Total Tan — score 50
 
-- **Handle:** [@null](https://toptigerteamboxing.com/)
+- **Handle:** [@null](https://totaltanla.com/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
+- **Why they matched:** med-spa
 
-> gym · 2417 North Tryon Street Charlotte NC 28206
+> med-spa · 8505 Santa Monica Boulevard West Hollywood CA 90069
 
-### YVY Fitness — score 50
+### Estate Beauty — score 50
 
-- **Handle:** [@null](https://yvyclt.squarespace.com/)
+- **Handle:** [@null](http://estatebeautyla.com)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
+- **Why they matched:** med-spa
 
-> gym · 1701 North Graham Street Charlotte NC 28206
+> med-spa · 8515 Santa Monica Boulevard West Hollywood CA 90069
 
-### Alternative Fitness Pilates — score 50
+### Smooth Cheeks — score 50
 
-- **Handle:** [@null](https://altfitpilates.com)
+- **Handle:** [@null](https://smoothcheeks.com/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
+- **Why they matched:** med-spa
 
-> gym · 200 North Sharon Amity Road Charlotte NC 28211
+> med-spa · 8543 Santa Monica Boulevard West Hollywood CA 90069
 
-### M3lleo — score 50
+### Lunch Box Wax — score 50
 
-- **Handle:** [@null](https://m3lleo.com)
+- **Handle:** [@null](https://www.lunchboxwax.com/west-hollywood/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
+- **Why they matched:** med-spa
 
-> gym · 200 East Cama Street Charlotte NC 28217
+> med-spa · 8621 Santa Monica Boulevard West Hollywood CA 90069
 
-### Eat The Frog Fitness — score 50
+### Fabulicious — score 50
 
-- **Handle:** [@null](https://eatthefrogcharlotte.com/)
+- **Handle:** [@null](https://fabulicious.us)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
+- **Why they matched:** med-spa
 
-> gym · 1111 Metropolitan Avenue Charlotte NC 28204
+> med-spa · 9119 West Olympic Boulevard 90212
 
-### Fit Atelier — score 50
+### European Wax Center — score 50
 
-- **Handle:** [@null](https://fitatelier.com)
+- **Handle:** [@null](https://locations.waxcenter.com/ca/losangeles/los-angeles-westwood-0375.html)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
+- **Why they matched:** med-spa
 
-> gym
+> med-spa
 
-### F45 Training — score 50
+### European Wax Center — score 50
 
-- **Handle:** [@null](https://www.f45training.com/southendcharlotte)
+- **Handle:** [@null](https://locations.waxcenter.com/ca/losangeles/hollywood-sunset-vine-0471.html)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
+- **Why they matched:** med-spa
 
-> gym · 141 New Bern Street Charlotte NC 28209
+> med-spa
 
-### Kika Strech — score 50
+### Olympic Spa — score 70
 
-- **Handle:** [@null](https://kikastretchstudios.com/stretch-studio/north-carolina/charlotte)
+- **Handle:** [@null](https://olympicspala.com/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
+- **Why they matched:** med-spa
 
-> gym · 1425 Winnifred Street Charlotte NC 28203
+> med-spa · 3915 West Olympic Boulevard Los Angeles CA 90019
 
-### Pilates Body Shaping — score 70
+### Heavena Spa — score 50
 
-- **Handle:** [@null](https://www.pilatesbodyshaping.com/)
+- **Handle:** [@null](https://heavenaspala.com/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
+- **Why they matched:** med-spa
 
-> gym · 1940 East 8th Street Charlotte NC 28204
+> med-spa · 11053 Santa Monica Boulevard Los Angeles CA 90025
 
-### Burn Boot Camp — score 50
+### Sugar Nails — score 50
 
-- **Handle:** [@null](https://burnbootcamp.com/locations/elizabeth-nc/)
+- **Handle:** [@null](https://mysugarnail.com/pages/westfield-century-city)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
+- **Why they matched:** med-spa
 
-> gym · 1306 The Plaza Charlotte NC 28205
+> med-spa · 10250 Santa Monica Boulevard Los Angeles CA 90067
 
-### Functional Fit — score 50
+### Robert H. Cohen, MD — score 50
 
-- **Handle:** [@null](https://www.ffclt.com)
+- **Handle:** [@null](https://roberthcohenmd.com)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
+- **Why they matched:** med-spa
 
-> gym
+> med-spa · 450 North Bedford Drive Beverly Hills CA 90210
 
-### Anytime Fitness — score 50
+### Sabrena Smith Electrology Clinic — score 50
 
-- **Handle:** [@null](https://www.anytimefitness.com/gyms/4408/charlotte-nc-28209/)
+- **Handle:** [@null](https://www.sabrenasmith.com)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
+- **Why they matched:** med-spa
 
-> gym · 3609 South Boulevard Charlotte NC 28209
+> med-spa · 1350 North Highland Avenue Hollywood CA 90028
 
-### Core 704 — score 70
+### BeautyMarcd Lash — score 70
 
-- **Handle:** [@null](https://www.core704.com/)
+- **Handle:** [@null](https://www.beautymarcd.com)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
+- **Why they matched:** med-spa
 
-> gym · 2729 South Boulevard Charlotte NC 28209
+> med-spa · 10817 Santa Monica Boulevard Los Angeles CA 90025-4688
 
-### ISI Elite Training — score 50
+### Wynn Nail Spa — score 70
 
-- **Handle:** [@null](https://www.isielitetraining.com)
+- **Handle:** [@null](https://www.wynnnailspa.com/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
+- **Why they matched:** med-spa
 
-> gym
+> med-spa · 5600 Wilshire Boulevard Los Angeles CA 90036
 
-### Y2 Yoga — score 50
+### Pixi Beauty Boutique — score 50
 
-- **Handle:** [@null](https://y2yoga.com/)
+- **Handle:** [@null](https://www.pixibeauty.com/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
+- **Why they matched:** med-spa
 
-> gym
+> med-spa · 10250 Santa Monica Boulevard Los Angeles CA 90067
 
-### Body Fit Training — score 50
+### Oxynergy2 Hyperbaric Oxygen & Longevity Center — score 70
 
-- **Handle:** [@null](https://www.bodyfittraining.com)
+- **Handle:** [@null](https://oxynergy2.com)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
+- **Why they matched:** med-spa
 
-> gym · 3216 South Boulevard Charlotte NC 28203
+> med-spa · 113 North San Vicente Boulevard
 
-### Sweat Method — score 70
+### Beverly Hills Rejuvenation Center — score 70
 
-- **Handle:** [@null](https://www.sweatmethod.com)
+- **Handle:** [@null](https://bhrcenter.com/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
+- **Why they matched:** med-spa
 
-> gym · 3700 South Boulevard Charlotte NC 28217
+> med-spa
 
-### Gritbox — score 50
+### Spray La Vie — score 70
 
-- **Handle:** [@null](https://gritboxfitness.com/location/charlotte)
+- **Handle:** [@null](http://spraylavie.com)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
+- **Why they matched:** med-spa
 
-> gym · 2151 Hawkins Street Charlotte NC 28203
+> med-spa · 8912 West Sunset Boulevard West Hollywood CA 90069
 
-### Solidcore — score 50
+### Leif Rogers MD — score 50
 
-- **Handle:** [@null](https://solidcore.co1)
+- **Handle:** [@null](https://leifrogersmd.com/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
+- **Why they matched:** clinic
 
-> gym
+> clinic · 9735 Wilshire Boulevard Beverly Hills CA 90210
 
-### Yonder Yoga — score 70
+### Elite body sculpture — score 50
 
-- **Handle:** [@null](https://yonderyoga.com)
+- **Handle:** [@null](https://www.elitebodysculpture.com/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
+- **Why they matched:** clinic
 
-> gym
+> clinic · 436 North Bedford Drive
 
-### Aerial CLT — score 70
+### Ryan A. Stanton, MD — score 70
 
-- **Handle:** [@null](https://www.aerialclt.com/)
+- **Handle:** [@null](https://drryanstanton.com/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
+- **Why they matched:** clinic
 
-> gym · 801 North Tryon Street Charlotte NC 28202
+> clinic · 9090 Burton Way Beverly Hills CA 90211
 
-### Casa Gaia Studio — score 70
+### Southern California Reproductive Center — score 50
 
-- **Handle:** [@null](https://casagaiastudio.com)
+- **Handle:** [@null](https://www.scrcivf.com/locations/los-angeles/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
+- **Why they matched:** clinic
 
-> gym · 1511 Central Avenue Charlotte NC 28205
+> clinic · 450 North Roxbury Drive Beverly Hills 90210
 
-### MADabolic — score 50
+### Dr. Gary Motykie Plastic Surgery — score 70
 
-- **Handle:** [@null](http://www.madabolic.com/)
+- **Handle:** [@null](https://www.drmotykie.com/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
+- **Why they matched:** clinic
 
-> gym · 2315 North Davidson Street Charlotte NC 28205
+> clinic · 9201 West Sunset Boulevard West Hollywood CA 90069
 
-### Moon Wolf — score 70
+### Meta Clinic — score 50
 
-- **Handle:** [@null](https://www.themoonwolf.com/)
+- **Handle:** [@null](http://metaclinicwesthollywood.com)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
+- **Why they matched:** clinic
 
-> gym · 1912 Commonwealth Avenue Charlotte NC 28205
+> clinic · 8600A West Sunset Boulevard West Hollywood CA 90069
 
-### MADabolic — score 50
+### Relax Holistic — score 50
 
-- **Handle:** [@null](https://madabolic.com)
+- **Handle:** [@null](https://www.relaxholistic.com/)
 - **Said this:** [view the post](null) · unknown UTC
-- **Why they matched:** gym
+- **Why they matched:** clinic
 
-> gym · 2610 South Boulevard Charlotte NC 28209
+> clinic · 8730E Santa Monica Boulevard West Hollywood CA 90069
