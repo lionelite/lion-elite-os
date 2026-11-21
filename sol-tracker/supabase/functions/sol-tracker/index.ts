@@ -773,7 +773,7 @@ async function geckoTrendingPools(): Promise<any[]> {
         const base = String(p.relationships?.base_token?.data?.id ?? "").replace(/^solana_/, "");
         const ch24 = Number(a.price_change_percentage?.h24 ?? 0);
         const liq = Number(a.reserve_in_usd ?? 0);
-        if (!a.address || !base || base === WSOL || liq < 50_000 || ch24 < 30) continue;
+        if (!a.address || !base || base === WSOL || liq < 30_000 || ch24 < 20) continue;
         out.push({ pool: a.address, mint: base, name: a.name, change24h: ch24, liquidity: liq });
       }
     } catch { /* best effort */ }
@@ -795,18 +795,25 @@ async function discoverStep() {
   }
   while (st.next < st.pools.length && Date.now() - started < 38_000) {
     const p = st.pools[st.next];
-    const sigs: any[] = await rpc("getSignaturesForAddress", [p.pool, { limit: 600, commitment: "confirmed" }]).catch(() => []);
-    const ok = sigs.filter((x) => !x.err).slice(0, 240);
+    // Helius parsed swap history for the pool: 100 swaps per call, paged back up to ~1,500 swaps.
+    // A seller is the fee payer who sent this token and whose SOL balance rose by >= 1 SOL.
     const found: Record<string, number> = {};
-    for (let i = 0; i < ok.length && Date.now() - started < 38_000; i += 10) {
-      const txs = await Promise.all(ok.slice(i, i + 10).map((x: any) => getTx(x.signature).catch(() => null)));
-      for (const tx of txs) {
-        const k0 = tx?.transaction?.message?.accountKeys?.[0];
-        const payer = typeof k0 === "string" ? k0 : k0?.pubkey;
-        if (!payer) continue;
-        const sw = parseSwap(tx, payer);
-        if (sw.kind === "sell" && sw.mint === p.mint && sw.solDelta >= DISC_MIN_SELL_SOL) found[payer] = (found[payer] ?? 0) + sw.solDelta;
+    let before: string | null = null;
+    for (let page = 0; page < 15 && Date.now() - started < 38_000; page++) {
+      let res: { txs: any[]; continueFrom?: string };
+      try { res = await heliusSwapPage(p.pool, Math.floor(Date.now() / 1000) - 3 * 86400, before); } catch { break; }
+      if (res.continueFrom) { before = res.continueFrom; continue; }
+      if (!res.txs.length) break;
+      for (const tx of res.txs) {
+        const payer = tx.feePayer;
+        if (!payer || tx.transactionError) continue;
+        const sent = (tx.tokenTransfers ?? []).some((t: any) => t.mint === p.mint && t.fromUserAccount === payer);
+        if (!sent) continue;
+        const acct = (tx.accountData ?? []).find((a: any) => a.account === payer);
+        const sol = ((acct?.nativeBalanceChange ?? 0) + (tx.fee ?? 0)) / 1e9;
+        if (sol >= DISC_MIN_SELL_SOL) found[payer] = (found[payer] ?? 0) + sol;
       }
+      before = res.txs[res.txs.length - 1].signature;
     }
     const rows = Object.entries(found).map(([wallet, sol]) => ({ wallet, mint: p.mint, pool: p.pool, token: p.name, sol_out: sol }));
     if (rows.length) await db.from("sol_discovery_hits").upsert(rows, { onConflict: "wallet,mint" });
