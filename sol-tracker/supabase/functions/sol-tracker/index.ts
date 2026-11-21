@@ -755,6 +755,97 @@ async function researchSummaryIfFinished() {
   await setRow("research_summary", { batch, sent_at: new Date().toISOString(), passed: passed.map((x: any) => x.label) });
 }
 
+// ---------- discovery: find profitable, less-crowded wallets on-chain ----------
+// 1. Trending Solana pools from GeckoTerminal's public API (big 24h move, real liquidity).
+// 2. For each pool, read its most recent trades and keep wallets that SOLD that token for >= 1 SOL.
+// 3. Wallets that took profit on several different winners rank highest; known leaderboard wallets are excluded.
+// 4. The top candidates are queued for the same 90-day research; passing ones are auto-tracked.
+const DISC_MIN_SELL_SOL = 1;
+async function geckoTrendingPools(): Promise<any[]> {
+  const out: any[] = [];
+  for (const path of ["trending_pools?duration=24h&page=1", "trending_pools?duration=24h&page=2", "trending_pools?duration=6h&page=1"]) {
+    try {
+      const r = await fetch(`https://api.geckoterminal.com/api/v2/networks/solana/${path}`, { headers: { accept: "application/json" } });
+      if (!r.ok) continue;
+      const j = await r.json();
+      for (const p of j.data ?? []) {
+        const a = p.attributes ?? {};
+        const base = String(p.relationships?.base_token?.data?.id ?? "").replace(/^solana_/, "");
+        const ch24 = Number(a.price_change_percentage?.h24 ?? 0);
+        const liq = Number(a.reserve_in_usd ?? 0);
+        if (!a.address || !base || base === WSOL || liq < 50_000 || ch24 < 30) continue;
+        out.push({ pool: a.address, mint: base, name: a.name, change24h: ch24, liquidity: liq });
+      }
+    } catch { /* best effort */ }
+    await sleep(2100); // GeckoTerminal public limit is ~30 calls/min
+  }
+  const seen = new Set<string>();
+  return out.filter((p) => (seen.has(p.pool) ? false : (seen.add(p.pool), true))).sort((a, b) => b.change24h - a.change24h).slice(0, 25);
+}
+async function discoverStep() {
+  if (!HELIUS_KEY) return { skipped: "HELIUS_API_KEY not set" };
+  const started = Date.now();
+  let st = await getRow("discovery");
+  if (!st.pools || st.done) {
+    const pools = await geckoTrendingPools();
+    st = { started_at: new Date().toISOString(), pools, next: 0, done: false };
+    await setRow("discovery", st);
+    await logEvent("discovery", `Scanning ${pools.length} trending pools for profitable sellers`);
+    return { phase: "pools", pools: pools.length };
+  }
+  while (st.next < st.pools.length && Date.now() - started < 38_000) {
+    const p = st.pools[st.next];
+    const sigs: any[] = await rpc("getSignaturesForAddress", [p.pool, { limit: 600, commitment: "confirmed" }]).catch(() => []);
+    const ok = sigs.filter((x) => !x.err).slice(0, 240);
+    const found: Record<string, number> = {};
+    for (let i = 0; i < ok.length && Date.now() - started < 38_000; i += 10) {
+      const txs = await Promise.all(ok.slice(i, i + 10).map((x: any) => getTx(x.signature).catch(() => null)));
+      for (const tx of txs) {
+        const k0 = tx?.transaction?.message?.accountKeys?.[0];
+        const payer = typeof k0 === "string" ? k0 : k0?.pubkey;
+        if (!payer) continue;
+        const sw = parseSwap(tx, payer);
+        if (sw.kind === "sell" && sw.mint === p.mint && sw.solDelta >= DISC_MIN_SELL_SOL) found[payer] = (found[payer] ?? 0) + sw.solDelta;
+      }
+    }
+    const rows = Object.entries(found).map(([wallet, sol]) => ({ wallet, mint: p.mint, pool: p.pool, token: p.name, sol_out: sol }));
+    if (rows.length) await db.from("sol_discovery_hits").upsert(rows, { onConflict: "wallet,mint" });
+    st.next++;
+    await setRow("discovery", st);
+  }
+  if (st.next < st.pools.length) return { phase: "scanning", scanned: st.next, of: st.pools.length };
+  // Rank and queue for research.
+  const { data: hits } = await db.from("sol_discovery_hits").select("wallet,mint,token,sol_out").limit(5000);
+  const { data: known } = await db.from("sol_research").select("wallet");
+  const skip = new Set((known ?? []).map((k: any) => k.wallet));
+  const agg: Record<string, { tokens: Set<string>; names: string[]; sol: number }> = {};
+  for (const h of hits ?? []) {
+    if (skip.has(h.wallet)) continue;
+    const a = (agg[h.wallet] ??= { tokens: new Set(), names: [], sol: 0 });
+    if (!a.tokens.has(h.mint)) { a.tokens.add(h.mint); a.names.push(h.token); }
+    a.sol += Number(h.sol_out);
+  }
+  const ranked = Object.entries(agg)
+    .map(([wallet, a]) => ({ wallet, n: a.tokens.size, sol: a.sol, names: a.names }))
+    .sort((x, y) => y.n - x.n || y.sol - x.sol).slice(0, 20);
+  const now = new Date().toISOString();
+  const rows = ranked.map((c) => ({
+    wallet: c.wallet, label: `${c.wallet.slice(0, 4)}…${c.wallet.slice(-4)}`,
+    source: "On-chain discovery: took profit on trending Solana coins (GeckoTerminal trending pools)",
+    source_snapshot: { views: `Sold ${c.n} trending coin(s) for ${c.sol.toFixed(2)} SOL: ${c.names.slice(0, 4).join(", ")}`, found_at: now },
+    status: "queued", sig_cursor: null, pages_fetched: 0, attempts: 0, metrics: null, error: null, requested_at: now, completed_at: null,
+  }));
+  if (rows.length) await db.from("sol_research").upsert(rows);
+  st.done = true; st.queued = rows.length; st.finished_at = now;
+  await setRow("discovery", st);
+  await logEvent("discovery", `Queued ${rows.length} new wallets for 90-day research`);
+  const cfg = await getRow("config");
+  if (TG_TOKEN && cfg.telegram_chat_id) {
+    await tgSend(cfg.telegram_chat_id, `🔎 <b>Found ${rows.length} new wallets</b> that took profit on this week's trending coins (none from the public leaderboards). Each now gets the 90-day check; any that pass go on the watch list automatically.`).catch(() => {});
+  }
+  return { phase: "done", queued: rows.length };
+}
+
 // ---------- HTTP ----------
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: CORS });
@@ -766,6 +857,10 @@ Deno.serve(async (req) => {
     if (path === "/research/step") {
       if (req.headers.get("x-cron-secret") !== secrets.cron_secret) return json({ error: "unauthorized" }, 401);
       return json(await researchStep());
+    }
+    if (path === "/discover/step") {
+      if (req.headers.get("x-cron-secret") !== secrets.cron_secret) return json({ error: "unauthorized" }, 401);
+      return json(await discoverStep());
     }
     if (path === "/tick") {
       if (req.headers.get("x-cron-secret") !== secrets.cron_secret) return json({ error: "unauthorized" }, 401);
