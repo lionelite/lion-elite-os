@@ -656,7 +656,9 @@ async function researchStep() {
     }).eq("wallet", r.wallet);
     await logEvent("research", `${r.label}: ${metrics.assessment.passed}/${metrics.assessment.total} checks passed`, "info", r.wallet);
     let tracked = false;
-    if (metrics.assessment.qualifies) tracked = await autoTrack(r, metrics);
+    const { data: tw } = await db.from("sol_wallets").select("*").eq("address", r.wallet).maybeSingle();
+    if (tw?.evidence?.provisional && tw.status === "active") tracked = await settleProvisional(r, metrics, tw);
+    else if (metrics.assessment.qualifies) tracked = await autoTrack(r, metrics);
     await researchSummaryIfFinished();
     return { wallet: r.label, phase: "done", qualifies: metrics.assessment.qualifies, tracked };
   } catch (e) {
@@ -678,6 +680,16 @@ async function autoTrack(r: any, m: any): Promise<boolean> {
   const { count } = await db.from("sol_wallets").select("*", { count: "exact", head: true }).eq("status", "active");
   const summary = `${m.assessment.passed}/${m.assessment.total} checks · 30d ${solStr(m.d30.realized_sol)} · 60d ${solStr(m.d60.realized_sol)} · 90d ${solStr(m.d90.realized_sol)} realized · win ${m.d90.win_rate_pct}% · median buy ${m.median_buy_sol} SOL`;
   if ((count ?? 0) >= 5) {
+    // Full: a verified trader takes the place of a provisional one (one whose research is not done first).
+    const { data: prov } = await db.from("sol_wallets").select("address,label,evidence").eq("status", "active");
+    const provisional = (prov ?? []).filter((w: any) => w.evidence?.provisional);
+    if (provisional.length) {
+      const victim = provisional[0];
+      await db.from("sol_wallets").update({ status: "paused", last_error: `Replaced by verified trader ${r.label}` }).eq("address", victim.address);
+      await logEvent("wallet", `Paused provisional ${victim.label} to make room for verified ${r.label}`, "info", victim.address);
+      if (TG_TOKEN && cfg.telegram_chat_id) await tgSend(cfg.telegram_chat_id, `🔁 Swapped out provisional <b>${esc(victim.label)}</b> for verified <b>${esc(r.label)}</b>.`).catch(() => {});
+      return await autoTrack(r, m);
+    }
     await logEvent("research", `${r.label} qualifies but 5 wallets are already tracked`, "info", r.wallet);
     if (TG_TOKEN && cfg.telegram_chat_id) await tgSend(cfg.telegram_chat_id, `✅ <b>${esc(r.label)}</b> passed research but you already track 5 wallets. Swap it in from the dashboard if you want it.\n${esc(summary)}`).catch(() => {});
     return false;
@@ -699,6 +711,24 @@ async function autoTrack(r: any, m: any): Promise<boolean> {
     ].join("\n")).catch(() => {});
   }
   return true;
+}
+// A provisional wallet was put on the watch list before its research finished.
+// Pass: it becomes a verified wallet. Fail: it is paused and the owner is told which check it failed.
+async function settleProvisional(r: any, m: any, w: any): Promise<boolean> {
+  const cfg = await getRow("config");
+  const summary = `${m.assessment.passed}/${m.assessment.total} checks · 30d ${solStr(m.d30.realized_sol)} · 60d ${solStr(m.d60.realized_sol)} · 90d ${solStr(m.d90.realized_sol)} realized · win ${m.d90.win_rate_pct}% · median buy ${m.median_buy_sol} SOL`;
+  const label = String(w.label).replace(/\s*\(provisional\)$/i, "");
+  if (m.assessment.qualifies) {
+    await db.from("sol_wallets").update({ label, evidence: { summary, researched_at: new Date().toISOString(), source: r.source, source_snapshot: r.source_snapshot, metrics: m } }).eq("address", w.address);
+    await logEvent("wallet", `${label} confirmed by research`, "info", w.address);
+    if (TG_TOKEN && cfg.telegram_chat_id) await tgSend(cfg.telegram_chat_id, `✅ <b>${esc(label)}</b> passed research and stays on the watch list.\n${esc(summary)}`).catch(() => {});
+    return true;
+  }
+  const fail = m.assessment.rules.find((x: any) => !x.pass);
+  await db.from("sol_wallets").update({ status: "paused", last_error: `Failed research: ${fail?.rule ?? ""}`, evidence: { ...w.evidence, research_failed: true, summary, metrics: m } }).eq("address", w.address);
+  await logEvent("wallet", `Paused provisional ${label}: failed "${fail?.rule}" (${fail?.detail})`, "warn", w.address);
+  if (TG_TOKEN && cfg.telegram_chat_id) await tgSend(cfg.telegram_chat_id, `⏸ Stopped watching <b>${esc(label)}</b>. It failed research: ${esc(fail?.rule ?? "")} (${esc(fail?.detail ?? "")}).\n${esc(summary)}`).catch(() => {});
+  return false;
 }
 async function researchSummaryIfFinished() {
   const { count } = await db.from("sol_research").select("*", { count: "exact", head: true }).in("status", ["queued", "collecting", "parsing"]);
