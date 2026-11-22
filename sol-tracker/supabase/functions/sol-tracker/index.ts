@@ -1,9 +1,12 @@
 // Solana trader monitor: polls tracked wallets, detects swaps, sends Telegram alerts,
 // runs a paper-trading simulation, and serves a JSON API for the dashboard.
-// Monitoring + paper trading only. This code never holds keys and never signs transactions.
+// Live copy trading (real money) runs only for wallets marked copy_live, only with the owner's own
+// LIVE_TRADER_KEY Edge Function secret, and only inside the owner-set per-buy and total caps.
 import { createClient } from "npm:@supabase/supabase-js@2";
-import { parseSwap, researchMetrics, poolSwapSide, discoveryVerdict, historyTooShort, WSOL, USDC, USDT } from "./lib.ts";
-import type { PoolAgg } from "./lib.ts";
+import { Keypair, VersionedTransaction } from "npm:@solana/web3.js@1.98.0";
+import bs58 from "npm:bs58@6.0.0";
+import { parseSwap, researchMetrics, poolSwapSide, discoveryVerdict, historyTooShort, liveBuyDecision, liveSellAmount, LIVE_DEFAULTS, WSOL, USDC, USDT } from "./lib.ts";
+import type { PoolAgg, LiveCfg } from "./lib.ts";
 
 const SB_URL = Deno.env.get("SUPABASE_URL")!;
 let SB_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
@@ -280,6 +283,197 @@ async function paperExecute(t: any, cfg: any, price: number | null) {
   }
 }
 
+// ---------- live copy trading (REAL MONEY) ----------
+// The key is read only from the LIVE_TRADER_KEY Edge Function secret: never from the database, never
+// logged, never returned. Orders are rows in sol_live_orders, unique per (source trade, side), and are
+// claimed atomically before execution, so an overlapping tick can never submit the same trade twice.
+// Buys obey liveBuyDecision() (lib.ts). Sells of positions we hold run even when buying is switched
+// off, so turning live trading off never strands an open position.
+let LIVE_KP: Keypair | null = null;
+let LIVE_KEY_ERR: string | null = null;
+function liveKeypair(): Keypair | null {
+  if (LIVE_KP) return LIVE_KP;
+  const raw = (Deno.env.get("LIVE_TRADER_KEY") ?? "").trim();
+  if (!raw) return null;
+  try {
+    const bytes = raw.startsWith("[") ? Uint8Array.from(JSON.parse(raw)) : bs58.decode(raw);
+    LIVE_KP = Keypair.fromSecretKey(bytes);
+    LIVE_KEY_ERR = null;
+  } catch {
+    LIVE_KEY_ERR = "LIVE_TRADER_KEY is set but is not a valid Solana secret key"; // never echo the value
+  }
+  return LIVE_KP;
+}
+const liveCfg = (cfg: any): LiveCfg => ({ ...LIVE_DEFAULTS, ...(cfg.live ?? {}) });
+const JUP = "https://lite-api.jup.ag/swap/v1";
+const b64ToBytes = (b64: string) => Uint8Array.from(atob(b64), (c) => c.charCodeAt(0));
+const bytesToB64 = (u: Uint8Array) => { let s = ""; for (const b of u) s += String.fromCharCode(b); return btoa(s); };
+
+async function jupQuote(inputMint: string, outputMint: string, amount: bigint, slippageBps: number) {
+  const u = new URL(`${JUP}/quote`);
+  u.searchParams.set("inputMint", inputMint);
+  u.searchParams.set("outputMint", outputMint);
+  u.searchParams.set("amount", amount.toString());
+  u.searchParams.set("slippageBps", String(slippageBps));
+  const r = await fetch(u);
+  const j = await r.json();
+  if (!r.ok || !j.outAmount) throw new Error(`No Jupiter route: ${JSON.stringify(j).slice(0, 200)}`);
+  return j;
+}
+async function jupSwap(quote: any, kp: Keypair): Promise<string> {
+  const r = await fetch(`${JUP}/swap`, {
+    method: "POST", headers: { "content-type": "application/json" },
+    body: JSON.stringify({
+      quoteResponse: quote, userPublicKey: kp.publicKey.toBase58(), wrapAndUnwrapSol: true,
+      dynamicComputeUnitLimit: true,
+      prioritizationFeeLamports: { priorityLevelWithMaxLamports: { maxLamports: 1_000_000, priorityLevel: "veryHigh" } },
+    }),
+  });
+  const j = await r.json();
+  if (!r.ok || !j.swapTransaction) throw new Error(`Jupiter swap build failed: ${JSON.stringify(j).slice(0, 200)}`);
+  const tx = VersionedTransaction.deserialize(b64ToBytes(j.swapTransaction));
+  tx.sign([kp]);
+  // Preflight on: a swap that would fail (slippage, missing balance) is rejected here, costing nothing.
+  return await rpc("sendTransaction", [bytesToB64(tx.serialize()), { encoding: "base64", skipPreflight: false, maxRetries: 3, preflightCommitment: "confirmed" }], 2);
+}
+async function walletSol(pub: string): Promise<number | null> {
+  try { return Number((await rpc("getBalance", [pub, { commitment: "confirmed" }]))?.value ?? 0) / 1e9; } catch { return null; }
+}
+async function tokenBalanceRaw(owner: string, mint: string): Promise<bigint> {
+  const res = await rpc("getTokenAccountsByOwner", [owner, { mint }, { encoding: "jsonParsed", commitment: "confirmed" }]);
+  let total = 0n;
+  for (const a of res?.value ?? []) total += BigInt(a.account?.data?.parsed?.info?.tokenAmount?.amount ?? "0");
+  return total;
+}
+async function liveSpentSol(): Promise<number> {
+  const { data } = await db.from("sol_live_orders").select("sol_amount").eq("side", "buy").in("status", ["executing", "sent", "confirmed"]);
+  return (data ?? []).reduce((s: number, r: any) => s + Number(r.sol_amount ?? 0), 0);
+}
+async function liveNotify(cfg: any, html: string) {
+  if (TG_TOKEN && cfg.telegram_chat_id) await tgSend(cfg.telegram_chat_id, html).catch(() => {});
+}
+
+// Called once per newly recorded trade of a monitored wallet.
+async function liveOnTrade(t: any, w: any) {
+  if (!w.copy_live || (t.kind !== "buy" && t.kind !== "sell")) return;
+  await db.from("sol_live_orders").upsert({
+    source_signature: t.signature, wallet: t.wallet, mint: t.mint, symbol: t.token_symbol, side: t.kind, trade: t, status: "pending",
+  }, { onConflict: "source_signature,side", ignoreDuplicates: true });
+}
+
+async function liveConfirm(cfg: any) {
+  const { data: sent } = await db.from("sol_live_orders").select("*").eq("status", "sent").limit(50);
+  if (!sent?.length) return 0;
+  const st = await rpc("getSignatureStatuses", [sent.map((o: any) => o.tx_signature), { searchTransactionHistory: true }]);
+  const { data: labels } = await db.from("sol_wallets").select("address,label");
+  const name = (a: string) => (labels ?? []).find((l: any) => l.address === a)?.label ?? a.slice(0, 6);
+  let n = 0;
+  for (let i = 0; i < sent.length; i++) {
+    const o = sent[i], s = st?.value?.[i];
+    const link = `<a href="https://solscan.io/tx/${esc(o.tx_signature)}">tx</a>`;
+    if (s && !s.err && (s.confirmationStatus === "confirmed" || s.confirmationStatus === "finalized")) {
+      await db.from("sol_live_orders").update({ status: "confirmed", updated_at: new Date().toISOString() }).eq("id", o.id);
+      if (o.side === "buy") {
+        await db.from("sol_live_positions").upsert({ mint: o.mint, wallet: o.wallet, symbol: o.symbol, sol_in: o.sol_amount, sol_out: 0, status: "open", opened_at: new Date().toISOString(), closed_at: null });
+        await liveNotify(cfg, `🟢 <b>LIVE BUY</b> ${esc(o.symbol ?? o.mint)}: ${fmt(o.sol_amount, 3)} SOL, copying <b>${esc(name(o.wallet))}</b> · ${link}`);
+      } else {
+        const { data: p } = await db.from("sol_live_positions").select("*").eq("mint", o.mint).maybeSingle();
+        const out = Number(p?.sol_out ?? 0) + Number(o.sol_amount ?? 0);
+        await db.from("sol_live_positions").update({ sol_out: out, ...(o.close ? { status: "closed", closed_at: new Date().toISOString() } : {}) }).eq("mint", o.mint);
+        await liveNotify(cfg, `🔴 <b>LIVE SELL</b> ${esc(o.symbol ?? o.mint)}${o.close ? " (all)" : " (partial)"}: ~${fmt(o.sol_amount, 3)} SOL back, copying <b>${esc(name(o.wallet))}</b>` +
+          (o.close && p ? ` · P/L ~${fmt(out - Number(p.sol_in), 3)} SOL` : "") + ` · ${link}`);
+      }
+      n++;
+    } else if (s?.err) {
+      await liveFail(cfg, o, `On-chain error: ${JSON.stringify(s.err).slice(0, 150)}`);
+    } else if (Date.now() - Date.parse(o.updated_at) > 120_000) {
+      await liveFail(cfg, o, "Not confirmed within 2 minutes (dropped)");
+    }
+  }
+  return n;
+}
+// A failed buy is final (copying it later would be chasing). A failed sell is retried up to 3 times,
+// then the owner is told loudly, because a stuck sell is a position we can no longer exit by copy.
+async function liveFail(cfg: any, o: any, reason: string) {
+  const attempts = Number(o.attempts ?? 0) + 1;
+  const retry = o.side === "sell" && attempts < 3;
+  await db.from("sol_live_orders").update({ status: retry ? "pending" : "failed", attempts, error: clean(reason), updated_at: new Date().toISOString() }).eq("id", o.id);
+  await logEvent("live", `${o.side} ${o.symbol ?? o.mint} ${retry ? "retrying" : "failed"}: ${reason}`, retry ? "warn" : "error", o.wallet);
+  if (!retry) await liveNotify(cfg, o.side === "sell"
+    ? `🚨 <b>LIVE SELL FAILED</b> for ${esc(o.symbol ?? o.mint)} after 3 tries: ${esc(clean(reason))}. The position is still open; sell it manually or use Sell all.`
+    : `⚠️ Live buy of ${esc(o.symbol ?? o.mint)} failed: ${esc(clean(reason))}`);
+}
+
+async function liveExecute(cfg: any) {
+  const kp = liveKeypair();
+  const lc = liveCfg(cfg);
+  const { data: pending } = await db.from("sol_live_orders").select("*").eq("status", "pending").order("created_at").limit(5);
+  let done = 0;
+  for (const o of pending ?? []) {
+    // Atomic claim: only one tick can move an order from pending to executing.
+    const { data: claimed } = await db.from("sol_live_orders").update({ status: "executing", updated_at: new Date().toISOString() })
+      .eq("id", o.id).eq("status", "pending").select("id");
+    if (!claimed?.length) continue;
+    const skip = async (reason: string) => {
+      await db.from("sol_live_orders").update({ status: "skipped", error: reason, updated_at: new Date().toISOString() }).eq("id", o.id);
+    };
+    try {
+      if (!kp) { await skip(LIVE_KEY_ERR ?? "No trading wallet key (LIVE_TRADER_KEY) is set"); continue; }
+      const me = kp.publicKey.toBase58();
+      const t = o.trade ?? {};
+      if (o.side === "buy") {
+        const [{ count: openN }, { data: held }, { count: inflight }, spent, bal] = await Promise.all([
+          db.from("sol_live_positions").select("*", { count: "exact", head: true }).eq("status", "open"),
+          db.from("sol_live_positions").select("mint").eq("mint", o.mint).eq("status", "open").maybeSingle(),
+          db.from("sol_live_orders").select("*", { count: "exact", head: true }).eq("mint", o.mint).eq("side", "buy").in("status", ["sent"]),
+          liveSpentSol(), walletSol(me),
+        ]);
+        const d = liveBuyDecision({
+          cfg: lc, keySet: true, copyWallet: true, spentSol: spent, openPositions: openN ?? 0, holdingMint: !!held || (inflight ?? 0) > 0,
+          walletSol: bal, liquidityUsd: t.market?.liquidityUsd ?? null,
+          freezeAuthority: (t.risk ?? []).includes("Freeze authority active"),
+          delaySeconds: t.block_time ? (Date.now() - Date.parse(t.block_time)) / 1000 : null, traderBuySol: t.sol_value ?? null,
+        });
+        if (!d.go) { await skip(d.reason); continue; }
+        const lamports = BigInt(Math.round(lc.buy_sol * 1e9));
+        // Reserve the spend before sending, so the cap holds even if this tick dies mid-flight.
+        await db.from("sol_live_orders").update({ sol_amount: lc.buy_sol }).eq("id", o.id);
+        const q = await jupQuote(WSOL, o.mint, lamports, lc.slippage_bps);
+        const sig = await jupSwap(q, kp);
+        await db.from("sol_live_orders").update({ status: "sent", tx_signature: sig, token_amount: q.outAmount, updated_at: new Date().toISOString() }).eq("id", o.id);
+        await logEvent("live", `BUY sent: ${lc.buy_sol} SOL -> ${o.symbol ?? o.mint}`, "info", o.wallet);
+      } else {
+        const { data: pos } = await db.from("sol_live_positions").select("*").eq("mint", o.mint).eq("status", "open").maybeSingle();
+        if (!pos) { await skip("We hold no copied position in this token"); continue; }
+        if (pos.wallet !== o.wallet && !o.trade?.panic) { await skip("Position was opened copying a different trader"); continue; }
+        const heldRaw = await tokenBalanceRaw(me, o.mint);
+        const amount = liveSellAmount(heldRaw, t.exit_type ?? null, t.exit_pct ?? null);
+        if (amount <= 0n) {
+          await db.from("sol_live_positions").update({ status: "closed", closed_at: new Date().toISOString() }).eq("mint", o.mint);
+          await skip("Token balance is already zero");
+          continue;
+        }
+        const q = await jupQuote(o.mint, WSOL, amount, Math.max(lc.slippage_bps, 2000));
+        const sig = await jupSwap(q, kp);
+        await db.from("sol_live_orders").update({
+          status: "sent", tx_signature: sig, token_amount: amount.toString(), sol_amount: Number(q.outAmount) / 1e9,
+          close: amount === heldRaw, updated_at: new Date().toISOString(),
+        }).eq("id", o.id);
+        await logEvent("live", `SELL sent: ${amount === heldRaw ? "all" : "part"} of ${o.symbol ?? o.mint}`, "info", o.wallet);
+      }
+      done++;
+    } catch (e) {
+      await liveFail(cfg, { ...o, updated_at: new Date().toISOString() }, String(e));
+    }
+  }
+  return done;
+}
+async function processLive(cfg: any) {
+  const confirmed = await liveConfirm(cfg);
+  const executed = await liveExecute(cfg);
+  return { executed, confirmed };
+}
+
 // ---------- monitoring tick ----------
 async function processWallet(w: any, cfg: any, budget: { left: number }) {
   if (!w.last_signature) {
@@ -384,6 +578,9 @@ async function recordTrade(w: any, signature: string, p: any, cfg: any) {
   if (isAlertable && qualifies && w.status === "active") {
     try { await paperOnTrade(row, cfg); } catch (e) { await logEvent("paper_error", clean(e), "warn", w.address); }
   }
+  if (isAlertable && w.status === "active") {
+    try { await liveOnTrade(row, w); } catch (e) { await logEvent("live_error", clean(e), "error", w.address); }
+  }
 }
 
 async function deliverAlerts(cfg: any) {
@@ -456,6 +653,7 @@ async function tick() {
     let paperFilled = 0;
     try { paperFilled = await processPaperOrders(cfg); } catch (e) { await logEvent("paper_error", clean(e), "warn"); }
     results["paper_orders_filled"] = paperFilled;
+    try { results["live"] = await processLive(cfg); } catch (e) { await logEvent("live_error", clean(e), "error"); results["live"] = { error: clean(e) }; }
     const alerts = await deliverAlerts(cfg);
     await setRow("health", { last_tick_at: started.toISOString(), last_tick_ok: true, last_tick_error: null,
       last_tick_ms: Date.now() - started.getTime(), last_results: results, last_alerts: alerts, rpc: RPC_URL.replace(/api-key=[^&]+/, "api-key=***") });
@@ -950,6 +1148,58 @@ Deno.serve(async (req) => {
         health: { ...health, stale }, wallets, trades, events,
         paper: { cash, equity: cash + openValue, realized, starting: cfg.paper.starting_usd, positions, ledger },
       });
+    }
+    if (path === "/live" && req.method === "GET") {
+      const kp = liveKeypair();
+      const lc = liveCfg(cfg);
+      const me = kp?.publicKey.toBase58() ?? null;
+      const [{ data: positions }, { data: orders }, { data: copied }] = await Promise.all([
+        db.from("sol_live_positions").select("*").order("opened_at", { ascending: false }).limit(50),
+        db.from("sol_live_orders").select("id,created_at,updated_at,wallet,mint,symbol,side,status,sol_amount,tx_signature,error,attempts").order("created_at", { ascending: false }).limit(50),
+        db.from("sol_wallets").select("address,label,status").eq("copy_live", true),
+      ]);
+      return json({
+        config: lc, key_set: !!kp, key_error: LIVE_KEY_ERR, trading_wallet: me, balance_sol: me ? await walletSol(me) : null,
+        spent_sol: await liveSpentSol(), copied_wallets: copied ?? [], positions: positions ?? [], orders: orders ?? [],
+      });
+    }
+    if (path === "/live/config" && req.method === "POST") {
+      const cur = liveCfg(cfg);
+      const next: any = { ...cur };
+      for (const k of Object.keys(LIVE_DEFAULTS) as (keyof LiveCfg)[]) {
+        if (body[k] == null) continue;
+        next[k] = typeof LIVE_DEFAULTS[k] === "boolean" ? !!body[k] : Math.max(0, Number(body[k]));
+      }
+      await setRow("config", { ...cfg, live: next });
+      await logEvent("live", `Live settings changed: ${JSON.stringify(body)}`, "warn");
+      await liveNotify(cfg, `⚙️ Live trading settings changed: ${esc(JSON.stringify(body))}`);
+      return json({ ok: true, config: next });
+    }
+    // Emergency exit: stop buying and queue a full sell of every open position.
+    if (path === "/live/sell-all" && req.method === "POST") {
+      await setRow("config", { ...cfg, live: { ...liveCfg(cfg), enabled: false } });
+      const { data: open } = await db.from("sol_live_positions").select("*").eq("status", "open");
+      const stamp = Date.now();
+      for (const p of open ?? []) {
+        await db.from("sol_live_orders").insert({ source_signature: `sell-all-${stamp}-${p.mint}`, wallet: p.wallet, mint: p.mint, symbol: p.symbol,
+          side: "sell", status: "pending", trade: { exit_type: "FULL", exit_pct: 100, panic: true } });
+      }
+      await logEvent("live", `Sell all: buying switched off, ${open?.length ?? 0} position(s) queued to sell`, "warn");
+      await liveNotify(cfg, `🛑 <b>Sell all</b>: live buying switched off; selling ${open?.length ?? 0} open position(s) on the next tick.`);
+      return json({ ok: true, queued: open?.length ?? 0 });
+    }
+    // Builds (and signs, if a key is set) a real Jupiter swap for a tiny amount, but never sends it.
+    if (path === "/live/dry-run" && req.method === "POST") {
+      const kp = liveKeypair() ?? Keypair.generate();
+      const mint = String(body.mint || USDC);
+      const q = await jupQuote(WSOL, mint, BigInt(Math.round(Number(body.sol ?? 0.01) * 1e9)), liveCfg(cfg).slippage_bps);
+      const r = await fetch(`${JUP}/swap`, { method: "POST", headers: { "content-type": "application/json" },
+        body: JSON.stringify({ quoteResponse: q, userPublicKey: kp.publicKey.toBase58(), wrapAndUnwrapSol: true, dynamicComputeUnitLimit: true }) });
+      const j = await r.json();
+      if (!j.swapTransaction) return json({ ok: false, error: JSON.stringify(j).slice(0, 300) }, 502);
+      const tx = VersionedTransaction.deserialize(b64ToBytes(j.swapTransaction));
+      tx.sign([kp]);
+      return json({ ok: true, real_key: !!liveKeypair(), out_amount: q.outAmount, route: q.routePlan?.map((x: any) => x.swapInfo?.label), signed_bytes: tx.serialize().length, sent: false });
     }
     if (path === "/settings" && req.method === "POST") {
       const next = { ...cfg };

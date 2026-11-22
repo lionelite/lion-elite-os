@@ -167,3 +167,38 @@ describe("discovery pre-filters", () => {
     expect(historyTooShort([], 1000, now, 72)).toBe(true);
   });
 });
+
+import { liveBuyDecision, liveSellAmount, LIVE_DEFAULTS } from "../supabase/functions/sol-tracker/lib.ts";
+describe("live copy trading decisions", () => {
+  const ok = { cfg: { ...LIVE_DEFAULTS, enabled: true }, keySet: true, copyWallet: true, spentSol: 0, openPositions: 0,
+    holdingMint: false, walletSol: 1, liquidityUsd: 50_000, freezeAuthority: false, delaySeconds: 40 };
+  test("buys when every gate is open", () => expect(liveBuyDecision(ok)).toEqual({ go: true, reason: "ok" }));
+  test("switched off, no key, or not a copied wallet never buys", () => {
+    expect(liveBuyDecision({ ...ok, cfg: { ...ok.cfg, enabled: false } }).go).toBe(false);
+    expect(liveBuyDecision({ ...ok, keySet: false }).go).toBe(false);
+    expect(liveBuyDecision({ ...ok, copyWallet: false }).go).toBe(false);
+  });
+  test("the total cap is never exceeded, even by one buy", () => {
+    expect(liveBuyDecision({ ...ok, spentSol: 4.75 }).go).toBe(true); // 4.75 + 0.25 = 5 exactly
+    expect(liveBuyDecision({ ...ok, spentSol: 4.8 }).reason).toMatch(/Spend cap/);
+  });
+  test("keeps a fee reserve and refuses risky or late entries", () => {
+    expect(liveBuyDecision({ ...ok, walletSol: 0.27 }).reason).toMatch(/needs/);
+    expect(liveBuyDecision({ ...ok, walletSol: null }).go).toBe(false);
+    expect(liveBuyDecision({ ...ok, freezeAuthority: true }).reason).toMatch(/freeze/);
+    expect(liveBuyDecision({ ...ok, liquidityUsd: 5000 }).reason).toMatch(/Liquidity/);
+    expect(liveBuyDecision({ ...ok, liquidityUsd: null }).go).toBe(false);
+    expect(liveBuyDecision({ ...ok, delaySeconds: 300 }).reason).toMatch(/after their buy/);
+    expect(liveBuyDecision({ ...ok, holdingMint: true }).go).toBe(false);
+    expect(liveBuyDecision({ ...ok, openPositions: 8 }).go).toBe(false);
+    expect(liveBuyDecision({ ...ok, traderBuySol: 0.05 }).reason).toMatch(/Their buy/);
+    expect(liveBuyDecision({ ...ok, traderBuySol: 3 }).go).toBe(true);
+  });
+  test("sell size mirrors the trader's exit", () => {
+    expect(liveSellAmount(1000n, "FULL", 100)).toBe(1000n);
+    expect(liveSellAmount(1000n, "PARTIAL", 40)).toBe(400n);
+    expect(liveSellAmount(1000n, "PARTIAL", 97)).toBe(1000n);
+    expect(liveSellAmount(1000n, "PARTIAL", null)).toBe(1000n);
+    expect(liveSellAmount(0n, "FULL", 100)).toBe(0n);
+  });
+});

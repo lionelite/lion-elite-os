@@ -248,3 +248,53 @@ export function historyTooShort(sigs: { blockTime?: number | null }[], pageLimit
   if (typeof oldest !== "number") return false;
   return nowSec - oldest < minDays * 86400;
 }
+
+// ---------- live copy trading: decisions only (execution lives in index.ts) ----------
+// Every rule that decides whether real money moves is here so it is tested, not buried in I/O.
+export type LiveCfg = {
+  enabled: boolean;
+  buy_sol: number;              // SOL spent per copied buy
+  total_cap_sol: number;        // lifetime SOL spent on buys; buying stops at this number
+  max_open_positions: number;
+  slippage_bps: number;
+  min_sol_reserve: number;      // never spend below this; it pays for sells and fees
+  min_liquidity_usd: number;
+  max_buy_delay_seconds: number; // copying later than this after the trader's buy is chasing, not copying
+  skip_freeze_authority: boolean; // a token whose issuer can freeze accounts may be unsellable
+  min_trader_buy_sol: number;   // the trader's own buy must be at least this; smaller buys are tests/dust
+};
+export const LIVE_DEFAULTS: LiveCfg = {
+  enabled: false, buy_sol: 0.25, total_cap_sol: 5, max_open_positions: 8, slippage_bps: 1500,
+  min_sol_reserve: 0.03, min_liquidity_usd: 10_000, max_buy_delay_seconds: 120, skip_freeze_authority: true,
+  min_trader_buy_sol: 0.25,
+};
+
+export function liveBuyDecision(i: {
+  cfg: LiveCfg; keySet: boolean; copyWallet: boolean; spentSol: number; openPositions: number; holdingMint: boolean;
+  walletSol: number | null; liquidityUsd: number | null; freezeAuthority: boolean; delaySeconds: number | null;
+  traderBuySol?: number | null;
+}): { go: boolean; reason: string } {
+  const c = i.cfg;
+  if (!c.enabled) return { go: false, reason: "Live trading is switched off" };
+  if (!i.keySet) return { go: false, reason: "No trading wallet key (LIVE_TRADER_KEY) is set" };
+  if (!i.copyWallet) return { go: false, reason: "This wallet is monitored but not copied" };
+  if (i.traderBuySol != null && i.traderBuySol < c.min_trader_buy_sol) return { go: false, reason: `Their buy was ${i.traderBuySol.toFixed(3)} SOL (copy only ${c.min_trader_buy_sol}+)` };
+  if (i.holdingMint) return { go: false, reason: "Already holding this token" };
+  if (i.spentSol + c.buy_sol > c.total_cap_sol + 1e-9) return { go: false, reason: `Spend cap reached (${i.spentSol.toFixed(2)} of ${c.total_cap_sol} SOL used)` };
+  if (i.openPositions >= c.max_open_positions) return { go: false, reason: `Max open positions (${c.max_open_positions}) reached` };
+  if (i.walletSol == null) return { go: false, reason: "Could not read the trading wallet balance" };
+  if (i.walletSol < c.buy_sol + c.min_sol_reserve) return { go: false, reason: `Trading wallet has ${i.walletSol.toFixed(3)} SOL; needs ${(c.buy_sol + c.min_sol_reserve).toFixed(3)}` };
+  if (c.skip_freeze_authority && i.freezeAuthority) return { go: false, reason: "Token has an active freeze authority (may be unsellable)" };
+  if (i.liquidityUsd == null || i.liquidityUsd < c.min_liquidity_usd) return { go: false, reason: `Liquidity ${i.liquidityUsd == null ? "unknown" : "$" + Math.round(i.liquidityUsd)} is under $${c.min_liquidity_usd}` };
+  if (i.delaySeconds != null && i.delaySeconds > c.max_buy_delay_seconds) return { go: false, reason: `Detected ${Math.round(i.delaySeconds)}s after their buy (limit ${c.max_buy_delay_seconds}s)` };
+  return { go: true, reason: "ok" };
+}
+
+// How many raw token units to sell when the copied trader sells. FULL exits sell everything we hold;
+// a PARTIAL exit sells the same fraction of our position that they sold of theirs.
+export function liveSellAmount(heldRaw: bigint, exitType: string | null, exitPct: number | null): bigint {
+  if (heldRaw <= 0n) return 0n;
+  if (exitType === "FULL" || exitPct == null || exitPct >= 95) return heldRaw;
+  const bps = BigInt(Math.max(0, Math.min(10_000, Math.round(exitPct * 100))));
+  return (heldRaw * bps) / 10_000n;
+}
