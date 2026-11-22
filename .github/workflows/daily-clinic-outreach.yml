@@ -7,11 +7,13 @@ name: Daily clinic outreach
 # Every 10 minutes 9 AM–10:59 PM New York, every day. The local-time guard
 # handles DST; the HTTP sender is bounded to 8 minutes per call on Render.
 # Re-runs are safe: advisory lock + daily cap + org/step idempotency.
+# Scheduled sending moved to ONE authoritative scheduler: Supabase pg_cron
+# (job `clinic-outreach-send`, see docs/clinic-outreach-operations.md). GitHub
+# fired this workflow's schedule only 2-3 times a day out of 84 slots
+# (29 scheduled runs in 11 days), which starved sending. This workflow remains
+# for manual operator runs (workflow_dispatch); the server enforces the sending
+# window and the daily cap whichever path calls it.
 on:
-  schedule:
-    # UTC hours overlap both EST and EDT local daytime; guard below narrows it.
-    - cron: '7,17,27,37,47,57 13-23 * * *'
-    - cron: '7,17,27,37,47,57 0-3 * * *'
   workflow_dispatch:
     inputs:
       dry_run:

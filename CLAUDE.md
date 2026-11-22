@@ -953,6 +953,18 @@ notes), not live infrastructure — don't treat them as configuration.
   day. Each pass is logged to `clinic_discovery_runs`. The Bluesky listener is
   no longer started, and its leads are not written to `prospects`.
   `lead-harvest.yml` is manual-only. Docs: `docs/clinic-discovery.md`.
+- **Clinic send scheduling and accounting (2026-11-22).** GitHub fired the
+  every-10-minutes send workflow only 1–3 times a day inside the window (29
+  scheduled runs in 11 days), so sending was starved. The one scheduled sender
+  is now **Supabase pg_cron** (`clinic-outreach-send`,
+  `db/supabase/clinic-outreach-scheduler.sql`), and GitHub's send workflows are
+  dispatch-only. `daily_usage` was keyed by the UTC date; it is now the New York
+  day. The server enforces `OUTREACH_SEND_WINDOW` (default 09:00–15:00 NY) and
+  paces sends. Ambiguous provider outcomes are held as `uncertain` and resolved
+  only by re-submitting with the stored idempotency key; an accepted message is
+  never marked failed. **A second sender exists in Base44** (BuildPipeline.online
+  agent "Pipeline automation", Gmail), which needs an owner decision. Full record:
+  `docs/clinic-outreach-operations.md`.
 - **Known dropped job, needs an owner decision:** the daily `staleData` cron
   enqueues `refresh-stale-prospect-data` to the `enrichment` queue, which no
   worker consumes — it has been piling up unprocessed every day. Either write the

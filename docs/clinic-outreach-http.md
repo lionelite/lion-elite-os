@@ -188,3 +188,13 @@ right before each send.
   works those metros from the cache. If no service answers for a metro, the run
   stops discovery without advancing the rotation past it, and still sends to
   whoever already qualifies.
+
+## Scheduling and send safety (2026-11-22)
+
+The scheduled sender is now Supabase pg_cron (`clinic-outreach-send`, every 10
+minutes 13:00–20:59 UTC), installed by `db/supabase/clinic-outreach-scheduler.sql`.
+GitHub's `schedule:` triggers on `daily-clinic-outreach.yml` and
+`clinic-outreach.yml` were removed (manual dispatch remains). The server enforces
+the window (`OUTREACH_SEND_WINDOW`, default 09:00–15:00 New York), New York-day
+quota accounting, pacing, and uncertain-submission handling. See
+`docs/clinic-outreach-operations.md` for ownership, the runbook and verification.

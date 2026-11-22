@@ -84,7 +84,7 @@ test('/health/outreach: last run, sends today, cap and the most recent error, wi
       if (/FROM outreach_runs ORDER BY started_at DESC LIMIT 1/.test(sql)) return { rows: [{ run_id: 'r1', status: 'completed', sent: 4, started_at: '2026-11-20T14:00:00Z', finished_at: '2026-11-20T14:20:00Z' }] };
       if (/COUNT\(\*\)::int AS n FROM outreach_queue/.test(sql)) return { rows: [{ n: 4 }] };
       if (/FROM outreach_runs WHERE status = 'error'/.test(sql)) return { rows: [{ at: '2026-11-19T10:00:00Z', message: 'old' }] };
-      if (/FROM outreach_queue\s+WHERE status = 'failed'/.test(sql)) return { rows: [{ at: '2026-11-20T14:10:00Z', message: 'DELIVERY_PROVIDER_ERROR: bounced for info@clinic.example' }] };
+      if (/FROM outreach_queue\s+WHERE status IN \('failed','uncertain'\)/.test(sql)) return { rows: [{ at: '2026-11-20T14:10:00Z', message: 'DELIVERY_PROVIDER_ERROR: bounced for info@clinic.example' }] };
       return { rows: [], rowCount: 0 };
     },
   };
@@ -97,6 +97,9 @@ test('/health/outreach: last run, sends today, cap and the most recent error, wi
     assert.equal(body.dailySendCap, 150);
     assert.equal(body.lastError.source, 'send', 'newest error wins');
     assert.doesNotMatch(body.lastError.message, /@/, 'no e-mail address in a public endpoint');
+    // The scheduler's own record was not readable in this fake: unknown, never green.
+    assert.equal(body.status, 'unknown');
+    assert.ok(body.reasons.some(r => /scheduler record/.test(r)), JSON.stringify(body.reasons));
   } finally { await close(); }
 });
 
@@ -143,3 +146,30 @@ test('OSM User-Agent identifies us with a contact e-mail from configuration', ()
   assert.doesNotMatch(discoveryUserAgent({}), /@/);
 });
 
+
+test('/run/clinic-outreach: the Supabase scheduler authenticates by a hash held in the database, and async answers 202', async () => {
+  const crypto = require('crypto');
+  const hash = crypto.createHash('sha256').update('db-held-scheduler-secret').digest('hex');
+  const database = { query: async sql => (/scheduler_secret_sha256/.test(sql) ? { rows: [{ v: hash }] } : { rows: [] }) };
+  const runner = fakeRunner();
+  const { base, close } = await serve(createOutreachRunRouter({ runner, env: {}, database, oidcVerifier: rejectingOidc, logger: quiet }));
+  try {
+    const wrong = await fetch(`${base}/run/clinic-outreach?async=1`, { method: 'POST', headers: { 'x-outreach-secret': 'not-it' } });
+    assert.equal(wrong.status, 401);
+    assert.equal(runner.calls.length, 0);
+    const res = await fetch(`${base}/run/clinic-outreach?async=1`, { method: 'POST', headers: { 'x-outreach-secret': 'db-held-scheduler-secret' } });
+    assert.equal(res.status, 202);
+    assert.deepEqual(await res.json(), { status: 'accepted', trigger: 'supabase/pg_cron', dryRun: false });
+    await new Promise(r => setTimeout(r, 20));
+    assert.deepEqual(runner.calls[0], ['run', { dryRun: false, trigger: 'supabase/pg_cron' }]);
+  } finally { await close(); }
+
+  // No hash stored (or a malformed one) means the scheduler path is closed.
+  const empty = { query: async () => ({ rows: [{ v: 'not-a-hash' }] }) };
+  const r2 = fakeRunner();
+  const s2 = await serve(createOutreachRunRouter({ runner: r2, env: {}, database: empty, oidcVerifier: rejectingOidc, logger: quiet }));
+  try {
+    assert.equal((await fetch(`${s2.base}/run/clinic-outreach?async=1`, { method: 'POST', headers: { 'x-outreach-secret': 'not-a-hash' } })).status, 401);
+    assert.equal(r2.calls.length, 0);
+  } finally { await s2.close(); }
+});
