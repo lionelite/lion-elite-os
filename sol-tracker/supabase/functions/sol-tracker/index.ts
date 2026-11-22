@@ -268,19 +268,53 @@ async function paperExecute(t: any, cfg: any, price: number | null) {
     const pos = open.find((o: any) => o.mint === t.mint && o.wallet === t.wallet);
     if (!pos) return;
     const frac = t.exit_type === "FULL" ? 1 : Math.min(1, Math.max(0, (t.exit_pct ?? 100) / 100));
-    const q = Number(pos.qty_open) * frac;
-    const fill = price * (1 - p.slippage_pct / 100);
-    const proceeds = Math.max(0, q * fill * (1 - p.fee_pct / 100) - prio);
-    const costPart = Number(pos.cost_usd) * (q / Number(pos.qty));
-    const left = Number(pos.qty_open) - q;
-    await db.from("sol_paper_positions").update({
-      qty_open: left, realized_usd: Number(pos.realized_usd) + proceeds - costPart,
-      status: left <= Number(pos.qty) * 0.001 ? "closed" : "open",
-      closed_at: left <= Number(pos.qty) * 0.001 ? new Date().toISOString() : null,
-    }).eq("id", pos.id);
-    await db.from("sol_paper_ledger").insert({ ...base, type: "sell", usd: proceeds, price_usd: fill,
-      note: `SIMULATED ${t.exit_type ?? ""} sell ${Math.round(frac * 100)}% @ ${usd(fill)}, P/L ${usd(proceeds - costPart)}` });
+    await paperSell(pos, frac, price, cfg, prio, base, `${t.exit_type ?? ""} copy sell`);
   }
+}
+// Sell `frac` of a paper position's remaining tokens at `price` (minus slippage and fees).
+async function paperSell(pos: any, frac: number, price: number, cfg: any, prio: number, base: any, reason: string, extra: any = {}) {
+  const p = cfg.paper;
+  const q = Number(pos.qty_open) * frac;
+  const fill = price * (1 - p.slippage_pct / 100);
+  const proceeds = Math.max(0, q * fill * (1 - p.fee_pct / 100) - prio);
+  const costPart = Number(pos.cost_usd) * (q / Number(pos.qty));
+  const left = Number(pos.qty_open) - q;
+  const closed = left <= Number(pos.qty) * 0.001;
+  await db.from("sol_paper_positions").update({
+    qty_open: left, realized_usd: Number(pos.realized_usd) + proceeds - costPart,
+    status: closed ? "closed" : "open", closed_at: closed ? new Date().toISOString() : null, ...extra,
+  }).eq("id", pos.id);
+  await db.from("sol_paper_ledger").insert({ ...base, type: "sell", usd: proceeds, price_usd: fill,
+    note: `SIMULATED ${reason}: sold ${Math.round(frac * 100)}% @ ${usd(fill)}, P/L ${usd(proceeds - costPart)}` });
+}
+// Our own exits, independent of the trader: stop-loss sells everything once the price is
+// stop_loss_pct below our entry; take-profit sells take_profit_sell_frac once, at +take_profit_pct.
+// Checked every tick at the current DexScreener price.
+async function paperRiskExits(cfg: any) {
+  const p = cfg.paper;
+  const sl = Number(p.stop_loss_pct ?? 0), tp = Number(p.take_profit_pct ?? 0);
+  if (!sl && !tp) return 0;
+  const { data: open } = await db.from("sol_paper_positions").select("*").eq("status", "open");
+  if (!open?.length) return 0;
+  const prices = await dexPairs([...new Set(open.map((o: any) => o.mint))]);
+  const sol = await solUsd();
+  const prio = sol ? p.priority_fee_sol * sol : 0;
+  let n = 0;
+  for (const pos of open) {
+    const px = prices[pos.mint]?.priceUsd;
+    const entry = Number(pos.entry_price_usd);
+    if (!px || !entry) continue;
+    const move = (px / entry - 1) * 100;
+    const base = { wallet: pos.wallet, mint: pos.mint, symbol: pos.symbol, source_signature: pos.source_signature, delay_seconds: null };
+    if (sl && move <= -sl) {
+      await paperSell(pos, 1, px, cfg, prio, base, `stop-loss (${move.toFixed(0)}%)`);
+      n++;
+    } else if (tp && move >= tp && !pos.tp_taken) {
+      await paperSell(pos, Math.min(1, Number(p.take_profit_sell_frac ?? 0.5)), px, cfg, prio, base, `take-profit (+${move.toFixed(0)}%)`, { tp_taken: true });
+      n++;
+    }
+  }
+  return n;
 }
 
 // ---------- live copy trading (REAL MONEY) ----------
@@ -653,6 +687,7 @@ async function tick() {
     let paperFilled = 0;
     try { paperFilled = await processPaperOrders(cfg); } catch (e) { await logEvent("paper_error", clean(e), "warn"); }
     results["paper_orders_filled"] = paperFilled;
+    try { results["paper_risk_exits"] = await paperRiskExits(cfg); } catch (e) { await logEvent("paper_error", clean(e), "warn"); }
     try { results["live"] = await processLive(cfg); } catch (e) { await logEvent("live_error", clean(e), "error"); results["live"] = { error: clean(e) }; }
     const alerts = await deliverAlerts(cfg);
     await setRow("health", { last_tick_at: started.toISOString(), last_tick_ok: true, last_tick_error: null,
