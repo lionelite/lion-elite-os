@@ -64,7 +64,9 @@ request carrying the same key → `sent` + `provider_message_id`, or `failed`
 
 Scheduler secret: generated inside Supabase, held in Vault as
 `clinic_outreach_scheduler_secret`. Only its SHA-256 is stored, in
-`app_settings.scheduler_secret_sha256`.
+`scheduler_credentials` (owned by `postgres`, SELECT-only for the service role
+`lionos_app`). Each tick writes `scheduler_heartbeats`, which `/health/outreach`
+reads. pg_cron's own `cron.job_run_details` is row-secured to the job owner.
 
 ## 4. Integration inventory (checked with a read-only request on 2026-11-22)
 
@@ -91,8 +93,8 @@ agent is an owner decision (see §7).
 
 | Symptom | Check | Action |
 |---|---|---|
-| `/health/outreach` `failing`, "scheduler has not ticked" | `SELECT * FROM cron.job_run_details d JOIN cron.job j USING (jobid) WHERE j.jobname='clinic-outreach-send' ORDER BY start_time DESC LIMIT 5;` | re-run `db/supabase/clinic-outreach-scheduler.sql` |
-| ticks but no runs | `SELECT * FROM net._http_response ORDER BY created DESC LIMIT 5;` (status 401 = hash mismatch, timeout = Render asleep or down) | 401: re-run the SQL; otherwise check Render deploys/logs |
+| `/health/outreach` `failing`, "scheduler has not ticked" | `SELECT * FROM scheduler_heartbeats ORDER BY ticked_at DESC LIMIT 5;` and (as postgres) `SELECT * FROM cron.job_run_details WHERE jobid=(SELECT jobid FROM cron.job WHERE jobname='clinic-outreach-send') ORDER BY start_time DESC LIMIT 5;` | re-run `db/supabase/clinic-outreach-scheduler.sql` |
+| ticks but no runs | `SELECT * FROM net._http_response ORDER BY created DESC LIMIT 5;` (status 401 = hash mismatch, timeout = Render asleep or down; match `request_id` from `scheduler_heartbeats`) | 401: re-run the SQL; otherwise check Render deploys/logs |
 | runs, 0 sent | the run's `skipReasons` in `outreach_runs.summary` | "outside the sending window", cap 0, supply (`first touch: …`), provider 429 |
 | `uncertainHeld` > 0 | `SELECT queue_id, recipient, last_error, updated_at, provider_message_id FROM outreach_queue WHERE status IN ('uncertain','processing');` | under 23 h it resolves on the next run; older ones need the Resend log to settle them, then set the status by hand |
 | provider 429 | the run note `stopped: provider …` | plan/quota limit: raise the plan or lower `DAILY_SEND_CAP` |
