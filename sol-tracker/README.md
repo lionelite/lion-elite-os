@@ -59,6 +59,31 @@ Why: the first two scans queued any wallet that sold ≥ 1 SOL, and research rej
 far more than they ever bought (dev, bundle, or airdrop wallets) or were days old. Known trade-off: a
 real trader whose buy predates the ~1,500-swap window is dropped at step 3.
 
+## Live copy trading (real money)
+
+Owner decision 2026-11-22: copy the Kolscan **daily** leaderboard ranks 15–20 (Smokez, Tuults, Iced,
+Idontpaytaxes, yeekidd, Wugi) with **0.25 SOL per buy and a 5 SOL lifetime cap**. Only wallets with
+`sol_wallets.copy_live = true` are copied; every other wallet stays monitor-only.
+
+- **Key:** the owner's own wallet secret, set as the `LIVE_TRADER_KEY` Edge Function secret (base58 or the
+  JSON byte array). It is never stored in the database, logged, or returned by the API. Without it, every
+  copied trade is recorded as `skipped`.
+- **Buys** pass `liveBuyDecision()` (`lib.ts`): enabled, key set, trader's own buy ≥ 0.25 SOL, not already
+  holding, spend cap not exceeded by this buy, ≤ 8 open positions, 0.03 SOL fee reserve kept, liquidity ≥
+  $10k, no freeze authority, detected ≤ 120 s after their buy. The spend is reserved before sending.
+- **Sells** mirror the trader's exit (`liveSellAmount()`: FULL sells all, PARTIAL the same fraction), only for
+  positions opened copying that trader. They run even with buying switched off. A failed sell retries 3 times,
+  then Telegram says so loudly.
+- **Execution:** Jupiter quote + swap, signed in the function, sent with preflight on. Orders live in
+  `sol_live_orders`, are unique per (copied trade, side), and are claimed atomically, so overlapping ticks
+  cannot double-submit. Positions are in `sol_live_positions`.
+- **Controls (dashboard token):** `GET /live` (wallet, balance, spend, positions, orders), `POST /live/config`
+  (any `LiveCfg` field, e.g. `{"enabled": false}`), `POST /live/sell-all` (stop buying, sell everything),
+  `POST /live/dry-run` (build and sign a real swap, never send).
+- **Known limits:** detection runs on the 1-minute tick, so copies land roughly 10–70 s after the trader.
+  There is no stop-loss: a position closes only when the trader sells via a swap we detect. If they move the
+  tokens out instead of selling, use sell-all or sell manually.
+
 ## Deploying
 
 The deployed `index.ts` is a stub that imports this directory's `index.ts` from GitHub at one pinned commit
