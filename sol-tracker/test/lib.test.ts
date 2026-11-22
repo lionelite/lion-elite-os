@@ -119,3 +119,51 @@ describe("researchMetrics", () => {
     expect(m.assessment.qualifies).toBe(true);
   });
 });
+
+import { poolSwapSide, discoveryVerdict, historyTooShort } from "../supabase/functions/sol-tracker/lib.ts";
+describe("discovery pre-filters", () => {
+  const P = "Payer11111111111111111111111111111111111111";
+  const htx = (o: { native: number; sent?: boolean; got?: boolean; wsolIn?: number; wsolOut?: number; err?: any }) => ({
+    feePayer: P, fee: 5000, transactionError: o.err ?? null,
+    accountData: [{ account: P, nativeBalanceChange: o.native * 1e9 - 5000 }],
+    tokenTransfers: [
+      ...(o.sent ? [{ mint: MINT, fromUserAccount: P, toUserAccount: "Pool", tokenAmount: 1000 }] : []),
+      ...(o.got ? [{ mint: MINT, fromUserAccount: "Pool", toUserAccount: P, tokenAmount: 1000 }] : []),
+      ...(o.wsolIn ? [{ mint: WSOL, fromUserAccount: "Pool", toUserAccount: P, tokenAmount: o.wsolIn }] : []),
+      ...(o.wsolOut ? [{ mint: WSOL, fromUserAccount: P, toUserAccount: "Pool", tokenAmount: o.wsolOut }] : []),
+    ],
+  });
+  test("native SOL buy and sell, fee excluded", () => {
+    expect(poolSwapSide(htx({ native: -2, got: true }), MINT)).toEqual({ payer: P, side: "buy", sol: 2 });
+    expect(poolSwapSide(htx({ native: 3.5, sent: true }), MINT)).toEqual({ payer: P, side: "sell", sol: 3.5 });
+  });
+  test("pre-held WSOL counts when native barely moves", () => {
+    expect(poolSwapSide(htx({ native: 0, sent: true, wsolIn: 4 }), MINT)?.sol).toBe(4);
+    expect(poolSwapSide(htx({ native: 0, got: true, wsolOut: 1.5 }), MINT)).toEqual({ payer: P, side: "buy", sol: 1.5 });
+  });
+  test("wrapped in-tx WSOL is not double counted", () => {
+    expect(poolSwapSide(htx({ native: -2, got: true, wsolOut: 2 }), MINT)?.sol).toBe(2);
+  });
+  test("failed, two-way, or payment-less moves are not trades", () => {
+    expect(poolSwapSide(htx({ native: -2, got: true, err: "x" }), MINT)).toBeNull();
+    expect(poolSwapSide(htx({ native: -2, got: true, sent: true }), MINT)).toBeNull();
+    expect(poolSwapSide(htx({ native: 0, sent: true }), MINT)).toBeNull();
+    expect(poolSwapSide(htx({ native: 2, got: true }), MINT)).toBeNull();
+  });
+  test("verdict keeps only profitable round trips at a copyable size", () => {
+    expect(discoveryVerdict({ buys: 1, sells: 2, sol_in: 2, sol_out: 5 })).toEqual({ keep: true, reason: "bought_and_profited" });
+    expect(discoveryVerdict({ buys: 0, sells: 3, sol_in: 0, sol_out: 900 }).reason).toBe("sold_without_buying");
+    expect(discoveryVerdict({ buys: 2, sells: 1, sol_in: 4, sol_out: 4.5 }).reason).toBe("not_profitable");
+    expect(discoveryVerdict({ buys: 1, sells: 1, sol_in: 60, sol_out: 90 }).reason).toBe("uncopyable_size");
+    expect(discoveryVerdict({ buys: 1, sells: 1, sol_in: 0.1, sol_out: 1.5 }).reason).toBe("uncopyable_size");
+    expect(discoveryVerdict({ buys: 30, sells: 30, sol_in: 30, sol_out: 60 }).reason).toBe("bot_frequency");
+    expect(discoveryVerdict({ buys: 1, sells: 0, sol_in: 1, sol_out: 0 }).reason).toBe("no_sell");
+  });
+  test("history gate rejects only wallets whose whole history is younger than the window", () => {
+    const now = 1_800_000_000, day = 86400;
+    expect(historyTooShort([{ blockTime: now - day }, { blockTime: now - 10 * day }], 1000, now, 72)).toBe(true);
+    expect(historyTooShort([{ blockTime: now - 100 * day }], 1000, now, 72)).toBe(false);
+    expect(historyTooShort(Array(1000).fill({ blockTime: now - day }), 1000, now, 72)).toBe(false); // more history exists
+    expect(historyTooShort([], 1000, now, 72)).toBe(true);
+  });
+});

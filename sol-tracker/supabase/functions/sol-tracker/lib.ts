@@ -184,3 +184,67 @@ export function assess(m: any, days = 90, nowSec = Math.floor(Date.now() / 1000)
   const failed = rules.filter((r) => !r.pass);
   return { qualifies: failed.length === 0, passed: rules.length - failed.length, total: rules.length, rules };
 }
+
+// ---------- discovery pre-filters ----------
+// Research costs thousands of RPC calls per wallet, so discovery only queues wallets that already
+// look like copyable traders on the evidence it has in hand. Neither filter ever promotes a wallet:
+// research still decides. historyTooShort() only rejects wallets research would certainly reject.
+// discoveryVerdict() is a heuristic: it also drops a real trader whose buy predates the scanned
+// window (~1,500 swaps per pool), which is a cheap false negative next to researching dev wallets.
+
+// One Helius parsed swap on a pool, from the fee payer's side. null when the payer neither clearly
+// bought nor clearly sold `mint` (failed tx, token moved both ways, or not involved).
+export function poolSwapSide(tx: any, mint: string): { payer: string; side: "buy" | "sell"; sol: number } | null {
+  const payer = tx?.feePayer;
+  if (!payer || tx.transactionError) return null;
+  const tt = tx.tokenTransfers ?? [];
+  const sent = tt.some((t: any) => t.mint === mint && t.fromUserAccount === payer);
+  const got = tt.some((t: any) => t.mint === mint && t.toUserAccount === payer);
+  if (sent === got) return null;
+  const acct = (tx.accountData ?? []).find((a: any) => a.account === payer);
+  // Native change includes the fee; add it back so a trade is measured without network costs.
+  const native = ((acct?.nativeBalanceChange ?? 0) + (tx.fee ?? 0)) / 1e9;
+  // A wallet that already held WSOL pays/receives it as a token transfer with ~no native change.
+  // When SOL is wrapped/unwrapped inside the tx, the native change already carries it, so prefer it.
+  let wsol = 0;
+  for (const t of tt) {
+    if (t.mint !== WSOL) continue;
+    if (t.toUserAccount === payer) wsol += Number(t.tokenAmount ?? 0);
+    if (t.fromUserAccount === payer) wsol -= Number(t.tokenAmount ?? 0);
+  }
+  const sol = Math.abs(native) > 0.01 ? native : wsol;
+  if (got && sol < 0) return { payer, side: "buy", sol: -sol };
+  if (sent && sol > 0) return { payer, side: "sell", sol };
+  return null;
+}
+
+export type PoolAgg = { buys: number; sells: number; sol_in: number; sol_out: number };
+export const DISCOVERY_RULES = {
+  min_profit_sol: 1,        // realized on this coin inside the scanned window
+  min_avg_buy_sol: 0.3,     // smaller than this is dust we cannot meaningfully copy
+  max_avg_buy_sol: 15,      // larger than this moves the price we would be buying at
+  max_swaps_on_pool: 40,    // more swaps on one coin in the window is a bot, not a trader
+};
+// A seller is worth researching only if it also BOUGHT in the scanned window and came out ahead.
+// Selling with no buy is the profile research kept rejecting: dev/bundle/airdrop wallets that
+// "sold" thousands of SOL of tokens they never paid for.
+export function discoveryVerdict(a: PoolAgg, r = DISCOVERY_RULES): { keep: boolean; reason: string } {
+  if (a.sells < 1) return { keep: false, reason: "no_sell" };
+  if (a.buys < 1) return { keep: false, reason: "sold_without_buying" };
+  if (a.buys + a.sells > r.max_swaps_on_pool) return { keep: false, reason: "bot_frequency" };
+  const avgBuy = a.sol_in / a.buys;
+  if (avgBuy < r.min_avg_buy_sol || avgBuy > r.max_avg_buy_sol) return { keep: false, reason: "uncopyable_size" };
+  if (a.sol_out - a.sol_in < r.min_profit_sol) return { keep: false, reason: "not_profitable" };
+  return { keep: true, reason: "bought_and_profited" };
+}
+
+// One getSignaturesForAddress page (newest first). If the page is not full we have seen the wallet's
+// entire history; if even its oldest signature is younger than `minDays`, the "history covers the
+// window" research check cannot pass, so the wallet is not worth the research credits.
+export function historyTooShort(sigs: { blockTime?: number | null }[], pageLimit: number, nowSec: number, minDays: number): boolean {
+  if (sigs.length >= pageLimit) return false; // more history exists; let research decide
+  if (!sigs.length) return true;
+  const oldest = sigs[sigs.length - 1]?.blockTime;
+  if (typeof oldest !== "number") return false;
+  return nowSec - oldest < minDays * 86400;
+}

@@ -2,7 +2,8 @@
 // runs a paper-trading simulation, and serves a JSON API for the dashboard.
 // Monitoring + paper trading only. This code never holds keys and never signs transactions.
 import { createClient } from "npm:@supabase/supabase-js@2";
-import { parseSwap, researchMetrics, WSOL, USDC, USDT } from "./lib.ts";
+import { parseSwap, researchMetrics, poolSwapSide, discoveryVerdict, historyTooShort, WSOL, USDC, USDT } from "./lib.ts";
+import type { PoolAgg } from "./lib.ts";
 
 const SB_URL = Deno.env.get("SUPABASE_URL")!;
 let SB_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
@@ -757,10 +758,15 @@ async function researchSummaryIfFinished() {
 
 // ---------- discovery: find profitable, less-crowded wallets on-chain ----------
 // 1. Trending Solana pools from GeckoTerminal's public API (big 24h move, real liquidity).
-// 2. For each pool, read its most recent trades and keep wallets that SOLD that token for >= 1 SOL.
-// 3. Wallets that took profit on several different winners rank highest; known leaderboard wallets are excluded.
-// 4. The top candidates are queued for the same 90-day research; passing ones are auto-tracked.
+// 2. For each pool, read its most recent trades and keep wallets that BOUGHT and SOLD that token in the
+//    window and came out >= 1 SOL ahead at a copyable size (discoveryVerdict in lib.ts).
+// 3. Wallets that profited on several different winners rank highest; already-researched wallets are excluded.
+// 4. One signature page per candidate skips wallets too new to pass the 90-day coverage check.
+// 5. The top candidates are queued for the same 90-day research; passing ones are auto-tracked.
 const DISC_MIN_SELL_SOL = 1;
+const DISC_VET_MAX = 40;    // ranked candidates that get the one-call history check
+const DISC_QUEUE_MAX = 10;  // research costs thousands of calls per wallet; queue the best few
+const DISC_SIG_PAGE = 1000;
 async function geckoTrendingPools(): Promise<any[]> {
   const out: any[] = [];
   for (const path of ["trending_pools?duration=24h&page=1", "trending_pools?duration=24h&page=2", "trending_pools?duration=6h&page=1"]) {
@@ -796,8 +802,9 @@ async function discoverStep() {
   while (st.next < st.pools.length && Date.now() - started < 38_000) {
     const p = st.pools[st.next];
     // Helius parsed swap history for the pool: 100 swaps per call, paged back up to ~1,500 swaps.
-    // A seller is the fee payer who sent this token and whose SOL balance rose by >= 1 SOL.
-    const found: Record<string, number> = {};
+    // Each swap is attributed to its fee payer as a buy or a sell, so a wallet's round trip on
+    // this coin inside the window (SOL in vs SOL out) is known before any research is spent on it.
+    const agg: Record<string, PoolAgg> = {};
     let before: string | null = null;
     for (let page = 0; page < 15 && Date.now() - started < 38_000; page++) {
       let res: { txs: any[]; continueFrom?: string };
@@ -805,52 +812,90 @@ async function discoverStep() {
       if (res.continueFrom) { before = res.continueFrom; continue; }
       if (!res.txs.length) break;
       for (const tx of res.txs) {
-        const payer = tx.feePayer;
-        if (!payer || tx.transactionError) continue;
-        const sent = (tx.tokenTransfers ?? []).some((t: any) => t.mint === p.mint && t.fromUserAccount === payer);
-        if (!sent) continue;
-        const acct = (tx.accountData ?? []).find((a: any) => a.account === payer);
-        const sol = ((acct?.nativeBalanceChange ?? 0) + (tx.fee ?? 0)) / 1e9;
-        if (sol >= DISC_MIN_SELL_SOL) found[payer] = (found[payer] ?? 0) + sol;
+        const s = poolSwapSide(tx, p.mint);
+        if (!s) continue;
+        const a = (agg[s.payer] ??= { buys: 0, sells: 0, sol_in: 0, sol_out: 0 });
+        if (s.side === "buy") { a.buys++; a.sol_in += s.sol; } else { a.sells++; a.sol_out += s.sol; }
       }
       before = res.txs[res.txs.length - 1].signature;
     }
-    const rows = Object.entries(found).map(([wallet, sol]) => ({ wallet, mint: p.mint, pool: p.pool, token: p.name, sol_out: sol }));
+    const foundAt = new Date().toISOString();
+    const rows: any[] = [];
+    st.reasons ??= {};
+    for (const [wallet, a] of Object.entries(agg)) {
+      if (a.sells < 1 || a.sol_out < DISC_MIN_SELL_SOL) continue; // only sellers of size are candidates
+      const v = discoveryVerdict(a);
+      st.reasons[v.reason] = (st.reasons[v.reason] ?? 0) + 1;
+      rows.push({ wallet, mint: p.mint, pool: p.pool, token: p.name, found_at: foundAt, verdict: v.reason,
+        buys: a.buys, sells: a.sells, sol_in: +a.sol_in.toFixed(4), sol_out: +a.sol_out.toFixed(4) });
+    }
     if (rows.length) await db.from("sol_discovery_hits").upsert(rows, { onConflict: "wallet,mint" });
     st.next++;
     await setRow("discovery", st);
   }
   if (st.next < st.pools.length) return { phase: "scanning", scanned: st.next, of: st.pools.length };
-  // Rank and queue for research.
-  const { data: hits } = await db.from("sol_discovery_hits").select("wallet,mint,token,sol_out").limit(5000);
-  const { data: known } = await db.from("sol_research").select("wallet");
-  const skip = new Set((known ?? []).map((k: any) => k.wallet));
-  const agg: Record<string, { tokens: Set<string>; names: string[]; sol: number }> = {};
-  for (const h of hits ?? []) {
-    if (skip.has(h.wallet)) continue;
-    const a = (agg[h.wallet] ??= { tokens: new Set(), names: [], sol: 0 });
-    if (!a.tokens.has(h.mint)) { a.tokens.add(h.mint); a.names.push(h.token); }
-    a.sol += Number(h.sol_out);
+
+  // Rank this scan's qualifying wallets: profit on several different winners beats one big one.
+  if (!st.candidates) {
+    const { data: hits } = await db.from("sol_discovery_hits").select("wallet,mint,token,sol_in,sol_out")
+      .eq("verdict", "bought_and_profited").gte("found_at", st.started_at).limit(5000);
+    const { data: known } = await db.from("sol_research").select("wallet");
+    const skip = new Set((known ?? []).map((k: any) => k.wallet));
+    const agg: Record<string, { tokens: Set<string>; names: string[]; profit: number }> = {};
+    for (const h of hits ?? []) {
+      if (skip.has(h.wallet)) continue;
+      const a = (agg[h.wallet] ??= { tokens: new Set(), names: [], profit: 0 });
+      if (!a.tokens.has(h.mint)) { a.tokens.add(h.mint); a.names.push(h.token); }
+      a.profit += Number(h.sol_out) - Number(h.sol_in);
+    }
+    st.candidates = Object.entries(agg)
+      .map(([wallet, a]) => ({ wallet, n: a.tokens.size, profit: +a.profit.toFixed(3), names: a.names }))
+      .sort((x, y) => y.n - x.n || y.profit - x.profit).slice(0, DISC_VET_MAX);
+    st.vet_next = 0; st.vetted = []; st.too_new = 0;
+    await setRow("discovery", st);
+    return { phase: "ranked", candidates: st.candidates.length };
   }
-  const ranked = Object.entries(agg)
-    .map(([wallet, a]) => ({ wallet, n: a.tokens.size, sol: a.sol, names: a.names }))
-    .sort((x, y) => y.n - x.n || y.sol - x.sol).slice(0, 20);
+
+  // Vet: one signature page per wallet. A wallet whose whole history is younger than the research
+  // window fails the coverage check for certain, so it is skipped here instead of researched.
+  const nowSec = Math.floor(Date.now() / 1000);
+  while (st.vet_next < st.candidates.length && st.vetted.length < DISC_QUEUE_MAX && Date.now() - started < 38_000) {
+    const chunk = st.candidates.slice(st.vet_next, st.vet_next + 8);
+    const pages = await Promise.all(chunk.map((c: any) =>
+      rpc("getSignaturesForAddress", [c.wallet, { limit: DISC_SIG_PAGE }]).catch(() => null)));
+    chunk.forEach((c: any, i: number) => {
+      const sigs = pages[i];
+      if (sigs && historyTooShort(sigs, DISC_SIG_PAGE, nowSec, RESEARCH_DAYS * 0.8)) { st.too_new++; return; }
+      if (st.vetted.length < DISC_QUEUE_MAX) st.vetted.push(c); // lookup failure: let research decide
+    });
+    st.vet_next += chunk.length;
+    await setRow("discovery", st);
+  }
+  if (st.vet_next < st.candidates.length && st.vetted.length < DISC_QUEUE_MAX) {
+    return { phase: "vetting", vetted: st.vet_next, of: st.candidates.length };
+  }
+
   const now = new Date().toISOString();
-  const rows = ranked.map((c) => ({
+  const rows = st.vetted.map((c: any) => ({
     wallet: c.wallet, label: `${c.wallet.slice(0, 4)}…${c.wallet.slice(-4)}`,
-    source: "On-chain discovery: took profit on trending Solana coins (GeckoTerminal trending pools)",
-    source_snapshot: { views: `Sold ${c.n} trending coin(s) for ${c.sol.toFixed(2)} SOL: ${c.names.slice(0, 4).join(", ")}`, found_at: now },
+    source: "On-chain discovery: bought and sold trending Solana coins at a profit (GeckoTerminal trending pools)",
+    source_snapshot: { views: `Round-trip profit ${c.profit.toFixed(2)} SOL on ${c.n} trending coin(s): ${c.names.slice(0, 4).join(", ")}`, found_at: now },
     status: "queued", sig_cursor: null, pages_fetched: 0, attempts: 0, metrics: null, error: null, requested_at: now, completed_at: null,
   }));
   if (rows.length) await db.from("sol_research").upsert(rows);
-  st.done = true; st.queued = rows.length; st.finished_at = now;
+  const r = st.reasons ?? {};
+  const sellers = Object.values(r).reduce((x: number, y: any) => x + Number(y), 0);
+  const funnel = `${sellers} sellers of 1+ SOL on ${st.pools.length} trending coins · ${r.sold_without_buying ?? 0} sold without buying · ` +
+    `${r.not_profitable ?? 0} not profitable · ${(r.uncopyable_size ?? 0) + (r.bot_frequency ?? 0)} bot-like or uncopyable size · ` +
+    `${st.candidates.length} profitable round trips · ${st.too_new} wallets too new · ${rows.length} queued`;
+  st.done = true; st.queued = rows.length; st.finished_at = now; st.funnel = funnel;
   await setRow("discovery", st);
-  await logEvent("discovery", `Queued ${rows.length} new wallets for 90-day research`);
+  await logEvent("discovery", funnel);
   const cfg = await getRow("config");
-  if (TG_TOKEN && cfg.telegram_chat_id) {
-    await tgSend(cfg.telegram_chat_id, `🔎 <b>Found ${rows.length} new wallets</b> that took profit on this week's trending coins (none from the public leaderboards). Each now gets the 90-day check; any that pass go on the watch list automatically.`).catch(() => {});
+  if (TG_TOKEN && cfg.telegram_chat_id && rows.length) {
+    await tgSend(cfg.telegram_chat_id, `🔎 <b>Found ${rows.length} new wallets</b> that bought and sold this week's trending coins at a profit (none from the public leaderboards). Each now gets the 90-day check, and any that pass go on the watch list automatically.\n<i>${esc(funnel)}</i>`).catch(() => {});
   }
-  return { phase: "done", queued: rows.length };
+  return { phase: "done", queued: rows.length, funnel };
 }
 
 // ---------- HTTP ----------
