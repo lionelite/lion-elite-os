@@ -78,6 +78,8 @@ test('clinic outreach run end to end', { skip: !databaseConfigured, timeout: 60_
   const env = {
     OUTREACH_SEND_ENABLED: 'true', RESEND_API_KEY: 'stub', OUTREACH_FROM_EMAIL: 'stub@example.com', OUTREACH_POSTAL_ADDRESS: '1 Test St',
     OUTREACH_START_DATE: '2026-01-05', DAILY_SEND_MAX: '150',
+    // A short window keeps pacing out of the way so the 30–90 s jitter assertions hold.
+    OUTREACH_SEND_WINDOW: '09:00-09:30',
     // This test exercises the legacy in-process discovery path.
     CLINIC_SEND_RUN_DISCOVERY: 'true',
     OUTREACH_APPROVED_MESSAGE_VERSIONS: [templateVersion(1), followUpVersion()].join(','),

@@ -51,6 +51,8 @@ test('live run qualifies only as many clinics as it can send in its budget', { s
   const env = {
     OUTREACH_SEND_ENABLED: 'true', RESEND_API_KEY: 'stub', OUTREACH_FROM_EMAIL: 'stub@example.com',
     OUTREACH_START_DATE: '2026-01-05', DAILY_SEND_CAP: '150',
+    // 10:00 ET with 5 minutes of window left: pacing gives the 30 s floor.
+    OUTREACH_SEND_WINDOW: '09:00-10:05',
     OUTREACH_APPROVED_MESSAGE_VERSIONS: [templateVersion(1), followUpVersion()].join(','),
   };
   const sent = [];
