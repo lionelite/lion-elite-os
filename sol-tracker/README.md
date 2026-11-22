@@ -39,6 +39,33 @@ hold times, sub-60-second flips, and proceeds from tokens never bought (airdrops
 Known limits: SOL-quoted trades only (stablecoin-quoted trades are counted and excluded); open positions are
 excluded (unrealized); token liquidity at the time of each historical trade is not reconstructed.
 
+## Discovery (finding wallets to research)
+
+`pg_cron` job `sol-tracker-discover` calls `/discover/step` every minute while a scan is running, and starts
+a new scan 6 hours after the last one finished once the research queue is empty. A scan:
+
+1. takes trending Solana pools from GeckoTerminal (24h move ≥ 20%, liquidity ≥ $30k);
+2. reads each pool's last ~1,500 swaps (Helius parsed history) and attributes every swap to its fee payer
+   as a buy or a sell (`poolSwapSide()`), giving each wallet's SOL in vs SOL out on that coin;
+3. keeps a seller only if it **also bought** in the window, came out ≥ 1 SOL ahead, at an average buy of
+   0.3–15 SOL, with ≤ 40 swaps on the coin (`discoveryVerdict()`). Every verdict is stored on
+   `sol_discovery_hits.verdict`;
+4. ranks survivors by number of different coins profited on, then profit, and spends **one**
+   `getSignaturesForAddress` page per candidate to drop wallets whose entire history is younger than the
+   research window (`historyTooShort()`, which those wallets would fail for certain);
+5. queues the best 10 for full 90-day research. The funnel counts go to `sol_events` and Telegram.
+
+Why: the first two scans queued any wallet that sold ≥ 1 SOL, and research rejected all 40. Most had sold
+far more than they ever bought (dev, bundle, or airdrop wallets) or were days old. Known trade-off: a
+real trader whose buy predates the ~1,500-swap window is dropped at step 3.
+
+## Deploying
+
+The deployed `index.ts` is a stub that imports this directory's `index.ts` from GitHub at one pinned commit
+SHA. Supabase bundles it at deploy time, so what runs cannot change without a redeploy. To ship a change,
+push it, then redeploy the stub with the new SHA. The stub is used because the function is too large to
+paste through the deploy API reliably.
+
 ## Secrets (Supabase → Edge Functions → Secrets)
 
 - `TELEGRAM_BOT_TOKEN` — from @BotFather. Then message the bot `/start` and press **Link my Telegram chat**.
