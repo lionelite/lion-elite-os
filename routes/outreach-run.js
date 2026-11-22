@@ -59,7 +59,12 @@ function createOutreachRunRouter({ runner, discoveryStore, env = process.env, da
     if (!given) return false;
     if (Date.now() - schedulerHash.at > 60_000) {
       try {
-        const r = await getDb().query(`SELECT value #>> '{}' AS v FROM app_settings WHERE key = 'scheduler_secret_sha256'`);
+        // scheduler_credentials is owned by the database admin role and only
+        // readable by the service; app_settings is the older location.
+        const db = getDb();
+        const primary = await db.query(`SELECT sha256 AS v FROM scheduler_credentials WHERE name = 'clinic-outreach-send'`).catch(() => ({ rows: [] }));
+        const r = primary.rows[0] ? primary
+          : await db.query(`SELECT value #>> '{}' AS v FROM app_settings WHERE key = 'scheduler_secret_sha256'`);
         schedulerHash = { value: r.rows[0]?.v || null, at: Date.now() };
       } catch {
         schedulerHash = { value: null, at: Date.now() };
@@ -200,8 +205,10 @@ function createOutreachRunRouter({ runner, discoveryStore, env = process.env, da
         safe(db.query(`SELECT sent_count FROM daily_usage WHERE channel = 'email' AND usage_day = (now() AT TIME ZONE 'America/New_York')::date`)),
         safe(db.query(`SELECT COUNT(*)::int AS n FROM outreach_queue WHERE status IN ('uncertain','processing')`)),
         safe(db.query(`SELECT finished_at, sent, qualified FROM outreach_runs WHERE status = 'completed' AND dry_run = false ORDER BY started_at DESC LIMIT 1`)),
-        safe(db.query(`SELECT d.start_time, d.status, d.return_message FROM cron.job_run_details d JOIN cron.job j ON j.jobid = d.jobid
-                       WHERE j.jobname = 'clinic-outreach-send' ORDER BY d.start_time DESC LIMIT 1`)),
+        // The pg_cron job writes a heartbeat row on every tick. (cron.job_run_details
+        // is row-secured to the job owner, so the service cannot read it.)
+        safe(db.query(`SELECT ticked_at AS start_time, 'ticked' AS status, request_id::text AS return_message
+                       FROM scheduler_heartbeats WHERE job = 'clinic-outreach-send' ORDER BY ticked_at DESC LIMIT 1`)),
       ]);
       const errors = [runError.rows[0] && { source: 'run', ...runError.rows[0] }, sendError.rows[0] && { source: 'send', ...sendError.rows[0] }]
         .filter(Boolean).sort((a, b) => new Date(b.at) - new Date(a.at));
@@ -214,7 +221,7 @@ function createOutreachRunRouter({ runner, discoveryStore, env = process.env, da
       const remaining = acceptedToday === null ? null : Math.max(0, cap.cap - acceptedToday);
       const reasons = [];
       let status = 'healthy';
-      if (!tick) { status = 'unknown'; reasons.push('scheduler record (cron.job_run_details) not readable'); }
+      if (!tick) { status = 'unknown'; reasons.push('scheduler record (scheduler_heartbeats) not readable'); }
       else if (!lastTick) { status = 'unknown'; reasons.push('scheduler record: no tick of clinic-outreach-send recorded'); }
       if (win.open) {
         if (tick && minutesSince(lastTick?.start_time) > 25) { status = 'failing'; reasons.push('scheduler has not ticked in 25 minutes during the window'); }

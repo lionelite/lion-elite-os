@@ -173,3 +173,17 @@ test('/run/clinic-outreach: the Supabase scheduler authenticates by a hash held 
     assert.equal(r2.calls.length, 0);
   } finally { await s2.close(); }
 });
+
+test('/run/clinic-outreach: the scheduler hash is read from scheduler_credentials first', async () => {
+  const crypto = require('crypto');
+  const hash = crypto.createHash('sha256').update('vault-secret').digest('hex');
+  const seen = [];
+  const database = { query: async sql => { seen.push(sql); return /FROM scheduler_credentials/.test(sql) ? { rows: [{ v: hash }] } : { rows: [] }; } };
+  const runner = fakeRunner();
+  const { base, close } = await serve(createOutreachRunRouter({ runner, env: {}, database, oidcVerifier: rejectingOidc, logger: quiet }));
+  try {
+    const res = await fetch(`${base}/run/clinic-outreach?async=1`, { method: 'POST', headers: { 'x-outreach-secret': 'vault-secret' } });
+    assert.equal(res.status, 202);
+    assert.ok(!seen.some(q => /app_settings/.test(q)), 'fallback not needed when the primary table answers');
+  } finally { await close(); }
+});
