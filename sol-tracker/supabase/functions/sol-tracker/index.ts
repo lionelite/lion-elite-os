@@ -205,8 +205,11 @@ async function paperState(cfg: any) {
 }
 // A copied trade is queued and filled `exec_delay_seconds` after detection at the price *then*,
 // so the simulation pays for being late instead of filling at the moment it noticed the trade.
+// Buys also wait `confirm_hold_seconds`: if the trader has already sold by then, the buy is skipped
+// (a fast flip we could not copy profitably). Sells keep the short exec delay.
 async function paperOnTrade(t: any, cfg: any) {
-  const extra = Number(cfg.paper.exec_delay_seconds ?? 0);
+  let extra = Number(cfg.paper.exec_delay_seconds ?? 0);
+  if (t.kind === "buy") extra = Math.max(extra, Number(cfg.paper.confirm_hold_seconds ?? 0));
   if (extra > 0) {
     await db.from("sol_paper_orders").insert({
       signature: t.signature, wallet: t.wallet, trade: t, due_at: new Date(Date.now() + extra * 1000).toISOString(),
@@ -219,8 +222,18 @@ async function processPaperOrders(cfg: any) {
   const { data: due } = await db.from("sol_paper_orders").select("*").eq("status", "queued").lte("due_at", new Date().toISOString()).order("due_at").limit(20);
   if (!due?.length) return 0;
   const prices = await dexPairs([...new Set(due.map((o: any) => o.trade.mint))]);
+  const hold = Number(cfg.paper.confirm_hold_seconds ?? 0);
   for (const o of due) {
     try {
+      if (o.trade.kind === "buy" && hold > 0) {
+        const still = await tokenBalanceRaw(o.wallet, o.trade.mint);
+        if (still === 0n) {
+          await db.from("sol_paper_ledger").insert({ wallet: o.wallet, mint: o.trade.mint, symbol: o.trade.token_symbol, source_signature: o.signature,
+            type: "skip", note: `Fast flip: trader had already sold within ${hold}s, not copied` });
+          await db.from("sol_paper_orders").update({ status: "skipped", filled_at: new Date().toISOString() }).eq("id", o.id);
+          continue;
+        }
+      }
       await paperExecute(o.trade, cfg, prices[o.trade.mint]?.priceUsd ?? null);
       await db.from("sol_paper_orders").update({ status: "filled", filled_at: new Date().toISOString() }).eq("id", o.id);
     } catch (e) {
@@ -651,8 +664,20 @@ async function deliverAlerts(cfg: any) {
   return { sent, failed };
 }
 
+// One run at a time across all instances (minute cron + webhook-triggered runs).
+async function withLock<T>(waitMs: number, fn: () => Promise<T>): Promise<T | { skipped: string }> {
+  const until = Date.now() + waitMs;
+  for (;;) {
+    const { data } = await db.rpc("sol_try_lock", { lock_name: "tick", ttl_seconds: 55 });
+    if (data === true) break;
+    if (Date.now() >= until) return { skipped: "another run in progress" };
+    await sleep(700);
+  }
+  try { return await fn(); } finally { await db.rpc("sol_unlock", { lock_name: "tick" }); }
+}
+const tick = () => withLock(0, tickInner);
 let ticking = false;
-async function tick() {
+async function tickInner() {
   if (ticking) return { skipped: "already running" };
   ticking = true;
   const started = new Date();
@@ -684,6 +709,7 @@ async function tick() {
         results[w.label] = { error: clean(e) };
       }
     }
+    try { results["realtime"] = await syncHeliusWebhook((wallets ?? []).map((w: any) => w.address)); } catch (e) { results["realtime"] = { error: clean(e) }; }
     let paperFilled = 0;
     try { paperFilled = await processPaperOrders(cfg); } catch (e) { await logEvent("paper_error", clean(e), "warn"); }
     results["paper_orders_filled"] = paperFilled;
@@ -1131,6 +1157,58 @@ async function discoverStep() {
   return { phase: "done", queued: rows.length, funnel };
 }
 
+// ---------- realtime: Helius webhook ----------
+// Helius calls /webhook/helius the moment a tracked wallet appears in a confirmed transaction.
+// The payload is only a trigger: the normal cursor-based run then reads and classifies the
+// transactions, so trades are still deduped and the minute cron remains the backup.
+// The webhook's address list is kept equal to the active wallets automatically.
+async function syncHeliusWebhook(addresses: string[]) {
+  if (!HELIUS_KEY) return { skipped: "no Helius key" };
+  const want = [...new Set(addresses)].sort();
+  const st = await getRow("helius_webhook");
+  if (want.length === 0) return { skipped: "no active wallets", id: st.id ?? null };
+  if (st.id && JSON.stringify(st.addresses ?? []) === JSON.stringify(want)) return { ok: true, id: st.id, wallets: want.length };
+  const secrets = await getRow("secrets");
+  let auth = secrets.helius_webhook_secret;
+  if (!auth) {
+    auth = crypto.randomUUID().replace(/-/g, "") + crypto.randomUUID().replace(/-/g, "");
+    await setRow("secrets", { ...secrets, helius_webhook_secret: auth });
+  }
+  const body = JSON.stringify({ webhookURL: `${SB_URL}/functions/v1/sol-tracker/webhook/helius`, transactionTypes: ["ANY"],
+    accountAddresses: want, webhookType: "raw", authHeader: auth, txnStatus: "success" });
+  const base = "https://mainnet.helius-rpc.com/v0/webhooks";
+  let r = st.id
+    ? await fetch(`${base}/${st.id}?api-key=${HELIUS_KEY}`, { method: "PUT", headers: { "content-type": "application/json" }, body })
+    : await fetch(`${base}?api-key=${HELIUS_KEY}`, { method: "POST", headers: { "content-type": "application/json" }, body });
+  if (st.id && r.status === 404) r = await fetch(`${base}?api-key=${HELIUS_KEY}`, { method: "POST", headers: { "content-type": "application/json" }, body });
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok || !j.webhookID) throw new Error(`Helius webhook ${r.status}: ${JSON.stringify(j).slice(0, 200)}`);
+  await setRow("helius_webhook", { id: j.webhookID, addresses: want, synced_at: new Date().toISOString() });
+  await logEvent("realtime", `Helius instant trigger now watching ${want.length} wallet(s)`);
+  return { ok: true, id: j.webhookID, wallets: want.length, updated: true };
+}
+// Runs after a webhook: one full run now, then fills paper orders as soon as each is due
+// (sell copies after exec_delay_seconds, buys after the confirm-hold check), for up to ~2 minutes.
+async function realtimeRun(received: number) {
+  const started = Date.now();
+  const r: any = await withLock(20_000, tickInner);
+  const rt = await getRow("realtime");
+  await setRow("realtime", { ...rt, last_webhook_at: new Date(received).toISOString(), last_run_ms: Date.now() - started,
+    last_run: r?.skipped ? r.skipped : "ok", webhooks_received: (rt.webhooks_received ?? 0) + 1 });
+  while (Date.now() - started < 120_000) {
+    const { data: next } = await db.from("sol_paper_orders").select("due_at").eq("status", "queued").order("due_at").limit(1).maybeSingle();
+    if (!next) break;
+    const wait = Date.parse(next.due_at) - Date.now();
+    if (wait > 120_000 - (Date.now() - started)) break;
+    if (wait > 0) await sleep(wait + 300);
+    await withLock(10_000, async () => {
+      const cfg = await getRow("config");
+      await processPaperOrders(cfg);
+      await deliverAlerts(cfg);
+    });
+  }
+}
+
 // ---------- HTTP ----------
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: CORS });
@@ -1146,6 +1224,14 @@ Deno.serve(async (req) => {
     if (path === "/discover/step") {
       if (req.headers.get("x-cron-secret") !== secrets.cron_secret) return json({ error: "unauthorized" }, 401);
       return json(await discoverStep());
+    }
+    if (path === "/webhook/helius" && req.method === "POST") {
+      if (!secrets.helius_webhook_secret || req.headers.get("authorization") !== secrets.helius_webhook_secret) return json({ error: "unauthorized" }, 401);
+      await req.body?.cancel().catch(() => {});
+      const job = realtimeRun(Date.now()).catch((e) => logEvent("realtime_error", clean(e), "error"));
+      const rt = (globalThis as any).EdgeRuntime;
+      if (rt?.waitUntil) rt.waitUntil(job); else await job;
+      return json({ ok: true });
     }
     if (path === "/tick") {
       if (req.headers.get("x-cron-secret") !== secrets.cron_secret) return json({ error: "unauthorized" }, 401);
