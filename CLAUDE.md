@@ -740,6 +740,17 @@ anywhere): `JOB_ATTEMPTS`, `JOB_BACKOFF_MS`, `JOB_LOCK_TTL_MS`,
 (read by `workers/outreach-worker.js`) have no default anywhere in
 `render.yaml` and fall back to hardcoded defaults in code.
 
+## Obsidian vault (2026-11-23)
+
+The repo root is an Obsidian vault, added to keep everything in the OS organized. Start at
+`knowledge/Home.md`. `knowledge/maps/*.md` holds one map per business and per function, and between them
+they link every doc in the repo. **When you add or move a durable doc, add or fix its line on the matching
+map.** `test/obsidian-vault.test.js` fails CI on any broken link from Home or a map. Shared vault settings
+are committed in `.obsidian/`; per-device state is gitignored. Obsidian syncs (via the `obsidian-git`
+plugin) to the unprotected **`vault`** branch, because `main`'s required check blocks direct pushes. Fold
+notes into `main` with a `vault → main` PR, and never by weakening branch protection. The repo is
+public, so the vault holds business operating knowledge only. Guide: `knowledge/obsidian.md`.
+
 ## Docs landscape (what's authoritative vs stale/aspirational)
 
 Current and accurate: `docs/postgres-live-store.md`,
