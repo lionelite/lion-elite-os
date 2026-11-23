@@ -83,6 +83,28 @@ the trader's buys within 1 hour of the token's launch (`earlyBuyShare()`, launch
 `POST /paper/reset` now closes open paper positions instead of deleting them, and results count from the
 latest reset marker.
 
+## Execution via Jupiter Ultra, optional Birdeye discovery (2026-11-23)
+
+**Ultra.** Live swaps use Jupiter Ultra (`lite-api.jup.ag/ultra/v1` `/order` then `/execute`, no API key).
+Measured on a 0.25 SOL meme-coin buy, compared with our previous v1 quote+swap at 15% slippage:
+
+- Ultra set **1%** slippage itself, so the room a sandwich bot can take shrinks from ~15% to ~1%.
+- The priority fee was ~0.000025 SOL instead of up to 0.001.
+- Jupiter charges 0.1% (`feeBps` 10).
+- Sending goes through Jupiter's own landing, not the public mempool.
+
+The signature is computed before `/execute`, so a lost response still leaves a trackable transaction. If
+Ultra is rate-limited or down (HTTP 429/5xx on `/order`), live falls back to v1 with slippage capped at 5%.
+Paper prices every fill with the same Ultra order, including its network fees. `POST /live/dry-run` builds
+and signs an Ultra order without sending it.
+
+**Birdeye (optional).** With `birdeye_api_key` in the `sol_settings` secrets row (or `BIRDEYE_API_KEY`),
+discovery also asks Birdeye for the 10 most profitable wallets of the month (`top_traders`, 30d,
+`realized_pnl`) on 6 of the established coins per scan. It skips wallets tagged as bot, sniper, MEV,
+arbitrage, market maker, insider or dev. Those wallets still go through the same history check and 90-day
+research. Budget: about 6 × 35 compute units per scan, 4 scans a day, which fits Birdeye's free 30k
+units a month. Only the documented `owner` and `tags` fields are read. Not exercised yet: no key is set.
+
 ## Paper/live parity, realistic fills, scorecard (2026-11-23)
 
 Paper trading is only evidence for live trading if both follow the same rules, so:

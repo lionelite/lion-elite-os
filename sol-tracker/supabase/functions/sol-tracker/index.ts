@@ -20,10 +20,12 @@ const db = createClient(SB_URL, SB_KEY, { auth: { persistSession: false } });
 // Keys come from Edge Function secrets, or from the locked sol_settings 'secrets' row
 // (RLS on, no policies: only this function's service role can read it). Env wins if both exist.
 let HELIUS_KEY = Deno.env.get("HELIUS_API_KEY") ?? "";
+let BIRDEYE_KEY = Deno.env.get("BIRDEYE_API_KEY") ?? "";
 let TG_TOKEN = Deno.env.get("TELEGRAM_BOT_TOKEN") ?? "";
 let RPC_URL = "", KEYED_RPC = false, MAX_TX_PER_TICK = 40, SIG_PAGE = 100;
 function applyKeys(secrets: any = {}) {
   HELIUS_KEY = Deno.env.get("HELIUS_API_KEY") || secrets.helius_api_key || "";
+  BIRDEYE_KEY = Deno.env.get("BIRDEYE_API_KEY") || secrets.birdeye_api_key || "";
   TG_TOKEN = Deno.env.get("TELEGRAM_BOT_TOKEN") || secrets.telegram_bot_token || "";
   RPC_URL = Deno.env.get("SOLANA_RPC_URL") ||
     (HELIUS_KEY ? `https://mainnet.helius-rpc.com/?api-key=${HELIUS_KEY}` : "https://api.mainnet-beta.solana.com");
@@ -219,21 +221,27 @@ async function mintDecimals(mint: string): Promise<number | null> {
   } catch { /* fall through */ }
   return null;
 }
-async function quoteBuyTokens(mint: string, sol: number, bps: number): Promise<{ tokens: number; dec: number } | null> {
+// Paper is priced with the SAME Jupiter Ultra order live executes (route, Jupiter fee, automatic
+// slippage, network fees), falling back to a plain quote only if Ultra is unavailable.
+async function paperQuote(inputMint: string, outputMint: string, amount: bigint, bps: number): Promise<{ out: bigint; feeSol: number } | null> {
   try {
-    const dec = await mintDecimals(mint);
-    if (dec == null) return null;
-    const q = await jupQuote(WSOL, mint, BigInt(Math.round(sol * 1e9)), bps);
-    return { tokens: Number(q.outAmount) / 10 ** dec, dec };
-  } catch { return null; }
+    const o = await ultraOrder(inputMint, outputMint, amount, liveKeypair()?.publicKey.toBase58());
+    const fees = Number(o.prioritizationFeeLamports ?? 0) + Number(o.signatureFeeLamports ?? 0) + Number(o.rentFeeLamports ?? 0);
+    return { out: BigInt(o.outAmount), feeSol: fees > 0 ? fees / 1e9 : 0.0001 };
+  } catch { /* fall back */ }
+  try { const q = await jupQuote(inputMint, outputMint, amount, bps); return { out: BigInt(q.outAmount), feeSol: 0.0001 }; } catch { return null; }
 }
-async function quoteSellSol(mint: string, tokens: number, dec: number, bps: number): Promise<number | null> {
-  try {
-    const raw = BigInt(Math.floor(tokens * 10 ** dec));
-    if (raw <= 0n) return 0;
-    const q = await jupQuote(mint, WSOL, raw, bps);
-    return Number(q.outAmount) / 1e9;
-  } catch { return null; }
+async function quoteBuyTokens(mint: string, sol: number, bps: number): Promise<{ tokens: number; dec: number; feeSol: number } | null> {
+  const dec = await mintDecimals(mint);
+  if (dec == null) return null;
+  const q = await paperQuote(WSOL, mint, BigInt(Math.round(sol * 1e9)), bps);
+  return q ? { tokens: Number(q.out) / 10 ** dec, dec, feeSol: q.feeSol } : null;
+}
+async function quoteSellSol(mint: string, tokens: number, dec: number, bps: number): Promise<{ sol: number; feeSol: number } | null> {
+  const raw = BigInt(Math.floor(tokens * 10 ** dec));
+  if (raw <= 0n) return { sol: 0, feeSol: 0 };
+  const q = await paperQuote(mint, WSOL, raw, bps);
+  return q ? { sol: Number(q.out) / 1e9, feeSol: q.feeSol } : null;
 }
 
 // A copied buy waits copyRules().confirm_hold_seconds (live does the same): if the trader has already
@@ -289,11 +297,10 @@ async function paperExecute(t: any, cfg: any, price: number | null) {
     if (open.length >= cr.max_open_positions) { await skip("Max open positions reached"); return; }
     const sol = await solUsd();
     if (!sol) { await skip("No SOL price"); return; }
-    const prioUsd = p.priority_fee_sol * sol;
-    const cost = cr.buy_sol * sol + prioUsd; // same SOL size live would spend
-    if (cash < cost) { await skip("Not enough simulated cash"); return; }
+    if (cash < cr.buy_sol * sol * 1.01) { await skip("Not enough simulated cash"); return; }
     const q = await quoteBuyTokens(t.mint, cr.buy_sol, lc.slippage_bps);
     if (!q || !(q.tokens > 0)) { await skip("No Jupiter route at fill time (a live buy would fail too)"); return; }
+    const cost = (cr.buy_sol + q.feeSol) * sol; // same SOL size live spends, plus the network fees Ultra quoted
     const fill = cost / q.tokens;
     await db.from("sol_paper_positions").insert({
       wallet: t.wallet, mint: t.mint, symbol: t.token_symbol, source_signature: t.signature,
@@ -318,7 +325,7 @@ async function paperSell(pos: any, frac: number, price: number, cfg: any, base: 
   let proceeds: number | null = null, how = "Jupiter quote";
   if (pos.decimals != null && sol) {
     const out = await quoteSellSol(pos.mint, q, Number(pos.decimals), Math.max(liveCfg(cfg).slippage_bps, 2000));
-    if (out != null) proceeds = Math.max(0, out * sol - prioUsd);
+    if (out != null) proceeds = Math.max(0, (out.sol - out.feeSol) * sol);
   }
   if (proceeds == null) {
     how = "ESTIMATED, no Jupiter route";
@@ -409,6 +416,50 @@ async function jupSwap(quote: any, kp: Keypair): Promise<string> {
   tx.sign([kp]);
   // Preflight on: a swap that would fail (slippage, missing balance) is rejected here, costing nothing.
   return await rpc("sendTransaction", [bytesToB64(tx.serialize()), { encoding: "base64", skipPreflight: false, maxRetries: 3, preflightCommitment: "confirmed" }], 2);
+}
+// ---------- Jupiter Ultra: managed, MEV-protected execution (primary) ----------
+// Measured 2026-11-23 on a 0.25 SOL meme-coin buy: Ultra set 1% slippage automatically (our v1 call
+// allowed 15%, i.e. up to ~15% extractable by a sandwich bot), a ~0.000025 SOL priority fee (v1 up to
+// 0.001), a 0.1% Jupiter fee, and sends through Jupiter's own landing instead of the public mempool.
+const ULTRA = "https://lite-api.jup.ag/ultra/v1";
+async function ultraOrder(inputMint: string, outputMint: string, amount: bigint, taker?: string): Promise<any> {
+  const u = new URL(`${ULTRA}/order`);
+  u.searchParams.set("inputMint", inputMint);
+  u.searchParams.set("outputMint", outputMint);
+  u.searchParams.set("amount", amount.toString());
+  if (taker) u.searchParams.set("taker", taker);
+  const r = await fetch(u);
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok || !j.outAmount || (taker && !j.transaction)) throw new Error(`Ultra order HTTP ${r.status}: ${JSON.stringify(j).slice(0, 200)}`);
+  return j;
+}
+// Signs and submits through Ultra /execute. The signature is computed locally first: if the network
+// call dies after submission we still return it, so liveConfirm() can tell whether it actually landed
+// (a lost answer must never leave a real position untracked).
+async function ultraExecute(order: any, kp: Keypair): Promise<string> {
+  const tx = VersionedTransaction.deserialize(b64ToBytes(order.transaction));
+  tx.sign([kp]);
+  const localSig = bs58.encode(tx.signatures[0]);
+  let j: any;
+  try {
+    const r = await fetch(`${ULTRA}/execute`, { method: "POST", headers: { "content-type": "application/json" },
+      body: JSON.stringify({ signedTransaction: bytesToB64(tx.serialize()), requestId: order.requestId }) });
+    j = await r.json();
+  } catch { return localSig; }
+  if (j?.status === "Success") return j.signature ?? localSig;
+  throw new Error(`Ultra execute ${j?.status ?? "error"} ${j?.code ?? ""}: ${String(j?.error ?? "").slice(0, 200)}`);
+}
+// Live swap: Ultra first. Only when Ultra itself is unreachable or rate-limited (HTTP 429/5xx on the
+// order) do we fall back to the plain route, and then with slippage capped at 5%, never the old 15%.
+async function liveSwap(inputMint: string, outputMint: string, amount: bigint, kp: Keypair): Promise<{ sig: string; outAmount: string; via: string }> {
+  try {
+    const o = await ultraOrder(inputMint, outputMint, amount, kp.publicKey.toBase58());
+    return { sig: await ultraExecute(o, kp), outAmount: String(o.outAmount), via: `ultra ${o.slippageBps}bps` };
+  } catch (e) {
+    if (!/Ultra order HTTP (429|5\d\d)/.test(String(e))) throw e;
+    const q = await jupQuote(inputMint, outputMint, amount, 500);
+    return { sig: await jupSwap(q, kp), outAmount: String(q.outAmount), via: "v1 fallback 500bps" };
+  }
 }
 async function walletSol(pub: string): Promise<number | null> {
   try { return Number((await rpc("getBalance", [pub, { commitment: "confirmed" }]))?.value ?? 0) / 1e9; } catch { return null; }
@@ -532,10 +583,9 @@ async function liveExecute(cfg: any) {
         const lamports = BigInt(Math.round(rules.buy_sol * 1e9));
         // Reserve the spend before sending, so the cap holds even if this tick dies mid-flight.
         await db.from("sol_live_orders").update({ sol_amount: rules.buy_sol }).eq("id", o.id);
-        const q = await jupQuote(WSOL, o.mint, lamports, lc.slippage_bps);
-        const sig = await jupSwap(q, kp);
-        await db.from("sol_live_orders").update({ status: "sent", tx_signature: sig, token_amount: q.outAmount, updated_at: new Date().toISOString() }).eq("id", o.id);
-        await logEvent("live", `BUY sent: ${rules.buy_sol} SOL -> ${o.symbol ?? o.mint}`, "info", o.wallet);
+        const sw = await liveSwap(WSOL, o.mint, lamports, kp);
+        await db.from("sol_live_orders").update({ status: "sent", tx_signature: sw.sig, token_amount: sw.outAmount, updated_at: new Date().toISOString() }).eq("id", o.id);
+        await logEvent("live", `BUY sent (${sw.via}): ${rules.buy_sol} SOL -> ${o.symbol ?? o.mint}`, "info", o.wallet);
       } else {
         const { data: pos } = await db.from("sol_live_positions").select("*").eq("mint", o.mint).eq("status", "open").maybeSingle();
         if (!pos) { await skip("We hold no copied position in this token"); continue; }
@@ -547,13 +597,12 @@ async function liveExecute(cfg: any) {
           await skip("Token balance is already zero");
           continue;
         }
-        const q = await jupQuote(o.mint, WSOL, amount, Math.max(lc.slippage_bps, 2000));
-        const sig = await jupSwap(q, kp);
+        const sw = await liveSwap(o.mint, WSOL, amount, kp);
         await db.from("sol_live_orders").update({
-          status: "sent", tx_signature: sig, token_amount: amount.toString(), sol_amount: Number(q.outAmount) / 1e9,
+          status: "sent", tx_signature: sw.sig, token_amount: amount.toString(), sol_amount: Number(sw.outAmount) / 1e9,
           close: amount === heldRaw, updated_at: new Date().toISOString(),
         }).eq("id", o.id);
-        await logEvent("live", `SELL sent: ${amount === heldRaw ? "all" : "part"} of ${o.symbol ?? o.mint}`, "info", o.wallet);
+        await logEvent("live", `SELL sent (${sw.via}): ${amount === heldRaw ? "all" : "part"} of ${o.symbol ?? o.mint}`, "info", o.wallet);
       }
       done++;
     } catch (e) {
@@ -1265,6 +1314,36 @@ const DISC_SIG_PAGE = 1000;
 // trades we could copy a few seconds late; a sniper of minutes-old micro-caps is not (2026-11-23 finding).
 // The $100M ceiling and SOL/stable quote keep it to meme coins: above that, and for tokenized stocks or
 // wrapped BTC, the profitable sellers are market makers and arbitrage bots, not copyable traders.
+const BIRDEYE_MAX_TOKENS = 6; // ~35 compute units per call; 6 coins x 4 scans a day fits the free 30k/month
+async function birdeyeTopTraders(pools: any[]): Promise<{ wallets: Record<string, { mints: string[]; names: string[] }>; error?: string }> {
+  const wallets: Record<string, { mints: string[]; names: string[] }> = {};
+  if (!BIRDEYE_KEY) return { wallets };
+  let error: string | undefined;
+  for (const p of pools) {
+    try {
+      const u = new URL("https://public-api.birdeye.so/defi/v2/tokens/top_traders");
+      u.searchParams.set("address", p.mint);
+      u.searchParams.set("time_frame", "30d");
+      u.searchParams.set("sort_by", "realized_pnl");
+      u.searchParams.set("sort_type", "desc");
+      u.searchParams.set("offset", "0");
+      u.searchParams.set("limit", "10");
+      const r = await fetch(u, { headers: { "X-API-KEY": BIRDEYE_KEY, "x-chain": "solana", accept: "application/json" } });
+      const j = await r.json().catch(() => ({}));
+      if (!r.ok || j.success === false) { error = `Birdeye HTTP ${r.status}: ${String(j.message ?? "").slice(0, 120)}`; if (r.status === 401 || r.status === 403) break; continue; }
+      const items: any[] = j.data?.items ?? (Array.isArray(j.data) ? j.data : []);
+      for (const it of items) {
+        const owner = String(it.owner ?? "");
+        const tags = (it.tags ?? []).map((t: any) => String(t?.name ?? t)).join(" ");
+        if (!/^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(owner) || /bot|sniper|mev|arbitrage|market.?maker|insider|dev/i.test(tags)) continue;
+        const w = (wallets[owner] ??= { mints: [], names: [] });
+        w.mints.push(p.mint); w.names.push(p.name);
+      }
+    } catch (e) { error = clean(e); }
+    await sleep(1100); // free tier: 1 request per second
+  }
+  return { wallets, error };
+}
 const DISC_POOL_MIN_AGE_H = 24, DISC_POOL_MIN_LIQ = 50_000, DISC_POOL_MAX_MCAP = 100_000_000;
 async function geckoTrendingPools(rules: EntryRules = ENTRY_DEFAULTS): Promise<any[]> {
   const out: any[] = [];
@@ -1354,6 +1433,16 @@ async function discoverStep() {
       if (!a.tokens.has(h.mint)) { a.tokens.add(h.mint); a.names.push(h.token); }
       a.profit += Number(h.sol_out) - Number(h.sol_in);
     }
+    // Optional second source: Birdeye's ranking of the most profitable traders of each coin over 30 days.
+    // It sees a whole month instead of our last ~1,500 swaps. Only the documented `owner` and `tags`
+    // fields are used; profit itself is re-measured by our own 90-day research.
+    const bird = await birdeyeTopTraders(st.pools.slice(0, BIRDEYE_MAX_TOKENS));
+    st.birdeye = { used: !!BIRDEYE_KEY, found: Object.keys(bird.wallets).length, error: bird.error };
+    for (const [wallet, b] of Object.entries(bird.wallets)) {
+      if (skip.has(wallet)) continue;
+      const a = (agg[wallet] ??= { tokens: new Set(), names: [], profit: 0 });
+      for (let i = 0; i < b.mints.length; i++) if (!a.tokens.has(b.mints[i])) { a.tokens.add(b.mints[i]); a.names.push(`${b.names[i]} (Birdeye top 30d)`); }
+    }
     st.candidates = Object.entries(agg)
       .map(([wallet, a]) => ({ wallet, n: a.tokens.size, profit: +a.profit.toFixed(3), names: a.names }))
       .sort((x, y) => y.n - x.n || y.profit - x.profit).slice(0, DISC_VET_MAX);
@@ -1393,7 +1482,7 @@ async function discoverStep() {
   const sellers = Object.values(r).reduce((x: number, y: any) => x + Number(y), 0);
   const funnel = `${sellers} sellers of 1+ SOL on ${st.pools.length} established coins · ${r.sold_without_buying ?? 0} sold without buying · ` +
     `${r.not_profitable ?? 0} not profitable · ${(r.uncopyable_size ?? 0) + (r.bot_frequency ?? 0)} bot-like or uncopyable size · ` +
-    `${st.candidates.length} profitable round trips · ${st.too_new} wallets too new · ${rows.length} queued`;
+    `${st.candidates.length} candidates (incl. ${st.birdeye?.found ?? 0} from Birdeye${st.birdeye?.used ? "" : ", no key"}${st.birdeye?.error ? ", " + st.birdeye.error : ""}) · ${st.too_new} wallets too new · ${rows.length} queued`;
   st.done = true; st.queued = rows.length; st.finished_at = now; st.funnel = funnel;
   await setRow("discovery", st);
   await logEvent("discovery", funnel);
@@ -1566,17 +1655,19 @@ Deno.serve(async (req) => {
       return json({ ok: true, queued: open?.length ?? 0 });
     }
     // Builds (and signs, if a key is set) a real Jupiter swap for a tiny amount, but never sends it.
+    // Builds and signs the exact Jupiter Ultra order live would execute, but never sends it.
     if (path === "/live/dry-run" && req.method === "POST") {
       const kp = liveKeypair() ?? Keypair.generate();
       const mint = String(body.mint || USDC);
-      const q = await jupQuote(WSOL, mint, BigInt(Math.round(Number(body.sol ?? 0.01) * 1e9)), liveCfg(cfg).slippage_bps);
-      const r = await fetch(`${JUP}/swap`, { method: "POST", headers: { "content-type": "application/json" },
-        body: JSON.stringify({ quoteResponse: q, userPublicKey: kp.publicKey.toBase58(), wrapAndUnwrapSol: true, dynamicComputeUnitLimit: true }) });
-      const j = await r.json();
-      if (!j.swapTransaction) return json({ ok: false, error: JSON.stringify(j).slice(0, 300) }, 502);
-      const tx = VersionedTransaction.deserialize(b64ToBytes(j.swapTransaction));
-      tx.sign([kp]);
-      return json({ ok: true, real_key: !!liveKeypair(), out_amount: q.outAmount, route: q.routePlan?.map((x: any) => x.swapInfo?.label), signed_bytes: tx.serialize().length, sent: false });
+      const taker = String(body.taker || kp.publicKey.toBase58());
+      const o = await ultraOrder(WSOL, mint, BigInt(Math.round(Number(body.sol ?? 0.01) * 1e9)), taker).catch((e) => ({ error: clean(e) }));
+      if ((o as any).error) return json({ ok: false, error: (o as any).error }, 502);
+      const tx = VersionedTransaction.deserialize(b64ToBytes((o as any).transaction));
+      if (taker === kp.publicKey.toBase58()) tx.sign([kp]);
+      return json({ ok: true, real_key: !!liveKeypair(), via: "ultra", out_amount: (o as any).outAmount, slippage_bps: (o as any).slippageBps,
+        fee_bps: (o as any).feeBps, priority_fee_lamports: (o as any).prioritizationFeeLamports,
+        route: (o as any).routePlan?.map((x: any) => x.swapInfo?.label), signed: taker === kp.publicKey.toBase58(),
+        tx_bytes: tx.serialize().length, sent: false });
     }
     if (path === "/settings" && req.method === "POST") {
       const next = { ...cfg };
