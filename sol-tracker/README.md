@@ -110,7 +110,7 @@ units a month. Only the documented `owner` and `tags` fields are read. Not exerc
 Paper trading is only evidence for live trading if both follow the same rules, so:
 
 - **One rule set.** `copyRules()` (`lib.ts`, config key `copy`) drives both paths: buy size (`buy_sol`, the
-  same SOL amount live spends), the confirm-hold (60 s; a buy is skipped if the trader already sold — live
+  same SOL amount live spends), the confirm-hold (2 s since 2026-11-23, owner decision, was 60 s; a buy is skipped if the trader already sold — live
   now does this too), our own stop-loss −25% / take-profit +50% sells half once (`riskExit()`, now on live
   positions as well), and max open positions.
 - **Real fills.** Paper buys and sells are priced with a real Jupiter quote at fill time (DEX fees and
