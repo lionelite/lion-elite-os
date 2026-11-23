@@ -28,13 +28,12 @@
  * Same streaming contract as routes/clinic-outreach-cron.js.
  */
 
-const crypto = require('crypto');
 const express = require('express');
 const { createClinicOutreachRunner } = require('../lib/outreach/clinic-outreach-run');
 const control = require('../lib/outreach/outreach-control');
 const { effectiveDailyCap, windowState } = require('../lib/outreach/send-cap');
 const { createGithubOidcVerifier } = require('../lib/outreach/github-oidc');
-const { secretMatches } = require('./clinic-outreach-cron');
+const { createRunAuthorizer } = require('../lib/outreach/run-auth');
 const { createClinicDiscoveryStore } = require('../lib/discovery/clinic-discovery-store');
 
 const EMAIL_RE = /[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi;
@@ -50,54 +49,14 @@ function createOutreachRunRouter({ runner, discoveryStore, env = process.env, da
   const getDb = () => database || require('../lib/database');
   const oidc = oidcVerifier || createGithubOidcVerifier({ env });
 
-  // The Supabase pg_cron scheduler authenticates with a secret that was generated
-  // inside the database and kept in Supabase Vault. Only its SHA-256 is stored in
-  // app_settings (scheduler_secret_sha256), so the secret itself never appears in
-  // code, Render configuration, logs or a deploy.
-  let schedulerHash = { value: null, at: 0 };
-  async function schedulerSecretMatches(given) {
-    if (!given) return false;
-    if (Date.now() - schedulerHash.at > 60_000) {
-      try {
-        // scheduler_credentials is owned by the database admin role and only
-        // readable by the service; app_settings is the older location.
-        const db = getDb();
-        const primary = await db.query(`SELECT sha256 AS v FROM scheduler_credentials WHERE name = 'clinic-outreach-send'`).catch(() => ({ rows: [] }));
-        const r = primary.rows[0] ? primary
-          : await db.query(`SELECT value #>> '{}' AS v FROM app_settings WHERE key = 'scheduler_secret_sha256'`);
-        schedulerHash = { value: r.rows[0]?.v || null, at: Date.now() };
-      } catch {
-        schedulerHash = { value: null, at: Date.now() };
-      }
-    }
-    if (!schedulerHash.value || !/^[0-9a-f]{64}$/.test(schedulerHash.value)) return false;
-    const a = Buffer.from(crypto.createHash('sha256').update(String(given)).digest('hex'));
-    const b = Buffer.from(schedulerHash.value);
-    return a.length === b.length && crypto.timingSafeEqual(a, b);
-  }
-
-  async function authorize(req, res, next) {
-    if (env.OUTREACH_SECRET && secretMatches(req.get('x-outreach-secret'), env.OUTREACH_SECRET)) {
-      req.caller = { kind: 'outreach-secret' };
-      return next();
-    }
-    if (await schedulerSecretMatches(req.get('x-outreach-secret'))) {
-      req.caller = { kind: 'scheduler' };
-      return next();
-    }
-    const bearer = /^Bearer\s+(.+)$/i.exec(req.get('authorization') || '');
-    if (bearer) {
-      try {
-        req.caller = { kind: 'github-oidc', ...(await oidc.verify(bearer[1].trim())) };
-        return next();
-      } catch (error) {
-        logger.warn?.(`[clinic-outreach] /run rejected: OIDC ${error.code || 'OIDC_INVALID'}`);
-        return res.status(401).json({ error: 'OIDC_REJECTED', code: error.code || 'OIDC_INVALID' });
-      }
-    }
-    logger.warn?.(`[clinic-outreach] /run rejected: ${env.OUTREACH_SECRET ? 'missing or wrong x-outreach-secret' : 'OUTREACH_SECRET is not set on the server'}`);
-    return res.status(401).json({ error: 'UNAUTHORIZED', hint: env.OUTREACH_SECRET ? undefined : 'OUTREACH_SECRET is not configured' });
-  }
+  // Same three ways in as before (OUTREACH_SECRET, the pg_cron scheduler secret,
+  // GitHub OIDC), now shared with the agent brief via lib/outreach/run-auth.js.
+  const authorize = createRunAuthorizer({
+    env, getDb, oidc, logger,
+    credentialName: 'clinic-outreach-send',
+    legacyAppSettingsKey: 'scheduler_secret_sha256',
+    label: 'clinic-outreach',
+  });
 
   router.post('/run/clinic-outreach', authorize, async (req, res) => {
     const trigger = (req.caller.kind === 'github-oidc'

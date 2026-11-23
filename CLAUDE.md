@@ -740,6 +740,20 @@ anywhere): `JOB_ATTEMPTS`, `JOB_BACKOFF_MS`, `JOB_LOCK_TTL_MS`,
 (read by `workers/outreach-worker.js`) have no default anywhere in
 `render.yaml` and fall back to hardcoded defaults in code.
 
+## Daily agent brief (2026-11-23)
+
+The agent roster never ran in production: `agents:run` was scheduled nowhere, and it dispatches to
+BullMQ queues that don't exist on the free plan. **What runs every day is the brief.** At 11:17 UTC
+Supabase pg_cron (`db/supabase/agent-daily-brief-scheduler.sql`, its own `agent-daily-brief` credential)
+calls `POST /run/agents/daily-brief` (`routes/agent-brief.js`). The route runs read-only metric queries
+(`lib/agents/brief-metrics.js`, SELECT-only, enforced by test), applies deterministic per-lane rules
+(`lib/agents/daily-brief.js`) for Wellness, Beauty & Coaching and BuildPipeline, and stores one row per
+New York day in `agent_briefs`. `.github/workflows/daily-agent-brief.yml` copies it to
+`knowledge/daily/briefs/` on the `vault` branch, with the open-PR backlog added. Each action names a role
+from `roles.js` and who acts: `owner` (max 3/day), `claude` or `agent`. A failed query renders **no data**,
+never 0. Auth for `/run/*` is shared in `lib/outreach/run-auth.js` (extracted unchanged from
+`routes/outreach-run.js`). Docs: `docs/daily-agent-brief.md`.
+
 ## Obsidian vault (2026-11-23)
 
 The repo root is an Obsidian vault, added to keep everything in the OS organized. Start at

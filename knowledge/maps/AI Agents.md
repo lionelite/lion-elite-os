@@ -9,6 +9,8 @@ tags: [map]
 
 Back to [[knowledge/Home|Home]]
 
+- [[docs/daily-agent-brief|Daily agent brief]]: what runs every morning, across all three lanes
+- [[knowledge/daily/briefs/Latest|Latest brief]]
 - [[docs/ai-agent-roster|AI agent roster]]: roles, KPIs, coordinator, runner
 - [[docs/openai-executive-agent|OpenAI executive agent]]
 - Role design docs:

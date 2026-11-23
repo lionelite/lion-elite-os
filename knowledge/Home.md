@@ -9,6 +9,9 @@ This is the start page for the whole OS. Every doc in the repo is reachable from
 > [!warning] This repo is public
 > Everything synced here can be read by anyone on GitHub. No customer data, health records, passwords, API keys, financials or private notes. See [[knowledge/obsidian|How this vault works]].
 
+## Today
+- [[knowledge/daily/briefs/Latest|Today's agent brief]]: numbers, your top 3, what Claude is fixing, what's blocked
+
 ## Start here
 - [[CLAUDE|Architecture, autonomy contract and hard limits]]: the source of truth for what's actually built.
 - [[knowledge/README|Knowledge base rules]] and [[knowledge/execution-rules|GitHub-first memory protocol]]
