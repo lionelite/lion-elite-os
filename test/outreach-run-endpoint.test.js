@@ -88,7 +88,9 @@ test('/health/outreach: last run, sends today, cap and the most recent error, wi
       return { rows: [], rowCount: 0 };
     },
   };
-  const { base, close } = await serve(createOutreachRunRouter({ runner: fakeRunner(), env: { DAILY_SEND_CAP: '150', OUTREACH_START_DATE: '2026-08-01' }, database, oidcVerifier: rejectingOidc, logger: quiet }));
+  // Pinned clock: 6 PM New York, outside the sending window. Health depends on
+  // the window, so an unpinned clock made this test fail during sending hours.
+  const { base, close } = await serve(createOutreachRunRouter({ runner: fakeRunner(), env: { DAILY_SEND_CAP: '150', OUTREACH_START_DATE: '2026-08-01' }, database, oidcVerifier: rejectingOidc, logger: quiet, now: () => new Date('2026-11-20T23:00:00Z') }));
   try {
     const body = await (await fetch(`${base}/health/outreach`)).json();
     assert.equal(body.ok, true);
@@ -185,5 +187,25 @@ test('/run/clinic-outreach: the scheduler hash is read from scheduler_credential
     const res = await fetch(`${base}/run/clinic-outreach?async=1`, { method: 'POST', headers: { 'x-outreach-secret': 'vault-secret' } });
     assert.equal(res.status, 202);
     assert.ok(!seen.some(q => /app_settings/.test(q)), 'fallback not needed when the primary table answers');
+  } finally { await close(); }
+});
+
+test('/health/outreach inside the window: a missing scheduler tick and a stale run are failing, not green', async () => {
+  const database = {
+    query: async sql => {
+      if (/FROM outreach_runs ORDER BY started_at DESC LIMIT 1/.test(sql)) return { rows: [{ run_id: 'r1', status: 'completed', sent: 4, started_at: '2026-11-23T14:00:00Z', finished_at: '2026-11-23T14:05:00Z' }] };
+      if (/FROM scheduler_heartbeats/.test(sql)) return { rows: [{ start_time: '2026-11-23T14:00:00Z', status: 'ticked', return_message: '1' }] };
+      if (/COUNT\(\*\)::int AS n FROM outreach_queue/.test(sql)) return { rows: [{ n: 0 }] };
+      return { rows: [] };
+    },
+  };
+  // 11:00 New York, 55 minutes after both the last tick and the last run.
+  const { base, close } = await serve(createOutreachRunRouter({ runner: fakeRunner(), env: {}, database, oidcVerifier: rejectingOidc, logger: quiet, now: () => new Date('2026-11-23T16:00:00Z') }));
+  try {
+    const body = await (await fetch(`${base}/health/outreach`)).json();
+    assert.equal(body.window.open, true);
+    assert.equal(body.status, 'failing');
+    assert.ok(body.reasons.some(r => /scheduler has not ticked/.test(r)));
+    assert.ok(body.reasons.some(r => /no outreach run in 30 minutes/.test(r)));
   } finally { await close(); }
 });

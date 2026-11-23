@@ -41,7 +41,7 @@ const EMAIL_RE = /[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi;
 const redact = text => String(text || '').replace(EMAIL_RE, '<email>').slice(0, 500);
 const truthy = v => ['1', 'true', 'yes'].includes(String(v ?? '').toLowerCase());
 
-function createOutreachRunRouter({ runner, discoveryStore, env = process.env, database, heartbeatMs = 20_000, oidcVerifier, logger = console } = {}) {
+function createOutreachRunRouter({ runner, discoveryStore, env = process.env, database, heartbeatMs = 20_000, oidcVerifier, logger = console, now = () => new Date() } = {}) {
   const router = express.Router();
   let activeDiscovery = discoveryStore || null;
   const getDiscovery = () => (activeDiscovery ||= createClinicDiscoveryStore({ env }));
@@ -187,7 +187,7 @@ function createOutreachRunRouter({ runner, discoveryStore, env = process.env, da
   //   unknown  — the scheduler's own record cannot be read
   router.get('/health/outreach', async (_req, res) => {
     const cap = effectiveDailyCap({ env });
-    const win = windowState(new Date(), env);
+    const win = windowState(now(), env);
     const safe = q => q.catch(() => null);
     try {
       const db = getDb();
@@ -217,7 +217,7 @@ function createOutreachRunRouter({ runner, discoveryStore, env = process.env, da
       const heldUncertain = held?.rows?.[0] ? held.rows[0].n : null;
       const live = lastLive?.rows?.[0] || null;
       const lastTick = tick?.rows?.[0] || null;
-      const minutesSince = t => (t ? (Date.now() - new Date(t).getTime()) / 60000 : Infinity);
+      const minutesSince = t => (t ? (now().getTime() - new Date(t).getTime()) / 60000 : Infinity);
       const remaining = acceptedToday === null ? null : Math.max(0, cap.cap - acceptedToday);
       const reasons = [];
       let status = 'healthy';
