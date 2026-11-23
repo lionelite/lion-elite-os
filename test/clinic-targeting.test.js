@@ -229,3 +229,23 @@ test('an independent practice on its own domain is untouched by that rule', () =
     assert.notEqual(clinicRelevance({ name, website, category: 'med-spa' }).tier, 'exclude', name);
   }
 });
+
+test('unrelated wellness businesses are excluded even with broad wellness signals', () => {
+  const offTarget = [
+    '50th & France Chiropractic & Wellness',
+    'Magnolia Acupuncture & Integrative Wellness',
+    'Roots Wellness Chiropractic Center',
+    'Downtown Yoga Studio & Wellness',
+    'Fitness Studio and Recovery'
+  ];
+  for (const name of offTarget) {
+    const r = clinicRelevance({ name, website: 'https://example.com', category: 'clinic' });
+    assert.equal(r.tier, 'exclude', `${name}: ${r.reasons.join(' ')}`);
+  }
+});
+
+test('clear medical supply targets remain high fit', () => {
+  for (const name of ['Peak Hormone Replacement Clinic', 'Clearwater Medical Spa', 'Longevity Peptide Research Lab']) {
+    assert.equal(clinicRelevance({ name, category: 'clinic' }).tier, 'high', name);
+  }
+});
