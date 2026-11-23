@@ -242,3 +242,44 @@ describe("sniper score", () => {
     expect(assess({ ...base, early_buy_pct: null, early_buy_known: 0 }).qualifies).toBe(false);
   });
 });
+
+import { copyRules, riskExit, traderScore, SCORE_RULES } from "../supabase/functions/sol-tracker/lib.ts";
+describe("shared copy rules (paper/live parity)", () => {
+  test("one source of truth, with fallbacks to the older paper/live fields", () => {
+    const r = copyRules({ live: { buy_sol: 0.25, max_open_positions: 8 }, paper: { confirm_hold_seconds: 60, stop_loss_pct: 25, take_profit_pct: 50, take_profit_sell_frac: 0.5 } });
+    expect(r).toEqual({ buy_sol: 0.25, confirm_hold_seconds: 60, stop_loss_pct: 25, take_profit_pct: 50, take_profit_sell_frac: 0.5, max_open_positions: 8 });
+    expect(copyRules({ copy: { buy_sol: 0.1 }, live: { buy_sol: 0.25 } }).buy_sol).toBe(0.1);
+  });
+  test("stop-loss sells all, take-profit sells part once", () => {
+    const r = copyRules({});
+    expect(riskExit(1, 0.74, r, false)?.action).toBe("stop");
+    expect(riskExit(1, 0.74, r, false)?.frac).toBe(1);
+    expect(riskExit(1, 1.6, r, false)).toEqual({ action: "take", frac: 0.5, movePct: expect.closeTo(60, 5) });
+    expect(riskExit(1, 1.6, r, true)).toBeNull();
+    expect(riskExit(1, 0.9, r, false)).toBeNull();
+    expect(riskExit(1, null, r, false)).toBeNull();
+  });
+  test("the live loss limit stops buying", () => {
+    const ok = { cfg: { ...LIVE_DEFAULTS, enabled: true }, keySet: true, copyWallet: true, spentSol: 0, openPositions: 0,
+      holdingMint: false, walletSol: 1, liquidityUsd: 50_000, freezeAuthority: false, delaySeconds: 40 };
+    expect(liveBuyDecision({ ...ok, realizedPnlSol: -1.4 }).go).toBe(true);
+    expect(liveBuyDecision({ ...ok, realizedPnlSol: -1.5 }).reason).toMatch(/Loss limit/);
+  });
+});
+describe("trader scorecard", () => {
+  const t = (realized: number, i: number) => ({ realized, cost: 35, closedAt: new Date(Date.UTC(2026, 10, 1, 0, i)).toISOString() });
+  test("needs 20 trades, net profit, and a margin over costs", () => {
+    expect(traderScore(Array.from({ length: 19 }, (_, i) => t(5, i))).eligible).toBe(false);
+    const good = traderScore(Array.from({ length: 20 }, (_, i) => t(i % 2 ? 6 : -3, i)));
+    expect(good.eligible).toBe(true);
+    expect(good.win_rate_pct).toBe(50);
+    expect(traderScore(Array.from({ length: 20 }, (_, i) => t(i % 2 ? 3.1 : -3, i))).eligible).toBe(false); // tiny edge
+  });
+  test("demotes when the most recent copies lose money overall", () => {
+    const early = Array.from({ length: 20 }, (_, i) => t(10, i));
+    const late = Array.from({ length: SCORE_RULES.recent_n }, (_, i) => t(-2, 100 + i));
+    const s = traderScore([...early, ...late]);
+    expect(s.eligible).toBe(true);
+    expect(s.demote).toBe(true);
+  });
+});

@@ -83,6 +83,27 @@ the trader's buys within 1 hour of the token's launch (`earlyBuyShare()`, launch
 `POST /paper/reset` now closes open paper positions instead of deleting them, and results count from the
 latest reset marker.
 
+## Paper/live parity, realistic fills, scorecard (2026-11-23)
+
+Paper trading is only evidence for live trading if both follow the same rules, so:
+
+- **One rule set.** `copyRules()` (`lib.ts`, config key `copy`) drives both paths: buy size (`buy_sol`, the
+  same SOL amount live spends), the confirm-hold (60 s; a buy is skipped if the trader already sold — live
+  now does this too), our own stop-loss −25% / take-profit +50% sells half once (`riskExit()`, now on live
+  positions as well), and max open positions.
+- **Real fills.** Paper buys and sells are priced with a real Jupiter quote at fill time (DEX fees and
+  price impact included) plus the priority fee. The ledger notes the total cost against the market price. A
+  sell with no route is estimated and labelled `ESTIMATED`.
+- **Scorecard** (`traderScore()`, hourly): per trader, paper copies closed since the last reset. **Eligible**
+  = ≥ 20 trades, net positive, average ≥ +2% per trade. An eligible trader gets a Telegram message with
+  **Approve live / Not now** buttons. Approval sets `copy_live` and stage `live`; nothing else turns real
+  money on. A live trader whose last 10 paper copies lost money overall is **demoted** automatically.
+  `GET /scorecard` shows it.
+- **Live safety:** buying switches itself off when realized live P/L reaches −`max_loss_sol` (1.5 SOL,
+  i.e. 30% of the 5 SOL cap). A low-balance alert fires at most once a day.
+- **Daily summary** in Telegram at 9 pm New York (`POST /summary` sends one now): paper P/L since the reset,
+  the last 24 h, top skip reasons, the trader scorecard, research results, and live state.
+
 ## Live copy trading (real money)
 
 Owner decision 2026-11-22: copy the Kolscan **daily** leaderboard ranks 15–20 (Smokez, Tuults, Iced,

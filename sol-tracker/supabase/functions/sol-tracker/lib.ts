@@ -312,20 +312,22 @@ export type LiveCfg = {
   max_buy_delay_seconds: number; // copying later than this after the trader's buy is chasing, not copying
   skip_freeze_authority: boolean; // a token whose issuer can freeze accounts may be unsellable
   min_trader_buy_sol: number;   // the trader's own buy must be at least this; smaller buys are tests/dust
+  max_loss_sol: number;         // realized live loss at which buying stops by itself (owner re-enables)
 };
 export const LIVE_DEFAULTS: LiveCfg = {
   enabled: false, buy_sol: 0.25, total_cap_sol: 5, max_open_positions: 8, slippage_bps: 1500,
   min_sol_reserve: 0.03, min_liquidity_usd: 10_000, max_buy_delay_seconds: 120, skip_freeze_authority: true,
-  min_trader_buy_sol: 0.25,
+  min_trader_buy_sol: 0.25, max_loss_sol: 1.5,
 };
 
 export function liveBuyDecision(i: {
   cfg: LiveCfg; keySet: boolean; copyWallet: boolean; spentSol: number; openPositions: number; holdingMint: boolean;
   walletSol: number | null; liquidityUsd: number | null; freezeAuthority: boolean; delaySeconds: number | null;
-  traderBuySol?: number | null;
+  traderBuySol?: number | null; realizedPnlSol?: number;
 }): { go: boolean; reason: string } {
   const c = i.cfg;
   if (!c.enabled) return { go: false, reason: "Live trading is switched off" };
+  if ((i.realizedPnlSol ?? 0) <= -c.max_loss_sol) return { go: false, reason: `Loss limit reached (${(i.realizedPnlSol ?? 0).toFixed(2)} SOL realized, limit -${c.max_loss_sol})` };
   if (!i.keySet) return { go: false, reason: "No trading wallet key (LIVE_TRADER_KEY) is set" };
   if (!i.copyWallet) return { go: false, reason: "This wallet is monitored but not copied" };
   if (i.traderBuySol != null && i.traderBuySol < c.min_trader_buy_sol) return { go: false, reason: `Their buy was ${i.traderBuySol.toFixed(3)} SOL (copy only ${c.min_trader_buy_sol}+)` };
@@ -347,4 +349,60 @@ export function liveSellAmount(heldRaw: bigint, exitType: string | null, exitPct
   if (exitType === "FULL" || exitPct == null || exitPct >= 95) return heldRaw;
   const bps = BigInt(Math.max(0, Math.min(10_000, Math.round(exitPct * 100))));
   return (heldRaw * bps) / 10_000n;
+}
+
+// ---------- shared copy rules: ONE source for paper and live ----------
+// Paper trading is only evidence for live trading if both follow the same rules. Every rule that
+// shapes a copied position (size, the fast-flip wait, our own stop-loss and take-profit, the position
+// limit) is read from here by both paths, so they cannot drift apart again.
+export type CopyRules = {
+  buy_sol: number; confirm_hold_seconds: number; stop_loss_pct: number; take_profit_pct: number;
+  take_profit_sell_frac: number; max_open_positions: number;
+};
+export function copyRules(cfg: any): CopyRules {
+  const c = cfg?.copy ?? {}, p = cfg?.paper ?? {}, l = cfg?.live ?? {};
+  const pick = (k: string, ...alts: any[]) => Number(c[k] ?? alts.find((x) => x != null));
+  return {
+    buy_sol: pick("buy_sol", l.buy_sol, LIVE_DEFAULTS.buy_sol),
+    confirm_hold_seconds: pick("confirm_hold_seconds", p.confirm_hold_seconds, 60),
+    stop_loss_pct: pick("stop_loss_pct", p.stop_loss_pct, 25),
+    take_profit_pct: pick("take_profit_pct", p.take_profit_pct, 50),
+    take_profit_sell_frac: Math.min(1, pick("take_profit_sell_frac", p.take_profit_sell_frac, 0.5)),
+    max_open_positions: pick("max_open_positions", l.max_open_positions, p.max_open_positions, 8),
+  };
+}
+// Our own exit, independent of the trader. `entryPrice` is the effective price we paid (fees and
+// slippage included), so the move is our real gain or loss before exit costs.
+export function riskExit(entryPrice: number, price: number | null, r: CopyRules, tpTaken: boolean):
+  { action: "stop" | "take"; frac: number; movePct: number } | null {
+  if (!price || !entryPrice) return null;
+  const movePct = (price / entryPrice - 1) * 100;
+  if (r.stop_loss_pct > 0 && movePct <= -r.stop_loss_pct) return { action: "stop", frac: 1, movePct };
+  if (r.take_profit_pct > 0 && movePct >= r.take_profit_pct && !tpTaken) return { action: "take", frac: r.take_profit_sell_frac, movePct };
+  return null;
+}
+
+// ---------- trader scorecard: watch -> eligible -> live ----------
+// A trader earns real money only by first making money on paper under the exact live rules.
+// Eligible: >= min_trades closed copies, net positive, average return >= min_avg_pct (a margin for
+// the costs paper cannot fully model). Demote: the last `recent_n` copies lost money in total.
+export const SCORE_RULES = { min_trades: 20, min_avg_pct: 2, recent_n: 10 };
+export function traderScore(closed: { realized: number; cost: number; closedAt: string }[], r = SCORE_RULES) {
+  const xs = [...closed].sort((a, b) => Date.parse(a.closedAt) - Date.parse(b.closedAt));
+  const n = xs.length;
+  const net = xs.reduce((s, x) => s + x.realized, 0);
+  const wins = xs.filter((x) => x.realized > 0).length;
+  const avgPct = n ? xs.reduce((s, x) => s + (x.cost ? x.realized / x.cost : 0), 0) / n * 100 : null;
+  const recent = xs.slice(-r.recent_n);
+  const recentNet = recent.reduce((s, x) => s + x.realized, 0);
+  const reasons: string[] = [];
+  if (n < r.min_trades) reasons.push(`${n} of ${r.min_trades} paper trades`);
+  if (!(net > 0)) reasons.push(`net ${net.toFixed(2)} USD`);
+  if (!(avgPct != null && avgPct >= r.min_avg_pct)) reasons.push(`avg ${avgPct == null ? "n/a" : avgPct.toFixed(1)}% < ${r.min_avg_pct}%`);
+  const r2 = (x: number) => Math.round(x * 100) / 100;
+  return {
+    n, net: r2(net), win_rate_pct: n ? Math.round((wins / n) * 100) : null, avg_pct: avgPct == null ? null : r2(avgPct),
+    recent_net: r2(recentNet), eligible: reasons.length === 0, reasons,
+    demote: recent.length >= r.recent_n && recentNet < 0,
+  };
 }

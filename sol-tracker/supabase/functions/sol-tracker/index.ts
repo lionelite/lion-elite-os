@@ -5,7 +5,7 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { Keypair, VersionedTransaction } from "npm:@solana/web3.js@1.98.0";
 import bs58 from "npm:bs58@6.0.0";
-import { parseSwap, researchMetrics, assess, poolSwapSide, discoveryVerdict, historyTooShort, liveBuyDecision, liveSellAmount, LIVE_DEFAULTS, entryCheck, earlyBuyShare, ENTRY_DEFAULTS, WSOL, USDC, USDT } from "./lib.ts";
+import { parseSwap, researchMetrics, assess, poolSwapSide, discoveryVerdict, historyTooShort, liveBuyDecision, liveSellAmount, LIVE_DEFAULTS, entryCheck, earlyBuyShare, ENTRY_DEFAULTS, copyRules, riskExit, traderScore, SCORE_RULES, WSOL, USDC, USDT } from "./lib.ts";
 import type { PoolAgg, LiveCfg, EntryRules } from "./lib.ts";
 
 const SB_URL = Deno.env.get("SUPABASE_URL")!;
@@ -206,13 +206,41 @@ async function paperState(cfg: any) {
   const { data: open } = await db.from("sol_paper_positions").select("*").eq("status", "open");
   return { cash, open: open ?? [] };
 }
-// A copied trade is queued and filled `exec_delay_seconds` after detection at the price *then*,
-// so the simulation pays for being late instead of filling at the moment it noticed the trade.
-// Buys also wait `confirm_hold_seconds`: if the trader has already sold by then, the buy is skipped
-// (a fast flip we could not copy profitably). Sells keep the short exec delay.
+// Fills are REAL Jupiter quotes taken at fill time: the exact amount a live swap of the same size would
+// return, with DEX fees and price impact included, plus the priority fee. A flat "price + 3%" badly
+// understates the cost of copying thin meme coins, which is how paper can look good while live loses.
+const decCache: Record<string, number> = {};
+async function mintDecimals(mint: string): Promise<number | null> {
+  if (decCache[mint] != null) return decCache[mint];
+  try {
+    const info = await rpc("getAccountInfo", [mint, { encoding: "jsonParsed" }], 2);
+    const d = info?.value?.data?.parsed?.info?.decimals;
+    if (typeof d === "number") { decCache[mint] = d; return d; }
+  } catch { /* fall through */ }
+  return null;
+}
+async function quoteBuyTokens(mint: string, sol: number, bps: number): Promise<{ tokens: number; dec: number } | null> {
+  try {
+    const dec = await mintDecimals(mint);
+    if (dec == null) return null;
+    const q = await jupQuote(WSOL, mint, BigInt(Math.round(sol * 1e9)), bps);
+    return { tokens: Number(q.outAmount) / 10 ** dec, dec };
+  } catch { return null; }
+}
+async function quoteSellSol(mint: string, tokens: number, dec: number, bps: number): Promise<number | null> {
+  try {
+    const raw = BigInt(Math.floor(tokens * 10 ** dec));
+    if (raw <= 0n) return 0;
+    const q = await jupQuote(mint, WSOL, raw, bps);
+    return Number(q.outAmount) / 1e9;
+  } catch { return null; }
+}
+
+// A copied buy waits copyRules().confirm_hold_seconds (live does the same): if the trader has already
+// sold by then it was a fast flip we cannot copy profitably, and it is skipped. Sells keep a short delay.
 async function paperOnTrade(t: any, cfg: any) {
   let extra = Number(cfg.paper.exec_delay_seconds ?? 0);
-  if (t.kind === "buy") extra = Math.max(extra, Number(cfg.paper.confirm_hold_seconds ?? 0));
+  if (t.kind === "buy") extra = Math.max(extra, copyRules(cfg).confirm_hold_seconds);
   if (extra > 0) {
     await db.from("sol_paper_orders").insert({
       signature: t.signature, wallet: t.wallet, trade: t, due_at: new Date(Date.now() + extra * 1000).toISOString(),
@@ -225,7 +253,7 @@ async function processPaperOrders(cfg: any) {
   const { data: due } = await db.from("sol_paper_orders").select("*").eq("status", "queued").lte("due_at", new Date().toISOString()).order("due_at").limit(20);
   if (!due?.length) return 0;
   const prices = await dexPairs([...new Set(due.map((o: any) => o.trade.mint))]);
-  const hold = Number(cfg.paper.confirm_hold_seconds ?? 0);
+  const hold = copyRules(cfg).confirm_hold_seconds;
   for (const o of due) {
     try {
       if (o.trade.kind === "buy" && hold > 0) {
@@ -247,57 +275,56 @@ async function processPaperOrders(cfg: any) {
 }
 async function paperExecute(t: any, cfg: any, price: number | null) {
   const p = cfg.paper;
-  const sol = await solUsd();
+  const cr = copyRules(cfg);
+  const lc = liveCfg(cfg);
   const delay = t.block_time ? (Date.now() - Date.parse(t.block_time)) / 1000 : null;
-  const prio = sol ? p.priority_fee_sol * sol : 0;
   const base = { wallet: t.wallet, mint: t.mint, symbol: t.token_symbol, source_signature: t.signature, delay_seconds: delay };
-  if (!price) {
-    await db.from("sol_paper_ledger").insert({ ...base, type: "skip", note: "No price available at detection" });
-    return;
-  }
+  const skip = (note: string) => db.from("sol_paper_ledger").insert({ ...base, type: "skip", note });
+  if (!price) { await skip("No price available at detection"); return; }
   const { cash, open } = await paperState(cfg);
   if (t.kind === "buy") {
     const ec = entryCheck(t.market, entryRules(cfg));
-    if (!ec.pass) {
-      await db.from("sol_paper_ledger").insert({ ...base, type: "skip", note: `Entry filter: ${ec.reasons.join("; ")}` });
-      return;
-    }
-    if (open.find((o: any) => o.mint === t.mint)) {
-      await db.from("sol_paper_ledger").insert({ ...base, type: "skip", note: "Already holding this token" });
-      return;
-    }
-    if (open.length >= p.max_open_positions) {
-      await db.from("sol_paper_ledger").insert({ ...base, type: "skip", note: "Max open positions reached" });
-      return;
-    }
-    const equityGuess = cash + open.reduce((s: number, o: any) => s + Number(o.cost_usd), 0);
-    const size = Math.min(equityGuess * p.position_pct / 100, p.max_position_usd, cash);
-    if (size < 2) {
-      await db.from("sol_paper_ledger").insert({ ...base, type: "skip", note: "Not enough simulated cash" });
-      return;
-    }
-    const fill = price * (1 + p.slippage_pct / 100);
-    const net = size * (1 - p.fee_pct / 100) - prio;
-    const qty = net / fill;
+    if (!ec.pass) { await skip(`Entry filter: ${ec.reasons.join("; ")}`); return; }
+    if (open.find((o: any) => o.mint === t.mint)) { await skip("Already holding this token"); return; }
+    if (open.length >= cr.max_open_positions) { await skip("Max open positions reached"); return; }
+    const sol = await solUsd();
+    if (!sol) { await skip("No SOL price"); return; }
+    const prioUsd = p.priority_fee_sol * sol;
+    const cost = cr.buy_sol * sol + prioUsd; // same SOL size live would spend
+    if (cash < cost) { await skip("Not enough simulated cash"); return; }
+    const q = await quoteBuyTokens(t.mint, cr.buy_sol, lc.slippage_bps);
+    if (!q || !(q.tokens > 0)) { await skip("No Jupiter route at fill time (a live buy would fail too)"); return; }
+    const fill = cost / q.tokens;
     await db.from("sol_paper_positions").insert({
       wallet: t.wallet, mint: t.mint, symbol: t.token_symbol, source_signature: t.signature,
-      entry_price_usd: fill, qty, qty_open: qty, cost_usd: size,
+      entry_price_usd: fill, qty: q.tokens, qty_open: q.tokens, cost_usd: cost, decimals: q.dec,
     });
-    await db.from("sol_paper_ledger").insert({ ...base, type: "buy", usd: size, price_usd: fill,
-      note: `SIMULATED buy ${fmt(qty, 0)} @ ${usd(fill)} (incl. ${p.slippage_pct}% slippage, ${p.fee_pct}% fee, priority fee)` });
+    await db.from("sol_paper_ledger").insert({ ...base, type: "buy", usd: cost, price_usd: fill,
+      note: `SIMULATED buy ${cr.buy_sol} SOL -> ${fmt(q.tokens, 0)} via a real Jupiter quote; effective ${usd(fill)} vs market ${usd(price)} (${fmt((fill / price - 1) * 100, 1)}% total cost)` });
   } else if (t.kind === "sell" && p.copy_sells) {
     const pos = open.find((o: any) => o.mint === t.mint && o.wallet === t.wallet);
     if (!pos) return;
     const frac = t.exit_type === "FULL" ? 1 : Math.min(1, Math.max(0, (t.exit_pct ?? 100) / 100));
-    await paperSell(pos, frac, price, cfg, prio, base, `${t.exit_type ?? ""} copy sell`);
+    await paperSell(pos, frac, price, cfg, base, `${t.exit_type ?? ""} copy sell`);
   }
 }
-// Sell `frac` of a paper position's remaining tokens at `price` (minus slippage and fees).
-async function paperSell(pos: any, frac: number, price: number, cfg: any, prio: number, base: any, reason: string, extra: any = {}) {
+// Sell `frac` of a paper position's remaining tokens: a real Jupiter quote for that amount, minus the
+// priority fee. Only if no route exists (or decimals are unknown) is it estimated from the market price.
+async function paperSell(pos: any, frac: number, price: number, cfg: any, base: any, reason: string, extra: any = {}) {
   const p = cfg.paper;
   const q = Number(pos.qty_open) * frac;
-  const fill = price * (1 - p.slippage_pct / 100);
-  const proceeds = Math.max(0, q * fill * (1 - p.fee_pct / 100) - prio);
+  const sol = await solUsd();
+  const prioUsd = sol ? p.priority_fee_sol * sol : 0;
+  let proceeds: number | null = null, how = "Jupiter quote";
+  if (pos.decimals != null && sol) {
+    const out = await quoteSellSol(pos.mint, q, Number(pos.decimals), Math.max(liveCfg(cfg).slippage_bps, 2000));
+    if (out != null) proceeds = Math.max(0, out * sol - prioUsd);
+  }
+  if (proceeds == null) {
+    how = "ESTIMATED, no Jupiter route";
+    proceeds = Math.max(0, q * price * (1 - p.slippage_pct / 100) * (1 - p.fee_pct / 100) - prioUsd);
+  }
+  const fill = q ? proceeds / q : 0;
   const costPart = Number(pos.cost_usd) * (q / Number(pos.qty));
   const left = Number(pos.qty_open) - q;
   const closed = left <= Number(pos.qty) * 0.001;
@@ -306,34 +333,25 @@ async function paperSell(pos: any, frac: number, price: number, cfg: any, prio: 
     status: closed ? "closed" : "open", closed_at: closed ? new Date().toISOString() : null, ...extra,
   }).eq("id", pos.id);
   await db.from("sol_paper_ledger").insert({ ...base, type: "sell", usd: proceeds, price_usd: fill,
-    note: `SIMULATED ${reason}: sold ${Math.round(frac * 100)}% @ ${usd(fill)}, P/L ${usd(proceeds - costPart)}` });
+    note: `SIMULATED ${reason}: sold ${Math.round(frac * 100)}% (${how}) @ ${usd(fill)}, P/L ${usd(proceeds - costPart)}` });
 }
-// Our own exits, independent of the trader: stop-loss sells everything once the price is
-// stop_loss_pct below our entry; take-profit sells take_profit_sell_frac once, at +take_profit_pct.
-// Checked every tick at the current DexScreener price.
+// Our own exits, independent of the trader, from the shared riskExit() rule (live uses the same one).
+// Triggered on the current DexScreener price against our effective entry; executed at a real quote.
 async function paperRiskExits(cfg: any) {
-  const p = cfg.paper;
-  const sl = Number(p.stop_loss_pct ?? 0), tp = Number(p.take_profit_pct ?? 0);
-  if (!sl && !tp) return 0;
+  const cr = copyRules(cfg);
+  if (!cr.stop_loss_pct && !cr.take_profit_pct) return 0;
   const { data: open } = await db.from("sol_paper_positions").select("*").eq("status", "open");
   if (!open?.length) return 0;
   const prices = await dexPairs([...new Set(open.map((o: any) => o.mint))]);
-  const sol = await solUsd();
-  const prio = sol ? p.priority_fee_sol * sol : 0;
   let n = 0;
   for (const pos of open) {
-    const px = prices[pos.mint]?.priceUsd;
-    const entry = Number(pos.entry_price_usd);
-    if (!px || !entry) continue;
-    const move = (px / entry - 1) * 100;
+    const px = prices[pos.mint]?.priceUsd ?? null;
+    const x = riskExit(Number(pos.entry_price_usd), px, cr, !!pos.tp_taken);
+    if (!x) continue;
     const base = { wallet: pos.wallet, mint: pos.mint, symbol: pos.symbol, source_signature: pos.source_signature, delay_seconds: null };
-    if (sl && move <= -sl) {
-      await paperSell(pos, 1, px, cfg, prio, base, `stop-loss (${move.toFixed(0)}%)`);
-      n++;
-    } else if (tp && move >= tp && !pos.tp_taken) {
-      await paperSell(pos, Math.min(1, Number(p.take_profit_sell_frac ?? 0.5)), px, cfg, prio, base, `take-profit (+${move.toFixed(0)}%)`, { tp_taken: true });
-      n++;
-    }
+    await paperSell(pos, x.frac, px!, cfg, base, x.action === "stop" ? `stop-loss (${x.movePct.toFixed(0)}%)` : `take-profit (+${x.movePct.toFixed(0)}%)`,
+      x.action === "take" ? { tp_taken: true } : {});
+    n++;
   }
   return n;
 }
@@ -410,11 +428,18 @@ async function liveNotify(cfg: any, html: string) {
 }
 
 // Called once per newly recorded trade of a monitored wallet.
-async function liveOnTrade(t: any, w: any) {
+// Buys wait the same confirm-hold as paper (then skip fast flips); sells go immediately.
+async function liveOnTrade(t: any, w: any, cfg: any) {
   if (!w.copy_live || (t.kind !== "buy" && t.kind !== "sell")) return;
+  const hold = t.kind === "buy" ? copyRules(cfg).confirm_hold_seconds : 0;
   await db.from("sol_live_orders").upsert({
     source_signature: t.signature, wallet: t.wallet, mint: t.mint, symbol: t.token_symbol, side: t.kind, trade: t, status: "pending",
+    due_at: new Date(Date.now() + hold * 1000).toISOString(),
   }, { onConflict: "source_signature,side", ignoreDuplicates: true });
+}
+async function liveRealizedSol(): Promise<number> {
+  const { data } = await db.from("sol_live_positions").select("sol_in,sol_out").eq("status", "closed");
+  return (data ?? []).reduce((s: number, r: any) => s + Number(r.sol_out ?? 0) - Number(r.sol_in ?? 0), 0);
 }
 
 async function liveConfirm(cfg: any) {
@@ -430,7 +455,12 @@ async function liveConfirm(cfg: any) {
     if (s && !s.err && (s.confirmationStatus === "confirmed" || s.confirmationStatus === "finalized")) {
       await db.from("sol_live_orders").update({ status: "confirmed", updated_at: new Date().toISOString() }).eq("id", o.id);
       if (o.side === "buy") {
-        await db.from("sol_live_positions").upsert({ mint: o.mint, wallet: o.wallet, symbol: o.symbol, sol_in: o.sol_amount, sol_out: 0, status: "open", opened_at: new Date().toISOString(), closed_at: null });
+        const dec = await mintDecimals(o.mint);
+        const sol = await solUsd();
+        const tokens = dec != null && o.token_amount ? Number(o.token_amount) / 10 ** dec : null;
+        await db.from("sol_live_positions").upsert({ mint: o.mint, wallet: o.wallet, symbol: o.symbol, sol_in: o.sol_amount, sol_out: 0, status: "open",
+          opened_at: new Date().toISOString(), closed_at: null, decimals: dec, token_raw: o.token_amount ?? null, tp_taken: false,
+          entry_price_usd: tokens && sol ? (Number(o.sol_amount) * sol) / tokens : null });
         await liveNotify(cfg, `🟢 <b>LIVE BUY</b> ${esc(o.symbol ?? o.mint)}: ${fmt(o.sol_amount, 3)} SOL, copying <b>${esc(name(o.wallet))}</b> · ${link}`);
       } else {
         const { data: p } = await db.from("sol_live_positions").select("*").eq("mint", o.mint).maybeSingle();
@@ -463,7 +493,10 @@ async function liveFail(cfg: any, o: any, reason: string) {
 async function liveExecute(cfg: any) {
   const kp = liveKeypair();
   const lc = liveCfg(cfg);
-  const { data: pending } = await db.from("sol_live_orders").select("*").eq("status", "pending").order("created_at").limit(5);
+  const cr = copyRules(cfg);
+  const rules: LiveCfg = { ...lc, buy_sol: cr.buy_sol, max_open_positions: cr.max_open_positions };
+  const { data: pending } = await db.from("sol_live_orders").select("*").eq("status", "pending")
+    .lte("due_at", new Date().toISOString()).order("created_at").limit(5);
   let done = 0;
   for (const o of pending ?? []) {
     // Atomic claim: only one tick can move an order from pending to executing.
@@ -486,24 +519,27 @@ async function liveExecute(cfg: any) {
         ]);
         const ec = entryCheck(t.market, entryRules(cfg));
         if (!ec.pass) { await skip(`Entry filter: ${ec.reasons.join("; ")}`); continue; }
+        if (cr.confirm_hold_seconds > 0 && (await tokenBalanceRaw(o.wallet, o.mint)) === 0n) {
+          await skip(`Fast flip: trader had already sold within ${cr.confirm_hold_seconds}s, not copied`); continue;
+        }
         const d = liveBuyDecision({
-          cfg: lc, keySet: true, copyWallet: true, spentSol: spent, openPositions: openN ?? 0, holdingMint: !!held || (inflight ?? 0) > 0,
+          cfg: rules, keySet: true, realizedPnlSol: await liveRealizedSol(), copyWallet: true, spentSol: spent, openPositions: openN ?? 0, holdingMint: !!held || (inflight ?? 0) > 0,
           walletSol: bal, liquidityUsd: t.market?.liquidityUsd ?? null,
           freezeAuthority: (t.risk ?? []).includes("Freeze authority active"),
           delaySeconds: t.block_time ? (Date.now() - Date.parse(t.block_time)) / 1000 : null, traderBuySol: t.sol_value ?? null,
         });
         if (!d.go) { await skip(d.reason); continue; }
-        const lamports = BigInt(Math.round(lc.buy_sol * 1e9));
+        const lamports = BigInt(Math.round(rules.buy_sol * 1e9));
         // Reserve the spend before sending, so the cap holds even if this tick dies mid-flight.
-        await db.from("sol_live_orders").update({ sol_amount: lc.buy_sol }).eq("id", o.id);
+        await db.from("sol_live_orders").update({ sol_amount: rules.buy_sol }).eq("id", o.id);
         const q = await jupQuote(WSOL, o.mint, lamports, lc.slippage_bps);
         const sig = await jupSwap(q, kp);
         await db.from("sol_live_orders").update({ status: "sent", tx_signature: sig, token_amount: q.outAmount, updated_at: new Date().toISOString() }).eq("id", o.id);
-        await logEvent("live", `BUY sent: ${lc.buy_sol} SOL -> ${o.symbol ?? o.mint}`, "info", o.wallet);
+        await logEvent("live", `BUY sent: ${rules.buy_sol} SOL -> ${o.symbol ?? o.mint}`, "info", o.wallet);
       } else {
         const { data: pos } = await db.from("sol_live_positions").select("*").eq("mint", o.mint).eq("status", "open").maybeSingle();
         if (!pos) { await skip("We hold no copied position in this token"); continue; }
-        if (pos.wallet !== o.wallet && !o.trade?.panic) { await skip("Position was opened copying a different trader"); continue; }
+        if (pos.wallet !== o.wallet && !o.trade?.panic && !o.trade?.risk) { await skip("Position was opened copying a different trader"); continue; }
         const heldRaw = await tokenBalanceRaw(me, o.mint);
         const amount = liveSellAmount(heldRaw, t.exit_type ?? null, t.exit_pct ?? null);
         if (amount <= 0n) {
@@ -526,10 +562,53 @@ async function liveExecute(cfg: any) {
   }
   return done;
 }
+// Our own exits on live positions: the SAME riskExit() rule paper uses, queued as ordinary sell orders.
+async function liveRiskExits(cfg: any) {
+  const cr = copyRules(cfg);
+  const { data: open } = await db.from("sol_live_positions").select("*").eq("status", "open");
+  if (!open?.length) return 0;
+  const prices = await dexPairs(open.map((p: any) => p.mint));
+  let n = 0;
+  for (const pos of open) {
+    const x = riskExit(Number(pos.entry_price_usd), prices[pos.mint]?.priceUsd ?? null, cr, !!pos.tp_taken);
+    if (!x) continue;
+    const { count: busy } = await db.from("sol_live_orders").select("*", { count: "exact", head: true })
+      .eq("mint", pos.mint).eq("side", "sell").in("status", ["pending", "executing", "sent"]);
+    if ((busy ?? 0) > 0) continue;
+    await db.from("sol_live_orders").insert({ source_signature: `risk-${x.action}-${pos.mint}-${Date.now()}`, wallet: pos.wallet, mint: pos.mint,
+      symbol: pos.symbol, side: "sell", status: "pending",
+      trade: { exit_type: x.frac >= 1 ? "FULL" : "PARTIAL", exit_pct: x.frac * 100, risk: x.action } });
+    if (x.action === "take") await db.from("sol_live_positions").update({ tp_taken: true }).eq("mint", pos.mint);
+    await liveNotify(cfg, `${x.action === "stop" ? "🛑 Stop-loss" : "💰 Take-profit"} on <b>${esc(pos.symbol ?? pos.mint)}</b> (${x.movePct.toFixed(0)}%): selling ${Math.round(x.frac * 100)}%.`);
+    n++;
+  }
+  return n;
+}
+// Once per 24h per kind, so a condition that persists does not repeat every minute.
+async function liveAlertOnce(cfg: any, kind: string, html: string) {
+  const a = await getRow("live_alerts");
+  if (a[kind] && Date.now() - Date.parse(a[kind]) < 24 * 3600e3) return;
+  await setRow("live_alerts", { ...a, [kind]: new Date().toISOString() });
+  await liveNotify(cfg, html);
+}
 async function processLive(cfg: any) {
   const confirmed = await liveConfirm(cfg);
+  const riskExits = await liveRiskExits(cfg);
+  const lc = liveCfg(cfg);
+  const realized = await liveRealizedSol();
+  if (lc.enabled && realized <= -lc.max_loss_sol) {
+    await setRow("config", { ...cfg, live: { ...lc, enabled: false } });
+    await logEvent("live", `Loss limit hit (${realized.toFixed(3)} SOL realized): buying switched off`, "error");
+    await liveNotify(cfg, `🛑 <b>Live buying stopped</b>: realized loss ${realized.toFixed(3)} SOL reached the ${lc.max_loss_sol} SOL limit. Open positions still follow their sells and stop-loss. Re-enable from the dashboard only after reviewing.`);
+  }
+  const kp = liveKeypair();
+  if (kp && lc.enabled) {
+    const bal = await walletSol(kp.publicKey.toBase58());
+    const need = copyRules(cfg).buy_sol + lc.min_sol_reserve;
+    if (bal != null && bal < need) await liveAlertOnce(cfg, "low_balance", `⚠️ Trading wallet has ${bal.toFixed(3)} SOL; each copy needs ${need.toFixed(3)}. Live buys are being skipped until it is topped up.`);
+  }
   const executed = await liveExecute(cfg);
-  return { executed, confirmed };
+  return { executed, confirmed, riskExits, realized_sol: Math.round(realized * 1000) / 1000 };
 }
 
 // ---------- monitoring tick ----------
@@ -637,7 +716,7 @@ async function recordTrade(w: any, signature: string, p: any, cfg: any) {
     try { await paperOnTrade(row, cfg); } catch (e) { await logEvent("paper_error", clean(e), "warn", w.address); }
   }
   if (isAlertable && w.status === "active") {
-    try { await liveOnTrade(row, w); } catch (e) { await logEvent("live_error", clean(e), "error", w.address); }
+    try { await liveOnTrade(row, w, cfg); } catch (e) { await logEvent("live_error", clean(e), "error", w.address); }
   }
 }
 
@@ -688,6 +767,135 @@ async function withLock<T>(waitMs: number, fn: () => Promise<T>): Promise<T | { 
 }
 const tick = () => withLock(0, tickInner);
 let ticking = false;
+// ---------- trader scorecard, one-tap approval, daily summary ----------
+// watch -> eligible -> live. Research passing only earns a trader paper copies; real money needs the
+// paper copies (same rules, real quotes) to have made money, and then the owner's tap in Telegram.
+async function lastResetAt(): Promise<string> {
+  const { data } = await db.from("sol_paper_ledger").select("at").eq("type", "reset").order("at", { ascending: false }).limit(1);
+  return data?.[0]?.at ?? "1970-01-01T00:00:00Z";
+}
+async function tgApi(method: string, body: unknown): Promise<any> {
+  if (!TG_TOKEN) throw new Error("TELEGRAM_BOT_TOKEN secret is not set");
+  const r = await fetch(`https://api.telegram.org/bot${TG_TOKEN}/${method}`, {
+    method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body),
+  });
+  const j = await r.json();
+  if (!j.ok) throw new Error(`Telegram ${method}: ${j.description ?? r.status}`);
+  return j.result;
+}
+async function scoreTraders(cfg: any) {
+  const since = await lastResetAt();
+  const [{ data: wallets }, { data: pos }] = await Promise.all([
+    db.from("sol_wallets").select("address,label,status,stage,copy_live").or("status.eq.active,copy_live.eq.true"),
+    db.from("sol_paper_positions").select("wallet,realized_usd,cost_usd,closed_at").eq("status", "closed").gte("opened_at", since),
+  ]);
+  const out: Record<string, unknown> = {};
+  for (const w of wallets ?? []) {
+    const rows = (pos ?? []).filter((p: any) => p.wallet === w.address && p.closed_at)
+      .map((p: any) => ({ realized: Number(p.realized_usd), cost: Number(p.cost_usd), closedAt: p.closed_at }));
+    const sc = { ...traderScore(rows), scored_at: new Date().toISOString(), since };
+    let stage = w.stage ?? "watch";
+    if (w.copy_live && sc.demote) {
+      stage = "watch";
+      await db.from("sol_wallets").update({ copy_live: false }).eq("address", w.address);
+      await logEvent("scorecard", `${w.label} demoted from live: last copies net ${sc.recent_net} USD`, "warn", w.address);
+      await liveNotify(cfg, `⬇️ <b>${esc(w.label)}</b> is no longer copied with real money: its last ${SCORE_RULES.recent_n} paper copies lost ${usd(-sc.recent_net)} in total.`);
+    } else if (sc.eligible && !w.copy_live && stage === "watch") {
+      stage = "eligible";
+      await logEvent("scorecard", `${w.label} eligible for live: ${sc.n} paper copies, net ${sc.net} USD, avg ${sc.avg_pct}%`, "info", w.address);
+      if (TG_TOKEN && cfg.telegram_chat_id) {
+        await tgApi("sendMessage", {
+          chat_id: cfg.telegram_chat_id, parse_mode: "HTML", disable_web_page_preview: true,
+          text: [`🏁 <b>${esc(w.label)}</b> has earned live trading on paper`,
+            `${sc.n} copied trades under the live rules: net ${usd(sc.net)}, ${sc.win_rate_pct}% wins, avg ${sc.avg_pct}% per trade.`,
+            `Approve to copy it with real money (${copyRules(cfg).buy_sol} SOL a buy, inside your ${liveCfg(cfg).total_cap_sol} SOL cap).`].join("\n"),
+          reply_markup: { inline_keyboard: [[{ text: "✅ Approve live", callback_data: `approve:${w.address}` }, { text: "Not now", callback_data: `decline:${w.address}` }]] },
+        }).catch(() => {});
+        const tp = await getRow("telegram_poll");
+        await setRow("telegram_poll", { ...tp, awaiting: true });
+      }
+    }
+    await db.from("sol_wallets").update({ score: sc, stage }).eq("address", w.address);
+    out[w.label] = { n: sc.n, net: sc.net, stage, copy_live: w.copy_live && !(w.copy_live && sc.demote) };
+  }
+  return out;
+}
+// Telegram buttons arrive as callback queries. We poll only while an approval is outstanding, so the
+// /start + "Link my Telegram chat" flow (which reads the same update stream) is left alone otherwise.
+async function pollTelegram(cfg: any) {
+  const tp = await getRow("telegram_poll");
+  if (!tp.awaiting || !TG_TOKEN || !cfg.telegram_chat_id) return 0;
+  const ups: any[] = await tgApi("getUpdates", { offset: tp.offset ?? 0, timeout: 0 }).catch(() => []);
+  let handled = 0, offset = tp.offset ?? 0;
+  for (const u of ups) {
+    offset = Math.max(offset, u.update_id + 1);
+    const cq = u.callback_query;
+    if (!cq?.data) continue;
+    if (String(cq.message?.chat?.id) !== String(cfg.telegram_chat_id)) continue; // only the owner's linked chat
+    const [action, address] = String(cq.data).split(":");
+    const { data: w } = await db.from("sol_wallets").select("address,label,stage").eq("address", address).maybeSingle();
+    if (!w) continue;
+    const lc = liveCfg(cfg);
+    if (action === "approve") {
+      await db.from("sol_wallets").update({ copy_live: true, stage: "live" }).eq("address", address);
+      await logEvent("scorecard", `Owner approved ${w.label} for live copying (Telegram)`, "warn", address);
+      const caveat = !liveKeypair() ? " No trading wallet is connected yet, so nothing will trade until LIVE_TRADER_KEY is set."
+        : !lc.enabled ? " Live trading is switched off, so nothing will trade until it is switched on." : "";
+      await tgApi("answerCallbackQuery", { callback_query_id: cq.id, text: "Approved" }).catch(() => {});
+      await liveNotify(cfg, `✅ <b>${esc(w.label)}</b> approved for real-money copying.${caveat}`);
+    } else if (action === "decline") {
+      await db.from("sol_wallets").update({ stage: "declined" }).eq("address", address);
+      await tgApi("answerCallbackQuery", { callback_query_id: cq.id, text: "Kept on paper" }).catch(() => {});
+    }
+    handled++;
+  }
+  const { count } = await db.from("sol_wallets").select("*", { count: "exact", head: true }).eq("stage", "eligible");
+  await setRow("telegram_poll", { offset, awaiting: (count ?? 0) > 0 });
+  return handled;
+}
+async function dailySummary(cfg: any, force = false) {
+  const nyNow = new Date(new Date().toLocaleString("en-US", { timeZone: "America/New_York" }));
+  const date = `${nyNow.getFullYear()}-${String(nyNow.getMonth() + 1).padStart(2, "0")}-${String(nyNow.getDate()).padStart(2, "0")}`;
+  const ds = await getRow("daily_summary");
+  if (!force && (nyNow.getHours() < 21 || ds.date === date)) return null;
+  const since = await lastResetAt();
+  const dayAgo = new Date(Date.now() - 24 * 3600e3).toISOString();
+  const [{ cash, open }, { data: closed }, { data: skips }, { data: wallets }, { data: research }] = await Promise.all([
+    paperState(cfg),
+    db.from("sol_paper_positions").select("realized_usd,closed_at").eq("status", "closed").gte("opened_at", since),
+    db.from("sol_paper_ledger").select("note").eq("type", "skip").gte("at", dayAgo),
+    db.from("sol_wallets").select("label,stage,copy_live,score").eq("status", "active"),
+    db.from("sol_research").select("status,metrics,completed_at").gte("completed_at", dayAgo),
+  ]);
+  const realized = (closed ?? []).reduce((s: number, r: any) => s + Number(r.realized_usd), 0);
+  const today = (closed ?? []).filter((r: any) => r.closed_at >= dayAgo);
+  const openCost = open.reduce((s: number, o: any) => s + Number(o.cost_usd) * (Number(o.qty_open) / Number(o.qty)), 0);
+  const skipBy: Record<string, number> = {};
+  for (const k of skips ?? []) { const key = String(k.note ?? "").split(":")[0]; skipBy[key] = (skipBy[key] ?? 0) + 1; }
+  const topSkips = Object.entries(skipBy).sort((a, b) => b[1] - a[1]).slice(0, 3).map(([k, v]) => `${esc(k)} ${v}`).join(" · ");
+  const lc = liveCfg(cfg);
+  const kp = liveKeypair();
+  const passed = (research ?? []).filter((r: any) => r.metrics?.assessment?.qualifies).length;
+  const lines = [
+    `📊 <b>Daily summary</b> (${date})`,
+    `<b>Paper</b> since reset: realized ${usd(realized)} over ${closed?.length ?? 0} closed copies; cash ${usd(cash)} + ${usd(openCost)} in ${open.length} open.`,
+    `Last 24h: ${today.length} closed, ${usd(today.reduce((s: number, r: any) => s + Number(r.realized_usd), 0))}.${topSkips ? ` Skipped: ${topSkips}.` : ""}`,
+    `<b>Traders</b>: ${(wallets ?? []).map((w: any) => `${esc(w.label)} ${w.copy_live ? "LIVE" : w.stage ?? "watch"} ${w.score ? `${w.score.n} trades ${usd(w.score.net)}` : "unscored"}`).join(" · ") || "none active"}`,
+    `<b>Research</b> last 24h: ${research?.length ?? 0} finished, ${passed} passed.`,
+    `<b>Live</b>: ${lc.enabled ? "on" : "off"}, wallet ${kp ? "connected" : "not connected"}` +
+      (kp ? `, balance ${fmt(await walletSol(kp.publicKey.toBase58()), 3)} SOL, spent ${fmt(await liveSpentSol(), 2)}/${lc.total_cap_sol} SOL, realized ${fmt(await liveRealizedSol(), 3)} SOL` : "") + ".",
+  ];
+  if (!force) await setRow("daily_summary", { date, sent_at: new Date().toISOString() });
+  if (TG_TOKEN && cfg.telegram_chat_id) await tgSend(cfg.telegram_chat_id, lines.join("\n").slice(0, 3900));
+  return lines;
+}
+async function hourlyMaintenance(cfg: any) {
+  const m = await getRow("maintenance");
+  if (m.scored_at && Date.now() - Date.parse(m.scored_at) < 3600e3) return null;
+  await setRow("maintenance", { ...m, scored_at: new Date().toISOString() });
+  return await scoreTraders(cfg);
+}
+
 async function tickInner() {
   if (ticking) return { skipped: "already running" };
   ticking = true;
@@ -726,6 +934,9 @@ async function tickInner() {
     results["paper_orders_filled"] = paperFilled;
     try { results["paper_risk_exits"] = await paperRiskExits(cfg); } catch (e) { await logEvent("paper_error", clean(e), "warn"); }
     try { results["live"] = await processLive(cfg); } catch (e) { await logEvent("live_error", clean(e), "error"); results["live"] = { error: clean(e) }; }
+    try { results["telegram_buttons"] = await pollTelegram(cfg); } catch (e) { await logEvent("telegram_error", clean(e), "warn"); }
+    try { const sc = await hourlyMaintenance(cfg); if (sc) results["scorecard"] = sc; } catch (e) { await logEvent("scorecard_error", clean(e), "warn"); }
+    try { if (await dailySummary(cfg)) results["daily_summary"] = "sent"; } catch (e) { await logEvent("summary_error", clean(e), "warn"); }
     const alerts = await deliverAlerts(cfg);
     await setRow("health", { last_tick_at: started.toISOString(), last_tick_ok: true, last_tick_error: null,
       last_tick_ms: Date.now() - started.getTime(), last_results: results, last_alerts: alerts, rpc: RPC_URL.replace(/api-key=[^&]+/, "api-key=***") });
@@ -1307,6 +1518,13 @@ Deno.serve(async (req) => {
         health: { ...health, stale }, wallets, trades, events,
         paper: { cash, equity: cash + openValue, realized, starting: cfg.paper.starting_usd, positions, ledger },
       });
+    }
+    if (path === "/scorecard" && req.method === "GET") {
+      const scores = await scoreTraders(cfg);
+      return json({ rules: { ...SCORE_RULES }, copy_rules: copyRules(cfg), since: await lastResetAt(), traders: scores });
+    }
+    if (path === "/summary" && req.method === "POST") {
+      return json({ ok: true, lines: await dailySummary(cfg, true) });
     }
     if (path === "/live" && req.method === "GET") {
       const kp = liveKeypair();
