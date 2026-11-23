@@ -59,6 +59,29 @@ Why: the first two scans queued any wallet that sold ≥ 1 SOL, and research rej
 far more than they ever bought (dev, bundle, or airdrop wallets) or were days old. Known trade-off: a
 real trader whose buy predates the ~1,500-swap window is dropped at step 3.
 
+## Entry filter (paper and live buys)
+
+Owner decision 2026-11-23, from a video lesson ("avoid rugs: lots of holders, high market cap, high
+volume, a website and Twitter"), checked against our own data first. All 35 closed paper trades with
+market data failed it, losing $161.89 (avg −24.8%). The copied traders' buys had a median $9.9k market cap
+and were 12 minutes old. `entryCheck()` (`lib.ts`) skips a copied buy unless, at detection:
+
+- market cap (DexScreener FDV) ≥ $1M
+- 24h volume ≥ $250k
+- the token lists a website or Twitter
+- the pair is ≥ 1 hour old (a stand-in for "lots of holders", which our market data doesn't include)
+
+Missing data fails closed. Adjust with `POST /settings {"entry": {...}}`; `{"entry": {"enabled": false}}`
+turns it off. Skips are written to the paper ledger as `Entry filter: <reasons>`.
+
+Discovery uses the same thresholds: it scans only pools whose coin passes them, is ≥ 24h old with ≥ $50k
+liquidity, and is up on the day. Research adds an 11th check, "Buys established coins": fewer than 50% of
+the trader's buys within 1 hour of the token's launch (`earlyBuyShare()`, launch times from DexScreener,
+300 most recent tokens).
+
+`POST /paper/reset` now closes open paper positions instead of deleting them, and results count from the
+latest reset marker.
+
 ## Live copy trading (real money)
 
 Owner decision 2026-11-22: copy the Kolscan **daily** leaderboard ranks 15–20 (Smokez, Tuults, Iced,

@@ -202,3 +202,43 @@ describe("live copy trading decisions", () => {
     expect(liveSellAmount(0n, "FULL", 100)).toBe(0n);
   });
 });
+
+import { entryCheck, earlyBuyShare, ENTRY_DEFAULTS, assess } from "../supabase/functions/sol-tracker/lib.ts";
+describe("entry filter (video lesson, checked against paper results)", () => {
+  const now = Date.parse("2026-11-23T00:00:00Z");
+  const good = { fdvUsd: 16_400_000, volume24hUsd: 900_000, hasWebsite: true, hasTwitter: true, pairCreatedAt: "2026-11-20T00:00:00Z" };
+  test("an established coin with socials passes", () => expect(entryCheck(good, ENTRY_DEFAULTS, now)).toEqual({ pass: true, reasons: [] }));
+  test("the typical coin our copied traders bought fails on every count", () => {
+    const sniped = { fdvUsd: 9_876, volume24hUsd: 26_462, hasWebsite: false, hasTwitter: false, pairCreatedAt: "2026-11-22T23:48:00Z" };
+    const r = entryCheck(sniped, ENTRY_DEFAULTS, now);
+    expect(r.pass).toBe(false);
+    expect(r.reasons.length).toBe(4);
+  });
+  test("each rule rejects on its own, and missing data fails closed", () => {
+    expect(entryCheck({ ...good, fdvUsd: 900_000 }, ENTRY_DEFAULTS, now).reasons[0]).toMatch(/market cap/);
+    expect(entryCheck({ ...good, volume24hUsd: null }, ENTRY_DEFAULTS, now).reasons[0]).toMatch(/volume unknown/);
+    expect(entryCheck({ ...good, hasWebsite: false, hasTwitter: false }, ENTRY_DEFAULTS, now).reasons[0]).toMatch(/website/);
+    expect(entryCheck({ ...good, hasWebsite: false }, ENTRY_DEFAULTS, now).pass).toBe(true); // Twitter alone is enough
+    expect(entryCheck({ ...good, pairCreatedAt: "2026-11-22T23:30:00Z" }, ENTRY_DEFAULTS, now).reasons[0]).toMatch(/30 min/);
+    expect(entryCheck({ ...good, pairCreatedAt: null }, ENTRY_DEFAULTS, now).pass).toBe(false);
+    expect(entryCheck(null, ENTRY_DEFAULTS, now).pass).toBe(false);
+  });
+  test("switching the filter off lets everything through", () => {
+    expect(entryCheck(null, { ...ENTRY_DEFAULTS, enabled: false }, now).pass).toBe(true);
+  });
+});
+describe("sniper score", () => {
+  test("counts buys within an hour of launch among tokens with a known launch time", () => {
+    const buys = [{ mint: "A", t: 1000 }, { mint: "B", t: 10_000 }, { mint: "C", t: 500 }, { mint: "D", t: 99 }];
+    expect(earlyBuyShare(buys, { A: 0, B: 0, C: null })).toEqual({ pct: 50, known: 2 });
+    expect(earlyBuyShare([], {})).toEqual({ pct: null, known: 0 });
+  });
+  test("research adds the rule only when the score was computed, and unknown fails", () => {
+    const base: any = { history_days_covered: 90, d30: { realized_sol: 1 }, d60: { realized_sol: 1 }, d90: { realized_sol: 1, tokens_closed: 30, best_token_share_pct: 10 },
+      month_buckets: { a: 1, b: 1, c: 1 }, max_drawdown_sol: 0, round_trips_under_60s_pct: 0, median_buy_sol: 1, unknown_basis_sell_sol: 0, last_trade_at: new Date().toISOString() };
+    expect(assess(base).total).toBe(10);
+    expect(assess({ ...base, early_buy_pct: 20, early_buy_known: 40 }).qualifies).toBe(true);
+    expect(assess({ ...base, early_buy_pct: 70, early_buy_known: 40 }).qualifies).toBe(false);
+    expect(assess({ ...base, early_buy_pct: null, early_buy_known: 0 }).qualifies).toBe(false);
+  });
+});

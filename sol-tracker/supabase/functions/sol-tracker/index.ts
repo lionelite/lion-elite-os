@@ -5,8 +5,8 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { Keypair, VersionedTransaction } from "npm:@solana/web3.js@1.98.0";
 import bs58 from "npm:bs58@6.0.0";
-import { parseSwap, researchMetrics, poolSwapSide, discoveryVerdict, historyTooShort, liveBuyDecision, liveSellAmount, LIVE_DEFAULTS, WSOL, USDC, USDT } from "./lib.ts";
-import type { PoolAgg, LiveCfg } from "./lib.ts";
+import { parseSwap, researchMetrics, assess, poolSwapSide, discoveryVerdict, historyTooShort, liveBuyDecision, liveSellAmount, LIVE_DEFAULTS, entryCheck, earlyBuyShare, ENTRY_DEFAULTS, WSOL, USDC, USDT } from "./lib.ts";
+import type { PoolAgg, LiveCfg, EntryRules } from "./lib.ts";
 
 const SB_URL = Deno.env.get("SUPABASE_URL")!;
 let SB_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
@@ -92,6 +92,7 @@ const getTx = (sig: string) =>
 type Market = {
   name: string | null; symbol: string | null; priceUsd: number | null; liquidityUsd: number | null;
   fdvUsd: number | null; pairCreatedAt: string | null; volume24hUsd: number | null; dex: string | null; pairUrl: string | null;
+  hasWebsite: boolean; hasTwitter: boolean;
 };
 async function dexPairs(mints: string[]): Promise<Record<string, Market>> {
   const out: Record<string, Market> = {};
@@ -110,6 +111,8 @@ async function dexPairs(mints: string[]): Promise<Record<string, Market>> {
           priceUsd: p.priceUsd ? Number(p.priceUsd) : null, liquidityUsd: p.liquidity?.usd ?? null,
           fdvUsd: p.fdv ?? null, pairCreatedAt: p.pairCreatedAt ? new Date(p.pairCreatedAt).toISOString() : null,
           volume24hUsd: p.volume?.h24 ?? null, dex: p.dexId ?? null, pairUrl: p.url ?? null,
+          hasWebsite: (p.info?.websites ?? []).length > 0,
+          hasTwitter: (p.info?.socials ?? []).some((s: any) => /twitter|^x$/i.test(String(s.type ?? s.platform ?? ""))),
         };
       }
     } catch { /* market data is best effort */ }
@@ -254,6 +257,11 @@ async function paperExecute(t: any, cfg: any, price: number | null) {
   }
   const { cash, open } = await paperState(cfg);
   if (t.kind === "buy") {
+    const ec = entryCheck(t.market, entryRules(cfg));
+    if (!ec.pass) {
+      await db.from("sol_paper_ledger").insert({ ...base, type: "skip", note: `Entry filter: ${ec.reasons.join("; ")}` });
+      return;
+    }
     if (open.find((o: any) => o.mint === t.mint)) {
       await db.from("sol_paper_ledger").insert({ ...base, type: "skip", note: "Already holding this token" });
       return;
@@ -352,6 +360,7 @@ function liveKeypair(): Keypair | null {
   return LIVE_KP;
 }
 const liveCfg = (cfg: any): LiveCfg => ({ ...LIVE_DEFAULTS, ...(cfg.live ?? {}) });
+const entryRules = (cfg: any): EntryRules => ({ ...ENTRY_DEFAULTS, ...(cfg.entry ?? {}) });
 const JUP = "https://lite-api.jup.ag/swap/v1";
 const b64ToBytes = (b64: string) => Uint8Array.from(atob(b64), (c) => c.charCodeAt(0));
 const bytesToB64 = (u: Uint8Array) => { let s = ""; for (const b of u) s += String.fromCharCode(b); return btoa(s); };
@@ -475,6 +484,8 @@ async function liveExecute(cfg: any) {
           db.from("sol_live_orders").select("*", { count: "exact", head: true }).eq("mint", o.mint).eq("side", "buy").in("status", ["sent"]),
           liveSpentSol(), walletSol(me),
         ]);
+        const ec = entryCheck(t.market, entryRules(cfg));
+        if (!ec.pass) { await skip(`Entry filter: ${ec.reasons.join("; ")}`); continue; }
         const d = liveBuyDecision({
           cfg: lc, keySet: true, copyWallet: true, spentSol: spent, openPositions: openN ?? 0, holdingMint: !!held || (inflight ?? 0) > 0,
           walletSol: bal, liquidityUsd: t.market?.liquidityUsd ?? null,
@@ -908,7 +919,19 @@ async function researchStep() {
       all = all.concat(data ?? []);
       if (!data || data.length < 1000) break;
     }
-    const metrics = researchMetrics(all, Math.floor(Date.parse(r.requested_at) / 1000), RESEARCH_DAYS);
+    const metrics: any = researchMetrics(all, Math.floor(Date.parse(r.requested_at) / 1000), RESEARCH_DAYS);
+    // Sniper score: how many buys landed within an hour of the token's launch (DexScreener pair
+    // creation time). Capped at the 300 most recently bought tokens to bound the lookups (10 calls).
+    const buys = all.filter((x) => x.kind === "buy" && x.mint && x.block_time)
+      .map((x) => ({ mint: x.mint, t: Math.floor(Date.parse(x.block_time) / 1000) })).sort((a, b) => b.t - a.t);
+    const mints = [...new Set(buys.map((b) => b.mint))].slice(0, 300);
+    const pairs = await dexPairs(mints);
+    const created: Record<string, number | null> = {};
+    for (const m of mints) created[m] = pairs[m]?.pairCreatedAt ? Math.floor(Date.parse(pairs[m].pairCreatedAt!) / 1000) : null;
+    const eb = earlyBuyShare(buys.filter((b) => mints.includes(b.mint)), created);
+    metrics.early_buy_pct = eb.pct;
+    metrics.early_buy_known = eb.known;
+    metrics.assessment = assess(metrics, RESEARCH_DAYS, Math.floor(Date.parse(r.requested_at) / 1000));
     const failed = all.filter((x) => x.kind === "fetch_failed").length;
     await db.from("sol_research").update({
       status: "done", metrics: { ...metrics, capped_at_swaps: r.capped ? RESEARCH_SWAP_CAP : null, swaps_listed: all.length, fetch_failed: failed, stablecoin_trades_excluded: all.filter((x) => (x.kind === "buy" || x.kind === "sell") && x.sol_delta == null).length },
@@ -1026,9 +1049,15 @@ const DISC_MIN_SELL_SOL = 1;
 const DISC_VET_MAX = 40;    // ranked candidates that get the one-call history check
 const DISC_QUEUE_MAX = 10;  // research costs thousands of calls per wallet; queue the best few
 const DISC_SIG_PAGE = 1000;
-async function geckoTrendingPools(): Promise<any[]> {
+// Pools are restricted to ESTABLISHED coins that pass the same entry filter we buy with (market cap,
+// 24h volume, at least a day old) and are up on the day. A wallet that took profit there is one whose
+// trades we could copy a few seconds late; a sniper of minutes-old micro-caps is not (2026-11-23 finding).
+const DISC_POOL_MIN_AGE_H = 24, DISC_POOL_MIN_LIQ = 50_000;
+async function geckoTrendingPools(rules: EntryRules = ENTRY_DEFAULTS): Promise<any[]> {
   const out: any[] = [];
-  for (const path of ["trending_pools?duration=24h&page=1", "trending_pools?duration=24h&page=2", "trending_pools?duration=6h&page=1"]) {
+  const paths = ["trending_pools?duration=24h&page=1", "trending_pools?duration=24h&page=2",
+    "pools?sort=h24_volume_usd_desc&page=1", "pools?sort=h24_volume_usd_desc&page=2"];
+  for (const path of paths) {
     try {
       const r = await fetch(`https://api.geckoterminal.com/api/v2/networks/solana/${path}`, { headers: { accept: "application/json" } });
       if (!r.ok) continue;
@@ -1038,24 +1067,28 @@ async function geckoTrendingPools(): Promise<any[]> {
         const base = String(p.relationships?.base_token?.data?.id ?? "").replace(/^solana_/, "");
         const ch24 = Number(a.price_change_percentage?.h24 ?? 0);
         const liq = Number(a.reserve_in_usd ?? 0);
-        if (!a.address || !base || base === WSOL || liq < 30_000 || ch24 < 20) continue;
-        out.push({ pool: a.address, mint: base, name: a.name, change24h: ch24, liquidity: liq });
+        const mcap = Number(a.market_cap_usd ?? a.fdv_usd ?? 0);
+        const vol = Number(a.volume_usd?.h24 ?? 0);
+        const ageH = a.pool_created_at ? (Date.now() - Date.parse(a.pool_created_at)) / 3600e3 : 0;
+        if (!a.address || !base || [WSOL, USDC, USDT].includes(base)) continue;
+        if (liq < DISC_POOL_MIN_LIQ || mcap < rules.min_mcap_usd || vol < rules.min_volume24h_usd || ageH < DISC_POOL_MIN_AGE_H || ch24 <= 0) continue;
+        out.push({ pool: a.address, mint: base, name: a.name, change24h: ch24, liquidity: liq, mcap, volume24h: vol, age_hours: Math.round(ageH) });
       }
     } catch { /* best effort */ }
     await sleep(2100); // GeckoTerminal public limit is ~30 calls/min
   }
   const seen = new Set<string>();
-  return out.filter((p) => (seen.has(p.pool) ? false : (seen.add(p.pool), true))).sort((a, b) => b.change24h - a.change24h).slice(0, 25);
+  return out.filter((p) => (seen.has(p.mint) ? false : (seen.add(p.mint), true))).sort((a, b) => b.change24h - a.change24h).slice(0, 20);
 }
 async function discoverStep() {
   if (!HELIUS_KEY) return { skipped: "HELIUS_API_KEY not set" };
   const started = Date.now();
   let st = await getRow("discovery");
   if (!st.pools || st.done) {
-    const pools = await geckoTrendingPools();
+    const pools = await geckoTrendingPools(entryRules(await getRow("config")));
     st = { started_at: new Date().toISOString(), pools, next: 0, done: false };
     await setRow("discovery", st);
-    await logEvent("discovery", `Scanning ${pools.length} trending pools for profitable sellers`);
+    await logEvent("discovery", `Scanning ${pools.length} established coins (market cap, volume and age pass the entry filter) for profitable sellers`);
     return { phase: "pools", pools: pools.length };
   }
   while (st.next < st.pools.length && Date.now() - started < 38_000) {
@@ -1137,14 +1170,14 @@ async function discoverStep() {
   const now = new Date().toISOString();
   const rows = st.vetted.map((c: any) => ({
     wallet: c.wallet, label: `${c.wallet.slice(0, 4)}…${c.wallet.slice(-4)}`,
-    source: "On-chain discovery: bought and sold trending Solana coins at a profit (GeckoTerminal trending pools)",
-    source_snapshot: { views: `Round-trip profit ${c.profit.toFixed(2)} SOL on ${c.n} trending coin(s): ${c.names.slice(0, 4).join(", ")}`, found_at: now },
+    source: "On-chain discovery: bought and sold established Solana coins at a profit (GeckoTerminal pools passing the entry filter)",
+    source_snapshot: { views: `Round-trip profit ${c.profit.toFixed(2)} SOL on ${c.n} established coin(s): ${c.names.slice(0, 4).join(", ")}`, found_at: now },
     status: "queued", sig_cursor: null, pages_fetched: 0, attempts: 0, metrics: null, error: null, requested_at: now, completed_at: null,
   }));
   if (rows.length) await db.from("sol_research").upsert(rows);
   const r = st.reasons ?? {};
   const sellers = Object.values(r).reduce((x: number, y: any) => x + Number(y), 0);
-  const funnel = `${sellers} sellers of 1+ SOL on ${st.pools.length} trending coins · ${r.sold_without_buying ?? 0} sold without buying · ` +
+  const funnel = `${sellers} sellers of 1+ SOL on ${st.pools.length} established coins · ${r.sold_without_buying ?? 0} sold without buying · ` +
     `${r.not_profitable ?? 0} not profitable · ${(r.uncopyable_size ?? 0) + (r.bot_frequency ?? 0)} bot-like or uncopyable size · ` +
     `${st.candidates.length} profitable round trips · ${st.too_new} wallets too new · ${rows.length} queued`;
   st.done = true; st.queued = rows.length; st.finished_at = now; st.funnel = funnel;
@@ -1152,7 +1185,7 @@ async function discoverStep() {
   await logEvent("discovery", funnel);
   const cfg = await getRow("config");
   if (TG_TOKEN && cfg.telegram_chat_id && rows.length) {
-    await tgSend(cfg.telegram_chat_id, `🔎 <b>Found ${rows.length} new wallets</b> that bought and sold this week's trending coins at a profit (none from the public leaderboards). Each now gets the 90-day check, and any that pass go on the watch list automatically.\n<i>${esc(funnel)}</i>`).catch(() => {});
+    await tgSend(cfg.telegram_chat_id, `🔎 <b>Found ${rows.length} new wallets</b> that bought and sold established coins (passing the entry filter) at a profit (none from the public leaderboards). Each now gets the 90-day check, and any that pass go on the watch list automatically.\n<i>${esc(funnel)}</i>`).catch(() => {});
   }
   return { phase: "done", queued: rows.length, funnel };
 }
@@ -1251,7 +1284,9 @@ Deno.serve(async (req) => {
       const health = await getRow("health");
       const { cash, open } = await paperState(cfg);
       const prices = await dexPairs(open.map((o: any) => o.mint));
-      const { data: closed } = await db.from("sol_paper_positions").select("realized_usd");
+      const { data: rs } = await db.from("sol_paper_ledger").select("at").eq("type", "reset").order("at", { ascending: false }).limit(1);
+      const since = rs?.[0]?.at ?? "1970-01-01T00:00:00Z";
+      const { data: closed } = await db.from("sol_paper_positions").select("realized_usd").gte("opened_at", since);
       const realized = (closed ?? []).reduce((s: number, r: any) => s + Number(r.realized_usd), 0);
       const positions = open.map((o: any) => {
         const px = prices[o.mint]?.priceUsd ?? null;
@@ -1327,6 +1362,7 @@ Deno.serve(async (req) => {
       if (body.min_buy_sol != null) next.min_buy_sol = Math.max(0, Number(body.min_buy_sol));
       if (body.alerts_paused != null) next.alerts_paused = !!body.alerts_paused;
       if (body.paper) next.paper = { ...cfg.paper, ...body.paper };
+      if (body.entry) next.entry = { ...entryRules(cfg), ...body.entry };
       await setRow("config", next);
       await logEvent("settings", `Settings updated: ${JSON.stringify(body)}`);
       return json({ ok: true });
@@ -1401,9 +1437,11 @@ Deno.serve(async (req) => {
       return json({ helius_key_set: !!HELIUS_KEY, research: data ?? [] });
     }
     if (path === "/paper/reset" && req.method === "POST") {
-      await db.from("sol_paper_positions").delete().gte("id", 0);
+      // History is kept (it is how the 2026-11-23 entry filter was found): open positions are closed
+      // as abandoned, not deleted, and results are counted from the latest reset marker onward.
+      await db.from("sol_paper_positions").update({ status: "closed", closed_at: new Date().toISOString() }).eq("status", "open");
       await db.from("sol_paper_orders").update({ status: "cancelled" }).eq("status", "queued");
-      await db.from("sol_paper_ledger").insert({ type: "reset", note: "Simulation reset" });
+      await db.from("sol_paper_ledger").insert({ type: "reset", note: String(body.note ?? "Simulation reset") });
       return json({ ok: true });
     }
     return json({ error: "not found", path }, 404);

@@ -181,6 +181,11 @@ export function assess(m: any, days = 90, nowSec = Math.floor(Date.now() / 1000)
   add("Profit not driven by transfers/airdrops", (m.unknown_basis_sell_sol ?? 0) < Math.max(1, (m.d90.realized_sol ?? 0) * 0.25),
     `${m.unknown_basis_sell_sol} SOL sold with no recorded buy`);
   add("Still active (traded in the last 7 days)", !!m.last_trade_at && nowSec - Date.parse(m.last_trade_at) / 1000 < 7 * 86400, m.last_trade_at ?? "no trades");
+  // Only when the sniper score was computed (research sets it; older results lack it).
+  if (m.early_buy_pct !== undefined) {
+    add("Buys established coins (< 50% of buys within 1h of launch)", m.early_buy_pct != null && m.early_buy_pct < 50,
+      m.early_buy_pct == null ? "launch times unknown" : `${m.early_buy_pct}% of ${m.early_buy_known} buys within 1h of the token's launch`);
+  }
   const failed = rules.filter((r) => !r.pass);
   return { qualifies: failed.length === 0, passed: rules.length - failed.length, total: rules.length, rules };
 }
@@ -247,6 +252,51 @@ export function historyTooShort(sigs: { blockTime?: number | null }[], pageLimit
   const oldest = sigs[sigs.length - 1]?.blockTime;
   if (typeof oldest !== "number") return false;
   return nowSec - oldest < minDays * 86400;
+}
+
+// ---------- entry filter (paper and live) ----------
+// From the owner's 2026-11-23 video lesson ("avoid rugs: lots of holders, high market cap, high volume,
+// a website and Twitter"), checked against our own paper results first: all 35 closed paper trades with
+// market data failed it, losing $161.89 (avg -24.8%), and the traders we copied bought coins with a median
+// $9.9k market cap, 12 minutes after launch. Holder count is not in the market data we have; pair age is
+// used as the stand-in (a coin minutes old cannot have a broad holder base yet).
+export type EntryRules = {
+  enabled: boolean;
+  min_mcap_usd: number;
+  min_volume24h_usd: number;
+  require_website_or_twitter: boolean;
+  min_pair_age_hours: number;
+};
+export const ENTRY_DEFAULTS: EntryRules = {
+  enabled: true, min_mcap_usd: 1_000_000, min_volume24h_usd: 250_000, require_website_or_twitter: true, min_pair_age_hours: 1,
+};
+export function entryCheck(mk: any, r: EntryRules = ENTRY_DEFAULTS, nowMs = Date.now()): { pass: boolean; reasons: string[] } {
+  if (!r.enabled) return { pass: true, reasons: [] };
+  if (!mk) return { pass: false, reasons: ["no market data"] };
+  const reasons: string[] = [];
+  const usd = (n: number) => "$" + (n >= 1e6 ? (n / 1e6).toFixed(1) + "M" : n >= 1e3 ? Math.round(n / 1e3) + "k" : Math.round(n));
+  if (!(Number(mk.fdvUsd) >= r.min_mcap_usd)) reasons.push(`market cap ${mk.fdvUsd == null ? "unknown" : usd(Number(mk.fdvUsd))} < ${usd(r.min_mcap_usd)}`);
+  if (!(Number(mk.volume24hUsd) >= r.min_volume24h_usd)) reasons.push(`24h volume ${mk.volume24hUsd == null ? "unknown" : usd(Number(mk.volume24hUsd))} < ${usd(r.min_volume24h_usd)}`);
+  if (r.require_website_or_twitter && !mk.hasWebsite && !mk.hasTwitter) reasons.push("no website or Twitter listed");
+  if (r.min_pair_age_hours > 0) {
+    const created = mk.pairCreatedAt ? Date.parse(mk.pairCreatedAt) : NaN;
+    const ageH = (nowMs - created) / 3600e3;
+    if (!(ageH >= r.min_pair_age_hours)) reasons.push(`pair ${Number.isFinite(ageH) ? (ageH * 60).toFixed(0) + " min" : "age unknown"} old < ${r.min_pair_age_hours}h`);
+  }
+  return { pass: reasons.length === 0, reasons };
+}
+
+// Share of a trader's buys made within `windowSec` of the token's pair creation: a sniper score.
+// Copying a sniper from behind means buying after their buy moved a brand-new micro-cap.
+export function earlyBuyShare(buys: { mint: string; t: number }[], pairCreatedSec: Record<string, number | null>, windowSec = 3600): { pct: number | null; known: number } {
+  let known = 0, early = 0;
+  for (const b of buys) {
+    const c = pairCreatedSec[b.mint];
+    if (c == null) continue;
+    known++;
+    if (b.t - c < windowSec) early++;
+  }
+  return { pct: known ? Math.round((early / known) * 100) : null, known };
 }
 
 // ---------- live copy trading: decisions only (execution lives in index.ts) ----------
