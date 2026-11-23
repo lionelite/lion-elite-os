@@ -283,3 +283,22 @@ describe("trader scorecard", () => {
     expect(s.demote).toBe(true);
   });
 });
+
+import { needsRug } from "../supabase/functions/sol-tracker/lib.ts";
+describe("holder check (RugCheck), part of the entry filter", () => {
+  const now = Date.parse("2026-11-23T00:00:00Z");
+  const good = { fdvUsd: 16_400_000, volume24hUsd: 900_000, hasWebsite: true, hasTwitter: true, pairCreatedAt: "2026-11-20T00:00:00Z",
+    rug: { totalHolders: 5385, rugged: false, risks: [] } };
+  test("a widely held, unflagged coin passes", () => expect(entryCheck(good, ENTRY_DEFAULTS, now).pass).toBe(true));
+  test("too few holders, rugged, or a danger-level risk each reject; warnings do not", () => {
+    expect(entryCheck({ ...good, rug: { ...good.rug, totalHolders: 349 } }, ENTRY_DEFAULTS, now).reasons).toEqual(["349 holders < 500"]);
+    expect(entryCheck({ ...good, rug: { ...good.rug, rugged: true } }, ENTRY_DEFAULTS, now).reasons[0]).toMatch(/rugged/);
+    expect(entryCheck({ ...good, rug: { ...good.rug, risks: [{ name: "Top 10 holders high ownership", level: "danger" }] } }, ENTRY_DEFAULTS, now).reasons[0]).toMatch(/danger: Top 10/);
+    expect(entryCheck({ ...good, rug: { ...good.rug, risks: [{ name: "Low Liquidity", level: "warn" }] } }, ENTRY_DEFAULTS, now).pass).toBe(true);
+  });
+  test("a missing report fails closed; the check is skipped only when switched off", () => {
+    expect(entryCheck({ ...good, rug: null }, ENTRY_DEFAULTS, now).reasons).toEqual(["no RugCheck report"]);
+    expect(entryCheck({ ...good, rug: null }, { ...ENTRY_DEFAULTS, min_holders: 0, reject_rug_danger: false }, now).pass).toBe(true);
+    expect(needsRug(ENTRY_DEFAULTS)).toBe(true);
+  });
+});

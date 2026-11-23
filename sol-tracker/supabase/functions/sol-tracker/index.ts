@@ -5,8 +5,8 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { Keypair, VersionedTransaction } from "npm:@solana/web3.js@1.98.0";
 import bs58 from "npm:bs58@6.0.0";
-import { parseSwap, researchMetrics, assess, poolSwapSide, discoveryVerdict, historyTooShort, liveBuyDecision, liveSellAmount, LIVE_DEFAULTS, entryCheck, earlyBuyShare, ENTRY_DEFAULTS, copyRules, riskExit, traderScore, SCORE_RULES, WSOL, USDC, USDT } from "./lib.ts";
-import type { PoolAgg, LiveCfg, EntryRules } from "./lib.ts";
+import { parseSwap, researchMetrics, assess, poolSwapSide, discoveryVerdict, historyTooShort, liveBuyDecision, liveSellAmount, LIVE_DEFAULTS, entryCheck, earlyBuyShare, ENTRY_DEFAULTS, copyRules, riskExit, traderScore, SCORE_RULES, needsRug, WSOL, USDC, USDT } from "./lib.ts";
+import type { PoolAgg, LiveCfg, EntryRules, RugInfo } from "./lib.ts";
 
 const SB_URL = Deno.env.get("SUPABASE_URL")!;
 let SB_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
@@ -292,7 +292,7 @@ async function paperExecute(t: any, cfg: any, price: number | null) {
   if (!price) { await skip("No price available at detection"); return; }
   const { cash, open } = await paperState(cfg);
   if (t.kind === "buy") {
-    const ec = entryCheck(t.market, entryRules(cfg));
+    const ec = await entryCheckFull(t.market, t.mint, cfg);
     if (!ec.pass) { await skip(`Entry filter: ${ec.reasons.join("; ")}`); return; }
     if (open.find((o: any) => o.mint === t.mint)) { await skip("Already holding this token"); return; }
     if (open.length >= cr.max_open_positions) { await skip("Max open positions reached"); return; }
@@ -418,6 +418,31 @@ async function jupSwap(quote: any, kp: Keypair): Promise<string> {
   // Preflight on: a swap that would fail (slippage, missing balance) is rejected here, costing nothing.
   return await rpc("sendTransaction", [bytesToB64(tx.serialize()), { encoding: "base64", skipPreflight: false, maxRetries: 3, preflightCommitment: "confirmed" }], 2);
 }
+// ---------- RugCheck holder data for the entry filter ----------
+const rugCache: Record<string, { at: number; r: RugInfo | null }> = {};
+async function rugReport(mint: string): Promise<RugInfo | null> {
+  const c = rugCache[mint];
+  if (c && Date.now() - c.at < 10 * 60e3) return c.r;
+  let r: RugInfo | null = null;
+  try {
+    const res = await fetch(`https://api.rugcheck.xyz/v1/tokens/${mint}/report`, { headers: { accept: "application/json" } });
+    if (res.ok) {
+      const j = await res.json();
+      r = { totalHolders: typeof j.totalHolders === "number" ? j.totalHolders : null, rugged: !!j.rugged,
+        risks: (j.risks ?? []).map((x: any) => ({ name: String(x.name ?? ""), level: String(x.level ?? "") })) };
+    }
+  } catch { /* fail closed below */ }
+  rugCache[mint] = { at: Date.now(), r };
+  return r;
+}
+// The full entry filter. Cheap market checks first; RugCheck only for coins that already pass them.
+async function entryCheckFull(market: any, mint: string, cfg: any) {
+  const rules = entryRules(cfg);
+  const pre = entryCheck(market, rules);
+  if (!pre.pass || !needsRug(rules)) return pre;
+  return entryCheck({ ...market, rug: await rugReport(mint) }, rules);
+}
+
 // ---------- Jupiter Ultra: managed, MEV-protected execution (primary) ----------
 // Measured 2026-11-23 on a 0.25 SOL meme-coin buy: Ultra set 1% slippage automatically (our v1 call
 // allowed 15%, i.e. up to ~15% extractable by a sandwich bot), a ~0.000025 SOL priority fee (v1 up to
@@ -571,7 +596,7 @@ async function liveExecute(cfg: any) {
           db.from("sol_live_orders").select("*", { count: "exact", head: true }).eq("mint", o.mint).eq("side", "buy").in("status", ["sent"]),
           liveSpentSol(), walletSol(me),
         ]);
-        const ec = entryCheck(t.market, entryRules(cfg));
+        const ec = await entryCheckFull(t.market, o.mint, cfg);
         if (!ec.pass) { await skip(`Entry filter: ${ec.reasons.join("; ")}`); continue; }
         if (cr.confirm_hold_seconds > 0 && (await tokenBalanceRaw(o.wallet, o.mint)) === 0n) {
           await skip(`Fast flip: trader had already sold within ${cr.confirm_hold_seconds}s, not copied`); continue;
@@ -1374,7 +1399,16 @@ async function geckoTrendingPools(rules: EntryRules = ENTRY_DEFAULTS): Promise<a
     await sleep(2100); // GeckoTerminal public limit is ~30 calls/min
   }
   const seen = new Set<string>();
-  return out.filter((p) => (seen.has(p.mint) ? false : (seen.add(p.mint), true))).sort((a, b) => b.change24h - a.change24h).slice(0, 20);
+  const top = out.filter((p) => (seen.has(p.mint) ? false : (seen.add(p.mint), true))).sort((a, b) => b.change24h - a.change24h).slice(0, 20);
+  if (!needsRug(rules)) return top;
+  // Same holder rule we buy with: no point hunting traders in coins we would refuse to buy.
+  const kept: any[] = [];
+  for (const p of top) {
+    const ec = entryCheck({ fdvUsd: p.mcap, volume24hUsd: p.volume24h, hasWebsite: true, hasTwitter: true, pairCreatedAt: null, rug: await rugReport(p.mint) },
+      { ...rules, require_website_or_twitter: false, min_pair_age_hours: 0 });
+    if (ec.pass) kept.push({ ...p, holders: rugCache[p.mint]?.r?.totalHolders ?? null });
+  }
+  return kept;
 }
 async function discoverStep() {
   if (!HELIUS_KEY) return { skipped: "HELIUS_API_KEY not set" };
@@ -1610,6 +1644,16 @@ Deno.serve(async (req) => {
         health: { ...health, stale }, wallets, trades, events,
         paper: { cash, equity: cash + openValue, realized, starting: cfg.paper.starting_usd, positions, ledger },
       });
+    }
+    // "Would we buy this coin right now, and if not, why?" Same entry filter paper and live use.
+    if (path === "/entry-check" && req.method === "GET") {
+      const mint = String(url.searchParams.get("mint") ?? "");
+      if (!/^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(mint)) return json({ error: "mint required" }, 400);
+      const mk = (await dexPairs([mint]))[mint] ?? null;
+      const ec = await entryCheckFull(mk, mint, cfg);
+      return json({ mint, symbol: mk?.symbol ?? null, pass: ec.pass, reasons: ec.reasons, rules: entryRules(cfg),
+        market: mk && { fdvUsd: mk.fdvUsd, volume24hUsd: mk.volume24hUsd, liquidityUsd: mk.liquidityUsd, pairCreatedAt: mk.pairCreatedAt, hasWebsite: mk.hasWebsite, hasTwitter: mk.hasTwitter },
+        rugcheck: rugCache[mint]?.r ?? null });
     }
     if (path === "/scorecard" && req.method === "GET") {
       const scores = await scoreTraders(cfg);

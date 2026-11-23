@@ -71,6 +71,12 @@ and were 12 minutes old. `entryCheck()` (`lib.ts`) skips a copied buy unless, at
 - the token lists a website or Twitter
 - the pair is ≥ 1 hour old (a stand-in for "lots of holders", which our market data doesn't include)
 
+- at least **500 holders** and no **danger**-level RugCheck risk (for example top-10 concentration or a
+  rug), from RugCheck's free report API (`api.rugcheck.xyz/v1/tokens/<mint>/report`, cached 10 min,
+  only called for coins that already pass the cheap checks). This replaced pair age as the measure of
+  "lots of holders"; pair age is kept as an extra check. Discovery applies the same holder rule to its
+  coin list. `GET /entry-check?mint=<mint>` answers "would we buy this right now, and why not?".
+
 Missing data fails closed. Adjust with `POST /settings {"entry": {...}}`; `{"entry": {"enabled": false}}`
 turns it off. Skips are written to the paper ledger as `Entry filter: <reasons>`.
 

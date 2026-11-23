@@ -266,10 +266,16 @@ export type EntryRules = {
   min_volume24h_usd: number;
   require_website_or_twitter: boolean;
   min_pair_age_hours: number;
+  min_holders: number;          // RugCheck totalHolders: the video's "ton of holders", measured (0 = off)
+  reject_rug_danger: boolean;   // any RugCheck risk at level "danger", or a coin RugCheck marks rugged
 };
 export const ENTRY_DEFAULTS: EntryRules = {
   enabled: true, min_mcap_usd: 1_000_000, min_volume24h_usd: 250_000, require_website_or_twitter: true, min_pair_age_hours: 1,
+  min_holders: 500, reject_rug_danger: true,
 };
+// What entryCheck() needs from a RugCheck report (api.rugcheck.xyz/v1/tokens/<mint>/report).
+export type RugInfo = { totalHolders: number | null; rugged: boolean; risks: { name: string; level: string }[] };
+export const needsRug = (r: EntryRules) => r.enabled && (r.min_holders > 0 || r.reject_rug_danger);
 export function entryCheck(mk: any, r: EntryRules = ENTRY_DEFAULTS, nowMs = Date.now()): { pass: boolean; reasons: string[] } {
   if (!r.enabled) return { pass: true, reasons: [] };
   if (!mk) return { pass: false, reasons: ["no market data"] };
@@ -282,6 +288,17 @@ export function entryCheck(mk: any, r: EntryRules = ENTRY_DEFAULTS, nowMs = Date
     const created = mk.pairCreatedAt ? Date.parse(mk.pairCreatedAt) : NaN;
     const ageH = (nowMs - created) / 3600e3;
     if (!(ageH >= r.min_pair_age_hours)) reasons.push(`pair ${Number.isFinite(ageH) ? (ageH * 60).toFixed(0) + " min" : "age unknown"} old < ${r.min_pair_age_hours}h`);
+  }
+  // Holder data is fail-closed like everything else: no report, no buy.
+  if (needsRug(r) && mk.rug !== undefined) {
+    const rg: RugInfo | null = mk.rug;
+    if (!rg) reasons.push("no RugCheck report");
+    else {
+      if (rg.rugged) reasons.push("RugCheck marks it rugged");
+      if (r.min_holders > 0 && !(Number(rg.totalHolders) >= r.min_holders)) reasons.push(`${rg.totalHolders ?? "unknown"} holders < ${r.min_holders}`);
+      const danger = r.reject_rug_danger ? (rg.risks ?? []).filter((x) => x.level === "danger").map((x) => x.name) : [];
+      if (danger.length) reasons.push(`RugCheck danger: ${danger.join(", ")}`);
+    }
   }
   return { pass: reasons.length === 0, reasons };
 }
