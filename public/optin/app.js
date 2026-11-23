@@ -12,6 +12,11 @@
       eyebrow: 'Lion Elite for Coaches',
       headline: 'Run your coaching business in one place.',
       lede: 'Your own client roster, programming, check-ins and messaging — instead of spreadsheets and scattered texts. Tell us where to reach you and we will show you the platform.'
+    },
+    'life-transformation': {
+      eyebrow: 'Lion Elite Life Transformation',
+      headline: 'Change the person. Change the life.',
+      lede: 'Start with a full-life audit. We identify what is holding you back, define the highest-leverage changes, and build a 30/90/365-day plan around the life you actually want.'
     }
   };
   const DEFAULT_LANE = 'beauty-client';

@@ -8,6 +8,7 @@ const {issueLoginLink,consumeLoginLink}=require('../lib/platform/gtm-access');
 const {createBillingPortal}=require('../lib/platform/stripe-billing-portal');
 const {bearerToken}=require('../lib/platform/security/sessions');
 const {AuthStore}=require('../lib/platform/security/auth-store');
+const {acquisitionCatalog}=require('../lib/platform/transformation-targets');
 
 function cleanEmail(v=''){const e=String(v).trim().toLowerCase();return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)?e:''}
 
@@ -22,6 +23,7 @@ function createGtmSalesRouter(){
     bucket.push(now);rateBuckets.set(id,bucket);return true;
   }
   router.get('/catalog',(_req,res)=>res.json({plans:PLANS,addOns:ADDONS,creditPacks:CREDIT_PACKS}));
+  router.get('/transformation-targets',(_req,res)=>res.json(acquisitionCatalog()));
   router.get('/readiness',async(_req,res)=>{
     const solo=configForPlan('solo'),agency=configForPlan('agency');
     let databaseHealthy=false;
