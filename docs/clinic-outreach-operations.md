@@ -135,11 +135,32 @@ old UTC-keyed counter for 11-14 (24), then 11-17 and 11-18 (no rows).
 4. **UTC-keyed daily counter** (accounting; the cap was not reached, so not
    the throughput cause).
 
+### First scheduled sending day (2026-11-23, checked 11:00 ET)
+
+- Scheduler: 19 pg_cron ticks from 08:00 ET, **all answered 202**. The 08:00
+  tick was refused by the window, as designed.
+- Runs: 12 completed, 1 in progress, 0 errors.
+- **48 accepted sends** between 09:00 and 10:58 ET, every one with a Resend
+  message id. 0 failed, 0 uncertain. `daily_usage` = 48 = queue count.
+- Pace: 48 in the first 2 h of the 6 h window, on track for ~144 by 15:00.
+- **Provider limit evidence:** every Resend response carries
+  `x-resend-daily-quota` (47 at 10:58) and `x-resend-monthly-quota` (117), and
+  a per-second limit of 10 (`ratelimit-policy: 10;w=1`). The values are usage,
+  not limits. A daily-quota header indicates a plan with a daily limit (the
+  free plan, 100/day and 3,000/month), so sending is expected to stop at about
+  100 today. The service stops the run on Resend's 429 and resumes the next day.
+- 27 of the 48 recipients have `.ca`/`.mx` addresses (Canadian discovery metros).
+  CASL applies, which is an owner decision (§7 open items).
+
 ### Open items (owner)
 
-- **Resend plan.** The free plan allows 100/day and 3,000/month, which cannot
-  carry 150/day. Confirm the plan in the Resend dashboard. The service now
-  records Resend's rate-limit/quota response headers on each send (logged as `limits=`).
+- **Resend plan.** The response headers show a daily quota (free-plan
+  behaviour: 100/day, 3,000/month), which cannot carry 150/day. Upgrading to
+  Pro removes the daily cap; that is a billing change only the owner can make.
+- **Non-US recipients.** Discovery includes Canadian and Mexican metros, and
+  27 of the first 48 sends on 2026-11-23 went to `.ca`/`.mx` addresses. CASL
+  (Canada) is stricter than CAN-SPAM. Decide: restrict to the US, or confirm the
+  legal basis.
 - **Base44 "Pipeline automation" Gmail sender.** Disable it, or route it through
   `POST /run/clinic-outreach`, so there is one sender. On the free Base44 plan
   this needs a Base44 builder turn (uses Base44 credits) or a plan upgrade.
