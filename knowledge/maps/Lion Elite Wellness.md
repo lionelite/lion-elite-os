@@ -29,7 +29,7 @@ Back to [[knowledge/Home|Home]]
 
 ## Fulfilment
 - [[docs/order-notification|Order notifications]]
-- [[operations/order-fulfillment-sop|Order fulfilment SOP]]
+- [[operations/order-fulfillment-sop|Order fulfilment SOP]] · [[docs/order-fulfillment-pirate-ship|Pirate Ship shipping workflow]]
 - [[operations/inventory-management-sop|Inventory management SOP]]
 
 ## Related
