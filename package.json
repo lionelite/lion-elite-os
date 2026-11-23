@@ -60,6 +60,8 @@
     "agents:recall": "node scripts/agents.js recall",
     "agents:plan": "node scripts/agents.js plan",
     "agents:run": "node scripts/run-agent-checkpoint.js",
+    "bots": "cd bots && python3 -m lionbots",
+    "bots:test": "cd bots/tests && python3 -m unittest",
     "worker:gtm-signals": "node workers/gtm-signal-worker.js",
     "gtm:signals:once": "node workers/gtm-signal-worker.js --once",
     "worker:gtm-delivery": "node workers/gtm-delivery-worker.js",
