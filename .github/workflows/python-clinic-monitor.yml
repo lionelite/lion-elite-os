@@ -1,0 +1,19 @@
+name: Python clinic outreach monitor
+# Monitoring only: no send credentials, no messages, and no CRM writes.
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '23 13-20 * * 1-5'
+permissions:
+  contents: read
+jobs:
+  health:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Check live outreach health
+        run: python python-bots/health_probe.py
