@@ -30,6 +30,41 @@ services:
         value: 100
       - key: PG_POOL_MAX
         value: 10
+      # The OWNER's coach token. Every other coach signs in with their own
+      # token issued from the Coaches tab, so this is never shared out.
+      - key: COACH_PORTAL_ADMIN_TOKEN
+        generateValue: true
+      - key: UNSUBSCRIBE_SECRET
+        generateValue: true
+      - key: PUBLIC_BASE_URL
+        sync: false
+      - key: COACH_OWNER_NAME
+        sync: false
+      - key: COACH_OWNER_EMAIL
+        sync: false
+      # Payment. Checkout stays disabled (503) until the first two are set,
+      # and the webhook refuses to process anything without the third, so
+      # leaving these blank is safe — it simply means nothing can be sold yet.
+      - key: STRIPE_SECRET_KEY
+        sync: false
+      - key: STRIPE_PRICE_ID
+        sync: false
+      - key: STRIPE_WEBHOOK_SECRET
+        sync: false
+      # LionOS GTM subscriptions. These are separate from coaching billing.
+      - key: GTM_STRIPE_PRICE_SOLO_MONTHLY
+        sync: false
+      - key: GTM_STRIPE_PRICE_AGENCY_MONTHLY
+        sync: false
+      - key: GTM_STRIPE_WEBHOOK_SECRET
+        sync: false
+      - key: GTM_EMAIL_FROM
+        sync: false
+      - key: GTM_SUPPORT_EMAIL
+        sync: false
+      # Public origin used for Stripe return URLs and coaching invite links.
+      - key: COACHING_PUBLIC_URL
+        sync: false
 
   - type: web
     name: lion-elite-outreach-api
@@ -132,6 +167,67 @@ services:
     autoDeploy: true
     envVars: *executiveEnv
 
+  # Consumes the prospect-discovery queue that scripts/cron-scheduler.js has
+  # been filling every four hours with no reader. Finds businesses from their
+  # own public OpenStreetMap listings and reads the contact address they publish
+  # on their own site — the same posture as the rest of the prospect pipeline.
+  # Concurrency stays at 1: Overpass is a donated shared service and the sites
+  # being read belong to small businesses.
+  - type: worker
+    name: lion-elite-discovery-worker
+    runtime: node
+    buildCommand: npm install --no-audit --no-fund
+    startCommand: node workers/discovery-worker.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: lion-elite-os-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          type: keyvalue
+          name: lion-elite-os-redis
+          property: connectionString
+      - key: DISCOVERY_WORKER_CONCURRENCY
+        value: 1
+
+  # Coaching welcome SMS. Runs hourly and does nothing until a human sets
+  # SMS_SEND_ENABLED=true and the Twilio credentials — a scheduled run with the
+  # switch off reports why it stopped and sends nothing, which is the intended
+  # resting state. Quiet hours are per recipient, so an hourly cadence lets a
+  # lead be reached during their own daytime rather than ours.
+  - type: cron
+    name: lion-elite-coaching-welcome-sms
+    runtime: node
+    schedule: "17 * * * *"
+    buildCommand: npm install --no-audit --no-fund
+    startCommand: node scripts/send-coaching-welcome-sms.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: lion-elite-os-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          type: keyvalue
+          name: lion-elite-os-redis
+          property: connectionString
+      - key: DAILY_SMS_LIMIT
+        value: 50
+      # Owner-set. Sending stays off until every one of these exists.
+      - key: SMS_SEND_ENABLED
+        sync: false
+      - key: TWILIO_ACCOUNT_SID
+        sync: false
+      - key: TWILIO_AUTH_TOKEN
+        sync: false
+      - key: TWILIO_MESSAGING_SERVICE_SID
+        sync: false
+
   - type: cron
     name: lion-elite-operations-monitor
     runtime: node
@@ -190,6 +286,18 @@ services:
     startCommand: node scripts/cron-scheduler.js staleData
     envVars: *cronEnv
 
+  # Daily clinic outreach (med_spa_research_supply). Picks up to
+  # OUTREACH_DAILY_NEW_CLINICS new high-tier clinics that pass qualification and
+  # enqueues their first e-mail. Does nothing until the outreach worker reports
+  # sending is set up (its Redis heartbeat), so it holds no send credential.
+  - type: cron
+    name: lion-elite-clinic-outreach
+    runtime: node
+    schedule: "7 14 * * 1-5"
+    buildCommand: npm install --no-audit --no-fund
+    startCommand: node scripts/clinic-outreach-daily.js --confirm
+    envVars: *cronEnv
+
   - type: cron
     name: lion-elite-followup-scheduler
     runtime: node
@@ -245,3 +353,73 @@ services:
     buildCommand: npm install --no-audit --no-fund
     startCommand: node scripts/cron-scheduler.js healthSnapshot
     envVars: *cronEnv
+
+  - type: cron
+    name: lion-elite-revenue-report
+    runtime: node
+    schedule: "0 12 * * *"
+    buildCommand: npm install --no-audit --no-fund
+    startCommand: node scripts/revenue-report.js --days=1
+    envVars: *cronEnv
+
+  - type: cron
+    name: lion-elite-revenue-scan
+    runtime: node
+    schedule: "0 11 * * *"
+    buildCommand: npm install --no-audit --no-fund
+    startCommand: node scripts/revenue-scan.js
+    envVars: *cronEnv
+
+
+  # Executes the eleven GTM runtime jobs from Postgres. The worker atomically
+  # claims due jobs so multiple instances cannot execute the same run.
+  - type: worker
+    name: lionos-gtm-runtime-worker
+    runtime: node
+    plan: starter
+    buildCommand: npm install --no-audit --no-fund && npm run db:migrate
+    startCommand: npm run worker:gtm-runtime
+    autoDeploy: true
+    envVars: &gtmRuntimeEnv
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: lion-elite-os-db
+          property: connectionString
+      - key: GTM_OAUTH_ENCRYPTION_KEY
+        sync: false
+      - key: GTM_GOOGLE_CLIENT_ID
+        sync: false
+      - key: GTM_GOOGLE_CLIENT_SECRET
+        sync: false
+      - key: GTM_GOOGLE_REDIRECT_URI
+        sync: false
+      - key: RESEND_API_KEY
+        sync: false
+      - key: APOLLO_API_KEY
+        sync: false
+
+  # Optional provider bridge for LinkedIn-side signals/actions. It remains
+  # disabled until the operator supplies a provider URL/token and explicitly
+  # flips GTM_LINKEDIN_WORKER_ENABLED=true.
+  - type: worker
+    name: lionos-gtm-linkedin-worker
+    runtime: node
+    plan: starter
+    buildCommand: npm install --no-audit --no-fund && npm run db:migrate
+    startCommand: npm run worker:gtm-linkedin
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: lion-elite-os-db
+          property: connectionString
+      - key: GTM_LINKEDIN_WORKER_ENABLED
+        sync: false
+      - key: GTM_LINKEDIN_PROVIDER_URL
+        sync: false
+      - key: GTM_LINKEDIN_PROVIDER_TOKEN
+        sync: false

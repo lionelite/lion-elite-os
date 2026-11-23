@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Join Lion Elite</title>
+  <meta name="description" content="Get started with Lion Elite coaching.">
+  <meta name="robots" content="noindex">
+  <link rel="stylesheet" href="/optin/styles.css?v=1">
+</head>
+<body>
+  <main class="wrap">
+    <p class="eyebrow" id="eyebrow">Lion Elite</p>
+    <h1 id="headline">Get started</h1>
+    <p class="lede" id="lede">Tell us where to reach you and we will take it from there.</p>
+
+    <section class="card" id="card">
+      <form id="join-form" novalidate>
+        <label>
+          Your name
+          <input name="name" type="text" autocomplete="name" placeholder="Sam Rivera">
+        </label>
+
+        <label>
+          Email address <span aria-hidden="true">*</span>
+          <input name="email" type="email" autocomplete="email" required placeholder="you@example.com">
+        </label>
+
+        <label>
+          Mobile number
+          <span class="hint">Only needed if you want text updates. Leave blank otherwise.</span>
+          <input name="phone" type="tel" autocomplete="tel" placeholder="(614) 555-0142">
+        </label>
+
+        <!--
+          Both boxes are unchecked by default and are never pre-selected.
+          A ticked-by-default box is not an affirmative act, and the API
+          records consent only for an explicit true.
+        -->
+        <label class="consent">
+          <input type="checkbox" name="emailMarketingConsent">
+          <span>Email me about Lion Elite coaching, programs and updates.</span>
+        </label>
+
+        <label class="consent">
+          <input type="checkbox" name="smsMarketingConsent">
+          <span>
+            Text me about Lion Elite coaching, programs and updates.
+            <span class="disclosure" id="sms-disclosure">Loading disclosure…</span>
+          </span>
+        </label>
+
+        <button type="submit" id="submit">Join</button>
+        <p class="message" id="message" role="status" aria-live="polite"></p>
+      </form>
+
+      <p class="note">
+        We never sell or share your details. You can unsubscribe at any time — reply STOP to any text,
+        or use the unsubscribe link in any email.
+      </p>
+    </section>
+  </main>
+
+  <script src="/optin/app.js?v=1" defer></script>
+</body>
+</html>

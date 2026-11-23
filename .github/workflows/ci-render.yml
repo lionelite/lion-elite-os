@@ -5,6 +5,12 @@ on:
     branches: [main, claude-automation]
   pull_request:
     branches: [main]
+  # Manual trigger. Pushes made with an Actions-scoped token do not raise
+  # push/pull_request events, so a PR can end up with zero check runs and an
+  # enabled auto-merge that waits forever on a `test` check that will never
+  # start. This lets the same required job be run on demand for that head.
+  # It adds a way to RUN the check, not a way to skip it.
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -72,3 +78,35 @@ jobs:
 
       - name: Run automated tests
         run: npm test
+
+  # BuildPipeline VSL funnel (apps/buildpipeline). A separate job, not a step in
+  # `test`: it is a Next.js app with its own dependencies, and keeping it apart
+  # leaves the required `test` check's name and meaning unchanged. Until this
+  # job existed nothing ever compiled the app, so a type error or a broken
+  # import would only have surfaced on whatever host first tried to deploy it.
+  buildpipeline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: apps/buildpipeline
+    env:
+      NEXT_TELEMETRY_DISABLED: '1'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        # No committed lockfile (docs/render-dependency-policy.md), so not `npm ci`.
+        run: npm install --no-audit --no-fund
+
+      - name: Type-check
+        run: npm run typecheck
+
+      - name: Production build
+        run: npm run build

@@ -1,0 +1,3 @@
+const test=require('node:test');const assert=require('node:assert/strict');const {ResendProvisioner}=require('../lib/platform/senders/resend');
+test('Resend provisioner fails closed without key',async()=>{const p=new ResendProvisioner();await assert.rejects(()=>p.createDomain('example.com'),/not configured/)});
+test('Resend provisioner creates domains using current REST surface',async()=>{let seen={};const p=new ResendProvisioner({apiKey:'re_x',fetchImpl:async(url,opts)=>{seen={url,opts};return{ok:true,json:async()=>({id:'d1',name:'example.com',status:'not_started',records:[]})}}});const r=await p.createDomain('example.com');assert.equal(r.id,'d1');assert.match(seen.url,/\/domains$/);assert.equal(seen.opts.method,'POST')});

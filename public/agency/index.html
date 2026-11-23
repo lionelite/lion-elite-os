@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>LionOS — Agency Mode</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#080a0f;color:#f5f6f8;font:14px/1.5 Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.wrap{max-width:1120px;margin:auto;padding:38px 20px}.brand{font-size:24px;font-weight:900}.brand span{color:#d6b15e}.eyebrow{margin-top:46px;color:#aa8942;font-size:11px;font-weight:800;letter-spacing:.13em;text-transform:uppercase}h1{font-size:40px;margin:8px 0}.sub{color:#818b99;max-width:760px}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:24px}.card{border:1px solid #202735;background:#0d1118;border-radius:14px;padding:20px}.card h2{font-size:18px;margin:0 0 8px}.card p{color:#7f8998}.pill{display:inline-block;border:1px solid #2a3340;border-radius:999px;padding:6px 9px;margin-top:9px;color:#a7b1be}.ready{color:#8acb72;border-color:#2b492a}.note{margin-top:16px;padding:16px;border:1px solid #242c39;border-radius:12px;background:#0b0f15;color:#7d8797}@media(max-width:760px){.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="brand">Lion<span>OS</span></div>
+<div class="eyebrow">AGENCY MODE</div>
+<h1>One client. One isolated GTM workspace.</h1>
+<p class="sub">Each client gets its own members, branding, limits, campaigns, prospects, inbox, integrations and source provenance.</p>
+<div class="grid">
+<article class="card"><h2>Workspace isolation</h2><p>Membership roles are scoped per workspace: owner, admin, operator, member and viewer.</p><span class="pill ready">Membership model ready</span></article>
+<article class="card"><h2>White label</h2><p>Each workspace can carry its own brand name, logo, accent, support email, postal address and custom domain.</p><span class="pill ready">Branding model ready</span></article>
+<article class="card"><h2>Lead data</h2><p>Apollo can provide net-new prospect search and enrichment when the server has an authorized API key.</p><span id="apollo" class="pill">Checking Apollo…</span></article>
+</div>
+<div class="note">Workspace authorization helpers are in place. Production login/session issuance still needs to bind an authenticated user to these membership rows before private client data is exposed.</div>
+</div>
+<script>
+const q=new URLSearchParams(location.search),workspaceId=q.get('workspaceId');
+async function load(){if(!workspaceId)return;const r=await fetch('/api/gtm/workspaces/'+workspaceId+'/sources/readiness');const j=await r.json();if(!r.ok)return;const el=document.getElementById('apollo');const ready=Boolean(j.providers?.apollo);el.textContent=ready?'Apollo configured':'Apollo not connected';el.className='pill '+(ready?'ready':'')}
+load();
+</script>
+</body></html>

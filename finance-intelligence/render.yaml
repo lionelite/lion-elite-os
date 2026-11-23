@@ -1,0 +1,17 @@
+services:
+  - type: worker
+    name: lion-elite-tax-documentation-agent
+    runtime: python
+    plan: starter
+    rootDir: finance-intelligence
+    buildCommand: "python -m compileall tax_documentation_worker.py"
+    startCommand: "python tax_documentation_worker.py"
+    envVars:
+      - key: TAX_DATA_DIR
+        value: /var/data/tax-intelligence
+      - key: TAX_POLL_SECONDS
+        value: "300"
+    disk:
+      name: tax-documentation-data
+      mountPath: /var/data
+      sizeGB: 5

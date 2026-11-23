@@ -32,6 +32,18 @@ function verifyShopify(req) {
   return safeEqual(req.headers['x-shopify-hmac-sha256'], expected);
 }
 
+function verifyStripe(req, nowSeconds = Math.floor(Date.now() / 1000), toleranceSeconds = 300) {
+  const secret = process.env.STRIPE_WEBHOOK_SECRET;
+  if (!secret) return false;
+  const parts = String(req.headers['stripe-signature'] || '').split(',');
+  const timestamp = Number(parts.find(part => part.startsWith('t='))?.slice(2));
+  const signatures = parts.filter(part => part.startsWith('v1=')).map(part => part.slice(3));
+  if (!Number.isFinite(timestamp) || Math.abs(nowSeconds - timestamp) > toleranceSeconds || !signatures.length) return false;
+  const signedPayload = `${timestamp}.${Buffer.from(req.rawBody || '').toString('utf8')}`;
+  const expected = crypto.createHmac('sha256', secret).update(signedPayload).digest('hex');
+  return signatures.some(signature => safeEqual(signature, expected));
+}
+
 function verifySharedSecret(req, envKey, headerName = 'x-lion-signature') {
   const secret = process.env[envKey];
   if (!secret) return false;
@@ -67,7 +79,8 @@ app.get('/status', requireBearer, async (_req, res) => {
     gmail: Boolean(process.env.GMAIL_WEBHOOK_SECRET),
     calendar: Boolean(process.env.CALENDAR_WEBHOOK_SECRET),
     ads: Boolean(process.env.ADS_WEBHOOK_SECRET),
-    affiliate: Boolean(process.env.AFFILIATE_WEBHOOK_SECRET)
+    affiliate: Boolean(process.env.AFFILIATE_WEBHOOK_SECRET),
+    stripe: Boolean(process.env.STRIPE_WEBHOOK_SECRET)
   }});
 });
 
@@ -76,6 +89,13 @@ app.post('/webhooks/shopify', async (req, res) => {
   const eventType = req.headers['x-shopify-topic'] || 'unknown';
   const eventId = req.headers['x-shopify-webhook-id'];
   res.status(202).json(await enqueue('shopify', eventType, req.body, { eventId, shopDomain: req.headers['x-shopify-shop-domain'] }));
+});
+
+app.post('/webhooks/stripe', async (req, res) => {
+  if (!verifyStripe(req)) return res.status(401).json({ error: 'INVALID_STRIPE_SIGNATURE' });
+  const eventType = req.body?.type || 'unknown';
+  const eventId = req.body?.id;
+  res.status(202).json(await enqueue('stripe', eventType, req.body, { eventId }));
 });
 
 for (const config of [
@@ -93,7 +113,7 @@ for (const config of [
 }
 
 app.post('/events/:source', requireBearer, async (req, res) => {
-  const allowed = new Set(['shopify', 'gmail', 'calendar', 'ads', 'affiliate', 'manual']);
+  const allowed = new Set(['shopify', 'gmail', 'calendar', 'ads', 'affiliate', 'stripe', 'manual']);
   if (!allowed.has(req.params.source)) return res.status(400).json({ error: 'UNSUPPORTED_SOURCE' });
   res.status(202).json(await enqueue(req.params.source, req.body?.type || 'manual-event', req.body?.payload ?? req.body, { submittedBy: 'authorized-api' }));
 });
@@ -107,4 +127,4 @@ if (require.main === module) {
   app.listen(port, () => console.log(JSON.stringify({ level: 'info', event: 'integration_gateway.started', port })));
 }
 
-module.exports = { app, safeEqual, verifySharedSecret, verifyShopify };
+module.exports = { app, safeEqual, verifySharedSecret, verifyShopify, verifyStripe };

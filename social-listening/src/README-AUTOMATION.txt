@@ -1,0 +1,1 @@
+Qualified Bluesky matches are now eligible for automated outbound handoff through outreach-engine.js. Real delivery requires BLUESKY_OUTREACH_ENABLED=true, BLUESKY_OUTREACH_DRY_RUN=false, and OUTREACH_WEBHOOK_URL pointing to the authenticated delivery adapter.

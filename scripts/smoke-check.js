@@ -16,7 +16,8 @@ const ENTRY_POINTS = [
   'integration-gateway-server.js',
   path.join('workers', 'outreach-worker.js'),
   path.join('workers', 'executive-worker.js'),
-  path.join('workers', 'integration-worker.js')
+  path.join('workers', 'integration-worker.js'),
+  path.join('workers', 'discovery-worker.js')
 ];
 
 const STARTUP_WINDOW_MS = 2500;

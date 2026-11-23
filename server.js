@@ -1,10 +1,160 @@
 const express = require('express');
 const path = require('path');
+const { leadAutomationReadiness } = require('./lib/lead-automation-readiness');
+const { MemoryCoachingStore, PostgresCoachingStore } = require('./lib/coaching/store');
+const { createPushService } = require('./lib/coaching/push');
+const { createCoachingRouter } = require('./routes/coaching');
+const { createLeadsRouter } = require('./routes/leads');
+const leadStore = require('./lib/leads/lead-store');
+const { createCheckoutRouter } = require('./routes/checkout');
+const agentRegistry = require('./lib/agents/roles');
+const { createGtmPlatformRouter } = require('./routes/gtm-platform');
+const { createWorkspaceStore } = require('./lib/platform/workspace-store');
+const { AuthStore } = require('./lib/platform/security/auth-store');
+const { createMcpRouter } = require('./routes/mcp');
+const { createGtmSalesRouter } = require('./routes/gtm-sales');
+const { createGtmFunnelsRouter } = require('./routes/gtm-funnels');
+const { createFunnelStore } = require('./lib/platform/funnel-store');
+const { createClinicOutreachCronRouter } = require('./routes/clinic-outreach-cron');
+const { createOutreachRunRouter } = require('./routes/outreach-run');
 
 const app = express();
 const port = process.env.PORT || 3000;
 
-app.use(express.json({ limit: '1mb' }));
+app.disable('x-powered-by');
+app.set('trust proxy', 1);
+// The raw bytes are kept so the Stripe webhook can verify its signature; the
+// signature is computed over exactly what was sent, not over a re-serialized
+// copy of the parsed object.
+app.use(express.json({
+  limit: '1mb',
+  verify: (req, _res, buffer) => { req.rawBody = buffer; }
+}));
+const coachingStore = process.env.COACHING_DEMO_MODE === 'true'
+  ? new MemoryCoachingStore()
+  : new PostgresCoachingStore();
+const coachingPush = createPushService(coachingStore);
+app.use('/api/coaching', createCoachingRouter({ store: coachingStore, pushService: coachingPush }));
+// Payment. Paying creates a coaching client, which is what sends the invite
+// email, so a completed checkout ends with the customer able to log in.
+app.use('/api/checkout', createCheckoutRouter({ store: coachingStore }));
+// Public B2C opt-in. The only path by which a consumer or coach enters the
+// marketing pipeline, because it is the only one where they consent.
+app.use('/api/leads', createLeadsRouter({ store: leadStore }));
+const gtmWorkspaceStore = createWorkspaceStore();
+const gtmAuthStore = process.env.DATABASE_URL ? new AuthStore() : null;
+app.use('/api/gtm', createGtmPlatformRouter({ store: gtmWorkspaceStore, authStore: gtmAuthStore }));
+app.use('/api/gtm-sales', createGtmSalesRouter());
+// BuildPipeline VSL funnels: config, PII-free analytics, application → CRM
+// prospect, booking confirmation. Called by apps/buildpipeline.
+app.use('/api/gtm-funnels', createGtmFunnelsRouter({ store: createFunnelStore(), authStore: gtmAuthStore }));
+if (gtmAuthStore) app.use('/api/mcp', createMcpRouter({ authStore: gtmAuthStore }));
+// Daily clinic outreach, triggered over HTTP by .github/workflows/daily-clinic-outreach.yml
+// (no Redis/workers on the free plan). Every route requires x-cron-secret.
+app.use('/api/cron', createClinicOutreachCronRouter());
+// POST /run/clinic-outreach (x-outreach-secret = OUTREACH_SECRET, or GitHub OIDC)
+// and the public, PII-free GET /health/outreach. Called by clinic-outreach.yml.
+app.use(createOutreachRunRouter());
+app.get('/.well-known/oauth-authorization-server', (_req, res) => {
+  const origin = String(process.env.PUBLIC_BASE_URL || '').replace(/\/$/,'');
+  res.json({
+    issuer: origin,
+    registration_endpoint: origin + '/api/mcp/register',
+    authorization_endpoint: origin + '/api/mcp/authorize',
+    token_endpoint: origin + '/api/mcp/token',
+    code_challenge_methods_supported: ['S256'],
+    token_endpoint_auth_methods_supported: ['none'],
+    scopes_supported: [
+      'workspace:read','campaign:read','campaign:write','prospect:read','prospect:write',
+      'conversation:read','meeting:write','agent:read','agent:write','signal:read',
+      'integration:read','usage:read','audit:read'
+    ]
+  });
+});
+app.use('/coaching', (_req, res, next) => {
+  res.set({
+    'Content-Security-Policy': [
+      "default-src 'self'",
+      "base-uri 'none'",
+      "connect-src 'self'",
+      "font-src 'self'",
+      "frame-ancestors 'none'",
+      'frame-src https://www.youtube-nocookie.com https://player.vimeo.com',
+      "img-src 'self' data:",
+      "manifest-src 'self'",
+      "media-src 'self' https:",
+      "object-src 'none'",
+      "script-src 'self'",
+      "style-src 'self' 'unsafe-inline'",
+      "worker-src 'self'"
+    ].join('; '),
+    'Cross-Origin-Opener-Policy': 'same-origin',
+    'Permissions-Policy': 'camera=(), geolocation=(), microphone=()',
+    'Referrer-Policy': 'no-referrer',
+    'X-Content-Type-Options': 'nosniff',
+    'X-Frame-Options': 'DENY'
+  });
+  next();
+});
+// The public opt-in page. Same posture as /coaching: no framing, no third-party
+// scripts, nothing it does not need. Distinct from /join, which is the
+// coaching purchase page.
+app.use(['/optin', '/unsubscribe'], (_req, res, next) => {
+  res.set({
+    'Content-Security-Policy': [
+      "default-src 'self'",
+      "base-uri 'none'",
+      "connect-src 'self'",
+      "font-src 'self'",
+      "form-action 'self'",
+      "frame-ancestors 'none'",
+      "img-src 'self' data:",
+      "object-src 'none'",
+      "script-src 'self'",
+      "style-src 'self'"
+    ].join('; '),
+    'Permissions-Policy': 'camera=(), geolocation=(), microphone=()',
+    'Referrer-Policy': 'no-referrer',
+    'X-Content-Type-Options': 'nosniff',
+    'X-Frame-Options': 'DENY'
+  });
+  next();
+});
+
+// BuildPipeline customer-facing domain. Keep the legacy internal command center
+// on the Render hostname while the custom domain presents the SaaS product.
+app.use((req,res,next)=>{
+  const host=String(req.hostname||req.headers.host||'').toLowerCase().split(':')[0];
+  const buildPipelineHost=host==='buildpipeline.online'||host==='www.buildpipeline.online';
+  if(!buildPipelineHost)return next();
+  const routes={
+    '/':'gtm/index.html',
+    '/pricing':'gtm/pricing/index.html',
+    '/pricing/':'gtm/pricing/index.html',
+    '/login':'gtm/access/index.html',
+    '/login/':'gtm/access/index.html',
+    '/account':'gtm/account/index.html',
+    '/account/':'gtm/account/index.html',
+    '/onboarding':'gtm/onboarding/index.html',
+    '/onboarding/':'gtm/onboarding/index.html',
+    '/security':'gtm/security/index.html',
+    '/security/':'gtm/security/index.html',
+    '/support':'gtm/support/index.html',
+    '/support/':'gtm/support/index.html',
+    '/terms':'gtm/legal/terms/index.html',
+    '/terms/':'gtm/legal/terms/index.html',
+    '/privacy':'gtm/legal/privacy/index.html',
+    '/privacy/':'gtm/legal/privacy/index.html',
+    '/acceptable-use':'gtm/legal/acceptable-use/index.html',
+    '/acceptable-use/':'gtm/legal/acceptable-use/index.html',
+    '/launch-status':'gtm/launch-status/index.html',
+    '/launch-status/':'gtm/launch-status/index.html'
+  };
+  const target=routes[req.path];
+  if(!target)return next();
+  res.sendFile(path.join(__dirname,'public',target));
+});
+
 app.use(express.static(path.join(__dirname, 'public')));
 
 const customerCommunicationRules = [
@@ -68,6 +218,15 @@ const agents = [
     systemPrompt: 'You are the Lion Elite Research Compliance Agent. For Lion Elite Wellness, keep content research-use-only. Do not provide dosing, human-use instructions, disease claims, treatment claims, or transformation promises. Rewrite risky copy into research-safe educational language. Include risk level, problem phrase, safer replacement, and final version. Also check that customer-facing content does not reveal internal inventory, exact product counts, unit quantities, batch details, source-sheet details, or internal notes. Availability language must only say limited stock or current availability is limited.'
   },
   {
+    id: 'client-success',
+    name: 'Client Success Agent',
+    mission: 'Retain and reactivate existing customers, and route coaching interest into Lion Elite Beauty.',
+    activation: 'Run when existing customers are due contact, after a reply arrives, or when reactivation is the fastest available revenue.',
+    dailyOutputs: ['reactivation list', 'check-in message', 'coaching routing decision', 'retention risk flag'],
+    tools: ['Customer records', 'coaching funnel', 'consent and suppression state', 'brand rules'],
+    systemPrompt: 'You are the Lion Elite Client Success Agent. Your job is retention and reactivation of EXISTING customers, and routing coaching interest to Lion Elite Beauty. Write warm, human, service-first messages that earn the next conversation rather than pushing a sale. For Lion Elite Wellness customers, everything stays Research-Use-Only: never give dosing, reconstitution, administration, human-use instructions, treatment claims, or transformation promises, and never imply a research product is for personal use. Coaching and transformation language belongs to Lion Elite Beauty only. Never reveal internal inventory, exact product counts, unit quantities, batch details, or internal notes; availability language may only say limited stock or current availability is limited. Respect consent and opt-out state absolutely: if a contact has opted out or lacks consent, say so and stop rather than drafting a message to them.'
+  },
+  {
     id: 'finance-kpi',
     name: 'Finance & KPI Agent',
     mission: 'Track the numbers that matter and turn them into daily revenue priorities.',
@@ -77,6 +236,40 @@ const agents = [
     systemPrompt: 'You are the Lion Elite Finance & KPI Agent. Translate numbers into daily action. Focus on revenue, orders, DMs, consultations, content performance, average order value, and the $100k/month target. Always end with one CEO priority question. Treat inventory quantities as internal business data, not customer-facing copy.'
   }
 ];
+
+// Reconcile this dashboard roster against the authoritative registry in
+// `lib/agents/roles.js`. CLAUDE.md records the problem this solves: the roles
+// were described here AND in `ai-agents/*.md`, with nothing reconciling them, so
+// the two drifted with no enforcement. The registry now owns each role's
+// mandate, KPIs, knowledge domains and dispatchable actions; the prompts stay
+// here. A roster that disagrees with the registry is a startup failure rather
+// than a silent divergence.
+(function reconcileAgentRoster() {
+  const registryIds = agentRegistry.roleIds();
+  const dashboardIds = agents.map(a => a.id);
+  const missingHere = registryIds.filter(id => !dashboardIds.includes(id));
+  const unknownHere = dashboardIds.filter(id => !registryIds.includes(id));
+  if (missingHere.length || unknownHere.length) {
+    throw new Error(
+      `Agent roster is out of step with lib/agents/roles.js — ` +
+      `missing from server.js: [${missingHere.join(', ')}]; ` +
+      `not in the registry: [${unknownHere.join(', ')}]. Update the registry, not just this file.`
+    );
+  }
+  const validation = agentRegistry.validateRegistry();
+  if (!validation.valid) {
+    throw new Error(`Agent registry is invalid: ${validation.problems.join(' ')}`);
+  }
+  for (const agent of agents) {
+    const definition = agentRegistry.role(agent.id);
+    agent.mandate = definition.mandate;
+    agent.ownsDecision = definition.ownsDecision;
+    agent.kpis = definition.kpis;
+    agent.dispatchableActions = definition.actions;
+    agent.gatedBy = definition.gates;
+    agent.knowledgeDomains = definition.knowledgeDomains;
+  }
+})();
 
 const commandCenter = {
   priority: 'AI agents first. Build Lion Elite OS around automation, not just a website.',
@@ -313,8 +506,29 @@ async function saveRunToGitHub(run) {
   };
 }
 
+// Render sets RENDER_GIT_COMMIT on every deploy. Reporting it lets CI confirm
+// that the commit it just merged is the one actually serving traffic, which a
+// deploy hook's 200 does not tell anyone.
+const DEPLOYED_COMMIT = String(process.env.RENDER_GIT_COMMIT || process.env.GIT_COMMIT || '').trim();
+
 app.get('/health', (req, res) => {
-  res.json({ status: 'ok', service: 'lion-elite-os', mode: commandCenter.mode, timestamp: new Date().toISOString() });
+  res.json({
+    status: 'ok',
+    service: 'lion-elite-os',
+    mode: commandCenter.mode,
+    commit: DEPLOYED_COMMIT,
+    leadAutomation: leadAutomationReadiness(),
+    // Booleans only — never the credential values themselves. Answers "is the
+    // listener running and are its leads being kept" without a dashboard.
+    bluesky: {
+      // start.js no longer starts the listener (see the note there).
+      listenerEnabled: false,
+      durableLeadStorage: Boolean(process.env.DATABASE_URL),
+      replyWorkerEnabled: String(process.env.BLUESKY_OUTREACH_ENABLED || '').toLowerCase() === 'true'
+        && Boolean(process.env.BLUESKY_HANDLE && process.env.BLUESKY_APP_PASSWORD)
+    },
+    timestamp: new Date().toISOString()
+  });
 });
 
 app.get('/api/integrations', (req, res) => {

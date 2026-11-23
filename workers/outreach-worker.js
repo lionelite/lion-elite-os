@@ -4,9 +4,11 @@ const http = require('http');
 const { Worker } = require('bullmq');
 const { createRedisConnection, getRedis, ensureConnected, healthcheck, withLock, closeRedis } = require('../lib/redis');
 const { QUEUE_NAMES, addJob, moveToDeadLetter, queueMetrics } = require('../lib/job-queues');
-const { buildEmail: generateEmailDraft, scoreEmail: scoreEmailDraft } = require('../lib/email-generation');
+const { draftForContext, isClinicSupply } = require('../lib/outreach/draft-router');
+const { qualifyClinicProspect } = require('../lib/outreach/clinic-qualification');
 const { validateProspect, authorizeOutreach } = require('../lib/outreach-validation');
 const { sendEmail } = require('../lib/email-delivery');
+const { isHalted } = require('../lib/kill-switch');
 const { PostgresProspectStore } = require('../lib/postgres-prospect-store');
 const { log, runtimeMetrics } = require('../lib/observability');
 
@@ -47,10 +49,52 @@ function startWorker(queueName, processor) {
   return worker;
 }
 
+/**
+ * Clinic prospects are qualified against live database facts (opt-out list,
+ * prior contact, other records at the same organisation) immediately before the
+ * draft goes to validation, so a status can never be stale by the time the
+ * 16 checks read it. A prospect that does not qualify is recorded with the
+ * reasons and the job completes without retrying: retrying cannot change the
+ * evidence, and a dead-lettered job would read as a fault when it is a decision.
+ */
+async function qualifyAndForward(job, context) {
+  const prospect = await store.get(context.prospect.prospectId);
+  if (!prospect) return { qualified: false, blockers: ['prospect not found'] };
+  const result = qualifyClinicProspect(prospect, await store.contactFacts(prospect));
+  await store.update(prospect.prospectId, {
+    validation: {
+      ...(prospect.validation || {}),
+      qualification: {
+        qualified: result.qualified,
+        tier: result.tier,
+        evaluatedAt: new Date().toISOString(),
+        checks: result.checks,
+        messageVersion: result.draft ? result.draft.messageVersion : null
+      }
+    }
+  }, 'clinic-qualification');
+  if (!result.qualified) {
+    log('info', 'qualification.blocked', { prospectId: prospect.prospectId, blockers: result.blockers });
+    return { qualified: false, blockers: result.blockers };
+  }
+  await addJob('validation', 'validate-outreach', {
+    ...context,
+    campaignId: result.campaignId,
+    prospect: result.view,
+    policy: result.policy,
+    draft: result.draft,
+    quality: result.draft.quality
+  }, { jobId: `validate:${prospect.prospectId}:step1` });
+  return { qualified: true, messageVersion: result.draft.messageVersion };
+}
+
 startWorker(QUEUE_NAMES.email, async job => {
   const context = job.data || {};
-  const draft = generateEmailDraft(context);
-  const quality = scoreEmailDraft(draft, context);
+  if (isClinicSupply(context) && context.prospect?.prospectId) return qualifyAndForward(job, context);
+  // Route to the campaign's own builder: clinics get the research-supply
+  // sequence, not the Beauty partnership template (lib/outreach/draft-router.js).
+  const { draft, quality } = draftForContext(context);
+  if (draft.approved === false && !quality.blockers.length) quality.blockers.push('draft_not_approved');
   const minimumScore = Number(context.minimumPersonalizationScore || process.env.MINIMUM_PERSONALIZATION_SCORE || 56.25);
   if (quality.blockers.length || quality.score < minimumScore) {
     const error = new Error('Generated email did not meet quality requirements.');
@@ -64,6 +108,10 @@ startWorker(QUEUE_NAMES.validation, async job => {
   const context = job.data || {};
 
   if (job.name === 'schedule-due-followups') {
+    if (await isHalted()) {
+      log('warn', 'followups.skipped_halted', {});
+      return { halted: true, queued: 0 };
+    }
     const pending = await store.listQueue({ status: 'pending' });
     const now = Date.now();
     const due = pending
@@ -91,12 +139,52 @@ startWorker(QUEUE_NAMES.validation, async job => {
     error.code = 'OUTREACH_BLOCKED'; error.validation = validation; throw error;
   }
   const authorization = authorizeOutreach(context.prospect, context.policy || {});
-  await addJob('dispatch', 'dispatch-authorized-outreach', { prospect: context.prospect, draft: context.draft, quality: context.quality, authorization }, { jobId: authorization.idempotencyKey });
-  return { validation, authorization };
+
+  // Every send must flow through outreach_queue: the store's transactional
+  // daily-quota ledger, suppression re-check, and audit events only apply
+  // to queue-backed dispatches. Direct dispatch (no queueId) previously
+  // bypassed the quota entirely, which unattended sending cannot afford.
+  if (!context.prospect?.prospectId) {
+    const error = new Error('A stored prospect (prospectId) is required to dispatch outreach.');
+    error.code = 'PROSPECT_ID_REQUIRED';
+    throw error;
+  }
+  const queued = await store.enqueue(context.prospect.prospectId, authorization, {
+    channel: context.draft?.channel || 'email',
+    recipient: context.draft?.recipient || context.prospect?.contact?.email,
+    subject: context.draft?.subject || null,
+    body: context.draft?.body,
+    messageVersion: context.draft?.messageVersion || context.prospect?.messageVersion || 'auto-v1'
+  }, new Date().toISOString(), 'outreach-worker');
+
+  if (await isHalted()) {
+    // Kill switch: park the item as 'pending' without a dispatch job. The
+    // follow-ups scheduler picks it up automatically after resume.
+    log('warn', 'validation.dispatch_skipped_halted', { queueId: queued.item.queueId });
+    return { validation, authorization, queueId: queued.item.queueId, halted: true };
+  }
+
+  // Deterministic jobId (same value the follow-ups scheduler uses for this
+  // item) so the two paths dedupe instead of double-dispatching.
+  await addJob('dispatch', 'dispatch-authorized-outreach', {
+    queueId: queued.item.queueId,
+    prospect: context.prospect,
+    draft: context.draft,
+    quality: context.quality,
+    authorization
+  }, { jobId: authorization.idempotencyKey });
+  return { validation, authorization, queueId: queued.item.queueId };
 });
 
 startWorker(QUEUE_NAMES.dispatch, async job => {
   const context = job.data || {};
+  if (await isHalted()) {
+    // Complete WITHOUT sending: the queue row stays 'pending', the
+    // completed job is pruned, and the follow-ups scheduler re-dispatches
+    // the item under the same jobId once the switch is cleared.
+    log('warn', 'dispatch.skipped_halted', { queueId: context.queueId || null });
+    return { skipped: 'outreach_halted', queueId: context.queueId || null };
+  }
   if (context.queueId) await store.markQueue(context.queueId, 'processing', {}, 'outreach-worker');
   try {
     const delivery = await sendEmail({ prospect: context.prospect, draft: context.draft, authorization: context.authorization });
@@ -112,11 +200,18 @@ startWorker(QUEUE_NAMES.dispatch, async job => {
   }
 });
 
+function deliveryConfigured() {
+  return Boolean(process.env.RESEND_API_KEY && process.env.OUTREACH_FROM_EMAIL && process.env.OUTREACH_POSTAL_ADDRESS
+    && String(process.env.OUTREACH_SEND_ENABLED).toLowerCase() === 'true');
+}
+
 async function heartbeat() {
   const redis = await ensureConnected(getRedis());
   const metrics = await queueMetrics();
   const waiting = Object.values(metrics).reduce((sum, queue) => sum + Number(queue.waiting || 0), 0);
-  const payload = { at: new Date().toISOString(), workers: workers.length, concurrency, waiting, ...runtimeMetrics() };
+  // deliveryConfigured is read by scripts/clinic-outreach-daily.js, so the cron
+  // can tell whether sending is set up without holding the Resend key itself.
+  const payload = { at: new Date().toISOString(), workers: workers.length, concurrency, waiting, deliveryConfigured: deliveryConfigured(), ...runtimeMetrics() };
   await redis.set(`heartbeat:${process.env.RENDER_SERVICE_NAME || 'lion-elite-outreach-worker'}`, JSON.stringify(payload), 'EX', heartbeatSeconds * 3);
   if (waiting >= queueLagWarning) log('warn', 'queue.lag_high', { waiting, threshold: queueLagWarning });
 }
@@ -133,11 +228,14 @@ const server = http.createServer(async (req, res) => {
   try {
     const redis = await healthcheck();
     const queues = req.url === '/metrics' ? await queueMetrics() : undefined;
-    const deliveryConfigured = Boolean(process.env.RESEND_API_KEY && process.env.OUTREACH_FROM_EMAIL && String(process.env.OUTREACH_SEND_ENABLED).toLowerCase() === 'true');
-    const ready = !shuttingDown && redis.ok && workers.length > 0 && deliveryConfigured;
+    const delivery = deliveryConfigured();
+    // A tripped kill switch is intentional, so it does not fail /ready —
+    // but it is always visible here and in the operations monitor.
+    const sendingHalted = await isHalted();
+    const ready = !shuttingDown && redis.ok && workers.length > 0 && delivery;
     const statusCode = req.url === '/ready' && !ready ? 503 : 200;
     res.writeHead(statusCode, { 'content-type': 'application/json' });
-    res.end(JSON.stringify({ status: ready ? 'ok' : 'degraded', ready, deliveryConfigured, service: 'lion-elite-outreach-worker', redis, queues, workers: workers.length, ...runtimeMetrics() }));
+    res.end(JSON.stringify({ status: ready ? 'ok' : 'degraded', ready, deliveryConfigured: delivery, sendingHalted, service: 'lion-elite-outreach-worker', redis, queues, workers: workers.length, ...runtimeMetrics() }));
   } catch (error) {
     res.writeHead(503, { 'content-type': 'application/json' });
     res.end(JSON.stringify({ status: 'degraded', ready: false, error: error.message }));

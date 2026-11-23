@@ -47,6 +47,51 @@ The outreach service can:
 
 It does not guess email addresses, use people-search data, or send messages directly.
 
+## Daily clinic outreach (free tier, HTTP-triggered)
+
+Runs on the free `lion-elite-os` web service with no Redis, workers or Render
+crons. A GitHub Actions schedule calls `POST /api/cron/clinic-outreach` at 9:07 AM
+New York time on weekdays; the run discovers new clinics, qualifies them, sends
+first-touch e-mails and the one follow-up to clinics already contacted, writes an
+`outreach_runs` row and mirrors changes to the tracker sheet. Full runbook:
+[`docs/clinic-outreach-http.md`](docs/clinic-outreach-http.md).
+
+Setup:
+
+The workflows authenticate to the service with GitHub's own short-lived OIDC
+tokens, so no shared secret has to be created or copied anywhere.
+
+1. **Render → lion-elite-os → Environment**, add:
+   `RESEND_API_KEY`, `OUTREACH_FROM_EMAIL`,
+   `OUTREACH_START_DATE` (first send day, `YYYY-MM-DD`), `DAILY_SEND_MAX=150`,
+   `DAILY_EMAIL_LIMIT=150` (the store's own quota; the default 100 would cap the
+   ramp), `GOOGLE_SERVICE_ACCOUNT_JSON`, and
+   `OUTREACH_APPROVED_MESSAGE_VERSIONS` (run `npm run outreach:versions` for the
+   ids; the follow-up id is new and needs your review). Leave
+   `OUTREACH_SEND_ENABLED` unset for now. `OUTREACH_POSTAL_ADDRESS` is already set.
+2. **Google Sheet**, share it with the service account's `client_email` as Editor.
+3. **Dry run**: Actions → *Daily clinic outreach* → Run workflow (dry run is
+   ticked by default). Read the JSON summary in the run log: who would be sent
+   what, and why everyone else was skipped.
+4. **Test e-mail**: send one to yourself and check the footer, the opt-out line
+   and DKIM=pass in the headers (`docs/automated-outreach.md`).
+5. **Turn sending on**: set `OUTREACH_SEND_ENABLED=true` on Render. The next
+   weekday 9:07 run sends.
+
+Controls, from **Actions → Outreach control → Run workflow** (no deploy, no secret):
+`status`, `pause` (stops sends from the next check, even mid-run), `resume`,
+`record_reply` and `record_opt_out` (stop the sequence for an address; opt-out
+also adds it to the suppression list). Optionally set `CRON_SECRET` on Render to
+use the same routes from `curl` with an `x-cron-secret` header.
+
+## Lion Elite Coaching PWA
+
+The main web service now includes an installable, mobile-first coaching portal at `/coaching/`. Coaches can create private client links, build video-backed workout plans, publish nutrition and supplement guidance, record clinician-confirmed peptide protocols, message clients in real time, and review check-ins. Clients can install the portal from their link without an App Store, follow exercise videos, log workouts, message their coach, and track progress.
+
+The workout assistant uses only exercises already approved in the coach's video library and always creates a draft for human review. It never generates peptide, supplement, diet, rehabilitation, or medical instructions. Peptide protocols are display-only and cannot be published without explicit licensed-clinician confirmation.
+
+Setup, production variables, install instructions, and verification: [`docs/coaching-pwa.md`](docs/coaching-pwa.md).
+
 Primary success metrics:
 
 - Qualified leads created
@@ -85,6 +130,27 @@ node --test real-estate/intelligence/test/scoring.test.js
 ```
 
 Documentation: [`real-estate/intelligence/README.md`](real-estate/intelligence/README.md)
+
+## Daily Social Content Engine
+
+A scheduled GitHub Action (`.github/workflows/daily-social-content.yml`)
+generates daily, brand-separated social content for Lion Elite Wellness and
+Lion Elite Beauty at 7:00 AM America/New_York — 1 feed post, 1 Reel/TikTok
+script, and 2 Stories per brand, with platform-specific captions for
+Instagram, Facebook, TikTok, LinkedIn, and X.
+
+- Every piece passes fail-closed compliance validation (Lion Elite Wellness
+  stays research-education only: no dosing, human-use, treatment, or
+  transformation claims, mandatory research disclaimer).
+- Duplicate-topic detection enforces a seven-day content rotation.
+- Output lands on the `automation/social-content` branch as structured JSON,
+  media prompts (1080x1350 feed / 1080x1920 Stories-Reels), and
+  Metricool-compatible CSVs (`content/metricool-import/week-of-*.csv`) for
+  free-plan batch scheduling.
+- Failures and compliance blocks automatically open a GitHub issue.
+
+Run locally with `npm run social:generate`. Setup, secrets, and token
+rotation: [`docs/social-content-pipeline.md`](docs/social-content-pipeline.md).
 
 ## Mission
 

@@ -3,3 +3,28 @@ bun.lock
 bun.lockb
 .env
 *.log
+
+# Social-listening monitor output (third-party post content stays local)
+social-listening/data/
+
+# Generated Claude Code lead context (contains third-party public post content)
+claude-context/
+
+# Agency client discovery files and engagement ledgers.
+# These hold client financials (revenue, lead volume, customer value) and our
+# own delivery costs and margins. Contractors are granted `repo-branch` access
+# by design (agency/src/access.js), so committing this data would route it
+# straight through the access tier built to keep them away from it.
+agency/clients/
+agency/ledgers/
+agency/bench/
+
+# Harvested lead store is pulled from the automation/leads branch on demand.
+leads/harvested/
+
+# BuildPipeline funnel app build output. No lockfile is committed here either
+# (same policy as the root: docs/render-dependency-policy.md).
+apps/buildpipeline/.next/
+apps/buildpipeline/tsconfig.tsbuildinfo
+apps/buildpipeline/package-lock.json
+dump.rdb

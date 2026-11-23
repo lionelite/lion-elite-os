@@ -1,0 +1,62 @@
+name: Clinic discovery
+
+# Finds new emailable clinics and stores them as `lion-elite-clinical`
+# prospects. Separate from sending (clinic-outreach.yml picks them up).
+#
+# Runs on the GitHub runner because Render's shared free-tier IPs are refused by
+# Overpass. The runner does the map search (Overpass only, rotating mirrors) and
+# reads each clinic's own website; the Render service dedupes and writes to
+# Supabase, so this job holds no database credential. Free sources only.
+#
+# Every two hours; each pass works through the 50 metros from where the last
+# one stopped and ends early once 200 new clinics are stored for the New York
+# day (CLINIC_DISCOVERY_DAILY_TARGET on the service). Details:
+# docs/clinic-discovery.md.
+on:
+  schedule:
+    - cron: '41 */2 * * *'
+  workflow_dispatch:
+    inputs:
+      max_metros:
+        description: 'Stop after this many metros (blank = all 50)'
+        required: false
+        default: ''
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: clinic-discovery
+  cancel-in-progress: false
+
+env:
+  SERVICE_URL: https://lion-elite-os.onrender.com
+
+jobs:
+  discover:
+    runs-on: ubuntu-latest
+    timeout-minutes: 115
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Wake Render service
+        run: |
+          for i in 1 2 3 4 5 6 7 8; do
+            if curl -fsS --max-time 60 "$SERVICE_URL/health" > /dev/null; then echo "Service is up."; exit 0; fi
+            echo "Not up yet (attempt $i); waiting 20s."; sleep 20
+          done
+          echo "::error::Service did not answer /health."; exit 1
+
+      # Node built-ins and repo files only; no install needed.
+      - name: Discover clinics
+        env:
+          OUTREACH_SECRET: ${{ secrets.OUTREACH_SECRET }}
+          DISCOVERY_BUDGET_MINUTES: '100'
+          DISCOVERY_CRAWL_CONCURRENCY: '20'
+          DISCOVERY_MAX_METROS: ${{ github.event.inputs.max_metros }}
+        run: node scripts/discover-clinics.js

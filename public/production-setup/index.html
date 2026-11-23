@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>LionOS — Production Setup</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#080a0f;color:#f4f5f7;font:14px/1.5 Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.wrap{max-width:1100px;margin:auto;padding:38px 20px}.brand{font-size:24px;font-weight:900}.brand span{color:#d6b15e}.eyebrow{margin-top:44px;color:#aa8942;font-size:11px;font-weight:800;letter-spacing:.13em;text-transform:uppercase}h1{font-size:40px;margin:7px 0}.sub{color:#808a99;max-width:780px}.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-top:22px}.card{border:1px solid #202735;background:#0d1118;border-radius:14px;padding:20px}.card h2{font-size:18px;margin:0 0 8px}.row{display:flex;justify-content:space-between;gap:14px;padding:9px 0;border-top:1px solid #1d2430}.row span{color:#7c8797}.yes{color:#8ccd73}.no{color:#d98a77}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}.actions button,.actions a{border-radius:9px;padding:10px 13px;font-weight:800;text-decoration:none;cursor:pointer}.primary{background:#d6b15e;color:#111;border:1px solid #e0c172}.ghost{background:#111720;color:#e1e5ea;border:1px solid #2b3442}.note{margin-top:16px;padding:14px;border:1px solid #242d39;border-radius:11px;color:#7e8897;background:#0b0f15}.status{margin-top:10px;color:#87919f}@media(max-width:760px){.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="brand">Lion<span>OS</span></div>
+<div class="eyebrow">PRODUCTION SETUP</div>
+<h1>Connect the last mile.</h1>
+<p class="sub">This page checks only whether production dependencies are configured. It never returns provider secrets or OAuth tokens.</p>
+<div class="grid">
+<section class="card"><h2>Server readiness</h2><div id="checks">Loading…</div></section>
+<section class="card"><h2>Workspace connections</h2><div id="connections">Loading…</div><div class="actions"><button class="primary" id="google">Connect Google</button><a class="ghost" href="/integrations/">Integrations</a></div><div id="status" class="status"></div></section>
+</div>
+<div class="note">For Google, an admin session is required. The consent flow uses PKCE and stores the returned tokens encrypted at rest. Resend and Apollo remain server-side credential integrations.</div>
+</div>
+<script>
+const q=new URLSearchParams(location.search),workspaceId=q.get('workspaceId');let bearer=localStorage.getItem('lionosSessionToken')||'';
+const $=id=>document.getElementById(id);
+async function get(path,auth=false){const headers={};if(auth&&bearer)headers.Authorization='Bearer '+bearer;const r=await fetch(path,{headers});const j=await r.json();if(!r.ok)throw new Error(j.error||'Request failed');return j}
+async function load(){
+ try{
+  const p=await get('/api/gtm/production/readiness');
+  const entries=Object.entries(p.production?.required||{});
+  $('checks').innerHTML=entries.map(([k,v])=>'<div class="row"><span>'+k+'</span><strong class="'+(v?'yes':'no')+'">'+(v?'Ready':'Missing')+'</strong></div>').join('');
+ }catch(e){$('checks').textContent=e.message}
+ if(!workspaceId){$('connections').textContent='Add ?workspaceId=YOUR_WORKSPACE_ID';$('google').disabled=true;return}
+ try{
+  const o=await get('/api/gtm/workspaces/'+workspaceId+'/oauth',true);
+  const creds=o.credentials||[];
+  $('connections').innerHTML=creds.length?creds.map(x=>'<div class="row"><span>'+x.provider+'</span><strong class="yes">Connected</strong></div>').join(''):'<div class="row"><span>Google</span><strong class="no">Not connected</strong></div>';
+ }catch(e){$('connections').textContent=bearer?'Unable to read workspace connections: '+e.message:'Session token required for workspace connections.'}
+}
+$('google').onclick=async()=>{if(!workspaceId)return;if(!bearer){$('status').textContent='Set your LionOS session token in localStorage as lionosSessionToken, or sign in through the identity provider once connected.';return}try{const j=await get('/api/gtm/workspaces/'+workspaceId+'/oauth/google/connect',true);location.href=j.url}catch(e){$('status').textContent=e.message}};
+if(q.get('google')==='connected')$('status').textContent='Google connected successfully.';
+load();
+</script>
+</body></html>

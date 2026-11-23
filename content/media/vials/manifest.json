@@ -1,0 +1,6 @@
+{
+  "_comment": "Canonical product-vial registry extras. The approved peptide catalog (lib/social/peptide-catalog.js) is the base product list; add here ONLY products/aliases beyond it. Drop the real vial asset at content/media/vials/<slug>.png (ideally a transparent-background PNG cutout). Regenerate coverage with `npm run social:vials`.",
+  "products": [
+    { "slug": "tirzepatide", "name": "Tirzepatide", "aliases": ["tirzepatide 10 mg", "tirzepatide-10mg"] }
+  ]
+}

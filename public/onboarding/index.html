@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>LionOS — Onboarding</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#090b10;color:#f4f5f7;font:15px/1.5 Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.wrap{max-width:920px;margin:0 auto;padding:48px 22px}.logo{font-weight:900;letter-spacing:-.03em;font-size:23px}.logo span{color:#d7b15a}.kicker{margin-top:70px;color:#b79243;font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase}h1{font-size:48px;line-height:1.02;letter-spacing:-.045em;margin:10px 0 12px;max-width:780px}p{color:#8892a2;max-width:680px}.card{margin-top:30px;border:1px solid #202735;background:#0e1219;border-radius:18px;padding:28px}.step{display:none}.step.active{display:block}.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.full{grid-column:1/-1}label{display:block;color:#a8b0bd;font-size:12px;font-weight:700;margin:0 0 7px}input,textarea,select{width:100%;border:1px solid #2a3241;background:#0a0e14;color:#fff;border-radius:9px;padding:12px;font:inherit}textarea{min-height:105px;resize:vertical}.actions{display:flex;justify-content:space-between;align-items:center;margin-top:22px}.actions button{border-radius:9px;padding:11px 18px;font-weight:800;cursor:pointer}.primary{border:1px solid #e0bf73;background:#d6b15e;color:#111}.ghost{border:1px solid #2b3341;background:#111620;color:#d9dde4}.progress{display:flex;gap:7px;margin-bottom:22px}.progress i{height:4px;flex:1;border-radius:99px;background:#222936}.progress i.on{background:#d6b15e}.summary{display:grid;gap:12px}.summary div{border:1px solid #232b38;border-radius:10px;padding:14px}.summary span{display:block;color:#697485;font-size:11px;text-transform:uppercase;letter-spacing:.08em}.summary strong{display:block;margin-top:4px}.done{text-align:center;padding:35px}.done b{display:grid;place-items:center;margin:0 auto 16px;width:56px;height:56px;border-radius:50%;background:#152117;color:#91cd76;font-size:27px}@media(max-width:650px){h1{font-size:36px}.grid{grid-template-columns:1fr}.full{grid-column:auto}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="logo">Lion<span>OS</span></div>
+<p class="kicker">GTM WORKSPACE SETUP</p>
+<h1>Give your AI workforce the context it needs to sell.</h1>
+<p>Set up your company, offer and ideal customer profile. LionOS will use this as shared context for research, qualification, messaging and campaigns.</p>
+<div class="card">
+<div class="progress"><i class="on"></i><i></i><i></i><i></i></div>
+<form id="form">
+<section class="step active">
+<h2>1. Create your workspace</h2>
+<div class="grid"><div class="full"><label>Company / workspace name</label><input name="workspaceName" required placeholder="Acme AI"></div><div><label>Plan</label><select name="plan"><option value="solo">Solo — $299/mo</option><option value="agency">Agency — $499/mo</option><option value="enterprise">Enterprise</option></select></div><div><label>Website</label><input name="websiteUrl" placeholder="https://example.com"></div></div>
+</section>
+<section class="step">
+<h2>2. What do you sell?</h2>
+<div class="grid"><div class="full"><label>Company description</label><textarea name="companyDescription" required placeholder="What does your company do?"></textarea></div><div><label>Offer name</label><input name="offerName" required placeholder="AI Front Desk"></div><div><label>Primary goal</label><select name="primaryGoal"><option value="book_meetings">Book meetings</option><option value="generate_pipeline">Generate pipeline</option><option value="close_sales">Close sales</option></select></div><div class="full"><label>Offer description</label><textarea name="offerDescription" required placeholder="Describe the result customers buy."></textarea></div></div>
+</section>
+<section class="step">
+<h2>3. Who should LionOS target?</h2>
+<div class="grid"><div><label>Industries</label><input name="industries" placeholder="Med spas, dental, clinics"></div><div><label>Geography</label><input name="targetGeography" placeholder="South Florida"></div><div><label>Employee range</label><input name="employees" placeholder="2-20"></div><div><label>Exclusions</label><input name="exclusions" placeholder="Existing customers, franchises"></div><div class="full"><label>Messaging angles</label><textarea name="messagingAngles" placeholder="Missed calls cost revenue; staff is overloaded"></textarea></div></div>
+</section>
+<section class="step">
+<h2>4. Review and build</h2>
+<div class="summary" id="summary"></div>
+</section>
+<div class="actions"><button type="button" class="ghost" id="back" style="visibility:hidden">Back</button><button type="button" class="primary" id="next">Continue</button></div>
+</form>
+<div class="done" id="done" hidden><b>✓</b><h2>Workspace ready.</h2><p>Your business context is saved. LionOS can now build campaigns and assign work to the AI workforce.</p><p><a id="workspaceLink" href="#" style="color:#d6b15e">Open workspace</a></p></div>
+</div>
+</div>
+<script>
+const form=document.getElementById('form'),steps=[...document.querySelectorAll('.step')],bars=[...document.querySelectorAll('.progress i')],next=document.getElementById('next'),back=document.getElementById('back');let index=0;
+function show(){steps.forEach((s,i)=>s.classList.toggle('active',i===index));bars.forEach((b,i)=>b.classList.toggle('on',i<=index));back.style.visibility=index?'visible':'hidden';next.textContent=index===steps.length-1?'Build workspace':'Continue';if(index===3)review()}
+function data(){return Object.fromEntries(new FormData(form).entries())}
+function review(){const d=data();document.getElementById('summary').innerHTML=[['Workspace',d.workspaceName],['Offer',d.offerName],['Goal',d.primaryGoal.replaceAll('_',' ')],['Target',d.industries||'Not specified'],['Geography',d.targetGeography||'Not specified']].map(([a,b])=>'<div><span>'+a+'</span><strong>'+b+'</strong></div>').join('')}
+next.onclick=async()=>{if(index<steps.length-1){if(!form.reportValidity())return;index++;show();return}const d=data();next.disabled=true;next.textContent='Building…';try{const w=await fetch('/api/gtm/workspaces',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:d.workspaceName,plan:d.plan})}).then(r=>r.json());if(!w.workspace)throw new Error(w.error||'Workspace failed');const profile={websiteUrl:d.websiteUrl,companyDescription:d.companyDescription,offerName:d.offerName,offerDescription:d.offerDescription,primaryGoal:d.primaryGoal,targetGeography:d.targetGeography,icp:{industries:d.industries.split(',').map(x=>x.trim()).filter(Boolean),employees:d.employees},exclusions:d.exclusions.split(',').map(x=>x.trim()).filter(Boolean),messagingAngles:d.messagingAngles.split(';').map(x=>x.trim()).filter(Boolean)};const p=await fetch('/api/gtm/workspaces/'+w.workspace.workspaceId+'/profile',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(profile)}).then(r=>r.json());if(!p.profile)throw new Error(p.error||'Profile failed');form.hidden=true;document.getElementById('done').hidden=false;document.getElementById('workspaceLink').href='/api/gtm/workspaces/'+w.workspace.workspaceId}catch(e){alert(e.message);next.disabled=false;next.textContent='Build workspace'}};
+back.onclick=()=>{if(index){index--;show()}};show();
+</script>
+</body></html>

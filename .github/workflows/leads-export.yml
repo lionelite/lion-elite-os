@@ -1,0 +1,49 @@
+name: Leads Export (sanitized)
+
+# On-demand, read-only export of an AGGREGATE leads summary (no names or
+# emails) as a downloadable artifact. Runs where the database is reachable
+# (the GitHub runner), unlike the dev sandbox. Inert until DATABASE_URL is
+# added as a repository secret.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    name: Export sanitized leads summary
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Export sanitized leads summary
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: |
+          if [ -z "$DATABASE_URL" ]; then
+            echo "::warning::DATABASE_URL secret is not set — add it (a read-only/replica URL is preferred) to enable the export."
+            exit 1
+          fi
+          node scripts/leads-export.js --out=leads-export
+
+      # Artifact only — never committed to the repo. Aggregate + redacted,
+      # but treat it as sensitive: it still describes pipeline health.
+      - name: Upload artifact
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: leads-export
+          path: |
+            leads-export.json
+            leads-export.md
+          retention-days: 7

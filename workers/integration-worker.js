@@ -3,7 +3,9 @@
 const { Worker } = require('bullmq');
 const { createRedisConnection, ensureConnected, getRedis, closeRedis } = require('../lib/redis');
 const { QUEUE_NAMES, addJob, moveToDeadLetter } = require('../lib/job-queues');
-const { summarize, classify, recordAffiliateLead } = require('../lib/integration-normalization');
+const { summarize, classify, recordAffiliateLead, recordStripeSubscription } = require('../lib/integration-normalization');
+const { isOrderEvent, brandFromEvent, buildOrderNotification } = require('../lib/orders/order-notification');
+const { sendOrderNotification } = require('../lib/orders/notify-transport');
 
 const concurrency = Number(process.env.INTEGRATION_WORKER_CONCURRENCY || 5);
 let shuttingDown = false;
@@ -28,6 +30,35 @@ const worker = new Worker(QUEUE_NAMES.integrations, async job => {
     record.affiliate = affiliateResult;
   }
 
+  if (record.source === 'stripe') {
+    const result = await recordStripeSubscription(record);
+    record.subscription = {
+      duplicate: result.duplicate,
+      tracked: result.tracked,
+      eventType: result.eventType,
+      status: result.status || null
+    };
+    record.summary = {
+      ...record.summary,
+      customerId: record.summary.customerId ? '[redacted]' : null,
+      customerEmail: record.summary.customerEmail ? '[redacted]' : null
+    };
+  }
+
+  // Internal owner order-notification (the "NEW ORDER — ACTION REQUIRED" email)
+  // for Shopify/Stripe order webhooks — fail-closed + non-fatal so a missing
+  // switch or a provider hiccup never blocks order processing.
+  if (isOrderEvent(event.source, event.eventType)) {
+    try {
+      const brandKey = brandFromEvent(event);
+      const notification = buildOrderNotification(event.source, event.payload || {}, { brandKey });
+      const sent = await sendOrderNotification(notification);
+      record.orderNotification = { brand: brandKey, orderId: notification.order.orderId, status: sent.status };
+    } catch (error) {
+      record.orderNotification = { status: 'error', message: error.message };
+    }
+  }
+
   const encoded = JSON.stringify(record);
   await redis.multi()
     .lpush('integrations:events', encoded)
@@ -36,9 +67,9 @@ const worker = new Worker(QUEUE_NAMES.integrations, async job => {
     .hincrby('integrations:counts', event.source, 1)
     .exec();
 
-  const executiveJob = record.category === 'revenue'
+  const executiveJob = ['revenue', 'subscription_revenue'].includes(record.category)
     ? 'midday-revenue-check'
-    : record.category === 'lead_or_support'
+    : ['lead_or_support', 'retention_risk'].includes(record.category)
       ? 'business-health-snapshot'
       : null;
 
@@ -47,7 +78,15 @@ const worker = new Worker(QUEUE_NAMES.integrations, async job => {
   }
 
   if (executiveJob) {
-    await addJob('executive', executiveJob, {
+    // Queue key is `analytics`, not `executive`: executive-worker.js listens on
+    // QUEUE_NAMES.analytics, and its allowlist contains exactly these two job
+    // names. Sending them to the `executive` queue enqueued them where nothing
+    // consumes, so every cascaded revenue and lead/retention event was silently
+    // dropped. Same bug class as the email-generator and audit_events mismatches
+    // in CLAUDE.md's recent fixes: a producer naming something the consumer does
+    // not answer to, unguarded because no test crossed the boundary.
+    // test/queue-producer-consumer.test.js now crosses it.
+    await addJob('analytics', executiveJob, {
       trigger: 'integration-event',
       sourceEvent: record,
       generatedAt: new Date().toISOString()

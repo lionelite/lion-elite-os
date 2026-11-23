@@ -1,0 +1,23 @@
+{
+  "id": "/coaching/coach-app",
+  "name": "Lion Elite Coach",
+  "short_name": "LE Coach",
+  "description": "Lion Elite coach command center for clients, programming, care plans, messaging, check-ins, and progress.",
+  "start_url": "/coaching/?app=coach#coach-clients",
+  "scope": "/coaching/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#0a0908",
+  "theme_color": "#0a0908",
+  "categories": ["fitness", "health", "productivity"],
+  "icons": [
+    {"src":"/coaching/icons/icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"},
+    {"src":"/coaching/icons/icon-192.png","sizes":"192x192","type":"image/png","purpose":"any"},
+    {"src":"/coaching/icons/icon-512.png","sizes":"512x512","type":"image/png","purpose":"any maskable"}
+  ],
+  "shortcuts": [
+    {"name":"Clients","short_name":"Clients","url":"/coaching/?app=coach#coach-clients","icons":[{"src":"/coaching/icons/icon-192.png","sizes":"192x192"}]},
+    {"name":"Messages","short_name":"Messages","url":"/coaching/?app=coach#coach-messages","icons":[{"src":"/coaching/icons/icon-192.png","sizes":"192x192"}]},
+    {"name":"Workouts","short_name":"Workouts","url":"/coaching/?app=coach#coach-workouts","icons":[{"src":"/coaching/icons/icon-192.png","sizes":"192x192"}]}
+  ]
+}

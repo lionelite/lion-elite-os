@@ -2,8 +2,13 @@
 
 const express = require('express');
 const crypto = require('crypto');
+const path = require('path');
 const { addJob, queueMetrics } = require('./lib/job-queues');
 const { getRedis, ensureConnected } = require('./lib/redis');
+const killSwitch = require('./lib/kill-switch');
+const { renderLeadsHtml } = require('./lib/leads-dashboard');
+const { runExecutiveAgent } = require('./lib/openai-executive-agent');
+const { dispatchPlan } = require('./lib/openai-action-dispatcher');
 
 const app = express();
 app.use(express.json({ limit: '256kb' }));
@@ -24,7 +29,13 @@ app.get('/health', async (_req, res) => {
   try {
     const redis = await ensureConnected(getRedis());
     await redis.ping();
-    res.json({ status: 'ok', service: 'lion-elite-executive-orchestrator', time: new Date().toISOString() });
+    res.json({
+      status: 'ok',
+      service: 'lion-elite-executive-orchestrator',
+      openaiConfigured: Boolean(process.env.OPENAI_API_KEY),
+      liveExecution: true,
+      time: new Date().toISOString()
+    });
   } catch (error) {
     res.status(503).json({ status: 'degraded', error: error.message });
   }
@@ -32,11 +43,97 @@ app.get('/health', async (_req, res) => {
 
 app.get('/status', requireAuth, async (_req, res) => {
   const redis = await ensureConnected(getRedis());
-  const [metrics, lastReport] = await Promise.all([
+  const [metrics, lastReport, lastAiExecution] = await Promise.all([
     queueMetrics(),
-    redis.get('executive:last-report')
+    redis.get('executive:last-report'),
+    redis.get('executive:last-ai-execution')
   ]);
-  res.json({ metrics, lastReport: lastReport ? JSON.parse(lastReport) : null, time: new Date().toISOString() });
+  res.json({
+    metrics,
+    lastReport: lastReport ? JSON.parse(lastReport) : null,
+    lastAiExecution: lastAiExecution ? JSON.parse(lastAiExecution) : null,
+    time: new Date().toISOString()
+  });
+});
+
+app.post('/ai/command', requireAuth, async (req, res, next) => {
+  try {
+    const plan = await runExecutiveAgent(req.body || {});
+    const result = await dispatchPlan(plan);
+    const redis = await ensureConnected(getRedis());
+    await redis.set('executive:last-ai-execution', JSON.stringify(result), 'EX', 60 * 60 * 24 * 30);
+    await redis.lpush('executive:ai-audit-log', JSON.stringify(result));
+    await redis.ltrim('executive:ai-audit-log', 0, 999);
+    res.status(202).json(result);
+  } catch (error) {
+    if (error.code === 'COMMAND_REQUIRED' || error.code === 'COMMAND_TOO_LARGE') {
+      return res.status(400).json({ error: error.code });
+    }
+    if (error.code === 'OPENAI_API_KEY_MISSING') {
+      return res.status(503).json({ error: error.code });
+    }
+    next(error);
+  }
+});
+
+// Kill-switch routes for automated outreach. Unlike the analytics routes,
+// these REQUIRE a configured token: requireAuth alone falls open when
+// EXECUTIVE_API_TOKEN is unset, and an unauthenticated resume path would
+// defeat the point of a kill switch.
+function requireConfiguredAuth(req, res, next) {
+  if (!apiToken) return res.status(503).json({ error: 'EXECUTIVE_API_TOKEN_NOT_CONFIGURED' });
+  return requireAuth(req, res, next);
+}
+
+app.get('/outreach/kill-switch', requireConfiguredAuth, async (_req, res) => {
+  res.json(await killSwitch.status());
+});
+
+// Leads dashboard (HTML). A browser navigation can't set an Authorization
+// header, so this route also accepts the token as ?token= (timing-safe
+// compared). Same fail-closed rule: no configured token → 503.
+function authorizeDashboard(req, res) {
+  if (!apiToken) {
+    res.status(503).send('EXECUTIVE_API_TOKEN not configured.');
+    return false;
+  }
+  const supplied = String(req.query.token || String(req.headers.authorization || '').replace(/^Bearer\s+/i, ''));
+  const ok = supplied.length === apiToken.length &&
+    crypto.timingSafeEqual(Buffer.from(supplied), Buffer.from(apiToken));
+  if (!ok) {
+    res.status(401).send('Unauthorized. Append ?token=YOUR_EXECUTIVE_API_TOKEN to the URL.');
+    return false;
+  }
+  return true;
+}
+
+app.get('/leads', async (req, res) => {
+  if (!authorizeDashboard(req, res)) return;
+  try {
+    const { buildLeadsDigest } = require('./lib/leads-digest');
+    res.type('html').send(renderLeadsHtml(await buildLeadsDigest()));
+  } catch (error) {
+    res.status(503).type('html').send(renderLeadsHtml({ generatedAt: new Date().toISOString(), prospects: {}, outreach: {}, error: error.message }));
+  }
+});
+
+// On-demand leads digest ("what leads are we getting and how do they
+// rate"). Token-required: the digest contains prospect names.
+app.get('/leads/digest', requireConfiguredAuth, async (_req, res) => {
+  try {
+    const { buildLeadsDigest } = require('./lib/leads-digest');
+    res.json(await buildLeadsDigest());
+  } catch (error) {
+    res.status(503).json({ error: 'LEADS_DIGEST_UNAVAILABLE', message: error.message });
+  }
+});
+
+app.post('/outreach/kill-switch', requireConfiguredAuth, async (req, res) => {
+  const wantHalted = Boolean(req.body?.halted);
+  const result = wantHalted
+    ? await killSwitch.halt(String(req.body?.reason || 'manual halt via executive API'), 'executive-api')
+    : await killSwitch.resume('executive-api');
+  res.json(result);
 });
 
 app.post('/run/:job', requireAuth, async (req, res) => {
@@ -65,4 +162,10 @@ app.use((error, _req, res, _next) => {
   res.status(500).json({ error: 'INTERNAL_ERROR' });
 });
 
-app.listen(port, () => console.log(JSON.stringify({ level: 'info', event: 'executive.api.started', port })));
+// Guarded so the module can be require()d by tests and the startup smoke
+// check without binding a port.
+if (require.main === module) {
+  app.listen(port, () => console.log(JSON.stringify({ level: 'info', event: 'executive.api.started', port, liveExecution: true })));
+}
+
+module.exports = { app };

@@ -25,14 +25,61 @@ jobs:
           curl --fail --show-error --location --request POST "${{ secrets.RENDER_DEPLOY_HOOK_URL }}"
           echo "Render deploy hook triggered successfully."
 
+      # A 200 from the deploy hook only means Render accepted the request. This
+      # step confirms the commit just merged is the one actually serving
+      # traffic, by polling the service's own /health for RENDER_GIT_COMMIT.
+      # No Render API key is involved.
+      - name: Verify the deploy actually shipped this commit
+        env:
+          SERVICE_URL: ${{ vars.RENDER_SERVICE_URL || 'https://lion-elite-os.onrender.com' }}
+          EXPECTED_SHA: ${{ github.sha }}
+        run: |
+          echo "Waiting for $SERVICE_URL/health to report $EXPECTED_SHA"
+          deadline=$(( $(date +%s) + 600 ))
+          reported=""
+          responded=0
+
+          while [ "$(date +%s)" -lt "$deadline" ]; do
+            body=$(curl -fsS --max-time 20 "$SERVICE_URL/health" 2>/dev/null || true)
+            if [ -n "$body" ]; then
+              responded=1
+              reported=$(printf '%s' "$body" | python3 -c 'import json,sys; print(json.load(sys.stdin).get("commit",""))' 2>/dev/null || true)
+              if [ -n "$reported" ] && [ "$reported" = "$EXPECTED_SHA" ]; then
+                echo "Verified: $SERVICE_URL is serving $EXPECTED_SHA."
+                echo "- Deploy **verified**: serving \`$EXPECTED_SHA\`" >> "$GITHUB_STEP_SUMMARY"
+                exit 0
+              fi
+              # An older build is still up; keep waiting for the rollover.
+              echo "Serving '${reported:-<no commit field>}', waiting..."
+            else
+              echo "No response yet, waiting..."
+            fi
+            sleep 20
+          done
+
+          if [ "$responded" -eq 0 ]; then
+            echo "::error::$SERVICE_URL never responded. The deploy did not come up."
+            echo "- Deploy **FAILED**: $SERVICE_URL never responded" >> "$GITHUB_STEP_SUMMARY"
+            exit 1
+          fi
+
+          if [ -z "$reported" ]; then
+            # Service is up but cannot say what it is running. Do not fail the
+            # build for it, but never report this as a verified deploy either.
+            echo "::warning::$SERVICE_URL is up but reports no commit. Cannot verify which build is live."
+            echo "- Deploy **unverified**: service up, no commit reported" >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+
+          echo "::error::$SERVICE_URL is still serving $reported, not $EXPECTED_SHA."
+          echo "- Deploy **FAILED**: still serving \`$reported\`" >> "$GITHUB_STEP_SUMMARY"
+          exit 1
+
       - name: Optional Render status visibility
         run: |
           if [ -z "${{ secrets.RENDER_API_KEY }}" ] || [ -z "${{ secrets.RENDER_SERVICE_ID }}" ]; then
-            echo "Render deploy was triggered."
-            echo "To let GitHub see Render deploy status, add these repository secrets:"
-            echo "RENDER_API_KEY"
-            echo "RENDER_SERVICE_ID"
-            echo "Skipping Render API status check for now."
+            echo "Render API status check skipped (RENDER_API_KEY / RENDER_SERVICE_ID not set)."
+            echo "This is optional: the deploy was already verified against /health above."
             exit 0
           fi
 

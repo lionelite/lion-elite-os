@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>LionOS — Demand Engine</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#080a0f;color:#f5f6f8;font:14px/1.5 Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.wrap{max-width:1180px;margin:auto;padding:36px 20px}.brand{font-size:24px;font-weight:900}.brand span{color:#d6b15e}.eyebrow{margin-top:45px;color:#aa8942;font-size:11px;font-weight:800;letter-spacing:.13em;text-transform:uppercase}h1{font-size:40px;line-height:1.03;margin:8px 0}.sub{color:#818b99;max-width:760px}.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:24px}.card,.panel{border:1px solid #202735;background:#0d1118;border-radius:14px}.card{padding:18px}.card span{color:#717c8c}.card strong{display:block;font-size:29px;margin-top:6px}.layout{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}.panel{padding:20px}.panel h2{font-size:18px;margin:0 0 14px}.agent{display:grid;grid-template-columns:34px 1fr auto;gap:11px;align-items:center;padding:12px 0;border-top:1px solid #1c2330}.agent b{display:grid;place-items:center;width:30px;height:30px;border-radius:8px;background:#161d29;color:#c9a755}.agent small{display:block;color:#6e7989}.agent em{font-style:normal;color:#87c36d;font-size:11px}.bar{height:9px;background:#171d27;border-radius:99px;overflow:hidden;margin:8px 0 4px}.bar i{display:block;height:100%;background:#d6b15e}.usage-row{margin-bottom:18px}.usage-row header{display:flex;justify-content:space-between}.usage-row small{color:#6f7988}.actions{display:flex;gap:8px;flex-wrap:wrap}.pill{border:1px solid #2a3340;border-radius:999px;padding:7px 10px;color:#9fa9b8}.empty{color:#758090}@media(max-width:760px){.metrics,.layout{grid-template-columns:1fr 1fr}}@media(max-width:520px){.metrics,.layout{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="brand">Lion<span>OS</span></div>
+<div class="eyebrow">AUTONOMOUS DEMAND ENGINE</div>
+<h1>Source. Qualify. Write. Send. Book.</h1>
+<p class="sub">Five default GTM specialists run the outbound motion while LionOS tracks the funnel, usage, and retryable downstream delivery under one workspace.</p>
+<div class="metrics">
+<div class="card"><span>Sourced</span><strong id="sourced">0</strong></div>
+<div class="card"><span>Contacted</span><strong id="contacted">0</strong></div>
+<div class="card"><span>Replies</span><strong id="replied">0</strong></div>
+<div class="card"><span>Booked</span><strong id="booked">0</strong></div>
+</div>
+<div class="layout">
+<section class="panel"><h2>Default GTM team</h2><div id="agents" class="empty">Loading agents…</div></section>
+<section class="panel"><h2>Usage</h2><div id="usage" class="empty">Loading usage…</div></section>
+</div>
+<div class="panel" style="margin-top:14px"><h2>Operating loop</h2><div class="actions"><span class="pill">1. ICP gate</span><span class="pill">2. Source</span><span class="pill">3. Enrich</span><span class="pill">4. Intent</span><span class="pill">5. Evidence-backed copy</span><span class="pill">6. QA gate</span><span class="pill">7. Send</span><span class="pill">8. Reply → Inbox</span><span class="pill">9. Meeting → CRM</span></div></div>
+</div>
+<script>
+const q=new URLSearchParams(location.search),workspaceId=q.get('workspaceId');const $=id=>document.getElementById(id);
+async function get(path){const r=await fetch(path);const j=await r.json();if(!r.ok)throw new Error(j.error||'Request failed');return j}
+function pct(x){return Math.max(0,Math.min(100,Number(x||0)))}
+async function load(){if(!workspaceId){$('agents').textContent='Missing workspaceId';$('usage').textContent='Missing workspaceId';return}
+try{
+ const [a,u,i]=await Promise.all([
+  get('/api/gtm/workspaces/'+workspaceId+'/agents'),
+  get('/api/gtm/workspaces/'+workspaceId+'/usage'),
+  get('/api/gtm/workspaces/'+workspaceId+'/insights')
+ ]);
+ $('agents').className='';$('agents').innerHTML=(a.agents||[]).map((x,n)=>'<div class="agent"><b>0'+(n+1)+'</b><div><strong>'+x.name+'</strong><small>'+x.role+'</small></div><em>'+x.status+'</em></div>').join('');
+ const parts=['data','action'];$('usage').className='';$('usage').innerHTML=parts.map(k=>{const x=u.usage[k];return '<div class="usage-row"><header><strong>'+k[0].toUpperCase()+k.slice(1)+' credits</strong><span>'+x.used.toLocaleString()+' / '+x.allowance.toLocaleString()+'</span></header><div class="bar"><i style="width:'+pct(x.percent)+'%"></i></div><small>'+x.remaining.toLocaleString()+' remaining'+(x.blocked?' · PAUSED':'')+'</small></div>'}).join('');
+ const f=i.insights.funnel||{};['sourced','contacted','replied','booked'].forEach(k=>$(k).textContent=Number(f[k]||0).toLocaleString());
+}catch(e){$('agents').textContent=e.message;$('usage').textContent=e.message}}
+load();
+</script>
+</body></html>

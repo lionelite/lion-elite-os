@@ -1,0 +1,150 @@
+name: Verify Coaching Deployment
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  statuses: write
+
+concurrency:
+  group: verify-coaching-production
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: Verify live coaching PWA
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Wait for Render and verify live coaching app
+        env:
+          APP_URL: https://lion-elite-os.onrender.com
+          PREVIEW_TOKEN: preview-mode-enabled
+          GH_TOKEN: ${{ github.token }}
+          SHA: ${{ github.sha }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+
+          report_status() {
+            context="$1"
+            state="$2"
+            description="$3"
+            curl --silent --show-error --fail \
+              --request POST \
+              --header "Authorization: Bearer $GH_TOKEN" \
+              --header "Accept: application/vnd.github+json" \
+              --header "X-GitHub-Api-Version: 2022-11-28" \
+              "https://api.github.com/repos/$REPO/statuses/$SHA" \
+              --data "$(printf '{\"state\":\"%s\",\"context\":\"%s\",\"description\":\"%s\"}' "$state" "$context" "$description")" \
+              >/dev/null
+          }
+
+          for context in production-coaching production-health production-ui-assets production-preview-login production-session production-roster; do
+            report_status "$context" pending "Waiting for Render coaching deployment"
+          done
+
+          for attempt in $(seq 1 45); do
+            rm -f /tmp/cookies.txt
+            health_status="$(curl --location --silent --show-error --output /tmp/health.json --write-out '%{http_code}' "$APP_URL/health" || true)"
+            coaching_health_status="$(curl --location --silent --show-error --output /tmp/coaching-health.json --write-out '%{http_code}' "$APP_URL/api/coaching/health" || true)"
+            page_status="$(curl --location --silent --show-error --output /tmp/coaching.html --write-out '%{http_code}' "$APP_URL/coaching/" || true)"
+            manifest_status="$(curl --location --silent --show-error --output /tmp/manifest.webmanifest --write-out '%{http_code}' "$APP_URL/coaching/manifest.webmanifest" || true)"
+            worker_status="$(curl --location --silent --show-error --output /tmp/sw.js --write-out '%{http_code}' "$APP_URL/coaching/sw.js" || true)"
+            preview_status="$(curl --location --silent --show-error --output /tmp/preview.js --write-out '%{http_code}' "$APP_URL/coaching/preview.js" || true)"
+            client_js_status="$(curl --location --silent --show-error --output /tmp/client-experience.js --write-out '%{http_code}' "$APP_URL/coaching/client-experience.js" || true)"
+            client_css_status="$(curl --location --silent --show-error --output /tmp/client-experience.css --write-out '%{http_code}' "$APP_URL/coaching/client-experience.css" || true)"
+
+            login_status="$(curl --silent --show-error \
+              --cookie-jar /tmp/cookies.txt \
+              --header 'Content-Type: application/json' \
+              --header "Origin: $APP_URL" \
+              --request POST \
+              --data "{\"token\":\"$PREVIEW_TOKEN\"}" \
+              --output /tmp/login.json \
+              --write-out '%{http_code}' \
+              "$APP_URL/api/coaching/auth/coach" || true)"
+
+            if [ "$attempt" = "1" ]; then
+              case "$login_status" in
+                200) report_status production-login-http-200 success "Coach login returned HTTP 200" ;;
+                401) report_status production-login-http-401 failure "Coach login returned HTTP 401" ;;
+                403) report_status production-login-http-403 failure "Coach login returned HTTP 403" ;;
+                429) report_status production-login-http-429 failure "Coach login returned HTTP 429" ;;
+                500) report_status production-login-http-500 failure "Coach login returned HTTP 500" ;;
+                503) report_status production-login-http-503 failure "Coach login returned HTTP 503" ;;
+                *) report_status "production-login-http-${login_status:-unknown}" failure "Coach login returned unexpected HTTP status" ;;
+              esac
+            fi
+
+            session_status="$(curl --silent --show-error \
+              --cookie /tmp/cookies.txt \
+              --output /tmp/session.json \
+              --write-out '%{http_code}' \
+              "$APP_URL/api/coaching/session" || true)"
+
+            clients_status="$(curl --silent --show-error \
+              --cookie /tmp/cookies.txt \
+              --output /tmp/clients.json \
+              --write-out '%{http_code}' \
+              "$APP_URL/api/coaching/admin/clients" || true)"
+
+            public_ok=false
+            assets_ok=false
+            login_ok=false
+            session_ok=false
+            roster_ok=false
+
+            if [ "$health_status" = "200" ] && [ "$coaching_health_status" = "200" ] && [ "$page_status" = "200" ] && [ "$manifest_status" = "200" ] && [ "$worker_status" = "200" ] && [ "$preview_status" = "200" ] && [ "$client_js_status" = "200" ] && [ "$client_css_status" = "200" ]; then
+              public_ok=true
+              report_status production-health success "Health and coaching client assets return 200"
+            fi
+
+            if [ "$page_status" = "200" ] && [ "$preview_status" = "200" ] \
+              && grep --quiet "coach-theme.css?v=7" /tmp/coaching.html \
+              && grep --quiet "coach-client-detail.js?v=7" /tmp/coaching.html \
+              && grep --quiet "client-experience.css?v=7" /tmp/coaching.html \
+              && grep --quiet "client-experience.js?v=7" /tmp/coaching.html \
+              && grep --quiet "Everything in one place" /tmp/client-experience.js \
+              && grep --quiet "Lion Assistant" /tmp/client-experience.js \
+              && grep --quiet "$PREVIEW_TOKEN" /tmp/preview.js \
+              && grep --quiet "lion-elite-coaching-v5" /tmp/sw.js \
+              && grep --quiet "/coaching/client-experience.js" /tmp/sw.js \
+              && grep --quiet "/coaching/client-experience.css" /tmp/sw.js; then
+              assets_ok=true
+              report_status production-ui-assets success "Current coach and client-care PWA assets are live"
+            fi
+
+            if [ "$login_status" = "200" ] && grep --quiet '"actorType":"coach"' /tmp/login.json; then
+              login_ok=true
+              report_status production-preview-login success "Preview login creates a coach actor"
+            fi
+
+            if [ "$session_status" = "200" ] && grep --quiet '"actorType":"coach"' /tmp/session.json; then
+              session_ok=true
+              report_status production-session success "Coach session cookie is valid"
+            fi
+
+            if [ "$clients_status" = "200" ] && grep --quiet '"clients"' /tmp/clients.json; then
+              roster_ok=true
+              report_status production-roster success "Authenticated client roster API is reachable"
+            fi
+
+            if [ "$public_ok" = true ] && [ "$assets_ok" = true ] && [ "$login_ok" = true ] && [ "$session_ok" = true ] && [ "$roster_ok" = true ]; then
+              report_status production-coaching success "Live coaching app verified end-to-end"
+              echo "Verified: Render serves current coach UI, Training/Nutrition/Supplements/Protocol client-care assets, Lion Assistant, PWA cache assets, preview coach session, and client roster API."
+              exit 0
+            fi
+
+            echo "Attempt $attempt/45: health=$health_status coaching_health=$coaching_health_status page=$page_status preview=$preview_status client_js=$client_js_status client_css=$client_css_status login=$login_status session=$session_status clients=$clients_status manifest=$manifest_status worker=$worker_status public_ok=$public_ok assets_ok=$assets_ok login_ok=$login_ok session_ok=$session_ok roster_ok=$roster_ok"
+            if [ -s /tmp/login.json ]; then echo "login response: $(cat /tmp/login.json)"; fi
+            sleep 20
+          done
+
+          report_status production-coaching failure "Live coaching production verification failed"
+          echo "Live coaching app did not become fully functional within 15 minutes."
+          exit 1

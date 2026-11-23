@@ -1,0 +1,71 @@
+name: Outreach control
+
+# Owner controls for the clinic outreach run, from the GitHub UI:
+# Actions → Outreach control → Run workflow. Authenticates to the service with a
+# short-lived GitHub OIDC token (lib/outreach/github-oidc.js); no secret needed.
+on:
+  workflow_dispatch:
+    inputs:
+      action:
+        description: 'What to do'
+        type: choice
+        options: [status, pause, resume, record_reply, record_opt_out]
+        default: status
+      email:
+        description: 'Address (record_reply / record_opt_out only)'
+        required: false
+        default: ''
+      reason:
+        description: 'Why (pause only; shown in status)'
+        required: false
+        default: ''
+
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  SERVICE_URL: https://lion-elite-os.onrender.com
+
+jobs:
+  control:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Wake Render service
+        run: |
+          for i in 1 2 3 4 5 6; do
+            if curl -fsS --max-time 60 "$SERVICE_URL/health" > /dev/null; then exit 0; fi
+            sleep 20
+          done
+          echo "::error::Service did not answer /health."; exit 1
+
+      - name: Get GitHub identity token
+        id: oidc
+        run: |
+          token="$(curl -fsS -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
+            "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=lion-elite-os-cron" | jq -r .value)"
+          if [ -z "$token" ] || [ "$token" = "null" ]; then echo "::error::Could not get an OIDC token."; exit 1; fi
+          echo "::add-mask::$token"
+          echo "token=$token" >> "$GITHUB_OUTPUT"
+
+      - name: Run
+        env:
+          OIDC_TOKEN: ${{ steps.oidc.outputs.token }}
+          ACTION: ${{ inputs.action }}
+          EMAIL: ${{ inputs.email }}
+          REASON: ${{ inputs.reason }}
+        run: |
+          set -o pipefail
+          auth=(-H "Authorization: Bearer $OIDC_TOKEN" -H "content-type: application/json")
+          case "$ACTION" in
+            status)  curl -fsS "${auth[@]}" "$SERVICE_URL/api/cron/clinic-outreach/status" > out.json ;;
+            pause)   jq -n --arg r "$REASON" '{paused:true, reason:$r}' | curl -fsS -X POST "${auth[@]}" -d @- "$SERVICE_URL/api/cron/outreach-pause" > out.json ;;
+            resume)  curl -fsS -X POST "${auth[@]}" -d '{"paused":false}' "$SERVICE_URL/api/cron/outreach-pause" > out.json ;;
+            record_reply|record_opt_out)
+              if [ -z "$EMAIL" ]; then echo "::error::email is required for $ACTION"; exit 1; fi
+              type=reply; [ "$ACTION" = record_opt_out ] && type=opt_out
+              jq -n --arg e "$EMAIL" --arg t "$type" '{email:$e, type:$t}' | curl -fsS -X POST "${auth[@]}" -d @- "$SERVICE_URL/api/cron/outreach-reply" > out.json ;;
+          esac
+          jq . out.json
+          { echo "## Outreach control: $ACTION"; echo '```json'; jq . out.json; echo '```'; } >> "$GITHUB_STEP_SUMMARY"

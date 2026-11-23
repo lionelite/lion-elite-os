@@ -1,0 +1,161 @@
+{
+  "_comment": "Swipe intelligence seed. Every performance figure here is REPORTED BY THE CITED CASE-STUDY LIBRARY, not independently verified by us (verificationStatus: reported-by-source). Creative specifics we have not personally inspected (real hook/headline/CTA/landing-page structure) are null and listed in research.gaps — never invented. `hypothesis` is OUR analysis of why it likely worked, grounded in the one lever the source names. Fill gaps as we inspect the actual ads/pages.",
+  "entries": [
+    {
+      "id": "cornbread-hemp-replo",
+      "brand": "Cornbread Hemp",
+      "product": "CBD / hemp wellness products",
+      "industry": "CBD / hemp wellness",
+      "price": null,
+      "offer": null,
+      "creative": { "openingHook": null, "visualStyle": null, "format": "unknown", "headline": null, "cta": null },
+      "funnel": { "adLandingCongruence": "Replo case centers on landing-page/CRO work — ad-to-page congruence implied", "landingPageStructure": null, "socialProof": null },
+      "performance": {
+        "metrics": [
+          { "name": "conversion_rate", "value": 117, "unit": "%", "direction": "increase", "period": null },
+          { "name": "CAC", "value": 33, "unit": "%", "direction": "decrease", "period": null }
+        ],
+        "reportedSpend": null,
+        "verificationStatus": "reported-by-source"
+      },
+      "source": { "name": "Replo case-study library", "url": null },
+      "hypothesis": "OUR HYPOTHESIS: systematic landing-page/CRO testing lifted CVR while a more congruent, higher-converting page lowered CAC on the same traffic. Lever named by source = landing-page conversion work.",
+      "tags": ["landing-page-testing", "cro", "ad-landing-congruence"],
+      "addedAt": "2026-07-25",
+      "research": { "complete": false, "gaps": ["actual ad creative", "hook", "headline", "CTA", "price/AOV", "landing-page structure", "exact case-study URL"] }
+    },
+    {
+      "id": "healthy-metal-replo",
+      "brand": "Healthy Metal",
+      "product": null,
+      "industry": "unresearched",
+      "price": null,
+      "offer": null,
+      "creative": { "openingHook": null, "visualStyle": null, "format": "unknown", "headline": null, "cta": null },
+      "funnel": { "adLandingCongruence": null, "landingPageStructure": null, "socialProof": null },
+      "performance": {
+        "metrics": [
+          { "name": "conversion_rate", "value": 67, "unit": "%", "direction": "increase", "period": null }
+        ],
+        "reportedSpend": null,
+        "verificationStatus": "reported-by-source"
+      },
+      "source": { "name": "Replo case-study library", "url": null },
+      "hypothesis": "OUR HYPOTHESIS: iterative landing-page testing found a higher-converting layout. Lever named by source = landing-page testing.",
+      "tags": ["landing-page-testing", "cro"],
+      "addedAt": "2026-07-25",
+      "research": { "complete": false, "gaps": ["industry", "product", "actual ad creative", "hook", "headline", "CTA", "price/AOV", "landing-page structure", "exact case-study URL"] }
+    },
+    {
+      "id": "portland-leather-triple-whale",
+      "brand": "Portland Leather Goods",
+      "product": "Leather bags / accessories",
+      "industry": "leather goods / accessories",
+      "price": null,
+      "offer": null,
+      "creative": { "openingHook": null, "visualStyle": null, "format": "unknown", "headline": null, "cta": null },
+      "funnel": { "adLandingCongruence": null, "landingPageStructure": null, "socialProof": null },
+      "performance": {
+        "metrics": [
+          { "name": "best_selling_product_sales", "value": 263, "unit": "% YoY", "direction": "increase", "period": "YoY" }
+        ],
+        "reportedSpend": null,
+        "verificationStatus": "reported-by-source"
+      },
+      "source": { "name": "Triple Whale case-study library", "url": null },
+      "hypothesis": "OUR HYPOTHESIS: attribution/measurement (Triple Whale) let them identify and pour spend into a proven best-seller rather than spreading budget — concentration on a winning product SKU.",
+      "tags": ["attribution", "measurement", "winner-concentration", "best-seller-scaling"],
+      "addedAt": "2026-07-25",
+      "research": { "complete": false, "gaps": ["actual ad creative", "hook", "headline", "CTA", "price/AOV", "offer", "landing-page structure", "exact case-study URL"] }
+    },
+    {
+      "id": "ohsnap-triple-whale",
+      "brand": "OhSnap",
+      "product": "Phone grip / accessory",
+      "industry": "phone accessories",
+      "price": null,
+      "offer": null,
+      "creative": { "openingHook": null, "visualStyle": null, "format": "demonstration", "headline": null, "cta": null },
+      "funnel": { "adLandingCongruence": null, "landingPageStructure": null, "socialProof": null },
+      "performance": {
+        "metrics": [
+          { "name": "CPA", "value": 37, "unit": "%", "direction": "decrease", "period": null },
+          { "name": "sales", "value": 147, "unit": "%", "direction": "increase", "period": null }
+        ],
+        "reportedSpend": null,
+        "verificationStatus": "reported-by-source"
+      },
+      "source": { "name": "Triple Whale case-study library", "url": null },
+      "hypothesis": "OUR HYPOTHESIS: a physically-demonstrable product (a grip) rewards demonstration creative; better measurement cut wasted spend (CPA down) while scaling the winning demo angle (sales up). Format set to 'demonstration' as a reasoned prior — CONFIRM against the real ad.",
+      "tags": ["attribution", "measurement", "demonstration-creative", "cpa-reduction"],
+      "addedAt": "2026-07-25",
+      "research": { "complete": false, "gaps": ["confirm creative format", "hook", "headline", "CTA", "price/AOV", "offer", "landing-page structure", "exact case-study URL"] }
+    },
+    {
+      "id": "ecobio-boutique-triple-whale",
+      "brand": "EcoBio Boutique",
+      "product": null,
+      "industry": "sustainable consumer goods",
+      "price": null,
+      "offer": null,
+      "creative": { "openingHook": null, "visualStyle": null, "format": "unknown", "headline": null, "cta": null },
+      "funnel": { "adLandingCongruence": null, "landingPageStructure": null, "socialProof": null },
+      "performance": {
+        "metrics": [
+          { "name": "net_profit", "value": 311, "unit": "% YoY", "direction": "increase", "period": "YoY" }
+        ],
+        "reportedSpend": null,
+        "verificationStatus": "reported-by-source"
+      },
+      "source": { "name": "Triple Whale case-study library", "url": null },
+      "hypothesis": "OUR HYPOTHESIS: profit (not just revenue) growth points to margin/spend discipline via attribution — cutting unprofitable ad sets. Note: net-profit % is a business outcome, weak evidence for a specific creative pattern.",
+      "tags": ["attribution", "measurement", "profit-focus", "spend-discipline"],
+      "addedAt": "2026-07-25",
+      "research": { "complete": false, "gaps": ["confirm industry", "product", "actual ad creative", "hook", "headline", "CTA", "price/AOV", "offer", "landing-page structure", "exact case-study URL"] }
+    },
+    {
+      "id": "emma-kate-co-adespresso",
+      "brand": "Emma Kate Co.",
+      "product": "Stationery / homewares",
+      "industry": "stationery / homewares",
+      "price": null,
+      "offer": null,
+      "creative": { "openingHook": null, "visualStyle": null, "format": "unknown", "headline": null, "cta": null },
+      "funnel": { "adLandingCongruence": null, "landingPageStructure": null, "socialProof": null },
+      "performance": {
+        "metrics": [
+          { "name": "sales", "value": 200, "unit": "% (3x) YoY", "direction": "increase", "period": "YoY" }
+        ],
+        "reportedSpend": null,
+        "verificationStatus": "reported-by-source"
+      },
+      "source": { "name": "AdEspresso case-study library", "url": null },
+      "hypothesis": "OUR HYPOTHESIS: disciplined AD-DESIGN A/B testing surfaced a decisively better creative and budget was moved to it — the 'test creatives, scale the winner' loop. Lever named by source = ad-design testing. (3x = +200%.)",
+      "tags": ["creative-testing", "ad-design-testing", "winner-scaling"],
+      "addedAt": "2026-07-25",
+      "research": { "complete": false, "gaps": ["actual winning creative", "hook", "headline", "CTA", "price/AOV", "offer", "landing-page structure", "exact case-study URL"] }
+    },
+    {
+      "id": "globein-adespresso",
+      "brand": "GlobeIn",
+      "product": "Artisan goods subscription box",
+      "industry": "artisan goods subscription",
+      "price": null,
+      "offer": null,
+      "creative": { "openingHook": null, "visualStyle": null, "format": "unknown", "headline": null, "cta": null },
+      "funnel": { "adLandingCongruence": null, "landingPageStructure": null, "socialProof": null },
+      "performance": {
+        "metrics": [
+          { "name": "revenue", "value": 100, "unit": "% (2x)", "direction": "increase", "period": null }
+        ],
+        "reportedSpend": null,
+        "verificationStatus": "reported-by-source"
+      },
+      "source": { "name": "AdEspresso case-study library", "url": null },
+      "hypothesis": "OUR HYPOTHESIS: audience testing found the highest-intent segments and retargeting recaptured warm traffic — a targeting+retargeting compound, not a single creative. Levers named by source = audience testing + retargeting. (2x = +100%.)",
+      "tags": ["audience-testing", "retargeting", "funnel-full"],
+      "addedAt": "2026-07-25",
+      "research": { "complete": false, "gaps": ["actual ad creative", "hook", "headline", "CTA", "price/AOV", "offer", "landing-page structure", "exact case-study URL"] }
+    }
+  ]
+}

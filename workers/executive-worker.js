@@ -3,9 +3,14 @@
 const { Worker } = require('bullmq');
 const { createRedisConnection, getRedis, ensureConnected, closeRedis } = require('../lib/redis');
 const { QUEUE_NAMES, queueMetrics } = require('../lib/job-queues');
+const { buildLeadsDigest } = require('../lib/leads-digest');
 
 const concurrency = Number(process.env.EXECUTIVE_WORKER_CONCURRENCY || 2);
-const allowed = new Set(['morning-brief', 'midday-revenue-check', 'evening-review', 'business-health-snapshot', 'daily-executive-report', 'queue-and-data-maintenance']);
+// Sourced from lib/queue-manifest.js so this list and the manifest the
+// producer/consumer guard checks against cannot drift apart. Bug #3 in that
+// file's history was exactly a producer/consumer disagreement nothing tested.
+const { consumersFor } = require('../lib/queue-manifest');
+const allowed = new Set(consumersFor('analytics').flatMap(c => c.jobs || []));
 
 function total(metrics, key) {
   return Object.values(metrics).reduce((sum, value) => sum + Number(value[key] || 0), 0);
@@ -37,6 +42,24 @@ const worker = new Worker(QUEUE_NAMES.analytics, async job => {
     priorities: [],
     metrics
   };
+
+  // Attach the leads digest to every report. Degrades gracefully when the
+  // service has no DATABASE_URL (queue metrics still report).
+  try {
+    report.leads = await buildLeadsDigest();
+    const qualified = (report.leads.prospects.byStage.find(row => row.stage === 'qualified') || {}).count || 0;
+    if (qualified > 0) report.priorities.push({ priority: 'high', action: `${qualified} qualified lead(s) waiting on sales contact — see leads dashboard.` });
+  } catch (error) {
+    report.leads = { available: false, error: error.message };
+  }
+
+  // One-tap links for the brief. EXECUTIVE_PUBLIC_URL is the deployed
+  // executive-API base (e.g. https://lion-elite-executive-api.onrender.com);
+  // the token is appended by whoever opens it, never logged here.
+  const base = (process.env.EXECUTIVE_PUBLIC_URL || '').replace(/\/$/, '');
+  report.dashboards = base
+    ? { leads: `${base}/leads?token=YOUR_EXECUTIVE_API_TOKEN` }
+    : { leads: '(set EXECUTIVE_PUBLIC_URL to surface the /leads dashboard link)' };
 
   if (report.summary.failed > 0) report.priorities.push({ priority: 'critical', action: 'Review failed automation jobs and dead-letter queue.' });
   if (report.summary.waiting > Number(process.env.EXECUTIVE_QUEUE_WARNING || 100)) report.priorities.push({ priority: 'high', action: 'Reduce queue backlog or increase worker concurrency.' });
