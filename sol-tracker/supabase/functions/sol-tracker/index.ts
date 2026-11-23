@@ -1052,7 +1052,9 @@ const DISC_SIG_PAGE = 1000;
 // Pools are restricted to ESTABLISHED coins that pass the same entry filter we buy with (market cap,
 // 24h volume, at least a day old) and are up on the day. A wallet that took profit there is one whose
 // trades we could copy a few seconds late; a sniper of minutes-old micro-caps is not (2026-11-23 finding).
-const DISC_POOL_MIN_AGE_H = 24, DISC_POOL_MIN_LIQ = 50_000;
+// The $100M ceiling and SOL/stable quote keep it to meme coins: above that, and for tokenized stocks or
+// wrapped BTC, the profitable sellers are market makers and arbitrage bots, not copyable traders.
+const DISC_POOL_MIN_AGE_H = 24, DISC_POOL_MIN_LIQ = 50_000, DISC_POOL_MAX_MCAP = 100_000_000;
 async function geckoTrendingPools(rules: EntryRules = ENTRY_DEFAULTS): Promise<any[]> {
   const out: any[] = [];
   const paths = ["trending_pools?duration=24h&page=1", "trending_pools?duration=24h&page=2",
@@ -1070,8 +1072,9 @@ async function geckoTrendingPools(rules: EntryRules = ENTRY_DEFAULTS): Promise<a
         const mcap = Number(a.market_cap_usd ?? a.fdv_usd ?? 0);
         const vol = Number(a.volume_usd?.h24 ?? 0);
         const ageH = a.pool_created_at ? (Date.now() - Date.parse(a.pool_created_at)) / 3600e3 : 0;
-        if (!a.address || !base || [WSOL, USDC, USDT].includes(base)) continue;
-        if (liq < DISC_POOL_MIN_LIQ || mcap < rules.min_mcap_usd || vol < rules.min_volume24h_usd || ageH < DISC_POOL_MIN_AGE_H || ch24 <= 0) continue;
+        const quote = String(p.relationships?.quote_token?.data?.id ?? "").replace(/^solana_/, "");
+        if (!a.address || !base || [WSOL, USDC, USDT].includes(base) || ![WSOL, USDC, USDT].includes(quote)) continue;
+        if (liq < DISC_POOL_MIN_LIQ || mcap > DISC_POOL_MAX_MCAP || mcap < rules.min_mcap_usd || vol < rules.min_volume24h_usd || ageH < DISC_POOL_MIN_AGE_H || ch24 <= 0) continue;
         out.push({ pool: a.address, mint: base, name: a.name, change24h: ch24, liquidity: liq, mcap, volume24h: vol, age_hours: Math.round(ageH) });
       }
     } catch { /* best effort */ }

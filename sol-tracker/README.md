@@ -75,7 +75,8 @@ Missing data fails closed. Adjust with `POST /settings {"entry": {...}}`; `{"ent
 turns it off. Skips are written to the paper ledger as `Entry filter: <reasons>`.
 
 Discovery uses the same thresholds: it scans only pools whose coin passes them, is ≥ 24h old with ≥ $50k
-liquidity, and is up on the day. Research adds an 11th check, "Buys established coins": fewer than 50% of
+liquidity, is quoted in SOL/USDC/USDT, is under a $100M market cap (above that the profitable sellers are
+market makers, not copyable traders), and is up on the day. Research adds an 11th check, "Buys established coins": fewer than 50% of
 the trader's buys within 1 hour of the token's launch (`earlyBuyShare()`, launch times from DexScreener,
 300 most recent tokens).
 
