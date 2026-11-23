@@ -225,7 +225,8 @@ async function mintDecimals(mint: string): Promise<number | null> {
 // slippage, network fees), falling back to a plain quote only if Ultra is unavailable.
 async function paperQuote(inputMint: string, outputMint: string, amount: bigint, bps: number): Promise<{ out: bigint; feeSol: number } | null> {
   try {
-    const o = await ultraOrder(inputMint, outputMint, amount, liveKeypair()?.publicKey.toBase58());
+    // No taker: a quote only, so the live wallet's balance can never change what paper sees.
+    const o = await ultraOrder(inputMint, outputMint, amount);
     const fees = Number(o.prioritizationFeeLamports ?? 0) + Number(o.signatureFeeLamports ?? 0) + Number(o.rentFeeLamports ?? 0);
     return { out: BigInt(o.outAmount), feeSol: fees > 0 ? fees / 1e9 : 0.0001 };
   } catch { /* fall back */ }
@@ -430,7 +431,9 @@ async function ultraOrder(inputMint: string, outputMint: string, amount: bigint,
   if (taker) u.searchParams.set("taker", taker);
   const r = await fetch(u);
   const j = await r.json().catch(() => ({}));
-  if (!r.ok || !j.outAmount || (taker && !j.transaction)) throw new Error(`Ultra order HTTP ${r.status}: ${JSON.stringify(j).slice(0, 200)}`);
+  if (!r.ok || !j.outAmount || (taker && !j.transaction)) {
+    throw new Error(`Ultra order HTTP ${r.status}: ${j.errorMessage ? `${j.errorMessage} (code ${j.errorCode})` : JSON.stringify(j).slice(0, 200)}`);
+  }
   return j;
 }
 // Signs and submits through Ultra /execute. The signature is computed locally first: if the network
