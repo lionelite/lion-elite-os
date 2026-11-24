@@ -160,9 +160,23 @@ export function researchMetrics(rows: ResearchRow[], nowSec: number, days = 90) 
 }
 
 // Balanced-risk screen. Returns pass/fail per rule so the reasoning is visible, not just a score.
+// Two tiers. CORE rules are the evidence that a wallet makes money at a size and pace we can follow:
+// a wallet that passes all of them goes on the PAPER watch list (no real money), where the scorecard
+// measures what copying it actually earns. The other rules are cautions: shown, and required for
+// "verified", but not a reason to ignore a profitable wallet. Requiring every rule just to paper-watch
+// threw away every profitable wallet found (2026-11-24: 0 of 103 passed all, while 6 had real
+// 30/60/90-day profit), and left only Kolscan names whose paper copies all lost money.
+// Real money is unchanged: it still needs traderScore() eligibility AND the owner's Telegram approval.
+export const CORE_RULES = [
+  "History covers the window",
+  "Profitable over 30, 60 and 90 days",
+  "Enough closed positions (20+ over 90d)",
+  "Copyable size (median buy 0.5–10 SOL)",
+  "Still active (traded in the last 7 days)",
+];
 export function assess(m: any, days = 90, nowSec = Math.floor(Date.now() / 1000)) {
-  const rules: { rule: string; pass: boolean; detail: string }[] = [];
-  const add = (rule: string, pass: boolean, detail: string) => rules.push({ rule, pass, detail });
+  const rules: { rule: string; pass: boolean; detail: string; core: boolean }[] = [];
+  const add = (rule: string, pass: boolean, detail: string) => rules.push({ rule, pass, detail, core: CORE_RULES.includes(rule) });
   add("History covers the window", m.history_days_covered >= days * 0.8, `${m.history_days_covered} of ${days} days`);
   add("Profitable over 30, 60 and 90 days", [m.d30, m.d60, m.d90].every((w: any) => (w.realized_sol ?? 0) > 0),
     `30d ${m.d30.realized_sol} · 60d ${m.d60.realized_sol} · 90d ${m.d90.realized_sol} SOL realized`);
@@ -187,7 +201,24 @@ export function assess(m: any, days = 90, nowSec = Math.floor(Date.now() / 1000)
       m.early_buy_pct == null ? "launch times unknown" : `${m.early_buy_pct}% of ${m.early_buy_known} buys within 1h of the token's launch`);
   }
   const failed = rules.filter((r) => !r.pass);
-  return { qualifies: failed.length === 0, passed: rules.length - failed.length, total: rules.length, rules };
+  const coreFailed = failed.filter((r) => r.core);
+  return {
+    qualifies: failed.length === 0, // verified: every rule
+    watch: coreFailed.length === 0, // paper watch list: every core rule
+    passed: rules.length - failed.length, total: rules.length, rules,
+    cautions: failed.filter((r) => !r.core).map((r) => r.rule),
+  };
+}
+
+// Best paper-watch candidates first: verified before watch-only, then rules passed, then 90d profit.
+export function rankWatch(rows: { wallet: string; metrics: any }[]) {
+  return rows
+    .filter((r) => r.metrics?.assessment?.watch)
+    .sort((a, b) => {
+      const x = a.metrics.assessment, y = b.metrics.assessment;
+      return Number(y.qualifies) - Number(x.qualifies) || y.passed - x.passed ||
+        (b.metrics.d90?.realized_sol ?? 0) - (a.metrics.d90?.realized_sol ?? 0);
+    });
 }
 
 // ---------- discovery pre-filters ----------

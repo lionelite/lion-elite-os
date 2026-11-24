@@ -36,6 +36,16 @@ with the same `parseSwap()`, and computes realized results with average-cost bas
 hold times, sub-60-second flips, and proceeds from tokens never bought (airdrops/transfers — excluded from profit).
 `assess()` applies ten pass/fail rules; the dashboard shows every rule and its numbers.
 
+**Two tiers (2026-11-24).** Five rules are *core*: history covers the window, profitable over 30/60/90
+days, 20+ closed positions, copyable size, still active. A wallet passing all core rules is put on the
+**paper** watch list (label `(watch)`), with the failed non-core rules listed as cautions; passing every
+rule makes it `verified`. Requiring every rule just to paper-watch rejected all 103 wallets researched,
+including six with real 30/60/90-day profit, and left only Kolscan names whose paper copies all lost.
+Slots (max 5) go verified first, then checks passed, then 90-day profit (`rankWatch()`); a verified
+wallet can displace a watch-tier one, nothing displaces a `copy_live` wallet. Real money is unchanged:
+it still needs the scorecard (20+ paper trades, net positive) and your Telegram approval.
+`POST /research/promote` re-assesses finished research with the current rules and fills the list.
+
 Known limits: SOL-quoted trades only (stablecoin-quoted trades are counted and excluded); open positions are
 excluded (unrealized); token liquidity at the time of each historical trade is not reconstructed.
 

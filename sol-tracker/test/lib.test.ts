@@ -203,7 +203,7 @@ describe("live copy trading decisions", () => {
   });
 });
 
-import { entryCheck, earlyBuyShare, ENTRY_DEFAULTS, assess } from "../supabase/functions/sol-tracker/lib.ts";
+import { entryCheck, earlyBuyShare, ENTRY_DEFAULTS, assess, rankWatch } from "../supabase/functions/sol-tracker/lib.ts";
 describe("entry filter (video lesson, checked against paper results)", () => {
   const now = Date.parse("2026-11-23T00:00:00Z");
   const good = { fdvUsd: 16_400_000, volume24hUsd: 900_000, hasWebsite: true, hasTwitter: true, pairCreatedAt: "2026-11-20T00:00:00Z" };
@@ -300,5 +300,33 @@ describe("holder check (RugCheck), part of the entry filter", () => {
     expect(entryCheck({ ...good, rug: null }, ENTRY_DEFAULTS, now).reasons).toEqual(["no RugCheck report"]);
     expect(entryCheck({ ...good, rug: null }, { ...ENTRY_DEFAULTS, min_holders: 0, reject_rug_danger: false }, now).pass).toBe(true);
     expect(needsRug(ENTRY_DEFAULTS)).toBe(true);
+  });
+});
+
+describe("research tiers", () => {
+  const good: any = { history_days_covered: 90, d30: { realized_sol: 27 }, d60: { realized_sol: 29 }, d90: { realized_sol: 61, tokens_closed: 300, best_token_share_pct: 20 },
+    month_buckets: { a: 27, b: 2, c: 31 }, max_drawdown_sol: 5, round_trips_under_60s_pct: 10, median_buy_sol: 1, unknown_basis_sell_sol: 0, last_trade_at: new Date().toISOString() };
+  test("a profitable wallet that only fails cautions is paper-watched, not verified (64aa on 2026-11-24)", () => {
+    const a = assess({ ...good, round_trips_under_60s_pct: 33, max_drawdown_sol: 40 });
+    expect(a.qualifies).toBe(false);
+    expect(a.watch).toBe(true);
+    expect(a.cautions).toEqual(["Drawdown under half of 90d profit", "Copyable speed (< 30% of round trips under 60s)"]);
+  });
+  test("losing, too-new, too-small or inactive wallets are never watched", () => {
+    expect(assess({ ...good, d30: { realized_sol: -37 } }).watch).toBe(false); // Fashr/Gucci shape
+    expect(assess({ ...good, history_days_covered: 42 }).watch).toBe(false);
+    expect(assess({ ...good, d90: { ...good.d90, tokens_closed: 5 } }).watch).toBe(false);
+    expect(assess({ ...good, median_buy_sol: 0.2 }).watch).toBe(false);
+    expect(assess({ ...good, last_trade_at: "2026-01-01T00:00:00Z" }).watch).toBe(false);
+  });
+  test("ranking: verified first, then checks passed, then 90d profit; non-watch excluded", () => {
+    const mk = (wallet: string, m: any) => ({ wallet, metrics: { ...m, assessment: assess(m) } });
+    const rows = [
+      mk("loser", { ...good, d30: { realized_sol: -1 } }),
+      mk("watchBig", { ...good, round_trips_under_60s_pct: 50, d90: { ...good.d90, realized_sol: 500 } }),
+      mk("verified", good),
+      mk("watchSmall", { ...good, round_trips_under_60s_pct: 50, d90: { ...good.d90, realized_sol: 40 } }),
+    ];
+    expect(rankWatch(rows).map((r) => r.wallet)).toEqual(["verified", "watchBig", "watchSmall"]);
   });
 });

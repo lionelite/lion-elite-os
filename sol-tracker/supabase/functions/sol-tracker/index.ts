@@ -5,7 +5,7 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { Keypair, VersionedTransaction } from "npm:@solana/web3.js@1.98.0";
 import bs58 from "npm:bs58@6.0.0";
-import { parseSwap, researchMetrics, assess, poolSwapSide, discoveryVerdict, historyTooShort, liveBuyDecision, liveSellAmount, LIVE_DEFAULTS, entryCheck, earlyBuyShare, ENTRY_DEFAULTS, copyRules, riskExit, traderScore, SCORE_RULES, needsRug, WSOL, USDC, USDT } from "./lib.ts";
+import { parseSwap, researchMetrics, assess, rankWatch, poolSwapSide, discoveryVerdict, historyTooShort, liveBuyDecision, liveSellAmount, LIVE_DEFAULTS, entryCheck, earlyBuyShare, ENTRY_DEFAULTS, copyRules, riskExit, traderScore, SCORE_RULES, needsRug, WSOL, USDC, USDT } from "./lib.ts";
 import type { PoolAgg, LiveCfg, EntryRules, RugInfo } from "./lib.ts";
 
 const SB_URL = Deno.env.get("SUPABASE_URL")!;
@@ -1229,9 +1229,9 @@ async function researchStep() {
     let tracked = false;
     const { data: tw } = await db.from("sol_wallets").select("*").eq("address", r.wallet).maybeSingle();
     if (tw?.evidence?.provisional && tw.status === "active") tracked = await settleProvisional(r, metrics, tw);
-    else if (metrics.assessment.qualifies) tracked = await autoTrack(r, metrics);
+    else if (metrics.assessment.watch) tracked = await autoTrack(r, metrics);
     await researchSummaryIfFinished();
-    return { wallet: r.label, phase: "done", qualifies: metrics.assessment.qualifies, tracked };
+    return { wallet: r.label, phase: "done", qualifies: metrics.assessment.qualifies, watch: metrics.assessment.watch, tracked };
   } catch (e) {
     const attempts = (r.attempts ?? 0) + 1;
     await db.from("sol_research").update({
@@ -1241,44 +1241,55 @@ async function researchStep() {
   }
 }
 
-// A trader that passes every research check goes straight onto the watch list (max 5 active),
-// with its evidence stored on the wallet row, and the owner is told in Telegram.
+// A wallet that passes every CORE research check goes onto the paper watch list (max 5 active), with
+// its evidence stored on the wallet row, and the owner is told in Telegram. "verified" = every rule
+// passed; "watch" = core rules passed, cautions listed. Neither tier copies with real money: that needs
+// traderScore() eligibility from paper results plus the owner's Telegram approval (copy_live).
 const solStr = (n: number | null | undefined) => (n == null ? "n/a" : `${n > 0 ? "+" : ""}${Number(n).toFixed(2)} SOL`);
+const tierOf = (m: any) => (m.assessment.qualifies ? "verified" : "watch");
+const researchSummaryLine = (m: any) => `${m.assessment.passed}/${m.assessment.total} checks · 30d ${solStr(m.d30.realized_sol)} · 60d ${solStr(m.d60.realized_sol)} · 90d ${solStr(m.d90.realized_sol)} realized · win ${m.d90.win_rate_pct}% · median buy ${m.median_buy_sol} SOL`;
+// Who gives up a slot for a new candidate: provisional (unresearched) first, then — only for a verified
+// newcomer — a watch-tier wallet. A wallet copying with real money is never displaced automatically.
+function displaceable(active: any[], newTier: string) {
+  const free = active.filter((w) => !w.copy_live);
+  return free.find((w) => w.evidence?.provisional) ??
+    (newTier === "verified" ? free.find((w) => w.evidence?.tier === "watch") : undefined);
+}
 async function autoTrack(r: any, m: any): Promise<boolean> {
   const cfg = await getRow("config");
   const { data: existing } = await db.from("sol_wallets").select("address,status").eq("address", r.wallet).maybeSingle();
   if (existing && existing.status === "active") return false;
-  const { count } = await db.from("sol_wallets").select("*", { count: "exact", head: true }).eq("status", "active");
-  const summary = `${m.assessment.passed}/${m.assessment.total} checks · 30d ${solStr(m.d30.realized_sol)} · 60d ${solStr(m.d60.realized_sol)} · 90d ${solStr(m.d90.realized_sol)} realized · win ${m.d90.win_rate_pct}% · median buy ${m.median_buy_sol} SOL`;
-  if ((count ?? 0) >= 5) {
-    // Full: a verified trader takes the place of a provisional one (one whose research is not done first).
-    const { data: prov } = await db.from("sol_wallets").select("address,label,evidence").eq("status", "active");
-    const provisional = (prov ?? []).filter((w: any) => w.evidence?.provisional);
-    if (provisional.length) {
-      const victim = provisional[0];
-      await db.from("sol_wallets").update({ status: "paused", last_error: `Replaced by verified trader ${r.label}` }).eq("address", victim.address);
-      await logEvent("wallet", `Paused provisional ${victim.label} to make room for verified ${r.label}`, "info", victim.address);
-      if (TG_TOKEN && cfg.telegram_chat_id) await tgSend(cfg.telegram_chat_id, `🔁 Swapped out provisional <b>${esc(victim.label)}</b> for verified <b>${esc(r.label)}</b>.`).catch(() => {});
+  const tier = tierOf(m);
+  const { data: active } = await db.from("sol_wallets").select("address,label,evidence,copy_live").eq("status", "active");
+  const summary = researchSummaryLine(m);
+  if ((active ?? []).length >= 5) {
+    const victim = displaceable(active ?? [], tier);
+    if (victim) {
+      await db.from("sol_wallets").update({ status: "paused", last_error: `Replaced by ${tier} trader ${r.label}` }).eq("address", victim.address);
+      await logEvent("wallet", `Paused ${victim.label} to make room for ${tier} ${r.label}`, "info", victim.address);
+      if (TG_TOKEN && cfg.telegram_chat_id) await tgSend(cfg.telegram_chat_id, `🔁 Swapped out <b>${esc(victim.label)}</b> for ${tier} <b>${esc(r.label)}</b>.`).catch(() => {});
       return await autoTrack(r, m);
     }
-    await logEvent("research", `${r.label} qualifies but 5 wallets are already tracked`, "info", r.wallet);
-    if (TG_TOKEN && cfg.telegram_chat_id) await tgSend(cfg.telegram_chat_id, `✅ <b>${esc(r.label)}</b> passed research but you already track 5 wallets. Swap it in from the dashboard if you want it.\n${esc(summary)}`).catch(() => {});
+    await logEvent("research", `${r.label} qualifies (${tier}) but 5 wallets are already tracked`, "info", r.wallet);
+    if (TG_TOKEN && cfg.telegram_chat_id) await tgSend(cfg.telegram_chat_id, `✅ <b>${esc(r.label)}</b> passed research (${tier}) but you already track 5 wallets. Swap it in from the dashboard if you want it.\n${esc(summary)}`).catch(() => {});
     return false;
   }
+  const label = String(r.label).replace(/\s*\((provisional|watch)[^)]*\)$/i, "") + (tier === "watch" ? " (watch)" : "");
   await db.from("sol_wallets").upsert({
-    address: r.wallet, label: r.label, status: "active", source: r.source ?? "research",
-    evidence: { summary, researched_at: new Date().toISOString(), source: r.source, source_snapshot: r.source_snapshot, metrics: m },
+    address: r.wallet, label, status: "active", source: r.source ?? "research",
+    evidence: { tier, summary, cautions: m.assessment.cautions, researched_at: new Date().toISOString(), source: r.source, source_snapshot: r.source_snapshot, metrics: m },
     last_signature: null, consecutive_errors: 0, last_error: null,
   });
-  await logEvent("wallet", `Auto-tracked ${r.label} after passing all research checks`, "info", r.wallet);
+  await logEvent("wallet", `Auto-tracked ${label} (${tier}) after research`, "info", r.wallet);
   if (TG_TOKEN && cfg.telegram_chat_id) {
     await tgSend(cfg.telegram_chat_id, [
-      `👀 <b>Now tracking ${esc(r.label)}</b>`,
+      `👀 <b>Now paper-watching ${esc(label)}</b>${tier === "verified" ? " — passed every check" : ""}`,
       `<code>${esc(r.wallet)}</code>`,
       esc(summary),
+      ...(m.assessment.cautions.length ? [`Cautions: ${esc(m.assessment.cautions.join("; "))}`] : []),
       `Max drawdown ${solStr(m.max_drawdown_sol)} · median hold ${m.median_hold_seconds ?? "n/a"}s · ${m.round_trips_under_60s_pct ?? "n/a"}% flips under 60s`,
       `<a href="https://gmgn.ai/sol/address/${esc(r.wallet)}">GMGN wallet</a>`,
-      "<i>Alerts on its buys (0.5 SOL+) and sells start now. Monitoring only.</i>",
+      "<i>Paper copies start now. Real money only after 20+ profitable paper copies and your approval.</i>",
     ].join("\n")).catch(() => {});
   }
   return true;
@@ -1287,15 +1298,16 @@ async function autoTrack(r: any, m: any): Promise<boolean> {
 // Pass: it becomes a verified wallet. Fail: it is paused and the owner is told which check it failed.
 async function settleProvisional(r: any, m: any, w: any): Promise<boolean> {
   const cfg = await getRow("config");
-  const summary = `${m.assessment.passed}/${m.assessment.total} checks · 30d ${solStr(m.d30.realized_sol)} · 60d ${solStr(m.d60.realized_sol)} · 90d ${solStr(m.d90.realized_sol)} realized · win ${m.d90.win_rate_pct}% · median buy ${m.median_buy_sol} SOL`;
-  const label = String(w.label).replace(/\s*\(provisional\)$/i, "");
-  if (m.assessment.qualifies) {
-    await db.from("sol_wallets").update({ label, evidence: { summary, researched_at: new Date().toISOString(), source: r.source, source_snapshot: r.source_snapshot, metrics: m } }).eq("address", w.address);
-    await logEvent("wallet", `${label} confirmed by research`, "info", w.address);
-    if (TG_TOKEN && cfg.telegram_chat_id) await tgSend(cfg.telegram_chat_id, `✅ <b>${esc(label)}</b> passed research and stays on the watch list.\n${esc(summary)}`).catch(() => {});
+  const summary = researchSummaryLine(m);
+  const tier = tierOf(m);
+  const label = String(w.label).replace(/\s*\((provisional|watch)[^)]*\)$/i, "") + (tier === "watch" ? " (watch)" : "");
+  if (m.assessment.watch) {
+    await db.from("sol_wallets").update({ label, evidence: { tier, summary, cautions: m.assessment.cautions, researched_at: new Date().toISOString(), source: r.source, source_snapshot: r.source_snapshot, metrics: m } }).eq("address", w.address);
+    await logEvent("wallet", `${label} confirmed by research (${tier})`, "info", w.address);
+    if (TG_TOKEN && cfg.telegram_chat_id) await tgSend(cfg.telegram_chat_id, `✅ <b>${esc(label)}</b> passed research (${tier}) and stays on the paper watch list.\n${esc(summary)}${m.assessment.cautions.length ? `\nCautions: ${esc(m.assessment.cautions.join("; "))}` : ""}`).catch(() => {});
     return true;
   }
-  const fail = m.assessment.rules.find((x: any) => !x.pass);
+  const fail = m.assessment.rules.find((x: any) => !x.pass && x.core);
   await db.from("sol_wallets").update({ status: "paused", last_error: `Failed research: ${fail?.rule ?? ""}`, evidence: { ...w.evidence, research_failed: true, summary, metrics: m } }).eq("address", w.address);
   await logEvent("wallet", `Paused provisional ${label}: failed "${fail?.rule}" (${fail?.detail})`, "warn", w.address);
   if (TG_TOKEN && cfg.telegram_chat_id) await tgSend(cfg.telegram_chat_id, `⏸ Stopped watching <b>${esc(label)}</b>. It failed research: ${esc(fail?.rule ?? "")} (${esc(fail?.detail ?? "")}).\n${esc(summary)}`).catch(() => {});
@@ -1311,18 +1323,23 @@ async function researchSummaryIfFinished() {
   if (sent.batch === batch) return;
   const cfg = await getRow("config");
   const passed = all.filter((x: any) => x.metrics?.assessment?.qualifies);
+  const ranked = rankWatch(all);
   const { data: active } = await db.from("sol_wallets").select("label").eq("status", "active");
+  const profitLine = (x: any) => `${esc(x.label)} (${x.metrics.assessment.passed}/${x.metrics.assessment.total}, 90d ${solStr(x.metrics.d90.realized_sol)})`;
   const lines = [
     `📋 <b>Trader research finished</b> — ${all.length} wallets checked on 90 days of on-chain swaps`,
-    passed.length ? `Passed all checks: ${passed.map((x: any) => esc(x.label)).join(", ")}` : "No wallet passed every check, so none were added. I'd rather track nobody than an unproven trader.",
-    `Now tracking: ${(active ?? []).map((w: any) => esc(w.label)).join(", ") || "none"}`,
-    ...all.filter((x: any) => !x.metrics?.assessment?.qualifies).map((x: any) => {
+    ranked.length
+      ? `Profitable and copyable (core checks passed): ${ranked.map(profitLine).join(", ")}`
+      : "No wallet passed the core checks (history, profit over 30/60/90 days, 20+ closed trades, copyable size, still active).",
+    passed.length ? `Passed every check: ${passed.map((x: any) => esc(x.label)).join(", ")}` : "",
+    `Now paper-watching: ${(active ?? []).map((w: any) => esc(w.label)).join(", ") || "none"}`,
+    ...all.filter((x: any) => !x.metrics?.assessment?.watch).map((x: any) => {
       const a = x.metrics?.assessment;
-      const firstFail = a?.rules?.find((rr: any) => !rr.pass);
+      const firstFail = a?.rules?.find((rr: any) => !rr.pass && rr.core !== false);
       return `• ${esc(x.label)}: ${a ? `${a.passed}/${a.total}` : x.status}${firstFail ? ` — failed “${esc(firstFail.rule)}” (${esc(firstFail.detail)})` : ""}`;
     }),
   ];
-  if (TG_TOKEN && cfg.telegram_chat_id) await tgSend(cfg.telegram_chat_id, lines.join("\n").slice(0, 3900)).catch(() => {});
+  if (TG_TOKEN && cfg.telegram_chat_id) await tgSend(cfg.telegram_chat_id, lines.filter(Boolean).join("\n").slice(0, 3900)).catch(() => {});
   await setRow("research_summary", { batch, sent_at: new Date().toISOString(), passed: passed.map((x: any) => x.label) });
 }
 
@@ -1790,6 +1807,22 @@ Deno.serve(async (req) => {
       if (error) throw error;
       await logEvent("research", `Queued ${rows.length} wallet(s) for 90-day research`);
       return json({ ok: true, queued: rows.length, helius_key_set: !!HELIUS_KEY });
+    }
+    if (path === "/research/promote" && req.method === "POST") {
+      // Re-assess finished research with the current rules and fill the paper watch list, best first.
+      const { data: done } = await db.from("sol_research").select("*").eq("status", "done");
+      for (const r of done ?? []) {
+        if (!r.metrics?.d90) continue;
+        r.metrics.assessment = assess(r.metrics, RESEARCH_DAYS, Math.floor(Date.parse(r.requested_at) / 1000));
+        await db.from("sol_research").update({ metrics: r.metrics }).eq("wallet", r.wallet);
+      }
+      const out: any[] = [];
+      for (const r of rankWatch(done ?? [])) {
+        const { data: w } = await db.from("sol_wallets").select("*").eq("address", r.wallet).maybeSingle();
+        const tracked = w?.evidence?.provisional && w.status === "active" ? await settleProvisional(r, r.metrics, w) : await autoTrack(r, r.metrics);
+        out.push({ wallet: r.wallet, label: r.label, tier: tierOf(r.metrics), passed: r.metrics.assessment.passed, d90: r.metrics.d90.realized_sol, tracked });
+      }
+      return json({ ok: true, candidates: out });
     }
     if (path === "/research" && req.method === "GET") {
       const { data } = await db.from("sol_research").select("*").order("requested_at");

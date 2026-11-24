@@ -279,7 +279,7 @@ function render() {
   $("#researchTable").innerHTML = `<tr><th>Candidate</th><th>Status</th><th class="num">30d</th><th class="num">60d</th><th class="num">90d</th><th class="num">Win %</th><th class="num">Median buy</th><th>Checks</th><th></th></tr>` +
     ((s.research || []).length ? s.research.map((r) => {
       const m = r.metrics || {}, a = m.assessment;
-      const st = r.status === "done" ? (a.qualifies ? '<span class="chip ok">qualifies</span>' : '<span class="chip">does not qualify</span>')
+      const st = r.status === "done" ? (a.qualifies ? '<span class="chip ok">verified</span>' : a.watch ? '<span class="chip ok">profitable · paper watch</span>' : '<span class="chip">does not qualify</span>')
         : r.status === "error" ? `<span class="chip bad" title="${esc(r.error)}">error</span>`
         : `<span class="chip warn"${r.error ? ` title="${esc(r.error)}"` : ""}>${esc(r.status)}</span>`;
       const rules = a ? `<details><summary>${a.passed}/${a.total}</summary><ul class="events">${a.rules.map((x) =>
