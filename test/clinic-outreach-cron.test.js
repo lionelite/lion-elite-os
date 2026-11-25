@@ -64,10 +64,11 @@ test('never-email list: Level T and asim.hasnie, case-insensitive, env can only 
   assert.match(neverEmailReason('asim.hasnie@intechaero.com'), /never-email/);
 });
 
-test('follow-up copy: 60–90 words, supplier comparison, RUO, opt-out, compliant', () => {
+test('follow-up copy: 60–90 words, owner framework, RUO, opt-out, compliant', () => {
   const d = buildClinicFollowUpEmail({ businessName: 'Glow Med Spa', category: 'clinic_or_medspa' });
   assert.ok(d.messageWordCount >= 60 && d.messageWordCount <= 90, `${d.messageWordCount} words`);
-  assert.match(d.body, /side-by-side supplier comparison/);
+  assert.match(d.body, /what you'd save buying it from us, with the highest quality, 100% made in the USA, at the best prices in the industry/);
+  assert.match(d.body, /Best,\nLion Elite Wellness\n/);
   assert.match(d.body, /laboratory research purposes only/);
   assert.match(d.body, /won't contact you again/);
   assert.doesNotMatch(d.body, /patient|dose|dosing|treat/i);
