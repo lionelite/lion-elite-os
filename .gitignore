@@ -28,3 +28,14 @@ apps/buildpipeline/.next/
 apps/buildpipeline/tsconfig.tsbuildinfo
 apps/buildpipeline/package-lock.json
 dump.rdb
+
+# Obsidian (the repo root is an Obsidian vault — see knowledge/obsidian.md).
+# Shared vault settings in .obsidian/ are committed; per-device window state,
+# caches, trash and downloaded plugin code are not.
+.obsidian/workspace.json
+.obsidian/workspace-mobile.json
+.obsidian/cache
+.obsidian/plugins/*/main.js
+.obsidian/plugins/*/manifest.json
+.obsidian/plugins/*/styles.css
+.trash/

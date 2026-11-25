@@ -1,0 +1,13 @@
+{
+  "commitMessage": "vault: {{date}} ({{numFiles}} files) from {{hostname}}",
+  "autoCommitMessage": "vault: auto-save {{date}} from {{hostname}}",
+  "commitDateFormat": "YYYY-MM-DD HH:mm",
+  "autoSaveInterval": 10,
+  "autoPushInterval": 0,
+  "autoPullInterval": 10,
+  "autoPullOnBoot": true,
+  "syncMethod": "rebase",
+  "pullBeforePush": true,
+  "disablePush": false,
+  "showStatusBar": true
+}

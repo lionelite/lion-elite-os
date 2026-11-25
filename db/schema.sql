@@ -1421,3 +1421,13 @@ CREATE TABLE IF NOT EXISTS outreach_runs (
   finished_at TIMESTAMPTZ
 );
 CREATE INDEX IF NOT EXISTS outreach_runs_date_idx ON outreach_runs(run_date, status);
+
+-- Daily agent brief (lib/agents/brief-store.js, docs/daily-agent-brief.md).
+CREATE TABLE IF NOT EXISTS agent_briefs (
+  brief_date DATE PRIMARY KEY,
+  generated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  trigger TEXT NOT NULL DEFAULT 'manual',
+  metrics JSONB NOT NULL DEFAULT '{}'::jsonb,
+  brief JSONB NOT NULL DEFAULT '{}'::jsonb,
+  markdown TEXT NOT NULL DEFAULT ''
+);

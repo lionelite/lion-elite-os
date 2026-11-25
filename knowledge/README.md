@@ -16,6 +16,11 @@ When a recurring fact is missing:
 
 ## Index
 
+The repo is also an Obsidian vault. Start at `Home.md` and the maps in `maps/`. See `obsidian.md` for how it works and syncs.
+
+- `Home.md` — start page linking every map.
+- `maps/` — one map per business and per function, covering every doc in the repo.
+- `obsidian.md` — vault rules, folders, and GitHub sync.
 - `scheduling.md` — verified scheduling identities and links.
 - `brands.md` — brand positioning and customer-facing constraints.
 - `equity-trust.md` — recurring Equity Trust communication context.

@@ -1,0 +1,27 @@
+{
+  "newFileLocation": "folder",
+  "newFileFolderPath": "knowledge/inbox",
+  "attachmentFolderPath": "knowledge/attachments",
+  "alwaysUpdateLinks": true,
+  "newLinkFormat": "absolute",
+  "useMarkdownLinks": false,
+  "showUnsupportedFiles": false,
+  "userIgnoreFilters": [
+    "node_modules/",
+    "lib/",
+    "workers/",
+    "routes/",
+    "scripts/",
+    "test/",
+    "public/",
+    "db/",
+    "data/",
+    "apps/buildpipeline/src/",
+    "agent-outputs/",
+    "automation-triggers/",
+    "deploy/",
+    "marketing-intelligence/data/",
+    "content/generated/",
+    "content/media/"
+  ]
+}

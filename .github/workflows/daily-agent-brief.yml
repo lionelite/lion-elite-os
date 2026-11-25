@@ -1,0 +1,101 @@
+name: Daily agent brief
+
+# Copies the daily agent brief into the Obsidian vault (the `vault` branch), so
+# it is the first thing you see when Obsidian opens.
+#
+# The brief itself is built by the service (routes/agent-brief.js) from live
+# data. Supabase pg_cron builds it at 11:17 UTC (db/supabase/agent-daily-brief-
+# scheduler.sql). This workflow asks for a fresh build, falls back to the stored
+# one if the service is slow, adds the engineering backlog (open PRs), and
+# commits it to knowledge/daily/briefs/. Read-only toward the business.
+#
+# Docs: docs/daily-agent-brief.md
+
+on:
+  schedule:
+    - cron: '47 11 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: read
+  id-token: write
+
+concurrency:
+  group: daily-agent-brief
+  cancel-in-progress: false
+
+env:
+  SERVICE_URL: https://lion-elite-os.onrender.com
+
+jobs:
+  brief:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Wake Render service
+        run: |
+          for i in 1 2 3 4 5 6 7 8; do
+            if curl -fsS --max-time 60 "$SERVICE_URL/health" > /dev/null; then echo "Service is up."; exit 0; fi
+            echo "Not up yet (attempt $i); waiting 20s."; sleep 20
+          done
+          echo "::error::Service did not answer /health."; exit 1
+
+      - name: Get the brief
+        run: |
+          set -o pipefail
+          token="$(curl -fsS -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
+            "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=lion-elite-os-cron" | jq -r .value)"
+          if [ -z "$token" ] || [ "$token" = "null" ]; then echo "::error::Could not get an OIDC token."; exit 1; fi
+          if curl -fsS --max-time 240 -X POST -H "Authorization: Bearer $token" \
+               "$SERVICE_URL/run/agents/daily-brief" -o brief.json; then
+            echo "Fresh brief built."
+          else
+            echo "::warning::Fresh build failed; using the stored brief."
+            curl -fsS --max-time 60 -H "Authorization: Bearer $token" \
+              "$SERVICE_URL/run/agents/daily-brief/latest" -o brief.json
+          fi
+          jq -r .date brief.json > brief.date
+          jq -r .markdown brief.json > brief.md
+          test -s brief.md || { echo "::error::Empty brief."; exit 1; }
+          echo "Brief for $(cat brief.date)"
+
+      - name: Add the engineering backlog
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -o pipefail
+          gh api "repos/${{ github.repository }}/pulls?state=open&per_page=100" > prs.json
+          total=$(jq 'length' prs.json)
+          stale=$(jq '[.[] | select((now - (.created_at | fromdateiso8601)) > 30*86400)] | length' prs.json)
+          {
+            echo ""
+            echo "## Engineering backlog"
+            echo ""
+            echo "- Open pull requests: $total (older than 30 days: $stale)"
+            jq -r 'sort_by(.created_at) | .[:5][] | "- #\(.number) \(.title) (opened \(.created_at[:10]))"' prs.json
+          } >> brief.md
+
+      - uses: actions/checkout@v4
+        with:
+          ref: vault
+          path: vault
+          fetch-depth: 1
+
+      - name: Commit to the vault
+        run: |
+          date="$(cat brief.date)"
+          mkdir -p vault/knowledge/daily/briefs
+          cp brief.md "vault/knowledge/daily/briefs/$date.md"
+          cp brief.md vault/knowledge/daily/briefs/Latest.md
+          cd vault
+          git config user.name "lion-elite-agents"
+          git config user.email "lion-elite-agents@users.noreply.github.com"
+          git add knowledge/daily/briefs
+          if git diff --cached --quiet; then echo "No change."; exit 0; fi
+          git commit -m "brief: daily agent brief $date"
+          for i in 1 2 3; do
+            git pull --rebase origin vault && git push origin HEAD:vault && exit 0
+            sleep 5
+          done
+          echo "::error::Could not push the brief to the vault branch."; exit 1
