@@ -19,15 +19,20 @@ test('every step is RUO-approved, personalized, and passes the quality checklist
   }
 });
 
-test('step 1 makes the pilot offer, asks one discovery question, and names the market', () => {
+test('step 1 uses only the owner framework (2026-11-25), asks one question, and names the market', () => {
   const d = buildClinicSupplyEmail(clinic);
-  assert.match(d.body, /side-by-side quote/);
+  assert.match(d.subject, /save on the peptides you already buy/);
+  assert.match(d.body, /save GlowVita money on the peptides you already buy/);
+  assert.match(d.body, /highest quality peptides, 100% made in the USA, at the best prices in the industry/);
+  assert.match(d.body, /long term, in a way that works well for both of us/);
   assert.match(d.body, /med spas and aesthetics practices in Miami/);
-  assert.match(d.body, /price, documentation, or delivery reliability\?/);
+  assert.match(d.body, /Worth a quick price check\?/);
   assert.match(d.body, /won't contact you again/);
+  assert.match(d.body, /Best,\nLion Elite Wellness\nhttps:\/\/lionelitewellness\.com/);
+  assert.doesNotMatch(d.body, /Alexander Ringfield|Lion Elite Clinical|COA/);
 });
 
-test('no savings claim, no patient-service language, no guessed names', () => {
+test('no savings figure, no patient-service language, no guessed names', () => {
   for (const step of [1, 2, 3]) {
     const body = buildClinicSupplyEmail(clinic, { step }).body;
     assert.doesNotMatch(body, /save \d|% (off|cheaper|less)|guarantee|patient|therapy|weight|hormone/i);
@@ -63,8 +68,8 @@ test('stored clinic prospects route to the clinic sequence, gyms keep the Beauty
   assert.equal(isClinicSupply(ctx), true);
   const routed = draftForContext(ctx);
   assert.equal(routed.route, 'clinic_supply');
-  assert.match(routed.draft.body, /Lion Elite Clinical/);
-  assert.doesNotMatch(routed.draft.body, /Lion Elite Wellness/);
+  assert.match(routed.draft.body, /Lion Elite Wellness/);
+  assert.doesNotMatch(routed.draft.body, /Lion Elite Clinical/);
   assert.doesNotMatch(routed.draft.body, /Lion Elite Beauty|coaching/);
   assert.match(routed.draft.body, /in Miami/);
 
