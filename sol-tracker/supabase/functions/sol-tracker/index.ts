@@ -286,20 +286,24 @@ async function paperExecute(t: any, cfg: any, price: number | null) {
   const p = cfg.paper;
   const cr = copyRules(cfg);
   const lc = liveCfg(cfg);
-  const delay = t.block_time ? (Date.now() - Date.parse(t.block_time)) / 1000 : null;
-  const base = { wallet: t.wallet, mint: t.mint, symbol: t.token_symbol, source_signature: t.signature, delay_seconds: delay };
-  const skip = (note: string) => db.from("sol_paper_ledger").insert({ ...base, type: "skip", note });
+  // delay_seconds = trader's block time -> the moment our fill price is fixed (the quote is in hand).
+  const delayNow = () => (t.block_time ? (Date.now() - Date.parse(t.block_time)) / 1000 : null);
+  const base: any = { wallet: t.wallet, mint: t.mint, symbol: t.token_symbol, source_signature: t.signature, delay_seconds: delayNow() };
+  const skip = (note: string) => db.from("sol_paper_ledger").insert({ ...base, delay_seconds: delayNow(), type: "skip", note });
   if (!price) { await skip("No price available at detection"); return; }
-  const { cash, open } = await paperState(cfg);
   if (t.kind === "buy") {
-    const ec = await entryCheckFull(t.market, t.mint, cfg);
+    // Speed: the entry filter, paper state, SOL price and the Jupiter quote are independent, so they
+    // run at once instead of one after another. The rules applied to the results are unchanged.
+    const [ec, { cash, open }, sol, q] = await Promise.all([
+      entryCheckFull(t.market, t.mint, cfg), paperState(cfg), solUsd(),
+      quoteBuyTokens(t.mint, cr.buy_sol, lc.slippage_bps).catch(() => null),
+    ]);
+    base.delay_seconds = delayNow();
     if (!ec.pass) { await skip(`Entry filter: ${ec.reasons.join("; ")}`); return; }
     if (open.find((o: any) => o.mint === t.mint)) { await skip("Already holding this token"); return; }
     if (open.length >= cr.max_open_positions) { await skip("Max open positions reached"); return; }
-    const sol = await solUsd();
     if (!sol) { await skip("No SOL price"); return; }
     if (cash < cr.buy_sol * sol * 1.01) { await skip("Not enough simulated cash"); return; }
-    const q = await quoteBuyTokens(t.mint, cr.buy_sol, lc.slippage_bps);
     if (!q || !(q.tokens > 0)) { await skip("No Jupiter route at fill time (a live buy would fail too)"); return; }
     const cost = (cr.buy_sol + q.feeSol) * sol; // same SOL size live spends, plus the network fees Ultra quoted
     const fill = cost / q.tokens;
@@ -310,10 +314,11 @@ async function paperExecute(t: any, cfg: any, price: number | null) {
     await db.from("sol_paper_ledger").insert({ ...base, type: "buy", usd: cost, price_usd: fill,
       note: `SIMULATED buy ${cr.buy_sol} SOL -> ${fmt(q.tokens, 0)} via a real Jupiter quote; effective ${usd(fill)} vs market ${usd(price)} (${fmt((fill / price - 1) * 100, 1)}% total cost)` });
   } else if (t.kind === "sell" && p.copy_sells) {
+    const { open } = await paperState(cfg);
     const pos = open.find((o: any) => o.mint === t.mint && o.wallet === t.wallet);
     if (!pos) return;
     const frac = t.exit_type === "FULL" ? 1 : Math.min(1, Math.max(0, (t.exit_pct ?? 100) / 100));
-    await paperSell(pos, frac, price, cfg, base, `${t.exit_type ?? ""} copy sell`);
+    await paperSell(pos, frac, price, cfg, { ...base, delay_seconds: delayNow }, `${t.exit_type ?? ""} copy sell`);
   }
 }
 // Sell `frac` of a paper position's remaining tokens: a real Jupiter quote for that amount, minus the
@@ -321,13 +326,15 @@ async function paperExecute(t: any, cfg: any, price: number | null) {
 async function paperSell(pos: any, frac: number, price: number, cfg: any, base: any, reason: string, extra: any = {}) {
   const p = cfg.paper;
   const q = Number(pos.qty_open) * frac;
-  const sol = await solUsd();
+  const [sol, out] = await Promise.all([
+    solUsd(),
+    pos.decimals != null ? quoteSellSol(pos.mint, q, Number(pos.decimals), Math.max(liveCfg(cfg).slippage_bps, 2000)).catch(() => null) : null,
+  ]);
+  // A copy sell passes delay_seconds as a function so it is read when the quote is in hand.
+  if (typeof base.delay_seconds === "function") base = { ...base, delay_seconds: base.delay_seconds() };
   const prioUsd = sol ? p.priority_fee_sol * sol : 0;
   let proceeds: number | null = null, how = "Jupiter quote";
-  if (pos.decimals != null && sol) {
-    const out = await quoteSellSol(pos.mint, q, Number(pos.decimals), Math.max(liveCfg(cfg).slippage_bps, 2000));
-    if (out != null) proceeds = Math.max(0, (out.sol - out.feeSol) * sol);
-  }
+  if (out != null && sol) proceeds = Math.max(0, (out.sol - out.feeSol) * sol);
   if (proceeds == null) {
     how = "ESTIMATED, no Jupiter route";
     proceeds = Math.max(0, q * price * (1 - p.slippage_pct / 100) * (1 - p.fee_pct / 100) - prioUsd);
@@ -746,7 +753,7 @@ async function processWallet(w: any, cfg: any, budget: { left: number }) {
 
 async function recordTrade(w: any, signature: string, p: any, cfg: any) {
   const blockIso = p.blockTime ? new Date(p.blockTime * 1000).toISOString() : null;
-  const sol = await solUsd();
+  const sol = await solUsd(); // cached for a minute, so normally instant
   let solValue: number | null = null;
   let quote = "SOL";
   let quoteAmount: number | null = null;
@@ -768,8 +775,9 @@ async function recordTrade(w: any, signature: string, p: any, cfg: any) {
   let mk: Market | undefined;
   let risk: string[] | null = null;
   if (isAlertable) {
-    mk = (await dexPairs([p.mint]))[p.mint];
-    risk = riskFlags(mk, await mintAuthorities(p.mint), solValue, sol);
+    const [pairs, auth] = await Promise.all([dexPairs([p.mint]), mintAuthorities(p.mint)]); // in parallel, for speed
+    mk = pairs[p.mint];
+    risk = riskFlags(mk, auth, solValue, sol);
   }
   let alertStatus = "none";
   if (isAlertable) {
@@ -1577,6 +1585,33 @@ async function syncHeliusWebhook(addresses: string[]) {
   await logEvent("realtime", `Helius instant trigger now watching ${want.length} wallet(s)`);
   return { ok: true, id: j.webhookID, wallets: want.length, updated: true };
 }
+// Fast path: the raw webhook body already holds the full confirmed transaction(s), so a copy is
+// recorded straight from it, without first re-reading every wallet's history over RPC. That saves
+// roughly a second per copy. recordTrade() is idempotent per (signature, wallet), so the cursor run
+// that follows only confirms what was already recorded, and remains the backup if this path fails.
+async function fastPathFromWebhook(payload: any): Promise<number> {
+  const txs: any[] = Array.isArray(payload) ? payload : payload ? [payload] : [];
+  if (!txs.length) return 0;
+  const [cfg, { data: wallets }] = await Promise.all([
+    getRow("config"), db.from("sol_wallets").select("*").eq("status", "active"),
+  ]);
+  const byAddr = new Map((wallets ?? []).map((w: any) => [w.address, w]));
+  let n = 0;
+  await Promise.all(txs.map(async (tx) => {
+    const sig = tx?.transaction?.signatures?.[0];
+    if (!sig || !tx.meta || tx.meta.err) return;
+    const keys: string[] = (tx.transaction.message?.accountKeys ?? []).map((k: any) => (typeof k === "string" ? k : k?.pubkey));
+    for (const addr of keys) {
+      const w = byAddr.get(addr);
+      if (!w) continue;
+      const p = parseSwap(tx, addr);
+      if (p.kind !== "buy" && p.kind !== "sell") continue;
+      await recordTrade(w, sig, p, cfg);
+      n++;
+    }
+  }));
+  return n;
+}
 // Runs after a webhook: one full run now, then fills paper orders as soon as each is due
 // (sell copies after exec_delay_seconds, buys after the confirm-hold check), for up to ~2 minutes.
 async function realtimeRun(received: number) {
@@ -1617,8 +1652,12 @@ Deno.serve(async (req) => {
     }
     if (path === "/webhook/helius" && req.method === "POST") {
       if (!secrets.helius_webhook_secret || req.headers.get("authorization") !== secrets.helius_webhook_secret) return json({ error: "unauthorized" }, 401);
-      await req.body?.cancel().catch(() => {});
-      const job = realtimeRun(Date.now()).catch((e) => logEvent("realtime_error", clean(e), "error"));
+      const received = Date.now();
+      const payload = await req.json().catch(() => null);
+      const job = fastPathFromWebhook(payload)
+        .catch((e) => logEvent("realtime_error", `fast path: ${clean(e)}`, "warn"))
+        .then(() => realtimeRun(received))
+        .catch((e) => logEvent("realtime_error", clean(e), "error"));
       const rt = (globalThis as any).EdgeRuntime;
       if (rt?.waitUntil) rt.waitUntil(job); else await job;
       return json({ ok: true });

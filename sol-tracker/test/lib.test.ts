@@ -15,6 +15,12 @@ const tx = (o: { pre: number; post: number; preT?: any[]; postT?: any[]; err?: a
 });
 
 describe("parseSwap", () => {
+  test("raw webhook shape (account keys as plain strings) parses the same as jsonParsed", () => {
+    const parsed = tx({ pre: 2e9, post: 1.4e9 - 5000, preT: [], postT: [tb(MINT, 1000)] });
+    const raw = { ...parsed, transaction: { signatures: ["sig"], message: { accountKeys: [W, "Other"] } } };
+    expect(parseSwap(raw, W)).toEqual(parseSwap(parsed, W));
+    expect(parseSwap(raw, W).kind).toBe("buy");
+  });
   test("SOL -> token is a BUY with the SOL spent (fee excluded)", () => {
     const p = parseSwap(tx({ pre: 2e9, post: 1.4e9 - 5000, preT: [], postT: [tb(MINT, 1000)] }), W);
     expect(p.kind).toBe("buy");

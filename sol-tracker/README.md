@@ -126,7 +126,7 @@ units a month. Only the documented `owner` and `tags` fields are read. Not exerc
 Paper trading is only evidence for live trading if both follow the same rules, so:
 
 - **One rule set.** `copyRules()` (`lib.ts`, config key `copy`) drives both paths: buy size (`buy_sol`, the
-  same SOL amount live spends), the confirm-hold (2 s since 2026-11-23, owner decision, was 60 s; a buy is skipped if the trader already sold — live
+  same SOL amount live spends), the confirm-hold (0 s since 2026-11-25 for the owner's 1 to 2 s copy target; 2 s from 2026-11-23, 60 s before; when above 0, a buy is skipped if the trader already sold — live
   now does this too), our own stop-loss −25% / take-profit +50% sells half once (`riskExit()`, now on live
   positions as well), and max open positions.
 - **Real fills.** Paper buys and sells are priced with a real Jupiter quote at fill time (DEX fees and
@@ -190,3 +190,14 @@ bun test sol-tracker/test
 ```
 Covers swap classification (SOL, WSOL, USDC legs, transfers, non-signer fees, foreign token accounts) and the
 research math (windows, average cost, airdrop exclusion, oversells, open positions, sniper detection, a passing wallet).
+
+### Copy speed (2026-11-25)
+
+Owner target: a copy lands within 1 to 2 s of the trader. Measured before this change (median of 40 paper
+copies, Nov 24-25): Helius webhook arrives ~1 s after the trader's block, the function then re-read all
+wallets over RPC (~1.5 s), waited the 2 s confirm-hold, and took ~0.8 s to quote and fill, about 5.5 s in all.
+Now the webhook body itself is parsed and recorded at once (`fastPathFromWebhook`; the cursor run that
+follows is the backup and dedupes), the market, filter and Jupiter quote lookups run in parallel, and the
+config sets `copy.confirm_hold_seconds` and `paper.exec_delay_seconds` to 0. `delay_seconds` in the ledger
+is now measured when the fill quote is in hand (was: when filling started). Trade-off: with no hold, a
+trader's sub-second flip is copied instead of skipped (the 2 s hold skipped none of ~110 copies).
