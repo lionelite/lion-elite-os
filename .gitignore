@@ -28,3 +28,7 @@ apps/buildpipeline/.next/
 apps/buildpipeline/tsconfig.tsbuildinfo
 apps/buildpipeline/package-lock.json
 dump.rdb
+
+# Python bot community task board (task payloads and results stay local) and caches.
+bots/.state/
+__pycache__/
