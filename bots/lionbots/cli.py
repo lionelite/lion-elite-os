@@ -5,6 +5,8 @@
   submit <skill> [json payload]  queue a specific skill
   run                            drain the queue once
   serve [--workers N]            stay up and work tasks as they arrive
+  loop <skill> [json] --every S --minutes M
+                                 run one skill on a timer (e.g. copytrade.watch)
   list [--status S]              recent tasks
   show <task id>                 one task with its full result
 """
@@ -43,6 +45,9 @@ def main(argv: list[str] | None = None) -> int:
     s.add_argument("--queue-only", action="store_true")
     sub.add_parser("run")
     sv = sub.add_parser("serve"); sv.add_argument("--workers", type=int, default=4); sv.add_argument("--poll", type=float, default=2.0)
+    lp = sub.add_parser("loop"); lp.add_argument("skill"); lp.add_argument("payload", nargs="?", default="{}")
+    lp.add_argument("--every", type=float, default=30.0, help="seconds between runs")
+    lp.add_argument("--minutes", type=float, default=60.0, help="stop after this many minutes")
     ls = sub.add_parser("list"); ls.add_argument("--status"); ls.add_argument("--limit", type=int, default=25)
     sh = sub.add_parser("show"); sh.add_argument("id")
     args = ap.parse_args(argv)
@@ -86,6 +91,45 @@ def main(argv: list[str] | None = None) -> int:
         for sig in (signal.SIGINT, signal.SIGTERM):
             signal.signal(sig, lambda *_: stop.set())
         runner.serve(community, workers=args.workers, poll_seconds=args.poll, stop=stop)
+        return 0
+
+    if args.cmd == "loop":
+        import time
+
+        try:
+            payload = json.loads(args.payload)
+        except json.JSONDecodeError as exc:
+            print(f"payload is not JSON: {exc}", file=sys.stderr)
+            return 2
+        stop = threading.Event()
+        for sig in (signal.SIGINT, signal.SIGTERM):
+            signal.signal(sig, lambda *_: stop.set())
+        deadline = time.monotonic() + args.minutes * 60
+        runs = bad = 0
+        while not stop.is_set() and time.monotonic() < deadline:
+            task = community.submit(args.skill, payload)
+            if task.status == "queued":
+                claimed = community.store.claim([task.skill], community.owner[task.skill])
+                task = runner.run_task(community, claimed) if claimed else community.store.get(task.id)
+            runs += 1
+            if task.status == "refused" or task.status == "needs_human":
+                print(_summary(task))
+                return 1
+            if task.status != "done":
+                bad += 1
+            line = {"at": task.updated_at, "status": task.status,
+                    "error": task.error}
+            r = task.result if isinstance(task.result, dict) else {}
+            for k in ("alerts", "paper_fills"):
+                if r.get(k):
+                    line[k] = r[k]
+            if "account" in r:
+                line["equity_usd"] = r["account"].get("equity_usd")
+            print(json.dumps(line, default=str), flush=True)
+            if task.status == "blocked" and "gate: owner" in (task.error or ""):
+                return 1  # waiting on the owner: polling again changes nothing
+            stop.wait(args.every)
+        print(f"loop finished: {runs} runs, {bad} not done", file=sys.stderr)
         return 0
 
     if args.cmd == "list":

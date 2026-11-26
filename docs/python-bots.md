@@ -31,6 +31,8 @@ because payloads and results (clinical briefs, deal numbers, margins) stay local
 | `brand_alex` | `week_plan` (@alexthelionlifts pillars, ~2/7 posts carry a CTA), `captions`, `check` | Claude, node |
 | `buildpipeline` | `funnel_copy` (VSL config + script), `validate_funnel`, `funnel_report` | Claude, node |
 | `shapewear` | `launch_plan`, `economics`, `size_chart` (gaps/overlaps), `copy` (claim-checked) | Claude, node for `copy` |
+| `clinic` | `health` (live /health/outreach, no secrets), `audit` (Supabase counts, read-only GET) | network; Supabase secrets for `audit` |
+| `copytrade` | `watch` (new trades from chosen wallets → alerts + paper fills), `report` (paper P&L), `vet` (a wallet's recent round trips) | network (Solana RPC, DexScreener) |
 | `finance` | `analyze_property`, `tax_estimate` (finance-intelligence/) | — |
 | `repo` | `search`, `read`, `script` (allowlisted read-only npm scripts) | git, npm |
 | `compliance` | `check` (lib/social/social-compliance.js) | node |
@@ -46,6 +48,27 @@ effort. Every other bot is stdlib-only.
 **Network:** PubMed, ClinicalTrials.gov and DexScreener are public and keyless.
 The dev sandbox's proxy refuses all three, so those skills return `blocked`
 there and work on any normal machine.
+
+## Scheduled runs (`.github/workflows/python-bots.yml`)
+
+- **clinic-health**: weekdays, hourly 9 AM–4 PM New York. Writes a short health
+  line to the run summary and fails the run when health says `failing`, so
+  GitHub e-mails the owner. Add `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY`
+  as Actions secrets to include queue counts.
+- **copytrade**: polls every 30 s for ~5.5 h, caches the paper ledger, then
+  starts its own next run. Idle until the `COPYTRADE_WALLETS` secret holds the
+  chosen wallets (comma-separated). Optional `SOLANA_RPC_URL` (e.g. a free
+  Helius key) if the public RPC rate-limits. This repo is public, so run logs
+  are public: wallets stay masked because they come from a secret.
+
+### Copy-trade rules (paper)
+
+$250 start, 10% of equity per copied buy, at most 5 open positions, only
+trader buys of 0.5 SOL or more, no copies into pools under $10k liquidity,
+3% worse fill than the trader on each side plus a flat fee, 50% stop loss, and
+exits that mirror the trader's own sells (a partial sell sells the same
+fraction). Every number is a `COPYTRADE_*` env var or payload field. There is
+no live mode: going live is a separate, owner-approved build.
 
 ## Statuses
 
