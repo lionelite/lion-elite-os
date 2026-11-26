@@ -603,6 +603,13 @@ Standalone modules that share the repo but not the architecture above:
   here only against recorded response shapes. Stdlib-only except the optional
   `anthropic` SDK (`bots/requirements.txt`). Tests: `npm run bots:test`, wired
   into the required CI `test` job. Docs: `docs/python-bots.md`.
+  *2026-11-26:* added `clinic` (read-only outreach monitor: public
+  `/health/outreach` + GET-only Supabase counts) and `copytrade` (watches the
+  owner's chosen Solana wallets from the `COPYTRADE_WALLETS` secret, alerts on
+  buys of 0.5 SOL or more and on sells, mirrors them in a **paper** account; no keys, no signing,
+  no live mode). `.github/workflows/python-bots.yml` schedules both. The
+  copytrade job polls for ~5.5 h, keeps its ledger in the Actions cache, and
+  re-dispatches itself, because GitHub drops scheduled runs.
 - **`social-listening/`** — Bluesky firehose (Jetstream) monitor. The
   *listening* half is read-only. A *reply* path does exist and this file
   previously denied it: `social-listening/src/bluesky-delivery.js` has
