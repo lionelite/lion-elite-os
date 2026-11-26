@@ -232,6 +232,21 @@ async function paperQuote(inputMint: string, outputMint: string, amount: bigint,
   } catch { /* fall back */ }
   try { const q = await jupQuote(inputMint, outputMint, amount, bps); return { out: BigInt(q.outAmount), feeSol: 0.0001 }; } catch { return null; }
 }
+// Speed: the webhook fast path starts a copied buy's Jupiter quote the moment it parses the trade,
+// so it runs alongside the market lookups instead of after them. A prefetched quote is used only
+// if it is for the same mint and size and was started within the last 5 s.
+const buyPrefetch: Record<string, { at: number; sol: number; q: Promise<{ tokens: number; dec: number; feeSol: number } | null> }> = {};
+function prefetchBuy(mint: string, cfg: any) {
+  const sol = copyRules(cfg).buy_sol;
+  buyPrefetch[mint] = { at: Date.now(), sol, q: quoteBuyTokens(mint, sol, liveCfg(cfg).slippage_bps).catch(() => null) };
+  if (needsRug(entryRules(cfg))) rugReport(mint).catch(() => null);
+}
+function quoteBuyFast(mint: string, sol: number, bps: number) {
+  const pf = buyPrefetch[mint];
+  delete buyPrefetch[mint];
+  if (pf && pf.sol === sol && Date.now() - pf.at < 5000) return pf.q;
+  return quoteBuyTokens(mint, sol, bps);
+}
 async function quoteBuyTokens(mint: string, sol: number, bps: number): Promise<{ tokens: number; dec: number; feeSol: number } | null> {
   const dec = await mintDecimals(mint);
   if (dec == null) return null;
@@ -296,7 +311,7 @@ async function paperExecute(t: any, cfg: any, price: number | null) {
     // run at once instead of one after another. The rules applied to the results are unchanged.
     const [ec, { cash, open }, sol, q] = await Promise.all([
       entryCheckFull(t.market, t.mint, cfg), paperState(cfg), solUsd(),
-      quoteBuyTokens(t.mint, cr.buy_sol, lc.slippage_bps).catch(() => null),
+      quoteBuyFast(t.mint, cr.buy_sol, lc.slippage_bps).catch(() => null),
     ]);
     base.delay_seconds = delayNow();
     if (!ec.pass) { await skip(`Entry filter: ${ec.reasons.join("; ")}`); return; }
@@ -427,9 +442,14 @@ async function jupSwap(quote: any, kp: Keypair): Promise<string> {
 }
 // ---------- RugCheck holder data for the entry filter ----------
 const rugCache: Record<string, { at: number; r: RugInfo | null }> = {};
-async function rugReport(mint: string): Promise<RugInfo | null> {
+const rugInflight: Record<string, Promise<RugInfo | null>> = {};
+function rugReport(mint: string): Promise<RugInfo | null> {
   const c = rugCache[mint];
-  if (c && Date.now() - c.at < 10 * 60e3) return c.r;
+  if (c && Date.now() - c.at < 10 * 60e3) return Promise.resolve(c.r);
+  // A lookup already under way (e.g. started by the webhook fast path) is shared, not repeated.
+  return (rugInflight[mint] ??= rugFetch(mint).finally(() => { delete rugInflight[mint]; }));
+}
+async function rugFetch(mint: string): Promise<RugInfo | null> {
   let r: RugInfo | null = null;
   try {
     const res = await fetch(`https://api.rugcheck.xyz/v1/tokens/${mint}/report`, { headers: { accept: "application/json" } });
@@ -1606,6 +1626,7 @@ async function fastPathFromWebhook(payload: any): Promise<number> {
       if (!w) continue;
       const p = parseSwap(tx, addr);
       if (p.kind !== "buy" && p.kind !== "sell") continue;
+      if (p.kind === "buy" && Math.abs(p.solDelta) >= cfg.min_buy_sol) prefetchBuy(p.mint, cfg);
       await recordTrade(w, sig, p, cfg);
       n++;
     }
@@ -1634,13 +1655,21 @@ async function realtimeRun(received: number) {
   }
 }
 
+// The secrets row changes rarely; a warm worker reuses it for 30 s instead of a DB read per request.
+let secretsCache: { at: number; v: any } | null = null;
+async function secretsCached() {
+  if (secretsCache && Date.now() - secretsCache.at < 30_000) return secretsCache.v;
+  const v = await getRow("secrets");
+  secretsCache = { at: Date.now(), v };
+  return v;
+}
 // ---------- HTTP ----------
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: CORS });
   const url = new URL(req.url);
   const path = url.pathname.replace(/^\/sol-tracker/, "") || "/";
   try {
-    const secrets = await getRow("secrets");
+    const secrets = await secretsCached();
     applyKeys(secrets);
     if (path === "/research/step") {
       if (req.headers.get("x-cron-secret") !== secrets.cron_secret) return json({ error: "unauthorized" }, 401);

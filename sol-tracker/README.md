@@ -201,3 +201,9 @@ follows is the backup and dedupes), the market, filter and Jupiter quote lookups
 config sets `copy.confirm_hold_seconds` and `paper.exec_delay_seconds` to 0. `delay_seconds` in the ledger
 is now measured when the fill quote is in hand (was: when filling started). Trade-off: with no hold, a
 trader's sub-second flip is copied instead of skipped (the 2 s hold skipped none of ~110 copies).
+
+Measured 2026-11-25 (58 paper copies after the change): buys median 2.6 s, sells 2.2 s (range 1.3 to 3.4 s).
+Helius delivers ~1.5 s after the recorded block second (block time is rounded down, so ~1 s in reality), the
+trade is recorded ~0.9 s after that, and a buy's fill took 0.6 to 1.0 s more. Second pass (2026-11-26): the
+fast path starts a buy's Jupiter quote and RugCheck lookup as soon as it parses the trade (`prefetchBuy`), in
+parallel with the market lookups, and the secrets row is cached for 30 s per warm worker.
