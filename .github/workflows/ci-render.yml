@@ -79,6 +79,11 @@ jobs:
       - name: Run automated tests
         run: npm test
 
+      # Python bot community (bots/). Stdlib-only tests; the Claude-backed
+      # skills are exercised with stubs, so no API key is needed here.
+      - name: Run bot community tests
+        run: npm run bots:test
+
   # BuildPipeline VSL funnel (apps/buildpipeline). A separate job, not a step in
   # `test`: it is a Next.js app with its own dependencies, and keeping it apart
   # leaves the required `test` check's name and meaning unchanged. Until this

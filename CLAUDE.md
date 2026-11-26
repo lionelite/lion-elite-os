@@ -585,6 +585,31 @@ Standalone modules that share the repo but not the architecture above:
   `lib/database.js` `migrate()` now takes a Postgres advisory lock. Concurrent
   migrations on a fresh DB raced on `CREATE EXTENSION`, and the Postgres
   integration tests serialize on `test/helpers/db-exclusive.js`.
+- **`bots/`** — Python bot community (`lionbots`), added 2026-11-23: 13 bots /
+  32 skills on a shared SQLite task board (`bots/.state/`, gitignored), run via
+  `npm run bots -- roster|ask|submit|serve|list|show`. Owner-requested lanes:
+  meme coins (screen/size/lookup, **never trades**), Amazon FBA, research
+  peptides (RUO), clinical peptides (briefs always `internal_only`),
+  @alexthelionlifts content, BuildPipeline.online funnels, Lion Elite Beauty
+  shapewear launch; plus finance, repo, compliance, a general `claude.ask`, ops.
+  `lionbots/guardrails.py` refuses send/post/buy/switch-flip/secret requests at
+  submission **and** at bot registration, so no future bot can declare such a
+  skill. Customer copy reuses the repo's JS validator and funnel rules through
+  `lionbots/node_bridge.py` instead of a Python copy that would drift;
+  `customer_ready` is true only when that validator ran and approved. Outside
+  dependencies (no Claude credentials, unreachable host, no node) surface as
+  `blocked` naming the gate, never as an empty "nothing found". The sandbox proxy
+  refuses PubMed/ClinicalTrials.gov/DexScreener, so those paths are verified
+  here only against recorded response shapes. Stdlib-only except the optional
+  `anthropic` SDK (`bots/requirements.txt`). Tests: `npm run bots:test`, wired
+  into the required CI `test` job. Docs: `docs/python-bots.md`.
+  *2026-11-26:* added `clinic` (read-only outreach monitor: public
+  `/health/outreach` + GET-only Supabase counts) and `copytrade` (watches the
+  owner's chosen Solana wallets from the `COPYTRADE_WALLETS` secret, alerts on
+  buys of 0.5 SOL or more and on sells, mirrors them in a **paper** account; no keys, no signing,
+  no live mode). `.github/workflows/python-bots.yml` schedules both. The
+  copytrade job polls for ~5.5 h, keeps its ledger in the Actions cache, and
+  re-dispatches itself, because GitHub drops scheduled runs.
 - **`social-listening/`** — Bluesky firehose (Jetstream) monitor. The
   *listening* half is read-only. A *reply* path does exist and this file
   previously denied it: `social-listening/src/bluesky-delivery.js` has

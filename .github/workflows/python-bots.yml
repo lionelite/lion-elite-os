@@ -1,0 +1,117 @@
+name: Python bots
+
+# Read-only and paper-only bots from bots/ (docs/python-bots.md).
+#   clinic-health  weekdays, hourly in the NY sending window: reads the public
+#                  /health/outreach endpoint (no secrets) and, if the Supabase
+#                  secrets exist, counts outreach rows. Never sends.
+#   copytrade      watches the wallets in the COPYTRADE_WALLETS secret every
+#                  30 s and mirrors them in a PAPER account ($250 start). The
+#                  job runs ~5.5 h, saves its ledger to the Actions cache, then
+#                  dispatches its own next run, because GitHub drops many
+#                  scheduled runs; the cron lines are only a restart backstop.
+#                  No keys, no signing, no trades. Idles until wallets are set.
+on:
+  workflow_dispatch:
+    inputs:
+      job:
+        description: 'Which bot to run'
+        type: choice
+        options: [copytrade, clinic-health]
+        default: copytrade
+  schedule:
+    - cron: '41 13-20 * * 1-5'   # clinic health, ~9 AM-4 PM New York
+    - cron: '7 */6 * * *'        # copytrade restart backstop
+
+permissions:
+  contents: read
+
+jobs:
+  clinic-health:
+    if: github.event_name == 'schedule' && github.event.schedule == '41 13-20 * * 1-5' || inputs.job == 'clinic-health'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - name: Outreach health
+        run: |
+          cd bots
+          python -m lionbots --db /tmp/b.db submit clinic.health > /tmp/health.json || true
+          python -m lionbots --db /tmp/b.db submit clinic.audit > /tmp/audit.json || true
+          python - <<'PY' >> "$GITHUB_STEP_SUMMARY"
+          import json
+          h = json.load(open('/tmp/health.json'))
+          r = h.get('result') or {}
+          print(f"## Clinic outreach: {r.get('status', h.get('status'))} ({r.get('verdict', '-')})")
+          for line in r.get('summary') or [h.get('error') or '']:
+              print(f"- {line}")
+          a = json.load(open('/tmp/audit.json'))
+          if a.get('status') == 'done':
+              res = a['result']
+              print(f"\nProspects: {res['prospects_total']} (+{res['prospects_new_7d']} in 7 days). Sent today: {res['sent_today_ny']}. Queue: {res['queue_by_status']}")
+              for w in res['warnings']:
+                  print(f"- Warning: {w}")
+          PY
+          cat "$GITHUB_STEP_SUMMARY"
+          python -c "import json,sys; r=json.load(open('/tmp/health.json')).get('result') or {}; sys.exit(1 if r.get('verdict')=='act' else 0)"
+
+  copytrade:
+    if: github.event_name == 'schedule' && github.event.schedule == '7 */6 * * *' || inputs.job == 'copytrade'
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    concurrency:
+      group: copytrade
+      cancel-in-progress: false
+    permissions:
+      contents: read
+      actions: write   # to dispatch the next run
+    env:
+      COPYTRADE_WALLETS: ${{ secrets.COPYTRADE_WALLETS }}
+      SOLANA_RPC_URL: ${{ secrets.SOLANA_RPC_URL }}
+      COPYTRADE_STATE: ${{ github.workspace }}/.copytrade/copytrade.json
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - name: Restore paper ledger
+        uses: actions/cache/restore@v4
+        with:
+          path: .copytrade
+          key: copytrade-ledger-${{ github.run_id }}
+          restore-keys: copytrade-ledger-
+      - name: Watch wallets (paper only)
+        id: watch
+        run: |
+          if [ -z "$COPYTRADE_WALLETS" ]; then
+            echo "No COPYTRADE_WALLETS secret yet; nothing to watch." | tee -a "$GITHUB_STEP_SUMMARY"
+            echo "idle=true" >> "$GITHUB_OUTPUT"; exit 0
+          fi
+          cd bots
+          # Wallet addresses stay masked: they come from a secret.
+          python -m lionbots --db /tmp/b.db loop copytrade.watch --every 30 --minutes 320 || true
+      - name: Save paper ledger
+        if: always() && steps.watch.outputs.idle != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: .copytrade
+          key: copytrade-ledger-${{ github.run_id }}
+      - name: Paper account summary
+        if: always() && steps.watch.outputs.idle != 'true'
+        run: |
+          cd bots
+          python -m lionbots --db /tmp/b.db submit copytrade.report > /tmp/report.json || true
+          python - <<'PY' >> "$GITHUB_STEP_SUMMARY"
+          import json
+          r = json.load(open('/tmp/report.json')).get('result') or {}
+          print(f"## Copy-trade paper account\nEquity ${r.get('equity_usd')} from ${r.get('starting_bankroll_usd')} ({r.get('return_pct')}%). "
+                f"Closed trades: {r.get('closed_trades')}, win rate: {r.get('win_rate_pct')}%. Open: {len(r.get('open_positions') or [])}.")
+          PY
+      - name: Start next run
+        if: success() && steps.watch.outputs.idle != 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run python-bots.yml --ref "${{ github.ref_name }}" -f job=copytrade

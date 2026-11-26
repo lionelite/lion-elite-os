@@ -1,0 +1,2 @@
+# Only the Claude-backed skills need this; every other bot is stdlib-only.
+anthropic>=1.0
